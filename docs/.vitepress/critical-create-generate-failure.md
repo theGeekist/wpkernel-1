@@ -224,6 +224,32 @@ What to do:
 
 **Retire.** Silent timing regressions.
 
+#### 65c — Readiness budget enforcement
+
+**Probe.** Extend the readiness registry so every helper records detect/prepare/execute/confirm timings and fails with `EnvironmentalError(budget.exceeded)` when a helper exceeds its allotted ceiling.
+
+**Fix.**
+
+1. Instrument `ReadinessRegistry.#runPlan` (packages/cli/src/dx/readiness/registry.ts) with `performance.now()` so each helper’s outcome carries `{ detectMs, prepareMs, executeMs, confirmMs, totalMs }`. Update `ReadinessOutcome`/`ReadinessRunResult` types to expose the timing payload.
+2. Add budget metadata/overrides (e.g., `ReadinessHelperMetadata['budgetMs']` + registry `helperOverrides?.timing`) and throw `EnvironmentalError('budget.exceeded', { helper, durationMs, budgetMs })` whenever `totalMs > budgetMs`.
+3. Surface timings via the helper reporter (`helperReporter.info('completed', { totalMs, budgetMs })`; `helperReporter.error('exceeded budget', …)` before throwing) so CLI logs call out overruns even when the command handles the error.
+4. Expand `packages/cli/src/dx/readiness/__tests__/registry.test.ts` (or new tests) to verify timings appear on outcomes and that helpers with budgets fail fast when they exceed the limit.
+
+**Retire.** Readiness helpers running silently slow without contractual enforcement.
+
+#### 65d — Pipeline telemetry & docs
+
+**Probe.** Persist the installer/readiness timing data captured in 65b–65c so we can compare runs (local smoke test + CI) and explain how to interpret the numbers.
+
+**Fix.**
+
+1. Extend the smoke harness (`scripts/test/smoke-create-generate.mjs`) to emit a telemetry JSON (e.g., `artifacts/cli-smoke/telemetry.json`) capturing commit SHA, npm/composer durations from the init pipeline, and the readiness helper timings surfaced by the registry.
+2. Add a CLI script under `packages/cli/scripts/` (or extend `check-release-pack-ci.ts`) that appends the same telemetry to `docs/internal/ci/init-readiness-telemetry.json`, keeping only the latest ~50 entries for comparison.
+3. Update `.github/workflows/ci.yml` to run the telemetry script and upload the JSON as an artifact (e.g., `init-readiness-telemetry`) alongside the release-pack metrics so every PR has traceable numbers.
+4. Document the telemetry format/override knobs in this worklog (and CLI README) so developers know where to find the installer + readiness timings and how to tune the budgets when CI hardware differs.
+
+**Retire.** One-off log spelunking to understand installer/readiness performance; timings become first-class release data.
+
 ### Task 66 — Packed End-to-End
 
 Validate packed CLI behaviour matches source using a release-gate workflow.
