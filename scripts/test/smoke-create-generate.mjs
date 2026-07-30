@@ -1,7 +1,16 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process';
-import { readdir, mkdtemp, mkdir, rm, stat, access } from 'node:fs/promises';
+import {
+	access,
+	mkdtemp,
+	mkdir,
+	readFile,
+	readdir,
+	rm,
+	stat,
+	writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -62,12 +71,7 @@ const REQUIRED_PACKAGES = [
 ];
 const PACKAGE_MANAGER_TOOLS = {
 	npm: {
-		install: (packages) => [
-			'npm',
-			'install',
-			'--save-dev',
-			...packages,
-		],
+		install: (packages) => ['npm', 'install', '--save-dev', ...packages],
 		execWpk: (args) => ['npx', '--yes', 'wpk', ...args],
 	},
 	pnpm: {
@@ -134,15 +138,28 @@ async function main() {
 			logStep(
 				`[${packageManager}] Installing CLI tarball and tsx inside scaffold`
 			);
-			const dependencyTarballs = [
+			const packedDependencies = [
 				'@wpkernel/cli',
 				'@wpkernel/core',
 				'@wpkernel/pipeline',
 				'@wpkernel/php-json-ast',
 				'@wpkernel/wp-json-ast',
 			]
-				.map((name) => tarballs.get(name))
-				.filter((tarballPath) => typeof tarballPath === 'string');
+				.map((name) => ({
+					name,
+					tarballPath: tarballs.get(name),
+				}))
+				.filter(({ tarballPath }) => typeof tarballPath === 'string');
+
+			await configurePackedDependencyOverrides(
+				packageManager,
+				scopedProjectDir,
+				packedDependencies
+			);
+
+			const dependencyTarballs = packedDependencies.map(
+				({ tarballPath }) => tarballPath
+			);
 
 			await runPackageManagerCommand(
 				packageManager,
@@ -166,34 +183,38 @@ async function main() {
 			);
 
 			// Ensure a clean, valid repository before running the CLI.
-			await resetGitRepository(scopedProjectDir, 'chore: post-install snapshot');
+			await resetGitRepository(
+				scopedProjectDir,
+				'chore: post-install snapshot'
+			);
 
-			logStep(`[${packageManager}] Running "wpk generate" inside scaffold`);
+			logStep(
+				`[${packageManager}] Running "wpk generate" inside scaffold`
+			);
 			await runPackageManagerCommand(
 				packageManager,
 				'execWpk',
 				['generate'],
 				{ cwd: scopedProjectDir, env: { ...process.env, ...cliEnv } }
 			);
-			await snapshotWorkspace(
-				scopedProjectDir,
-				'[smoke] post-generate'
-			);
+			await snapshotWorkspace(scopedProjectDir, '[smoke] post-generate');
 
-			logStep(`[${packageManager}] Running "wpk apply --yes" inside scaffold`);
+			logStep(
+				`[${packageManager}] Running "wpk apply --yes" inside scaffold`
+			);
 			await runPackageManagerCommand(
 				packageManager,
 				'execWpk',
 				['apply', '--yes'],
 				{ cwd: scopedProjectDir, env: { ...process.env, ...cliEnv } }
 			);
-			await snapshotWorkspace(
-				scopedProjectDir,
-				'[smoke] post-apply'
-			);
+			await snapshotWorkspace(scopedProjectDir, '[smoke] post-apply');
 
 			// Re-initialise git to avoid any partial object state before reruns.
-			await resetGitRepository(scopedProjectDir, 'chore: post-apply snapshot');
+			await resetGitRepository(
+				scopedProjectDir,
+				'chore: post-apply snapshot'
+			);
 
 			await runPackageManagerCommand(
 				packageManager,
@@ -226,26 +247,26 @@ async function main() {
 	}
 }
 
-async function cleanup(summary, success) {
-	if (!keepWorkspace) {
-		await safeRm(smokeRoot);
-	} else {
+async function cleanup(runSummary, success) {
+	if (keepWorkspace) {
 		const preserved =
-			summary.projects.length > 0
-				? summary.projects
-				: [{ packageManager: 'default', dir: summary.projectDir }];
+			runSummary.projects.length > 0
+				? runSummary.projects
+				: [{ packageManager: 'default', dir: runSummary.projectDir }];
 		console.log('\nINFO Preserved temp workspace (--keep-workspace):');
 		for (const project of preserved) {
 			console.log(`     - [${project.packageManager}] ${project.dir}`);
 		}
+	} else {
+		await safeRm(smokeRoot);
 	}
 
 	if (cleanArtifacts) {
 		await safeRm(artifactsDir);
 		console.log('\nINFO Removed artifacts directory (--clean-artifacts).');
-	} else if (!success && summary.artifacts.length > 0) {
+	} else if (!success && runSummary.artifacts.length > 0) {
 		console.log('\nINFO Packed tarballs are available at:');
-		for (const artifact of summary.artifacts) {
+		for (const artifact of runSummary.artifacts) {
 			console.log(`     - ${artifact}`);
 		}
 	}
@@ -255,32 +276,30 @@ function logStep(message) {
 	console.log(`\n>> ${message}`);
 }
 
-function logSuccess(summary) {
+function logSuccess(runSummary) {
 	console.log('\nSUCCESS Smoke test succeeded.');
-	if (summary.projects.length > 0) {
+	if (runSummary.projects.length > 0) {
 		console.log('   Workspaces:');
-		for (const project of summary.projects) {
-			console.log(
-				`     - [${project.packageManager}] ${project.dir}`
-			);
+		for (const project of runSummary.projects) {
+			console.log(`     - [${project.packageManager}] ${project.dir}`);
 		}
 	} else {
-		console.log(`   Project workspace: ${summary.projectDir}`);
+		console.log(`   Project workspace: ${runSummary.projectDir}`);
 	}
 	console.log('   Tarballs:');
-	for (const artifact of summary.artifacts) {
+	for (const artifact of runSummary.artifacts) {
 		console.log(`     - ${artifact}`);
 	}
 	console.log(
 		'\nRe-run readiness manually with:\n' +
-		`  cd ${summary.projects[0]?.dir ?? summary.projectDir}\n` +
-		'  wpk doctor --plan quickstart\n\n' +
-		'Or regenerate:\n' +
-		`  cd ${summary.projects[0]?.dir ?? summary.projectDir}\n` +
-		'  wpk generate\n\n' +
-		'Or apply immediately:\n' +
-		`  cd ${summary.projects[0]?.dir ?? summary.projectDir}\n` +
-		'  wpk apply --yes\n'
+			`  cd ${runSummary.projects[0]?.dir ?? runSummary.projectDir}\n` +
+			'  wpk doctor --plan quickstart\n\n' +
+			'Or regenerate:\n' +
+			`  cd ${runSummary.projects[0]?.dir ?? runSummary.projectDir}\n` +
+			'  wpk generate\n\n' +
+			'Or apply immediately:\n' +
+			`  cd ${runSummary.projects[0]?.dir ?? runSummary.projectDir}\n` +
+			'  wpk apply --yes\n'
 	);
 }
 
@@ -372,12 +391,12 @@ function runCommand(command, args, options = {}) {
 				return;
 			}
 
-			const reason =
-				typeof code === 'number'
-					? `exit code ${code}`
-					: signal
-						? `signal ${signal}`
-						: 'unknown failure';
+			let reason = 'unknown failure';
+			if (typeof code === 'number') {
+				reason = `exit code ${code}`;
+			} else if (signal) {
+				reason = `signal ${signal}`;
+			}
 			reject(
 				new Error(
 					`Command "${command} ${args.join(' ')}" failed with ${reason}`
@@ -422,6 +441,40 @@ async function runLocalCreate(scopedProjectDir, packageManager) {
 	);
 }
 
+async function configurePackedDependencyOverrides(
+	packageManager,
+	cwd,
+	packedDependencies
+) {
+	if (packageManager !== 'pnpm') {
+		return;
+	}
+
+	const packageJsonPath = path.join(cwd, 'package.json');
+	const packageManifest = JSON.parse(await readFile(packageJsonPath, 'utf8'));
+	const existingPnpm = packageManifest.pnpm ?? {};
+	const existingOverrides = existingPnpm.overrides ?? {};
+	const packedOverrides = Object.fromEntries(
+		packedDependencies.map(({ name, tarballPath }) => [
+			name,
+			`file:${tarballPath}`,
+		])
+	);
+
+	packageManifest.pnpm = {
+		...existingPnpm,
+		overrides: {
+			...existingOverrides,
+			...packedOverrides,
+		},
+	};
+
+	await writeFile(
+		packageJsonPath,
+		`${JSON.stringify(packageManifest, null, 2)}\n`
+	);
+}
+
 async function runPackageManagerCommand(
 	packageManager,
 	commandKind,
@@ -434,15 +487,9 @@ async function runPackageManagerCommand(
 	}
 
 	const buildArgs =
-		commandKind === 'install'
-			? tools.install(args)
-			: tools.execWpk(args);
+		commandKind === 'install' ? tools.install(args) : tools.execWpk(args);
 
-	return runCommand(
-		buildArgs[0],
-		buildArgs.slice(1),
-		options
-	);
+	return runCommand(buildArgs[0], buildArgs.slice(1), options);
 }
 
 function extractTarballFromStdout(stdout = '') {
@@ -454,9 +501,7 @@ function extractTarballFromStdout(stdout = '') {
 
 	for (const line of lines) {
 		if (line.endsWith('.tgz')) {
-			return path.isAbsolute(line)
-				? line
-				: path.join(artifactsDir, line);
+			return path.isAbsolute(line) ? line : path.join(artifactsDir, line);
 		}
 	}
 
@@ -530,10 +575,7 @@ async function safeRm(target) {
 		});
 	} catch (error) {
 		// Fallback for runtimes that don't support maxRetries/retryDelay or transient ENOTEMPTY.
-		if (
-			error &&
-			(error.code === 'ENOTEMPTY' || error.code === 'EEXIST')
-		) {
+		if (error && (error.code === 'ENOTEMPTY' || error.code === 'EEXIST')) {
 			await rm(target, { recursive: true, force: true });
 			return;
 		}
@@ -544,18 +586,27 @@ async function safeRm(target) {
 async function initGitRepository(cwd) {
 	// Always re-init to ensure .git exists and is consistent.
 	await runGit(['init'], { cwd, capture: true, quietCapture: true });
-	await runGit(
-		['config', 'user.name', gitIdentity.name],
-		{ cwd, capture: true, quietCapture: true }
-	);
-	await runGit(
-		['config', 'user.email', gitIdentity.email],
-		{ cwd, capture: true, quietCapture: true }
-	);
+	await runGit(['config', 'user.name', gitIdentity.name], {
+		cwd,
+		capture: true,
+		quietCapture: true,
+	});
+	await runGit(['config', 'user.email', gitIdentity.email], {
+		cwd,
+		capture: true,
+		quietCapture: true,
+	});
 	// Seed an initial commit so future git status calls don't error on missing objects.
 	await runGit(['add', '--all'], { cwd, capture: true, quietCapture: true });
 	await runGit(
-		['commit', '--quiet', '--no-verify', '--allow-empty', '-m', 'chore: initial scaffold'],
+		[
+			'commit',
+			'--quiet',
+			'--no-verify',
+			'--allow-empty',
+			'-m',
+			'chore: initial scaffold',
+		],
 		{
 			cwd,
 			capture: true,
@@ -607,9 +658,7 @@ main().catch((error) => {
 });
 
 function parsePackageManagers(args) {
-	const entry = args.find((arg) =>
-		arg.startsWith('--package-managers=')
-	);
+	const entry = args.find((arg) => arg.startsWith('--package-managers='));
 	const supported = ['npm', 'pnpm', 'yarn'];
 
 	if (!entry) {
