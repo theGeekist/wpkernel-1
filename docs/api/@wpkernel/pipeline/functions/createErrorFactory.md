@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -16,7 +16,7 @@ Creates an error factory that wraps a custom error class.
 
 ### create
 
-(`code`, `message`) => `Error`
+(`code`, `message`) =&gt; `Error`
 
 A function that creates an Error instance based on a code and message.
 
@@ -30,13 +30,13 @@ An error factory function
 
 ```typescript
 class WPKernelError extends Error {
-	constructor(code: string, options: { message: string }) {
-		super(options.message);
-		this.name = code;
-	}
+  constructor(code: string, options: { message: string }) {
+    super(options.message);
+    this.name = code;
+  }
 }
 
 const createError = createErrorFactory(
-	(code, message) => new WPKernelError(code, { message })
+  (code, message) =&gt; new WPKernelError(code, { message })
 );
 ```

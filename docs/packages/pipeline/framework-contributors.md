@@ -2,7 +2,11 @@
 
 ## Overview
 
-> **Note**: This guide focuses on the **Standard Pipeline** implementation (Fragments & Builders) used by WPKernel CLI. For custom architectures using the Core Runner, see the [Architecture Guide](./architecture.md).
+> **Note**: This guide focuses on the **Standard Pipeline** implementation
+> (Fragments & Builders) used by WPKernel CLI. Custom architectures use
+> `makePipeline` with the root-exported `PipelineStageDependencies` facade; see
+> the [Architecture Guide](./architecture.md). Do not import private
+> `core/runner` types.
 
 Framework contributors extend the pipeline along the **standard WPK model**:
 
@@ -19,6 +23,11 @@ Use `makePipeline()` to describe execution stages (fragments, builders, analysis
 - Attach to one or more **lifecycles** (e.g. `fragment`, `builder`, `plan-validate`)
 - Run transactional work inside the hook (`prepare`, `commit`, `rollback`)
 - Optionally register additional helpers as part of their setup
+
+Custom `createStages` callbacks are contextually typed. `createState`,
+`PipelineStageState`, `PipelineHelperStageOptions`, and
+`createRunResult.state` retain the same user-state, context, reporter,
+diagnostic, and helper input/output types without consumer casts.
 
 Each lifecycle run creates its own extension coordinator and state; commits run **once per lifecycle** in the order they were executed, while rollbacks run in **reverse order (LIFO)** when anything fails. Within a lifecycle, extension commit order follows hook sequencing rules (priority/registration order — whatever your coordinator guarantees). Extension authors should assume:
 

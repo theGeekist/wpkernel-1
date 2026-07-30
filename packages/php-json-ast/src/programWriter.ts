@@ -37,7 +37,6 @@ type BuilderApplyOptions<
 	TInput extends BuilderInput,
 	TOutput extends BuilderOutput,
 > = Parameters<BuilderHelper<TContext, TInput, TOutput>['apply']>[0];
-type BuilderNext = Parameters<BuilderHelper['apply']>[1];
 
 export function createPhpProgramWriterHelper<
 	TContext extends PipelineContext = PipelineContext,
@@ -56,8 +55,7 @@ export function createPhpProgramWriterHelper<
 		key: options.key ?? 'builder.generate.php.writer',
 		kind: 'builder',
 		async apply(
-			helperOptions: BuilderApplyOptions<TContext, TInput, TOutput>,
-			next?: BuilderNext
+			helperOptions: BuilderApplyOptions<TContext, TInput, TOutput>
 		) {
 			const { context, reporter, output } = helperOptions;
 			const channel = getPhpBuilderChannel(context);
@@ -68,7 +66,6 @@ export function createPhpProgramWriterHelper<
 				reporter.debug(
 					'createPhpProgramWriterHelper: no programs queued.'
 				);
-				await next?.();
 				return;
 			}
 
@@ -97,8 +94,6 @@ export function createPhpProgramWriterHelper<
 				prettyPrinter,
 				emitAst
 			);
-
-			await next?.();
 		},
 	});
 }

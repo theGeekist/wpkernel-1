@@ -59,4 +59,49 @@ describe('Multi-Lifecycle Extension Bug', () => {
 		expect(commitSpy1).toHaveBeenCalled(); // This is expected to fail currently
 		expect(commitSpy2).toHaveBeenCalled();
 	});
+
+	it('commits each lifecycle state exactly once across repeated explicit checkpoints and finalization', async () => {
+		const commitSpy1 = jest.fn();
+		const commitSpy2 = jest.fn();
+
+		const pipeline = makePipeline({
+			...baseOptions,
+			extensions: {
+				lifecycles: ['phase-one', 'phase-two'],
+			},
+			helperKinds: [],
+			createStages: (deps: any) => [
+				deps.makeLifecycleStage('phase-one'),
+				deps.commitStage,
+				deps.commitStage,
+				deps.makeLifecycleStage('phase-two'),
+				deps.commitStage,
+				deps.finalizeResult,
+			],
+		});
+
+		pipeline.extensions.use({
+			key: 'ext-1',
+			register: () => ({
+				lifecycle: 'phase-one',
+				hook: () => ({
+					commit: commitSpy1,
+				}),
+			}),
+		});
+		pipeline.extensions.use({
+			key: 'ext-2',
+			register: () => ({
+				lifecycle: 'phase-two',
+				hook: () => ({
+					commit: commitSpy2,
+				}),
+			}),
+		});
+
+		await pipeline.run({});
+
+		expect(commitSpy1).toHaveBeenCalledTimes(1);
+		expect(commitSpy2).toHaveBeenCalledTimes(1);
+	});
 });

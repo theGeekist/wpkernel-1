@@ -1,4 +1,5 @@
 import { makePipeline } from '../makePipeline';
+import { createHelper } from '../helper';
 import { type PipelineStage } from '../runner/types';
 import type { PipelineReporter } from '../types';
 
@@ -70,5 +71,38 @@ describe('makePipeline', () => {
 		// But verifying it runs without error suggests the configuration was accepted.
 		const result = await pipeline.run({});
 		expect(result).toMatchObject({ artifact: {} });
+	});
+
+	it('returns flattened public pipeline steps', async () => {
+		const pipeline = makePipeline({
+			...baseOptions,
+		});
+		pipeline.use(
+			createHelper({
+				key: 'step',
+				kind: 'testHelper',
+				priority: 7,
+				dependsOn: [],
+				origin: 'test',
+				apply() {},
+			})
+		);
+
+		const result = await pipeline.run({});
+
+		expect(result.steps).toEqual([
+			{
+				key: 'step',
+				kind: 'testHelper',
+				mode: 'extend',
+				priority: 7,
+				dependsOn: [],
+				origin: 'test',
+				id: 'testHelper:step#0',
+				index: 0,
+			},
+		]);
+		expect(result.steps[0]).not.toHaveProperty('helper');
+		expect(result.steps[0]).not.toHaveProperty('apply');
 	});
 });

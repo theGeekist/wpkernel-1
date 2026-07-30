@@ -81,4 +81,49 @@ describe('Synchronous Execution', () => {
 		expect(isPromiseLike(resultOrPromise)).toBe(true);
 		await resultOrPromise;
 	});
+
+	it('adopts the final replacement output into user state', () => {
+		const pipeline = makePipeline({
+			helperKinds: ['fragment'],
+			createContext: () => ({ reporter: {} }),
+			createState: () => ({ count: 0 }),
+			createStages: (deps: any) => [
+				deps.makeHelperStage('fragment', {
+					makeArgs: (state: any) => () => ({
+						context: state.context,
+						input: undefined,
+						output: state.userState,
+						reporter: state.reporter,
+					}),
+					writeOutput: (state: any, output: unknown) => ({
+						...state,
+						userState: output,
+					}),
+				}),
+				deps.finalizeResult,
+			],
+		});
+
+		pipeline.use({
+			kind: 'fragment',
+			key: 'first',
+			dependsOn: [],
+			apply: ({ output }: any) => ({
+				output: { count: output.count + 1 },
+			}),
+		} as any);
+		pipeline.use({
+			kind: 'fragment',
+			key: 'second',
+			dependsOn: ['first'],
+			apply: ({ output }: any) => ({
+				output: { count: output.count + 1 },
+			}),
+		} as any);
+
+		const result = pipeline.run({});
+
+		expect(isPromiseLike(result)).toBe(false);
+		expect(result).toHaveProperty('artifact', { count: 2 });
+	});
 });

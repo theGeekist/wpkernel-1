@@ -91,10 +91,24 @@ export interface HelperApplyResult<TOutput> {
 }
 
 /**
+ * Explicit continuation for wrapping the remainder of a helper chain.
+ *
+ * Calling the continuation executes downstream helpers with either the supplied
+ * output or the current helper output. The returned value is the final output
+ * produced by those helpers.
+ *
+ * @public
+ */
+export interface HelperNext<TOutput> {
+	(): MaybePromise<TOutput>;
+	(output: TOutput): MaybePromise<TOutput>;
+}
+
+/**
  * Function signature for a pipeline helper's apply method.
  *
  * This function is responsible for transforming the pipeline's input and output.
- * It can optionally call `next()` to pass control to the next helper in the pipeline.
+ * It can optionally call `next()` to wrap the remainder of the helper chain.
  *
  * Helpers can also return a result object with transformed output and optional rollback
  * for cleanup if the pipeline fails after the helper executes.
@@ -104,7 +118,7 @@ export interface HelperApplyResult<TOutput> {
  * @template TOutput - The type of the output artifact.
  * @template TReporter - The type of the reporter used for logging.
  * @param    options - Options for the apply function, including context, input, output, and reporter.
- * @param    next    - Optional function to call the next helper in the pipeline.
+ * @param    next    - Optional continuation that returns the downstream output.
  * @returns A promise that resolves when the helper has finished its work, or a result object with optional output and rollback.
  * @public
  */
@@ -115,7 +129,7 @@ export type HelperApplyFn<
 	TReporter extends PipelineReporter = PipelineReporter,
 > = (
 	options: HelperApplyOptions<TContext, TInput, TOutput, TReporter>,
-	next?: () => MaybePromise<void>
+	next?: HelperNext<TOutput>
 ) => MaybePromise<HelperApplyResult<TOutput> | void>;
 
 /**
@@ -256,6 +270,12 @@ export interface PipelinePauseOptions {
 
 /**
  * Snapshot captured when a pipeline run pauses.
+ *
+ * This is a process-local suspension value. Its state can contain live maps,
+ * sets, functions, extension coordinators, rollback callbacks, and other
+ * non-serializable runtime objects. Consumers must not persist or transport it
+ * as a durable checkpoint.
+ *
  * @public
  */
 export interface PipelinePauseSnapshot<TState> {
@@ -274,6 +294,255 @@ export interface PipelinePauseSnapshot<TState> {
 export interface PipelinePaused<TState> {
 	readonly __paused: true;
 	readonly snapshot: PipelinePauseSnapshot<TState>;
+}
+
+/**
+ * Public state threaded through custom pipeline stages.
+ *
+ * Consumer stages may replace `userState` immutably by returning a spread of
+ * the received state. Runner-owned fields are preserved by that spread without
+ * becoming part of the public custom-stage contract.
+ *
+ * @public
+ */
+declare const pipelineStageStateBrand: unique symbol;
+
+export interface PipelineStageState<
+	TRunOptions,
+	TUserState,
+	TContext extends { reporter: TReporter },
+	TReporter extends PipelineReporter = PipelineReporter,
+	TDiagnostic extends PipelineDiagnostic = PipelineDiagnostic,
+> {
+	/**
+	 * Prevents consumers from constructing runner state from scratch. Derive
+	 * replacement state from the value supplied to the stage instead.
+	 *
+	 * @internal
+	 */
+	readonly [pipelineStageStateBrand]: true;
+	readonly context: TContext;
+	readonly reporter: TReporter;
+	readonly runOptions: TRunOptions;
+	readonly userState: TUserState;
+	readonly steps: readonly PipelineStep[];
+	readonly diagnostics: readonly TDiagnostic[];
+	readonly executedLifecycles: ReadonlySet<string>;
+	readonly helperExecution?: ReadonlyMap<string, HelperExecutionSnapshot>;
+	readonly stageIndex?: number;
+	readonly resumeInput?: unknown;
+}
+
+/**
+ * Terminal result produced by a custom pipeline stage.
+ *
+ * @public
+ */
+export interface PipelineHalt<TRunResult> {
+	readonly __halt: true;
+	readonly error?: unknown;
+	readonly result?: TRunResult;
+	/** @internal */
+	readonly __hasError?: true;
+	/** @internal */
+	readonly __rollbackApplied?: true;
+}
+
+/**
+ * Result accepted from a custom pipeline stage.
+ *
+ * @public
+ */
+export type PipelineStageResult<TState, TRunResult> =
+	| TState
+	| PipelinePaused<TState>
+	| PipelineHalt<TRunResult>;
+
+/**
+ * A synchronous-or-asynchronous custom pipeline stage.
+ *
+ * @public
+ */
+export type PipelineStage<TState, TRunResult> = (
+	state: TState
+) => MaybePromise<PipelineStageResult<TState, TRunResult>>;
+
+/**
+ * Public registration metadata supplied to helper-stage argument factories.
+ *
+ * @public
+ */
+export interface PipelineRegisteredHelper<THelper> {
+	readonly helper: THelper;
+	readonly id: string;
+	readonly index: number;
+}
+
+/**
+ * A rollback captured while executing a helper stage.
+ *
+ * @public
+ */
+export interface PipelineHelperRollback<THelper> {
+	readonly helper: THelper;
+	readonly rollback: PipelineRollback;
+}
+
+/**
+ * Options for constructing a typed helper stage.
+ *
+ * @public
+ */
+export interface PipelineHelperStageOptions<
+	TState,
+	TContext,
+	TInput,
+	TOutput,
+	TReporter extends PipelineReporter,
+	TKind extends HelperKind,
+	THelper extends Helper<TContext, TInput, TOutput, TReporter, TKind>,
+> {
+	readonly makeArgs?: (
+		state: TState
+	) => (
+		entry: PipelineRegisteredHelper<THelper>
+	) => HelperApplyOptions<TContext, TInput, TOutput, TReporter>;
+	readonly writeOutput?: (state: TState, output: TOutput) => TState;
+	readonly onVisited?: (
+		state: TState,
+		visited: ReadonlySet<string>,
+		registered: readonly PipelineRegisteredHelper<THelper>[],
+		rollbacks: readonly PipelineHelperRollback<THelper>[],
+		output: TOutput
+	) => TState;
+}
+
+/**
+ * Diagnostic capabilities available to custom stages.
+ *
+ * @public
+ */
+export interface PipelineStageDiagnostics<
+	TDiagnostic extends PipelineDiagnostic,
+	TKind extends HelperKind,
+> {
+	readonly record: (diagnostic: TDiagnostic) => void;
+	readonly flagUnusedHelper: (
+		helper: HelperDescriptor<TKind>,
+		kind: TKind,
+		message: string,
+		dependsOn?: readonly string[]
+	) => void;
+}
+
+/**
+ * Stable, domain-neutral dependencies supplied to `createStages`.
+ *
+ * @public
+ */
+export interface PipelineStageDependencies<
+	TRunOptions,
+	TUserState,
+	TContext extends { reporter: TReporter },
+	TReporter extends PipelineReporter = PipelineReporter,
+	TDiagnostic extends PipelineDiagnostic = PipelineDiagnostic,
+	TRunResult = PipelineRunState<TUserState, TDiagnostic>,
+	TKind extends HelperKind = HelperKind,
+> {
+	readonly finalizeResult: PipelineStage<
+		PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		TRunResult
+	>;
+	readonly makeLifecycleStage: (
+		lifecycle: string
+	) => PipelineStage<
+		PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		TRunResult
+	>;
+	readonly commitStage: PipelineStage<
+		PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		TRunResult
+	>;
+	readonly makeHelperStage: <
+		TInput = TRunOptions,
+		TOutput = TUserState,
+		TSelectedKind extends TKind = TKind,
+		THelper extends Helper<
+			TContext,
+			TInput,
+			TOutput,
+			TReporter,
+			TSelectedKind
+		> = Helper<TContext, TInput, TOutput, TReporter, TSelectedKind>,
+	>(
+		kind: TSelectedKind,
+		options?: PipelineHelperStageOptions<
+			PipelineStageState<
+				TRunOptions,
+				TUserState,
+				TContext,
+				TReporter,
+				TDiagnostic
+			>,
+			TContext,
+			TInput,
+			TOutput,
+			TReporter,
+			TSelectedKind,
+			THelper
+		>
+	) => PipelineStage<
+		PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		TRunResult
+	>;
+	readonly halt: (error?: unknown) => PipelineHalt<TRunResult>;
+	readonly pause?: (
+		state: PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		options?: PipelinePauseOptions
+	) => PipelinePaused<
+		PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>
+	>;
+	readonly isHalt: (value: unknown) => value is PipelineHalt<TRunResult>;
+	readonly diagnostics: PipelineStageDiagnostics<TDiagnostic, TKind>;
+	readonly extensions: {
+		readonly lifecycles?: readonly string[];
+	};
 }
 
 /**
@@ -365,17 +634,18 @@ export interface AgnosticPipelineOptions<
 	TUserState = unknown,
 	TDiagnostic extends PipelineDiagnostic = PipelineDiagnostic,
 	TRunResult = PipelineRunState<TUserState, TDiagnostic>,
+	TKind extends HelperKind = HelperKind,
 > {
 	/**
 	 * List of helper kinds to manage registered helpers for.
 	 */
-	readonly helperKinds: readonly string[];
+	readonly helperKinds: readonly TKind[];
 
 	/**
 	 * Map of helper keys that should be treated as "already satisfied" for dependency resolution.
 	 * Keys are grouped by helper kind.
 	 */
-	readonly providedKeys?: Record<string, readonly string[]>;
+	readonly providedKeys?: Partial<Record<TKind, readonly string[]>>;
 
 	readonly extensions?: {
 		readonly lifecycles?: readonly string[];
@@ -391,7 +661,7 @@ export interface AgnosticPipelineOptions<
 	readonly createState?: (options: {
 		readonly context: TContext;
 		readonly options: TRunOptions;
-	}) => Record<string, unknown>;
+	}) => TUserState;
 
 	/**
 	 * Factory for pipeline stages.
@@ -399,8 +669,25 @@ export interface AgnosticPipelineOptions<
 	 * Use this to reinstate standard pipeline behaviors or implement custom flows.
 	 */
 	readonly createStages?: (
-		deps: unknown // We use unknown here to avoid circular imports. Consumers should cast to AgnosticStageDeps.
-	) => unknown[];
+		deps: PipelineStageDependencies<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic,
+			TRunResult,
+			TKind
+		>
+	) => readonly PipelineStage<
+		PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		TRunResult
+	>[];
 
 	/**
 	 * Adapts the generic run result (state) into the desired TRunResult.
@@ -411,7 +698,13 @@ export interface AgnosticPipelineOptions<
 		readonly steps: readonly PipelineStep[];
 		readonly context: TContext;
 		readonly options: TRunOptions;
-		readonly state: Record<string, unknown>; // Access to full state for custom extraction
+		readonly state: PipelineStageState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>;
 	}) => TRunResult;
 
 	/**
@@ -477,8 +770,8 @@ export interface PipelineBase<
 	/**
 	 * Generic helper registration.
 	 */
-	use: (
-		helper: Helper<TContext, unknown, unknown, TReporter, HelperKind>
+	use: <TInput, TOutput, TKind extends HelperKind>(
+		helper: Helper<TContext, TInput, TOutput, TReporter, TKind>
 	) => void;
 }
 

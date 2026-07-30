@@ -85,6 +85,7 @@ describe('createActionExecutionBuilder', () => {
 			},
 			async () => {
 				order.push('next');
+				return {};
 			}
 		);
 

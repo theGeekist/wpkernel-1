@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -7,14 +7,7 @@
 # Function: makePipeline()
 
 ```ts
-function makePipeline<
-	TRunOptions,
-	TContext,
-	TReporter,
-	TUserState,
-	TDiagnostic,
-	TRunResult,
->(options): AgnosticPipeline<TRunOptions, TRunResult, TContext, TReporter>;
+function makePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;(options): AgnosticPipeline&lt;TRunOptions, TRunResult, TContext, TReporter&gt;;
 ```
 
 ## Type Parameters
@@ -41,14 +34,18 @@ function makePipeline<
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TUserState`, `TDiagnostic`>
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+
+### TKind
+
+`TKind` _extends_ `string` = `string`
 
 ## Parameters
 
 ### options
 
-`AgnosticPipelineOptions`<`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`>
+[`AgnosticPipelineOptions`](../interfaces/AgnosticPipelineOptions.md)&lt;`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`&gt;
 
 ## Returns
 
-`AgnosticPipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`>
+`AgnosticPipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`&gt;

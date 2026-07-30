@@ -20,7 +20,9 @@ describe('stage-factories coverage', () => {
 			mode: 'extend',
 			priority: 1,
 			dependsOn: [],
-			apply: (_args, next) => next?.(),
+			apply: (_args, next) => {
+				next?.();
+			},
 		};
 		const entries: RegisteredHelper<typeof helper>[] = [
 			{ helper, id: 'test:h1#0', index: 0 },
@@ -103,7 +105,9 @@ describe('stage-factories coverage', () => {
 			mode: 'extend',
 			priority: 1,
 			dependsOn: [],
-			apply: (_args, next) => next?.(),
+			apply: (_args, next) => {
+				next?.();
+			},
 		};
 		const entries: RegisteredHelper<typeof helper>[] = [
 			{ helper, id: 'test:h2#0', index: 0 },

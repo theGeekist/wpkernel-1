@@ -133,22 +133,17 @@ describe('createPhpProgramWriterHelper', () => {
 		resetChannels(context);
 
 		const helper = createPhpProgramWriterHelper();
-		const next = jest.fn();
 
-		await helper.apply(
-			{
-				context,
-				input,
-				output,
-				reporter: context.reporter,
-			},
-			next
-		);
+		await helper.apply({
+			context,
+			input,
+			output,
+			reporter: context.reporter,
+		});
 
 		expect(context.reporter.debug).toHaveBeenCalledWith(
 			'createPhpProgramWriterHelper: no programs queued.'
 		);
-		expect(next).toHaveBeenCalledTimes(1);
 	});
 
 	it('writes queued programs using the PHP driver', async () => {

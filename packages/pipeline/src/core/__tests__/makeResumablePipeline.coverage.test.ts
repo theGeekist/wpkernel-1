@@ -112,7 +112,7 @@ describe('makeResumablePipeline coverage', () => {
 				(state: any) => {
 					if (!state.resumeInput) {
 						return Promise.resolve(
-							deps.runnerEnv.pause(state, { pauseKind: 'async' })
+							deps.pause(state, { pauseKind: 'async' })
 						);
 					}
 					return {
@@ -151,7 +151,7 @@ describe('makeResumablePipeline coverage', () => {
 			createStages: (deps: any) => [
 				(state: any) => {
 					if (!state.resumeInput) {
-						return deps.runnerEnv.pause(state, {
+						return deps.pause(state, {
 							pauseKind: 'sync',
 						});
 					}
@@ -370,7 +370,7 @@ describe('makeResumablePipeline coverage', () => {
 			createStages: (deps: any) => [
 				(state: any) => {
 					if (!state.resumeInput) {
-						return deps.runnerEnv.pause(state, {
+						return deps.pause(state, {
 							pauseKind: 'stop',
 						});
 					}

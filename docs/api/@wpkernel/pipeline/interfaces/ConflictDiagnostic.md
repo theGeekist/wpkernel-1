@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / ConflictDiagnostic
 
-# Interface: ConflictDiagnostic<TKind>
+# Interface: ConflictDiagnostic&lt;TKind&gt;
 
 Diagnostic for conflicting helper registrations.
 

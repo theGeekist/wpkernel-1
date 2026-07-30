@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / HelperApplyOptions
 
-# Interface: HelperApplyOptions<TContext, TInput, TOutput, TReporter>
+# Interface: HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;
 
 Options passed to a helper's apply function.
 

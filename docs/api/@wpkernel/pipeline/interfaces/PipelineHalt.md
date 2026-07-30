@@ -1,14 +1,12 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / Halt
+[@wpkernel/pipeline](../README.md) / PipelineHalt
 
-# Type Alias: Halt<TRunResult>
+# Interface: PipelineHalt&lt;TRunResult&gt;
 
-```ts
-type Halt<TRunResult> = object;
-```
+Terminal result produced by a custom pipeline stage.
 
 ## Type Parameters
 

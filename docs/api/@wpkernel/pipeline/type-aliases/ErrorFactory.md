@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -7,7 +7,7 @@
 # Type Alias: ErrorFactory
 
 ```ts
-type ErrorFactory = (code, message) => Error;
+type ErrorFactory = (code, message) =&gt; Error;
 ```
 
 Factory function for creating errors.
@@ -36,6 +36,6 @@ An Error instance
 ## Example
 
 ```typescript
-const createError = (code: string, message: string) =>
-	new MyCustomError(code, { message });
+const createError = (code: string, message: string) =&gt;
+  new MyCustomError(code, { message });
 ```

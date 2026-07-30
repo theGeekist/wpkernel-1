@@ -35,6 +35,7 @@ describe('createActionRegistryRecorder', () => {
 			},
 			async () => {
 				order.push('next');
+				return {};
 			}
 		);
 
@@ -72,6 +73,6 @@ describe('createActionRegistryRecorder', () => {
 				},
 				undefined
 			)
-		).resolves.toBeUndefined();
+		).resolves.toEqual({ output: {} });
 	});
 });

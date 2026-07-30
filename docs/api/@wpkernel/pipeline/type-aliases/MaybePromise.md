@@ -1,13 +1,13 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / MaybePromise
 
-# Type Alias: MaybePromise<T>
+# Type Alias: MaybePromise&lt;T&gt;
 
 ```ts
-type MaybePromise<T> = T | Promise<T>;
+type MaybePromise&lt;T&gt; = T | Promise&lt;T&gt;;
 ```
 
 A type that can be either a value or a Promise of a value.

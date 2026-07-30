@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / PipelineExtensionHookResult
 
-# Interface: PipelineExtensionHookResult<TArtifact>
+# Interface: PipelineExtensionHookResult&lt;TArtifact&gt;
 
 Result from a pipeline extension hook.
 
@@ -27,21 +27,21 @@ readonly optional artifact: TArtifact;
 ### commit()?
 
 ```ts
-readonly optional commit: () => MaybePromise<void>;
+readonly optional commit: () =&gt; MaybePromise&lt;void&gt;;
 ```
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`void`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`void`&gt;
 
 ---
 
 ### rollback()?
 
 ```ts
-readonly optional rollback: () => MaybePromise<void>;
+readonly optional rollback: () =&gt; MaybePromise&lt;void&gt;;
 ```
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`void`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`void`&gt;

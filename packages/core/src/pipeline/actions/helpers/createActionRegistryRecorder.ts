@@ -25,12 +25,11 @@ export function createActionRegistryRecorder<
 		mode: 'extend',
 		priority: 60,
 		dependsOn: ['action.execute.handler'],
-		apply: async ({ context }, next) => {
-			if (next) {
-				await next();
-			}
+		apply: async ({ context, output }, next) => {
+			const finalOutput = next ? await next(output) : output;
 
 			context.registry?.recordActionDefined?.(context.definition);
+			return { output: finalOutput };
 		},
 	}) satisfies ActionBuilderHelper<TArgs, TResult>;
 }

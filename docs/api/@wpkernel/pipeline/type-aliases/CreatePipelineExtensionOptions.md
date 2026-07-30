@@ -1,25 +1,15 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / CreatePipelineExtensionOptions
 
-# Type Alias: CreatePipelineExtensionOptions<TPipeline, TContext, TOptions, TArtifact>
+# Type Alias: CreatePipelineExtensionOptions&lt;TPipeline, TContext, TOptions, TArtifact&gt;
 
 ```ts
-type CreatePipelineExtensionOptions<TPipeline, TContext, TOptions, TArtifact> =
-	| CreatePipelineExtensionWithRegister<
-			TPipeline,
-			TContext,
-			TOptions,
-			TArtifact
-	  >
-	| CreatePipelineExtensionWithSetup<
-			TPipeline,
-			TContext,
-			TOptions,
-			TArtifact
-	  >;
+type CreatePipelineExtensionOptions&lt;TPipeline, TContext, TOptions, TArtifact&gt; =
+  | CreatePipelineExtensionWithRegister&lt;TPipeline, TContext, TOptions, TArtifact&gt;
+| CreatePipelineExtensionWithSetup&lt;TPipeline, TContext, TOptions, TArtifact&gt;;
 ```
 
 ## Type Parameters

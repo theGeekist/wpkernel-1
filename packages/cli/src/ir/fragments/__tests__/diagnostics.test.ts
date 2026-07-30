@@ -73,7 +73,7 @@ describe('createDiagnosticsFragment', () => {
 				output,
 				reporter,
 			},
-			async () => {}
+			async () => output
 		);
 
 		expect(draft.diagnostics).toEqual(
@@ -129,7 +129,7 @@ describe('createDiagnosticsFragment', () => {
 				output,
 				reporter,
 			},
-			async () => {}
+			async () => output
 		);
 
 		expect(draft.diagnostics).toEqual([]);

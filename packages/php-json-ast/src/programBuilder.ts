@@ -62,7 +62,6 @@ export type BuilderHelper<
 	TOutput extends BuilderOutput = BuilderOutput,
 > = Helper<TContext, TInput, TOutput, TContext['reporter'], 'builder'>;
 type BuilderApplyOptions = Parameters<BuilderHelper['apply']>[0];
-type BuilderNext = Parameters<BuilderHelper['apply']>[1];
 import {
 	appendDocblockLine,
 	appendProgramStatement,
@@ -157,10 +156,7 @@ export function createPhpProgramBuilder<
 	>({
 		key,
 		kind: 'builder',
-		apply: async (
-			helperOptions: BuilderApplyOptions,
-			next?: BuilderNext
-		) => {
+		apply: async (helperOptions: BuilderApplyOptions) => {
 			const { reporter, context } = helperOptions;
 			const astChannel = getPhpAstChannel(context);
 			const entry = astChannel.open({
@@ -193,8 +189,6 @@ export function createPhpProgramBuilder<
 					namespace: builder.getNamespace(),
 				}
 			);
-
-			await next?.();
 		},
 	});
 }

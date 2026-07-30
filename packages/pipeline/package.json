@@ -1,6 +1,6 @@
 {
 	"name": "@wpkernel/pipeline",
-	"version": "1.0.0",
+	"version": "1.2.0",
 	"description": "Framework-agnostic pipeline orchestration primitives for WPKernel",
 	"type": "module",
 	"sideEffects": false,
@@ -48,6 +48,7 @@
 		"clean": "rm -rf dist dist-tests *.tsbuildinfo",
 		"lint": "eslint src/",
 		"lint:fix": "eslint src/ --fix",
+		"qualify:packed": "node scripts/qualify-packed-api.mjs",
 		"test": "wpk-run-jest",
 		"test:coverage": "wpk-run-jest coverage",
 		"test:integration": "wpk-run-jest integration",

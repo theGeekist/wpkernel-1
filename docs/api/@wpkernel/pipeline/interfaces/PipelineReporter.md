@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -13,7 +13,7 @@ Interface for reporting pipeline events and warnings.
 ### warn()?
 
 ```ts
-optional warn: (message, context?) => void;
+optional warn: (message, context?) =&gt; void;
 ```
 
 #### Parameters

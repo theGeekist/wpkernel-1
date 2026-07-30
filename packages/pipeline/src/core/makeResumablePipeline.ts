@@ -18,6 +18,9 @@ import type {
 	AgnosticPipelineOptions,
 	ResumablePipeline,
 	PipelinePaused,
+	PipelineStage as PublicPipelineStage,
+	PipelineStageDependencies,
+	PipelineStageState,
 } from './types';
 import { initAgnosticResumableRunner } from './runner';
 import { createAgnosticDiagnosticManager } from './runner/diagnostics';
@@ -26,7 +29,6 @@ import type {
 	AgnosticRunnerDependencies,
 	PipelineStage,
 	Halt,
-	AgnosticStageDeps,
 	AgnosticState,
 } from './runner/types';
 
@@ -37,6 +39,7 @@ export function makeResumablePipeline<
 	TUserState = unknown,
 	TDiagnostic extends PipelineDiagnostic = PipelineDiagnostic,
 	TRunResult = PipelineRunState<TUserState, TDiagnostic>,
+	TKind extends HelperKind = HelperKind,
 >(
 	options: AgnosticPipelineOptions<
 		TRunOptions,
@@ -44,7 +47,8 @@ export function makeResumablePipeline<
 		TReporter,
 		TUserState,
 		TDiagnostic,
-		TRunResult
+		TRunResult,
+		TKind
 	>
 ): ResumablePipeline<
 	TRunOptions,
@@ -109,40 +113,34 @@ export function makeResumablePipeline<
 
 	// Default Stage Factory
 	const defaultStages = (
-		deps: AgnosticStageDeps<
-			AgnosticState<
-				TRunOptions,
-				TUserState,
-				TContext,
-				TReporter,
-				TDiagnostic
-			>,
-			TRunResult,
-			TContext,
+		deps: PipelineStageDependencies<
 			TRunOptions,
+			TUserState,
+			TContext,
 			TReporter,
 			TDiagnostic,
-			TUserState
+			TRunResult,
+			TKind
 		>
-	): PipelineStage<
-		AgnosticState<
+	): PublicPipelineStage<
+		PipelineStageState<
 			TRunOptions,
 			TUserState,
 			TContext,
 			TReporter,
 			TDiagnostic
 		>,
-		Halt<TRunResult>
+		TRunResult
 	>[] => {
-		const stages: PipelineStage<
-			AgnosticState<
+		const stages: PublicPipelineStage<
+			PipelineStageState<
 				TRunOptions,
 				TUserState,
 				TContext,
 				TReporter,
 				TDiagnostic
 			>,
-			Halt<TRunResult>
+			TRunResult
 		>[] = [];
 
 		// 1. Helper Stages
@@ -171,10 +169,7 @@ export function makeResumablePipeline<
 				readonly options: TRunOptions;
 			}) => {
 				if (options.createState) {
-					return options.createState(args) as Record<
-						string,
-						unknown
-					> as unknown as TUserState;
+					return options.createState(args);
 				}
 				return {} as unknown as TUserState;
 			},
@@ -214,7 +209,9 @@ export function makeResumablePipeline<
 			}) => {
 				opts.context.reporter.warn?.('Helper rollback failed', opts);
 			},
-			providedKeys: options.providedKeys,
+			providedKeys: options.providedKeys as
+				| Record<string, readonly string[]>
+				| undefined,
 		},
 		helperRegistries,
 		diagnosticManager,
@@ -236,7 +233,13 @@ export function makeResumablePipeline<
 					steps,
 					context,
 					options: runOptions,
-					state: state as unknown as Record<string, unknown>,
+					state: state as unknown as PipelineStageState<
+						TRunOptions,
+						TUserState,
+						TContext,
+						TReporter,
+						TDiagnostic
+					>,
 				});
 			}
 
@@ -249,8 +252,20 @@ export function makeResumablePipeline<
 		},
 		extensionHooks,
 		extensionLifecycles: options.extensions?.lifecycles,
-		stages: (options.createStages ?? defaultStages) as unknown as (
-			deps: AgnosticStageDeps<
+		stages: (deps) =>
+			[
+				...(options.createStages ?? defaultStages)(
+					deps as PipelineStageDependencies<
+						TRunOptions,
+						TUserState,
+						TContext,
+						TReporter,
+						TDiagnostic,
+						TRunResult,
+						TKind
+					>
+				),
+			] as unknown as PipelineStage<
 				AgnosticState<
 					TRunOptions,
 					TUserState,
@@ -258,23 +273,8 @@ export function makeResumablePipeline<
 					TReporter,
 					TDiagnostic
 				>,
-				TRunResult,
-				TContext,
-				TRunOptions,
-				TReporter,
-				TDiagnostic,
-				TUserState
-			>
-		) => PipelineStage<
-			AgnosticState<
-				TRunOptions,
-				TUserState,
-				TContext,
-				TReporter,
-				TDiagnostic
-			>,
-			Halt<TRunResult>
-		>[],
+				Halt<TRunResult>
+			>[],
 	};
 
 	const runner = initAgnosticResumableRunner(runnerDependencies);

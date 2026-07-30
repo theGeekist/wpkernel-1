@@ -1,16 +1,16 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / Helper
 
-# Interface: Helper<TContext, TInput, TOutput, TReporter, TKind>
+# Interface: Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
 
 A complete pipeline helper with descriptor and apply function.
 
 ## Extends
 
-- [`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
+- [`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
 
 ## Type Parameters
 
@@ -39,7 +39,7 @@ A complete pipeline helper with descriptor and apply function.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
+readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 ```
 
 ---

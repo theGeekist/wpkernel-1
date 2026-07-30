@@ -1,16 +1,16 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / PipelineExecutionMetadata
 
-# Interface: PipelineExecutionMetadata<TFragmentKind, TBuilderKind>
+# Interface: PipelineExecutionMetadata&lt;TFragmentKind, TBuilderKind&gt;
 
 Complete execution metadata for all helper phases.
 
 ## Extends
 
-- [`FragmentFinalizationMetadata`](FragmentFinalizationMetadata.md)<`TFragmentKind`>
+- [`FragmentFinalizationMetadata`](FragmentFinalizationMetadata.md)&lt;`TFragmentKind`&gt;
 
 ## Type Parameters
 
@@ -27,7 +27,7 @@ Complete execution metadata for all helper phases.
 ### builders
 
 ```ts
-readonly builders: HelperExecutionSnapshot<TBuilderKind>;
+readonly builders: HelperExecutionSnapshot&lt;TBuilderKind&gt;;
 ```
 
 ---
@@ -35,7 +35,7 @@ readonly builders: HelperExecutionSnapshot<TBuilderKind>;
 ### fragments
 
 ```ts
-readonly fragments: HelperExecutionSnapshot<TFragmentKind>;
+readonly fragments: HelperExecutionSnapshot&lt;TFragmentKind&gt;;
 ```
 
 #### Inherited from

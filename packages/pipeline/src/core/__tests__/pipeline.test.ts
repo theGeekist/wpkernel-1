@@ -26,9 +26,7 @@ describe('Agnostic Pipeline Core', () => {
 		>({
 			helperKinds: ['extract', 'transform', 'load'],
 			createContext: () => ({ reporter: mockReporter, data: [] }),
-			createState: ({ options }) => ({
-				sourceData: options.input,
-			}),
+			createState: ({ options }) => options.input,
 			createRunResult: ({ context }) => (context as TestContext).data, // Return accumulated data
 		});
 

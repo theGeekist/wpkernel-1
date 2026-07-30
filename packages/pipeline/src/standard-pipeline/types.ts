@@ -121,6 +121,16 @@ export interface CreatePipelineOptions<
 		TFragmentOutput,
 		TReporter
 	>;
+	/**
+	 * Adopts a replacement fragment output into the draft used for finalization.
+	 *
+	 * Omit this when fragment outputs are mutable views over the draft and do not
+	 * require replacement.
+	 */
+	readonly adoptFragmentOutput?: (options: {
+		readonly draft: TDraft;
+		readonly output: TFragmentOutput;
+	}) => TDraft;
 	readonly finalizeFragmentState: (options: {
 		readonly draft: TDraft;
 		readonly options: TRunOptions;
@@ -140,6 +150,16 @@ export interface CreatePipelineOptions<
 		TBuilderOutput,
 		TReporter
 	>;
+	/**
+	 * Adopts a replacement builder output into the artifact returned by the run.
+	 *
+	 * Omit this when builder outputs are mutable views over the artifact or are
+	 * intentionally stage-local.
+	 */
+	readonly adoptBuilderOutput?: (options: {
+		readonly artifact: TArtifact;
+		readonly output: TBuilderOutput;
+	}) => TArtifact;
 	readonly createRunResult?: (options: {
 		readonly artifact: TArtifact;
 		readonly diagnostics: readonly TDiagnostic[];

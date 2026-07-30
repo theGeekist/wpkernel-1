@@ -8,8 +8,10 @@ import { executeHelpers } from '../execution-utils';
 import type { PipelineRollback } from '../rollback';
 import type {
 	Helper,
+	HelperApplyResult,
 	HelperApplyOptions,
 	HelperKind,
+	HelperNext,
 	MaybePromise,
 	PipelinePaused,
 	PipelineExtensionRollbackErrorMetadata,
@@ -71,6 +73,7 @@ export function isPaused<TState>(
  * @param options.recordStep
  * @param options.onVisited
  * @param options.registerRollback
+ * @param options.writeOutput
  */
 export function createHelpersProgram<
 	TContext,
@@ -95,16 +98,22 @@ export function createHelpersProgram<
 			TContext,
 			TReporter
 		>
-	) => MaybePromise<void>;
+	) => MaybePromise<HelperApplyResult<TOutput> | void>;
 	recordStep: (entry: RegisteredHelper<unknown>) => void;
-	onVisited: (state: TState, visited: Set<string>) => TState;
-	registerRollback?: (helper: THelper, result: unknown) => void;
+	writeOutput?: (state: TState, output: TOutput) => TState;
+	onVisited: (state: TState, visited: Set<string>, output: TOutput) => TState;
+	registerRollback?: (
+		helper: THelper,
+		result: unknown,
+		executionIndex: number
+	) => void;
 }): (state: TState) => MaybePromise<TState> {
 	const {
 		getOrder,
 		makeArgs,
 		invoke,
 		recordStep,
+		writeOutput,
 		onVisited,
 		registerRollback,
 	} = options;
@@ -112,8 +121,9 @@ export function createHelpersProgram<
 	const invokeWithOptionalRollback = (
 		helper: THelper,
 		args: HelperApplyOptions<TContext, TInput, TOutput, TReporter>,
-		next: () => MaybePromise<void>
-	): MaybePromise<void> => {
+		next: HelperNext<TOutput>,
+		executionIndex: number
+	): MaybePromise<HelperApplyResult<TOutput> | void> => {
 		const invocation = invoke({ helper, args, next });
 
 		if (!registerRollback) {
@@ -122,12 +132,12 @@ export function createHelpersProgram<
 
 		if (isPromiseLike(invocation)) {
 			return invocation.then((resolved) => {
-				registerRollback(helper, resolved);
-				return undefined;
+				registerRollback(helper, resolved, executionIndex);
+				return resolved;
 			});
 		}
 
-		registerRollback(helper, invocation);
+		registerRollback(helper, invocation, executionIndex);
 		return invocation;
 	};
 
@@ -143,9 +153,13 @@ export function createHelpersProgram<
 			HelperApplyOptions<TContext, TInput, TOutput, TReporter>
 		>(order, makeArgs(state), invokeWithOptionalRollback, recordStep);
 
-		return maybeThen(visitedOrPromise, (visited) =>
-			onVisited(state, visited)
-		);
+		return maybeThen(visitedOrPromise, (result) => {
+			const outputState =
+				result.hasOutput && writeOutput
+					? writeOutput(state, result.output)
+					: state;
+			return onVisited(outputState, result.visited, result.output);
+		});
 	};
 }
 
@@ -344,13 +358,21 @@ export function makeHelperStageFactory<
 			}: {
 				helper: THelper;
 				args: HelperApplyOptions<TContext, TInput, TOutput, TReporter>;
-				next: () => MaybePromise<void>;
-			}): MaybePromise<void> =>
-				helper.apply(args, next) as MaybePromise<void>);
+				next: HelperNext<TOutput>;
+			}): MaybePromise<HelperApplyResult<TOutput> | void> =>
+				helper.apply(args, next));
 
-		const registerPipelineRollback =
-			(rollbacks: RollbackEntry<THelper>[]) =>
-			(helper: THelper, result: unknown) => {
+		const registerPipelineRollback = (
+			rollbacks: RollbackEntry<THelper>[],
+			baseOffset: number
+		) => {
+			const stageRollbacks = new Map<number, RollbackEntry<THelper>>();
+
+			return (
+				helper: THelper,
+				result: unknown,
+				executionIndex: number
+			) => {
 				if (!result || typeof result !== 'object') {
 					return;
 				}
@@ -358,10 +380,22 @@ export function makeHelperStageFactory<
 					const rollback = (result as { rollback?: PipelineRollback })
 						.rollback;
 					if (rollback) {
-						rollbacks.push({ helper, rollback });
+						stageRollbacks.set(executionIndex, {
+							helper,
+							rollback,
+						});
+						const ordered = Array.from(stageRollbacks.entries())
+							.sort(([left], [right]) => left - right)
+							.map(([, entry]) => entry);
+						rollbacks.splice(
+							baseOffset,
+							rollbacks.length - baseOffset,
+							...ordered
+						);
 					}
 				}
 			};
+		};
 
 		const toRollbackErrorHandler = () =>
 			onHelperRollbackError
@@ -423,6 +457,7 @@ export function makeHelperStageFactory<
 			const rollbacks = [
 				...(spec.readRollbacks?.(state as TState) ?? []),
 			] as RollbackEntry<THelper>[];
+			const rollbackBaseOffset = rollbacks.length;
 
 			const rollbackContext = toRollbackContext(state as TState);
 			const program = createHelpersProgram<
@@ -438,9 +473,22 @@ export function makeHelperStageFactory<
 				makeArgs: spec.makeArgs,
 				invoke: invokeHelper,
 				recordStep,
-				onVisited: (nextState, visited) =>
-					spec.onVisited(nextState, visited, rollbacks),
-				registerRollback: registerPipelineRollback(rollbacks),
+				writeOutput: spec.writeOutput,
+				onVisited: (nextState, visited, output) => {
+					const visitedState = spec.onVisited(
+						nextState,
+						visited,
+						rollbacks.slice(rollbackBaseOffset),
+						output
+					);
+					return spec.writeRollbacks
+						? spec.writeRollbacks(visitedState, rollbacks)
+						: visitedState;
+				},
+				registerRollback: registerPipelineRollback(
+					rollbacks,
+					rollbackBaseOffset
+				),
 			});
 
 			const rollbackPlan: HelperRollbackPlan<

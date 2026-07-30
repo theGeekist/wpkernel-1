@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -61,5 +61,5 @@ readonly summary: string;
 ### factory?
 
 ```ts
-readonly optional factory: ExtensionFactorySignature<unknown>;
+readonly optional factory: ExtensionFactorySignature&lt;unknown&gt;;
 ```

@@ -127,6 +127,41 @@ describe('dependency-graph', () => {
 				})
 			);
 		});
+
+		it('deduplicates repeated dependency keys', () => {
+			const dependency = {
+				key: 'dependency',
+				kind: 'fragment',
+				dependsOn: [],
+				priority: 0,
+				apply: () => {},
+			} as unknown as TestHelper;
+			const dependant = {
+				key: 'dependant',
+				kind: 'fragment',
+				dependsOn: ['dependency', 'dependency'],
+				priority: 0,
+				apply: () => {},
+			} as unknown as TestHelper;
+			const dependencyEntry = {
+				helper: dependency,
+				id: 'fragment:dependency#0',
+				index: 0,
+			} satisfies RegisteredHelper<TestHelper>;
+			const dependantEntry = {
+				helper: dependant,
+				id: 'fragment:dependant#1',
+				index: 1,
+			} satisfies RegisteredHelper<TestHelper>;
+
+			const graph = createDependencyGraph(
+				[dependantEntry, dependencyEntry],
+				undefined,
+				(_code, message) => new Error(message)
+			);
+
+			expect(graph.order).toEqual([dependencyEntry, dependantEntry]);
+		});
 	});
 
 	describe('compareHelpers', () => {

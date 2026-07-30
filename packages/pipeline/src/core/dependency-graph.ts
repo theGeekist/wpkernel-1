@@ -142,7 +142,7 @@ function registerHelperDependencies<THelper extends HelperDescriptor>(
 	const missing: MissingDependencyIssue<THelper>[] = [];
 
 	for (const entry of entries) {
-		for (const dependencyKey of entry.helper.dependsOn) {
+		for (const dependencyKey of new Set(entry.helper.dependsOn)) {
 			const linked = linkDependency(
 				entries,
 				graph,
@@ -196,9 +196,12 @@ function linkDependency<THelper extends HelperDescriptor>(
 			continue;
 		}
 
+		const edgeCount = neighbours.size;
 		neighbours.add(dependantId);
-		const current = graph.indegree.get(dependantId) ?? 0;
-		graph.indegree.set(dependantId, current + 1);
+		if (neighbours.size > edgeCount) {
+			const current = graph.indegree.get(dependantId) ?? 0;
+			graph.indegree.set(dependantId, current + 1);
+		}
 	}
 
 	return true;

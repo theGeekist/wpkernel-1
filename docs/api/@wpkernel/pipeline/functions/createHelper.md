@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -7,9 +7,7 @@
 # Function: createHelper()
 
 ```ts
-function createHelper<TContext, TInput, TOutput, TReporter, TKind>(
-	options
-): Helper<TContext, TInput, TOutput, TReporter, TKind>;
+function createHelper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;(options): Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;;
 ```
 
 Creates a pipeline helper-the fundamental building block of WPKernel's code generation system.
@@ -52,10 +50,11 @@ The pipeline automatically:
 
 ### Apply results & rollback
 
-Helpers typically perform their work by mutating the provided `fragment` or `output` in place and optionally calling `next()` to continue the chain.
-For more advanced scenarios, a helper can **also return** a result object:
+Helpers may mutate the provided `fragment` or `output` in place, or return a replacement output for immutable composition.
+Calling `next(output?)` is an advanced escape hatch for wrapping the remainder of the chain; it returns the final downstream output.
+A helper can return a result object containing:
 
-- `output` — an updated output value to feed into subsequent helpers
+- `output` — an updated output value to feed into subsequent helpers, or the final post-`next()` replacement
 - `rollback` — a rollback operation created via `createPipelineRollback`, which will be executed if the pipeline fails after this helper completes
 
 Returning a result object is opt-in; existing helpers that return `void` remain valid and continue to behave as before.
@@ -99,11 +98,11 @@ This design enables:
 
 ### options
 
-[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 ## Returns
 
-[`Helper`](../interfaces/Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 ## Examples
 
@@ -112,33 +111,33 @@ import { createHelper } from '@wpkernel/pipeline';
 
 // Add PHP opening tag to generated files
 const addPHPTag = createHelper({
-	key: 'add-php-opening-tag',
-	kind: 'fragment',
-	mode: 'extend',
-	priority: 100, // Run early in pipeline
-	origin: 'wp-kernel-core',
-	apply: ({ fragment }) => {
-		fragment.children.unshift({
-			kind: 'text',
-			text: '<?php\n',
-		});
-	},
+  key: 'add-php-opening-tag',
+  kind: 'fragment',
+  mode: 'extend',
+  priority: 100, // Run early in pipeline
+  origin: 'wp-kernel-core',
+  apply: ({ fragment }) =&gt; {
+    fragment.children.unshift({
+      kind: 'text',
+      text: '&lt;?php\n',
+    });
+  },
 });
 ```
 
 ```typescript
 // This helper depends on namespace detection running first
 const addNamespaceDeclaration = createHelper({
-	key: 'add-namespace',
-	kind: 'fragment',
-	dependsOn: ['detect-namespace'], // Won't run until this completes
-	apply: ({ fragment, context }) => {
-		const ns = context.detectedNamespace;
-		fragment.children.push({
-			kind: 'namespace',
-			name: ns,
-		});
-	},
+  key: 'add-namespace',
+  kind: 'fragment',
+  dependsOn: ['detect-namespace'], // Won't run until this completes
+  apply: ({ fragment, context }) =&gt; {
+    const ns = context.detectedNamespace;
+    fragment.children.push({
+      kind: 'namespace',
+      name: ns,
+    });
+  },
 });
 ```
 
@@ -146,45 +145,45 @@ const addNamespaceDeclaration = createHelper({
 import { createHelper, createPipelineRollback } from '@wpkernel/pipeline';
 
 const writeFileHelper = createHelper({
-	key: 'write-file',
-	kind: 'builder',
-	apply: ({ output, context }) => {
-		const path = context.outputPath;
-		const before = [...output]; // Capture current in-memory state
+  key: 'write-file',
+  kind: 'builder',
+  apply: ({ output, context }) =&gt; {
+    const path = context.outputPath;
+    const before = [...output]; // Capture current in-memory state
 
-		output.push(context.fileContent);
+    output.push(context.fileContent);
 
-		return {
-			rollback: createPipelineRollback(
-				() => {
-					output.length = 0;
-					output.push(...before);
-				},
-				{
-					key: 'write-file',
-					label: 'Restore file output state',
-				}
-			),
-		};
-	},
+    return {
+      rollback: createPipelineRollback(
+        () =&gt; {
+          output.length = 0;
+          output.push(...before);
+        },
+        {
+          key: 'write-file',
+          label: 'Restore file output state',
+        }
+      ),
+    };
+  },
 });
 ```
 
 ```typescript
 const formatCodeHelper = createHelper({
-	key: 'format-code',
-	kind: 'builder',
-	dependsOn: ['write-file'],
-	apply: async ({ output, context }) => {
-		try {
-			const formatted = await prettier.format(output.join(''), {
-				parser: 'php',
-			});
-			return { output: formatted.split('') }; // Optionally return a new output value
-		} catch (error) {
-			context.reporter.warn?.('Formatting failed', { error });
-			throw error;
-		}
-	},
+  key: 'format-code',
+  kind: 'builder',
+  dependsOn: ['write-file'],
+  apply: async ({ output, context }) =&gt; {
+    try {
+      const formatted = await prettier.format(output.join(''), {
+        parser: 'php',
+      });
+      return { output: formatted.split('') }; // Optionally return a new output value
+    } catch (error) {
+      context.reporter.warn?.('Formatting failed', { error });
+      throw error;
+    }
+  },
 });
 ```

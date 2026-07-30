@@ -105,7 +105,7 @@ describe('program coverage', () => {
 			resolveRunResult: () => ({}),
 			extensionHooks: [],
 			stages: (deps) =>
-				[deps.makeHelperStage('test')] as PipelineStage<
+				[deps.makeHelperStage('test')] as unknown as PipelineStage<
 					AgnosticState<
 						Record<string, never>,
 						Record<string, never>,

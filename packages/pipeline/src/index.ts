@@ -42,6 +42,7 @@ export type {
 	Helper,
 	HelperApplyFn,
 	HelperApplyResult,
+	HelperNext,
 	HelperDescriptor,
 	HelperKind,
 	HelperMode,
@@ -58,7 +59,18 @@ export type {
 	PipelinePaused,
 	PipelineExtensionRollbackErrorMetadata,
 	ResumablePipeline,
+	AgnosticPipelineOptions,
+	PipelineStage,
+	PipelineStageState,
+	PipelineStageResult,
+	PipelineStageDependencies,
+	PipelineHelperStageOptions,
+	PipelineRegisteredHelper,
+	PipelineHelperRollback,
+	PipelineStageDiagnostics,
+	PipelineHalt,
 } from './core/types';
+export type { PipelineHalt as Halt } from './core/types';
 
 export type {
 	Pipeline,
@@ -74,12 +86,9 @@ export type {
 } from './core/dependency-graph';
 export { createHelperId, compareHelpers } from './core/dependency-graph';
 
-// Advanced Pipeline construction (for custom architectures)
-export type {
-	PipelineStage,
-	Halt,
-	AgnosticRunContext as PipelineRunContext,
-} from './core/runner/types';
+// Backward-compatible advanced alias. New custom stages use
+// PipelineStageState through PipelineStageDependencies.
+export type { AgnosticRunContext as PipelineRunContext } from './core/runner/types';
 
 // Re-export async utilities for helper authors
 export {

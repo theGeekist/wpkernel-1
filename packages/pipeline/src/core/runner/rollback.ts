@@ -197,9 +197,11 @@ export function runRollbackToHalt<
 	>,
 	error: unknown
 ): MaybePromise<Halt<TRunResult>> {
-	return maybeThen(runHelperRollbackPlan(plan.rollbackPlan, error), () =>
-		plan.halt(error)
-	);
+	return maybeThen(runHelperRollbackPlan(plan.rollbackPlan, error), () => ({
+		...plan.halt(error),
+		__hasError: true,
+		__rollbackApplied: true,
+	}));
 }
 
 /**

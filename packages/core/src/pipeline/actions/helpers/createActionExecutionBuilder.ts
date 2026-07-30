@@ -59,6 +59,7 @@ export function createActionExecutionBuilder<
 				});
 			}
 			const start = output.startTime ?? readMonotonicTime();
+			let finalOutput = output;
 
 			try {
 				const result = await input.handler(
@@ -69,11 +70,11 @@ export function createActionExecutionBuilder<
 				output.resolvedOptions = context.resolvedOptions;
 
 				if (next) {
-					await next();
+					finalOutput = await next(output);
 				}
 
 				const duration = measureDurationMs(start);
-				output.durationMs = duration;
+				finalOutput.durationMs = duration;
 				const completeEvent = createActionLifecycleEvent(
 					'complete',
 					context.resolvedOptions,
@@ -83,6 +84,7 @@ export function createActionExecutionBuilder<
 					{ result, durationMs: duration }
 				);
 				emitLifecycleEvent(completeEvent);
+				return { output: finalOutput };
 			} catch (error) {
 				const normalized = normaliseError(error, context);
 				const duration = measureDurationMs(start);

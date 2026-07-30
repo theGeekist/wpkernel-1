@@ -47,6 +47,10 @@ export interface AgnosticDiagnosticManager<
 	setReporter: (reporter: TReporter) => void;
 	readDiagnostics: () => readonly TDiagnostic[];
 	getDiagnostics: () => readonly TDiagnostic[];
+	createRun?: (
+		reporter: TReporter,
+		initialDiagnostics?: readonly TDiagnostic[]
+	) => AgnosticDiagnosticManager<TReporter, TDiagnostic>;
 
 	// Helper-centric utilities
 	flagConflict: (
@@ -82,138 +86,138 @@ export function createAgnosticDiagnosticManager<
 	options: DiagnosticManagerOptions<TReporter, TDiagnostic> = {}
 ): AgnosticDiagnosticManager<TReporter, TDiagnostic> {
 	const staticDiagnostics: TDiagnostic[] = [];
-	const runDiagnostics: TDiagnostic[] = [];
-	let isInRun = false;
 
 	// Track logged diagnostics per reporter instance to avoid duplicate alerting
 	const loggedDiagnosticsByReporter = new WeakMap<
 		TReporter,
 		Set<TDiagnostic>
 	>();
-	let currentReporter: TReporter | undefined;
 
-	const logDiagnostic = (diagnostic: TDiagnostic): void => {
-		if (!currentReporter || !options.onDiagnostic) {
-			return;
-		}
+	const createManager = (
+		runDiagnostics?: TDiagnostic[]
+	): AgnosticDiagnosticManager<TReporter, TDiagnostic> => {
+		let currentReporter: TReporter | undefined;
 
-		let logged = loggedDiagnosticsByReporter.get(currentReporter);
-		if (!logged) {
-			logged = new Set();
-			loggedDiagnosticsByReporter.set(currentReporter, logged);
-		}
+		const logDiagnostic = (diagnostic: TDiagnostic): void => {
+			if (!currentReporter || !options.onDiagnostic) {
+				return;
+			}
 
-		if (logged.has(diagnostic)) {
-			return;
-		}
+			let logged = loggedDiagnosticsByReporter.get(currentReporter);
+			if (!logged) {
+				logged = new Set();
+				loggedDiagnosticsByReporter.set(currentReporter, logged);
+			}
 
-		options.onDiagnostic({
-			reporter: currentReporter,
-			diagnostic,
-		});
-		logged.add(diagnostic);
+			if (logged.has(diagnostic)) {
+				return;
+			}
+
+			options.onDiagnostic({
+				reporter: currentReporter,
+				diagnostic,
+			});
+			logged.add(diagnostic);
+		};
+
+		const record = (diagnostic: TDiagnostic): void => {
+			(runDiagnostics ?? staticDiagnostics).push(diagnostic);
+			logDiagnostic(diagnostic);
+		};
+
+		const describeHelper = (kind: string, helper: HelperDescriptor) =>
+			`${kind} helper "${helper.key}"`;
+
+		const manager: AgnosticDiagnosticManager<TReporter, TDiagnostic> = {
+			record,
+
+			createRun(reporter, initialDiagnostics = staticDiagnostics) {
+				const runManager = createManager([...initialDiagnostics]);
+				runManager.setReporter(reporter);
+				return runManager;
+			},
+
+			setReporter(reporter: TReporter) {
+				currentReporter = reporter;
+				(runDiagnostics ?? staticDiagnostics).forEach(logDiagnostic);
+			},
+
+			readDiagnostics: () => runDiagnostics ?? staticDiagnostics,
+			getDiagnostics: () => runDiagnostics ?? staticDiagnostics,
+
+			// Retained as no-ops for compatibility with internal runner adapters.
+			prepareRun() {},
+			endRun() {},
+
+			flagConflict(helper, existing, kind, message) {
+				const diagnostic =
+					options.createConflictDiagnostic?.({
+						helper,
+						existing,
+						message,
+					}) ??
+					({
+						type: 'conflict',
+						key: helper.key,
+						mode: helper.mode,
+						helpers: [
+							existing.origin ?? existing.key,
+							helper.origin ?? helper.key,
+						],
+						message,
+						kind,
+					} as unknown as TDiagnostic);
+
+				record(diagnostic);
+			},
+
+			flagMissingDependency(helper, dependency, kind) {
+				const description = describeHelper(kind, helper);
+				const message = `${description} depends on unknown helper "${dependency}".`;
+
+				const diagnostic =
+					options.createMissingDependencyDiagnostic?.({
+						helper,
+						dependency,
+						message,
+					}) ??
+					({
+						type: 'missing-dependency',
+						key: helper.key,
+						dependency,
+						message,
+						kind,
+						helper: helper.origin ?? helper.key,
+						dependsOn: helper.dependsOn,
+					} as unknown as TDiagnostic);
+
+				record(diagnostic);
+			},
+
+			flagUnusedHelper(helper, kind, reason, dependsOn) {
+				const description = describeHelper(kind, helper);
+				const message = `${description} ${reason}.`;
+
+				const diagnostic =
+					options.createUnusedHelperDiagnostic?.({
+						helper,
+						message,
+					}) ??
+					({
+						type: 'unused-helper',
+						key: helper.key,
+						message,
+						kind,
+						helper: helper.origin ?? helper.key,
+						dependsOn,
+					} as unknown as TDiagnostic);
+
+				record(diagnostic);
+			},
+		};
+
+		return manager;
 	};
 
-	const record = (diagnostic: TDiagnostic): void => {
-		if (isInRun) {
-			runDiagnostics.push(diagnostic);
-		} else {
-			staticDiagnostics.push(diagnostic);
-		}
-		logDiagnostic(diagnostic);
-	};
-
-	const describeHelper = (kind: string, helper: HelperDescriptor) =>
-		`${kind} helper "${helper.key}"`;
-
-	return {
-		record,
-
-		setReporter(reporter: TReporter) {
-			currentReporter = reporter;
-			// Replay all
-			[...staticDiagnostics, ...runDiagnostics].forEach(logDiagnostic);
-		},
-
-		readDiagnostics: () => [...staticDiagnostics, ...runDiagnostics],
-		getDiagnostics: () => runDiagnostics,
-
-		prepareRun() {
-			isInRun = true;
-			runDiagnostics.length = 0;
-			// We do NOT clear usage of static diagnostics, they persist across runs
-			// but we might need to re-emit them if a NEW reporter is attached.
-			// The logic in setReporter handles re-emission.
-		},
-
-		endRun() {
-			isInRun = false;
-		},
-
-		flagConflict(helper, existing, kind, message) {
-			const diagnostic =
-				options.createConflictDiagnostic?.({
-					helper,
-					existing,
-					message,
-				}) ??
-				({
-					type: 'conflict',
-					key: helper.key,
-					mode: helper.mode,
-					helpers: [
-						existing.origin ?? existing.key,
-						helper.origin ?? helper.key,
-					],
-					message,
-					kind,
-				} as unknown as TDiagnostic);
-
-			record(diagnostic);
-		},
-
-		flagMissingDependency(helper, dependency, kind) {
-			const description = describeHelper(kind, helper);
-			const message = `${description} depends on unknown helper "${dependency}".`;
-
-			const diagnostic =
-				options.createMissingDependencyDiagnostic?.({
-					helper,
-					dependency,
-					message,
-				}) ??
-				({
-					type: 'missing-dependency',
-					key: helper.key,
-					dependency,
-					message,
-					kind,
-					helper: helper.origin ?? helper.key,
-					dependsOn: helper.dependsOn,
-				} as unknown as TDiagnostic);
-
-			record(diagnostic);
-		},
-
-		flagUnusedHelper(helper, kind, reason, dependsOn) {
-			const description = describeHelper(kind, helper);
-			const message = `${description} ${reason}.`;
-
-			const diagnostic =
-				options.createUnusedHelperDiagnostic?.({
-					helper,
-					message,
-				}) ??
-				({
-					type: 'unused-helper',
-					key: helper.key,
-					message,
-					kind,
-					helper: helper.origin ?? helper.key,
-					dependsOn,
-				} as unknown as TDiagnostic);
-
-			record(diagnostic);
-		},
-	};
+	return createManager();
 }

@@ -1,14 +1,16 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / PipelineStage
 
-# Type Alias: PipelineStage<TState, TResult>
+# Type Alias: PipelineStage&lt;TState, TRunResult&gt;
 
 ```ts
-type PipelineStage<TState, TResult> = Program<TState | TResult>;
+type PipelineStage&lt;TState, TRunResult&gt; = (state) =&gt; MaybePromise&lt;PipelineStageResult&lt;TState, TRunResult&gt;&gt;;
 ```
+
+A synchronous-or-asynchronous custom pipeline stage.
 
 ## Type Parameters
 
@@ -16,6 +18,16 @@ type PipelineStage<TState, TResult> = Program<TState | TResult>;
 
 `TState`
 
-### TResult
+### TRunResult
 
-`TResult`
+`TRunResult`
+
+## Parameters
+
+### state
+
+`TState`
+
+## Returns
+
+[`MaybePromise`](MaybePromise.md)&lt;[`PipelineStageResult`](PipelineStageResult.md)&lt;`TState`, `TRunResult`&gt;&gt;

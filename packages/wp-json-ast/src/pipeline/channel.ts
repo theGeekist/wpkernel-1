@@ -75,14 +75,12 @@ export function createPhpChannelHelper<
 	>({
 		key: options.key ?? 'builder.generate.php.channel.bootstrap',
 		kind: 'builder',
-		async apply(helperOptions, next) {
+		async apply(helperOptions) {
 			resetPhpBuilderChannel(helperOptions.context);
 			resetPhpAstChannel(helperOptions.context);
 			helperOptions.reporter.debug(
 				'createPhpChannelHelper: channels reset for PHP pipeline.'
 			);
-
-			await next?.();
 		},
 	});
 }

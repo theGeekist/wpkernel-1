@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -16,7 +16,7 @@ if the pipeline encounters a failure, enabling cleanup and state restoration.
 ### run()
 
 ```ts
-readonly run: () => unknown;
+readonly run: () =&gt; unknown;
 ```
 
 #### Returns

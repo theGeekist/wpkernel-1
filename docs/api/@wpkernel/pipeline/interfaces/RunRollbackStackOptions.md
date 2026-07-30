@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
@@ -21,7 +21,7 @@ readonly source: "extension" | "helper";
 ### onError()?
 
 ```ts
-readonly optional onError: (args) => void;
+readonly optional onError: (args) =&gt; void;
 ```
 
 #### Parameters

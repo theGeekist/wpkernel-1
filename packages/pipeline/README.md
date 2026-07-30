@@ -28,7 +28,10 @@ Under the hood, the package is split into:
 1.  **Standard Pipeline (`src/standard-pipeline`)**: The opinionated implementation used by WPKernel.
 2.  **Core Runner (`src/core/runner`)**: A purely agnostic DAG execution engine.
 
-Subpath imports (e.g., `@wpkernel/pipeline/core`) are available if you need to build a completely custom pipeline architecture using the runner primitives directly.
+Custom architectures use the documented types exported from
+`@wpkernel/pipeline`. Private `core/runner` types such as
+`AgnosticStageDeps` are implementation details and must not be imported or
+recreated by consumers.
 
 ## Installation
 
@@ -61,25 +64,70 @@ const pipeline = createPipeline({
 
 #### Custom Pipeline (Advanced)
 
-For completely custom architectures (ETL, migrations, etc.), use `makePipeline` to define your own stages.
+For completely custom architectures (ETL, migrations, compilers, etc.), use
+`makePipeline`. The inline `createStages` callback is contextually typed as
+`PipelineStageDependencies`; no cast or private runner import is required.
 
 ```ts
-import { makePipeline } from '@wpkernel/pipeline';
+import {
+	makePipeline,
+	type PipelineStage,
+	type PipelineStageState,
+} from '@wpkernel/pipeline';
 
-const pipeline = makePipeline({
-	// Define the "Stages" of your pipeline
-	helperKinds: ['extract', 'transform', 'load'] as const,
+type RunOptions = { readonly source: string };
+type CompileState = {
+	readonly nodes: readonly string[];
+	readonly revision: number;
+};
+type Reporter = {
+	warn?: (message: string, context?: unknown) => void;
+};
+type Context = { readonly reporter: Reporter };
+type StageState = PipelineStageState<
+	RunOptions,
+	CompileState,
+	Context,
+	Reporter
+>;
+
+const pipeline = makePipeline<RunOptions, Context, Reporter, CompileState>({
+	helperKinds: ['compiler'] as const,
+	createContext: () => ({ reporter: console }),
+	createState: () => ({ nodes: [], revision: 0 }),
 	createStages: (deps) => [
-		deps.makeLifecycleStage('extract'),
-		deps.makeLifecycleStage('transform'),
-		deps.makeLifecycleStage('load'),
-		deps.commitStage,
+		deps.makeHelperStage('compiler'),
+		((state) => ({
+			...state,
+			userState: {
+				nodes: [...state.userState.nodes, 'final'],
+				revision: state.userState.revision + 1,
+			},
+		})) satisfies PipelineStage<StageState, unknown>,
 		deps.finalizeResult,
 	],
-	createContext: (ops) => ({ db: ops.db }),
-	// ... logic for resolving args for your helpers ...
 });
 ```
+
+The public custom-stage contract consists of:
+
+- `AgnosticPipelineOptions`
+- `PipelineStageDependencies`
+- `PipelineStageState`
+- `PipelineStageResult`
+- `PipelineStage`
+- `PipelineHelperStageOptions`
+- `PipelineRegisteredHelper`
+- `PipelineHelperRollback`
+- `PipelineStageDiagnostics`
+- `PipelineHalt`
+
+`createState` returns the typed user state. Custom stages receive that value as
+`state.userState`; returning an immutable replacement carries it into later
+stages and `createRunResult.state`. Derive replacement state from the supplied
+value with object spread. The public state is branded to reject fresh
+reconstruction, and the runner preserves hidden rollback and extension
+bookkeeping when it adopts a replacement.
 
 ### 2. Register Helpers
 
@@ -124,6 +172,25 @@ You are not limited to fixed roles. Define any `kind` of helper (e.g., `'validat
 
 Pipeline creates a dependency graph for _each_ kind of helper. If `Helper B` depends on `Helper A`, the runner ensures `A` executes before `B` (and passes `A`'s output to `B` if configured).
 
+### Helper Output Composition
+
+Helpers may mutate their current output or return `{ output }` with a replacement value. Replacement output becomes the input to the next helper while preserving synchronous execution when every helper is synchronous.
+
+Helpers continue automatically. `next(output?)` is an advanced continuation for helpers that need to wrap downstream execution:
+
+```ts
+apply: async ({ output }, next) => {
+	const prepared = prepare(output);
+	const downstream = next ? await next(prepared) : prepared;
+
+	return {
+		output: finalize(downstream),
+	};
+};
+```
+
+Calling `next()` without an argument passes the current output. The first call executes the downstream chain and subsequent calls return that same result.
+
 ### Extensions & Lifecycles
 
 Extensions wrap execution with hooks at specific lifecycle stages.
@@ -157,12 +224,24 @@ The pipeline supports robust rollback for both helper application and extension 
 
 ### Re-run Semantics
 
-Diagnostics are per-run. Calling `pipeline.run()` automatically clears any previous runtime diagnostics to ensure a fresh state. Static diagnostics (e.g., registration conflicts) are preserved and re-emitted for each run.
+Diagnostics are per-run. Calling `pipeline.run()` starts a fresh invocation-owned collection, so runtime diagnostics and reporters cannot leak between overlapping or later runs. Pipeline-level registration diagnostics (for example, registration conflicts) are copied into that collection for every run and are therefore visible in both completed results and process-local pause snapshots.
+
+### Process-local Suspension
+
+`makeResumablePipeline()` retains the existing `pause`/`resume` terminology
+for compatibility, but its snapshot is an in-memory suspension value - not a
+durable checkpoint. It contains live runner state such as maps, sets,
+diagnostic managers, extension coordinators, and rollback callbacks.
+
+Resume it only with the same pipeline implementation in the same process.
+Serialization, storage, transport, version binding, plan identity, and durable
+checkpoint migration belong to the consuming application.
 
 ## Documentation
 
 - [Architecture Guide](../../docs/packages/pipeline/architecture.md): Deep dive into the runner's internals and DAG resolution.
 - [API Reference](../../docs/api/@wpkernel/pipeline/README.md): Generated TSDoc for all interfaces.
+- [Changelog](./CHANGELOG.md): Release notes and migration-impact summary.
 
 ## License
 

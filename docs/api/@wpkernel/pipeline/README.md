@@ -1,8 +1,8 @@
-**@wpkernel/pipeline v0.12.6-beta.3**
+**@wpkernel/pipeline v1.2.0**
 
 ---
 
-# @wpkernel/pipeline v0.12.6-beta.3
+# @wpkernel/pipeline v1.2.0
 
 ## Interfaces
 
@@ -12,6 +12,7 @@
 
 ### Other
 
+- [AgnosticPipelineOptions](interfaces/AgnosticPipelineOptions.md)
 - [ConflictDiagnostic](interfaces/ConflictDiagnostic.md)
 - [CreateHelperOptions](interfaces/CreateHelperOptions.md)
 - [CreatePipelineOptions](interfaces/CreatePipelineOptions.md)
@@ -21,6 +22,7 @@
 - [HelperApplyResult](interfaces/HelperApplyResult.md)
 - [HelperDescriptor](interfaces/HelperDescriptor.md)
 - [HelperExecutionSnapshot](interfaces/HelperExecutionSnapshot.md)
+- [HelperNext](interfaces/HelperNext.md)
 - [MissingDependencyDiagnostic](interfaces/MissingDependencyDiagnostic.md)
 - [Pipeline](interfaces/Pipeline.md)
 - [PipelineExecutionMetadata](interfaces/PipelineExecutionMetadata.md)
@@ -29,11 +31,22 @@
 - [PipelineExtensionHookRegistration](interfaces/PipelineExtensionHookRegistration.md)
 - [PipelineExtensionHookResult](interfaces/PipelineExtensionHookResult.md)
 - [PipelineExtensionRollbackErrorMetadata](interfaces/PipelineExtensionRollbackErrorMetadata.md)
+- [PipelineHalt](interfaces/PipelineHalt.md)
+- [PipelineHelperRollback](interfaces/PipelineHelperRollback.md)
+- [PipelineHelperStageOptions](interfaces/PipelineHelperStageOptions.md)
+- [PipelinePaused](interfaces/PipelinePaused.md)
+- [PipelinePauseOptions](interfaces/PipelinePauseOptions.md)
+- [PipelinePauseSnapshot](interfaces/PipelinePauseSnapshot.md)
+- [PipelineRegisteredHelper](interfaces/PipelineRegisteredHelper.md)
 - [PipelineReporter](interfaces/PipelineReporter.md)
 - [PipelineRollback](interfaces/PipelineRollback.md)
 - [PipelineRollbackErrorMetadata](interfaces/PipelineRollbackErrorMetadata.md)
 - [PipelineRunState](interfaces/PipelineRunState.md)
+- [PipelineStageDependencies](interfaces/PipelineStageDependencies.md)
+- [PipelineStageDiagnostics](interfaces/PipelineStageDiagnostics.md)
+- [PipelineStageState](interfaces/PipelineStageState.md)
 - [PipelineStep](interfaces/PipelineStep.md)
+- [ResumablePipeline](interfaces/ResumablePipeline.md)
 - [RunRollbackStackOptions](interfaces/RunRollbackStackOptions.md)
 - [UnusedHelperDiagnostic](interfaces/UnusedHelperDiagnostic.md)
 
@@ -41,7 +54,6 @@
 
 - [CreatePipelineExtensionOptions](type-aliases/CreatePipelineExtensionOptions.md)
 - [ErrorFactory](type-aliases/ErrorFactory.md)
-- [Halt](type-aliases/Halt.md)
 - [HelperApplyFn](type-aliases/HelperApplyFn.md)
 - [HelperKind](type-aliases/HelperKind.md)
 - [HelperMode](type-aliases/HelperMode.md)
@@ -50,7 +62,9 @@
 - [PipelineExtensionHook](type-aliases/PipelineExtensionHook.md)
 - [PipelineExtensionLifecycle](type-aliases/PipelineExtensionLifecycle.md)
 - [PipelineExtensionRegisterOutput](type-aliases/PipelineExtensionRegisterOutput.md)
+- [PipelinePauseKind](type-aliases/PipelinePauseKind.md)
 - [PipelineStage](type-aliases/PipelineStage.md)
+- [PipelineStageResult](type-aliases/PipelineStageResult.md)
 
 ## Variables
 
@@ -72,3 +86,10 @@
 - [createPipeline](functions/createPipeline.md)
 - [createPipelineRollback](functions/createPipelineRollback.md)
 - [makePipeline](functions/makePipeline.md)
+- [makeResumablePipeline](functions/makeResumablePipeline.md)
+
+## References
+
+### Halt
+
+Renames and re-exports [PipelineHalt](interfaces/PipelineHalt.md)

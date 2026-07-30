@@ -1,48 +1,24 @@
 import { makePipeline } from '../../core/makePipeline';
-import {
-	isPaused,
-	makeFinalizeFragmentsStage,
-} from '../../core/runner/stage-factories';
+import { isPaused } from '../../core/runner/stage-factories';
 import { maybeThen } from '../../core/async-utils';
 import type {
 	PipelineDiagnostic,
 	PipelineReporter,
-	PipelineStep,
 	PipelineRunState,
 	HelperKind,
 	Helper,
 	HelperExecutionSnapshot,
 	AgnosticPipelineOptions,
+	HelperDescriptor,
+	PipelineRegisteredHelper,
+	PipelineStage as PublicPipelineStage,
+	PipelineStageState,
 } from '../../core/types';
 import type {
 	CreatePipelineOptions,
 	Pipeline,
 	FragmentFinalizationMetadata,
 } from '../types';
-import type {
-	AgnosticState,
-	AgnosticStageDeps,
-	Halt,
-} from '../../core/runner/types';
-
-import type { RegisteredHelper } from '../../core/dependency-graph';
-
-interface HelperWithKey {
-	key: string;
-	dependsOn?: string[];
-}
-
-interface StateWithExecution {
-	helperExecution?: Map<
-		string,
-		{
-			executed: readonly string[];
-			registered: unknown[];
-			missing: unknown[];
-			kind: string;
-		}
-	>;
-}
 
 /**
  * Creates a standard pipeline with "fragment" and "builder" stages.
@@ -142,6 +118,13 @@ export function createStandardPipeline<
 		draft: TDraft;
 		artifact: TArtifact | null;
 	};
+	type StageState = PipelineStageState<
+		TRunOptions,
+		StandardState,
+		TContext,
+		TReporter,
+		TDiagnostic
+	>;
 
 	const fragmentKind = (options.fragmentKind ?? 'fragment') as TFragmentKind;
 	const builderKind = (options.builderKind ?? 'builder') as TBuilderKind;
@@ -153,7 +136,8 @@ export function createStandardPipeline<
 		TReporter,
 		StandardState,
 		TDiagnostic,
-		TRunResult
+		TRunResult,
+		TFragmentKind | TBuilderKind
 	> = {
 		helperKinds: [fragmentKind, builderKind],
 		createContext: options.createContext,
@@ -206,132 +190,105 @@ export function createStandardPipeline<
 		providedKeys: {
 			[fragmentKind]: options.fragmentProvidedKeys ?? [],
 			[builderKind]: options.builderProvidedKeys ?? [],
-		},
+		} as Partial<Record<TFragmentKind | TBuilderKind, readonly string[]>>,
 
 		createStages: (deps) => {
-			const d = deps as AgnosticStageDeps<
-				AgnosticState<
-					TRunOptions,
-					StandardState,
-					TContext,
-					TReporter,
-					TDiagnostic
-				>,
-				TRunResult,
-				TContext,
-				TRunOptions,
-				TReporter,
-				TDiagnostic,
-				StandardState
-			>;
-
 			const {
 				makeHelperStage,
 				makeLifecycleStage,
 				finalizeResult,
-				diagnosticManager,
-			} = d;
+				diagnostics,
+			} = deps;
 
 			const onVisited =
-				(kind: string) =>
+				<
+					TSelectedKind extends TFragmentKind | TBuilderKind,
+					THelper extends HelperDescriptor<TSelectedKind>,
+				>(
+					kind: TSelectedKind
+				) =>
 				(
-					state: AgnosticState<
-						TRunOptions,
-						StandardState,
-						TContext,
-						TReporter,
-						TDiagnostic
-					>,
-					visited: Set<string>
+					state: StageState,
+					visited: ReadonlySet<string>,
+					registered: readonly PipelineRegisteredHelper<THelper>[]
 				) => {
-					const registered = state.helperOrders?.get(kind) ?? [];
 					for (const entry of registered) {
 						if (!visited.has(entry.id)) {
-							diagnosticManager.flagUnusedHelper(
-								entry.helper as unknown as
-									| TFragmentHelper
-									| TBuilderHelper,
+							diagnostics.flagUnusedHelper(
+								entry.helper,
 								kind,
 								'was registered but never executed',
-								(entry.helper as HelperWithKey).dependsOn ?? []
+								entry.helper.dependsOn
 							);
 						}
 					}
 					return state;
 				};
 
-			const fragmentStage = makeHelperStage(fragmentKind, {
-				makeArgs:
-					(
-						state: AgnosticState<
-							TRunOptions,
-							StandardState,
-							TContext,
-							TReporter,
-							TDiagnostic
-						>
-					) =>
-					(entry) => {
-						return options.createFragmentArgs({
-							helper: entry.helper as TFragmentHelper,
-							options: state.runOptions,
-							context: state.context,
-							buildOptions: state.userState.buildOptions,
-							draft: state.userState.draft!,
-						});
-					},
-				onVisited: onVisited(fragmentKind),
-			});
-
-			const finalizeFragmentStage = makeFinalizeFragmentsStage<
-				AgnosticState<
-					TRunOptions,
-					StandardState,
-					TContext,
-					TReporter,
-					TDiagnostic
-				>,
-				Halt<TRunResult>,
-				FragmentFinalizationMetadata<TFragmentKind>
-			>({
-				isHalt: d.runnerEnv.isHalt,
-				isPaused,
-				snapshotFragments: (state) => {
-					const fragments = ((
-						state as unknown as StateWithExecution
-					).helperExecution?.get(fragmentKind) ?? {
-						kind: fragmentKind,
-						executed: [],
-						missing: [],
-						registered: [],
-					}) as unknown as HelperExecutionSnapshot<TFragmentKind>;
-
-					return {
-						fragments,
-					};
-				},
-				applyArtifact: (state, metadata) => {
-					const result = options.finalizeFragmentState({
-						draft: state.userState.draft!,
+			const fragmentStage = makeHelperStage<
+				TFragmentInput,
+				TFragmentOutput,
+				TFragmentKind,
+				TFragmentHelper
+			>(fragmentKind, {
+				makeArgs: (state) => (entry) => {
+					return options.createFragmentArgs({
+						helper: entry.helper,
 						options: state.runOptions,
 						context: state.context,
 						buildOptions: state.userState.buildOptions,
-						helpers: metadata,
+						draft: state.userState.draft!,
 					});
-
-					// Update state with artifact
-					// We must cast to allow mutation or creation of new state
-					// Since AgnosticState is read-only in interface but likely mutable in practice
-					// or we return a copy
-					return {
-						...state,
-						userState: {
-							...state.userState,
-							artifact: result,
-						},
-					};
 				},
+				writeOutput: (state, output) =>
+					options.adoptFragmentOutput
+						? {
+								...state,
+								userState: {
+									...state.userState,
+									draft: options.adoptFragmentOutput({
+										draft: state.userState.draft,
+										output,
+									}),
+								},
+							}
+						: state,
+				onVisited: onVisited(fragmentKind),
 			});
+
+			const finalizeFragmentStage: PublicPipelineStage<
+				StageState,
+				TRunResult
+			> = (state) => {
+				if (deps.isHalt(state) || isPaused(state)) {
+					return state;
+				}
+
+				const fragments = (state.helperExecution?.get(fragmentKind) ?? {
+					kind: fragmentKind,
+					executed: [],
+					missing: [],
+					registered: [],
+				}) as HelperExecutionSnapshot<TFragmentKind>;
+				const metadata: FragmentFinalizationMetadata<TFragmentKind> = {
+					fragments,
+				};
+				const result = options.finalizeFragmentState({
+					draft: state.userState.draft!,
+					options: state.runOptions,
+					context: state.context,
+					buildOptions: state.userState.buildOptions,
+					helpers: metadata,
+				});
+
+				return {
+					...state,
+					userState: {
+						...state.userState,
+						artifact: result,
+					},
+				};
+			};
 
 			return [
 				makeLifecycleStage('prepare'),
@@ -341,25 +298,33 @@ export function createStandardPipeline<
 				finalizeFragmentStage,
 				makeLifecycleStage('before-builders'),
 				// Standard Builder Stage
-				makeHelperStage(builderKind, {
-					makeArgs:
-						(
-							state: AgnosticState<
-								TRunOptions,
-								StandardState,
-								TContext,
-								TReporter,
-								TDiagnostic
-							>
-						) =>
-						(entry) =>
-							options.createBuilderArgs({
-								helper: entry.helper as TBuilderHelper,
-								options: state.runOptions,
-								context: state.context,
-								buildOptions: state.userState.buildOptions,
-								artifact: state.userState.artifact!,
-							}),
+				makeHelperStage<
+					TBuilderInput,
+					TBuilderOutput,
+					TBuilderKind,
+					TBuilderHelper
+				>(builderKind, {
+					makeArgs: (state) => (entry) =>
+						options.createBuilderArgs({
+							helper: entry.helper,
+							options: state.runOptions,
+							context: state.context,
+							buildOptions: state.userState.buildOptions,
+							artifact: state.userState.artifact!,
+						}),
+					writeOutput: (state, output) =>
+						options.adoptBuilderOutput
+							? {
+									...state,
+									userState: {
+										...state.userState,
+										artifact: options.adoptBuilderOutput({
+											artifact: state.userState.artifact!,
+											output,
+										}),
+									},
+								}
+							: state,
 					onVisited: onVisited(builderKind),
 				}),
 				makeLifecycleStage('after-builders'),
@@ -375,32 +340,18 @@ export function createStandardPipeline<
 			diagnostics,
 			options: runOpts,
 			state: agnosticState,
-		}: {
-			artifact: unknown;
-			state: unknown;
-			context: TContext;
-			steps: readonly PipelineStep<string>[];
-			diagnostics: readonly TDiagnostic[];
-			options: TRunOptions;
 		}) => {
-			const stdState = state as unknown as StandardState;
-
 			if (options.createRunResult) {
 				return options.createRunResult({
-					artifact: stdState.artifact as TArtifact,
+					artifact: state.artifact as TArtifact,
 					diagnostics,
-					steps: steps.map(
-						(s) =>
-							(s as unknown as RegisteredHelper<unknown>).helper
-					) as unknown as PipelineStep<string>[],
+					steps,
 					context,
-					buildOptions: stdState.buildOptions,
+					buildOptions: state.buildOptions,
 					options: runOpts,
 					helpers: {
 						fragments:
-							((
-								agnosticState as StateWithExecution | undefined
-							)?.helperExecution?.get(
+							(agnosticState.helperExecution?.get(
 								fragmentKind
 							) as unknown as HelperExecutionSnapshot<TFragmentKind>) ??
 							({
@@ -410,9 +361,7 @@ export function createStandardPipeline<
 								registered: [],
 							} as unknown as HelperExecutionSnapshot<TFragmentKind>),
 						builders:
-							((
-								agnosticState as StateWithExecution | undefined
-							)?.helperExecution?.get(
+							(agnosticState.helperExecution?.get(
 								builderKind
 							) as unknown as HelperExecutionSnapshot<TBuilderKind>) ??
 							({
@@ -425,7 +374,7 @@ export function createStandardPipeline<
 				});
 			}
 			return {
-				artifact: stdState.artifact,
+				artifact: state.artifact,
 				diagnostics,
 				steps,
 			} as unknown as TRunResult;

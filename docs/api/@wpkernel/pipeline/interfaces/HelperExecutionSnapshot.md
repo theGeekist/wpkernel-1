@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / HelperExecutionSnapshot
 
-# Interface: HelperExecutionSnapshot<TKind>
+# Interface: HelperExecutionSnapshot&lt;TKind&gt;
 
 Snapshot of helper execution status.
 

@@ -69,6 +69,7 @@ function createTestPipeline(options?: {
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TestContext;
 	}) => void;
+	readonly adoptReplacementOutputs?: boolean;
 }): {
 	pipeline: TestPipeline;
 	reporter: TestReporter;
@@ -114,6 +115,9 @@ function createTestPipeline(options?: {
 				TestReporter
 			>;
 		},
+		adoptFragmentOutput: options?.adoptReplacementOutputs
+			? ({ output }) => output
+			: undefined,
 		finalizeFragmentState({ draft }) {
 			return draft.slice();
 		},
@@ -130,6 +134,9 @@ function createTestPipeline(options?: {
 				TestReporter
 			>;
 		},
+		adoptBuilderOutput: options?.adoptReplacementOutputs
+			? ({ output }) => output
+			: undefined,
 		createRunResult({ artifact, diagnostics, steps }) {
 			return { artifact, diagnostics, steps } satisfies TestRunResult;
 		},
@@ -174,6 +181,41 @@ function createTestPipeline(options?: {
 }
 
 describe('createPipeline (extensions)', () => {
+	it('adopts immutable fragment and builder outputs when configured', async () => {
+		const { pipeline } = createTestPipeline({
+			adoptReplacementOutputs: true,
+		});
+		pipeline.ir.use(
+			createHelper({
+				key: 'fragment.replacement',
+				kind: pipeline.fragmentKind,
+				priority: -1,
+				apply: ({ output }) => ({
+					output: [...output, 'fragment-replacement'],
+				}),
+			})
+		);
+		pipeline.builders.use(
+			createHelper({
+				key: 'builder.replacement',
+				kind: pipeline.builderKind,
+				priority: -1,
+				apply: ({ output }) => ({
+					output: [...output, 'builder-replacement'],
+				}),
+			})
+		);
+
+		const result = await pipeline.run({});
+
+		expect(result.artifact).toEqual([
+			'fragment',
+			'fragment-replacement',
+			'builder',
+			'builder-replacement',
+		]);
+	});
+
 	it('waits for async extension registration even when extensions.use() is not awaited', async () => {
 		const { pipeline } = createTestPipeline();
 		const hook = jest.fn(({ artifact }: { artifact: string[] }) => ({

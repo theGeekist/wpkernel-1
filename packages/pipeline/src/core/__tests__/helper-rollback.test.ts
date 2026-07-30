@@ -104,6 +104,281 @@ describe('Helper Rollback', () => {
 		expect(rollback).toHaveBeenCalled();
 	});
 
+	it('rolls back successful helpers when a later helper stage fails', async () => {
+		const rollback = jest.fn();
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['fragment', 'builder'],
+			createContext: () => ({ reporter }),
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'fragment.with-rollback',
+				kind: 'fragment',
+				apply() {
+					return {
+						rollback: createPipelineRollback(rollback),
+					};
+				},
+			})
+		);
+		pipeline.use(
+			createHelper({
+				key: 'builder.failure',
+				kind: 'builder',
+				apply() {
+					throw new Error('builder failed');
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('builder failed');
+		expect(rollback).toHaveBeenCalledTimes(1);
+	});
+
+	it('rolls back helpers when a later non-helper stage rejects', async () => {
+		const rollback = jest.fn();
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['fragment'],
+			createContext: () => ({ reporter }),
+			createStages: (deps: any) => [
+				deps.makeHelperStage('fragment'),
+				async () => {
+					throw new Error('later stage failed');
+				},
+				deps.finalizeResult,
+			],
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'fragment.with-rollback',
+				kind: 'fragment',
+				apply() {
+					return {
+						rollback: createPipelineRollback(rollback),
+					};
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('later stage failed');
+		expect(rollback).toHaveBeenCalledTimes(1);
+	});
+
+	it.each([
+		['synchronous', (state: Record<string, unknown>) => state],
+		[
+			'asynchronous',
+			(state: Record<string, unknown>) => Promise.resolve(state),
+		],
+	])(
+		'preserves runner-owned rollback state across a %s public-state replacement',
+		async (_label, returnReplacement) => {
+			const rollback = jest.fn();
+			const reporter = createTestReporter();
+			const pipeline = makePipeline({
+				helperKinds: ['fragment'],
+				createContext: () => ({ reporter }),
+				createState: () => ({ revision: 0 }),
+				createStages: (deps: any) => [
+					deps.makeHelperStage('fragment'),
+					(state: any) =>
+						returnReplacement({
+							context: state.context,
+							reporter: state.reporter,
+							runOptions: state.runOptions,
+							userState: { revision: 1 },
+							steps: state.steps,
+							diagnostics: state.diagnostics,
+							executedLifecycles: state.executedLifecycles,
+							helperExecution: state.helperExecution,
+							stageIndex: state.stageIndex,
+							resumeInput: state.resumeInput,
+						}),
+					() => {
+						throw new Error('later stage failed');
+					},
+				],
+			});
+
+			pipeline.use(
+				createHelper({
+					key: 'fragment.with-rollback',
+					kind: 'fragment',
+					apply() {
+						return {
+							rollback: createPipelineRollback(rollback),
+						};
+					},
+				})
+			);
+
+			await expect(
+				Promise.resolve().then(() => pipeline.run({}))
+			).rejects.toThrow('later stage failed');
+			expect(rollback).toHaveBeenCalledTimes(1);
+		}
+	);
+
+	it('rolls back helpers exactly once when a custom stage returns an error halt', async () => {
+		const rollback = jest.fn();
+		const error = new Error('custom stage halted');
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['fragment'],
+			createContext: () => ({ reporter }),
+			createStages: (deps: any) => [
+				deps.makeHelperStage('fragment'),
+				() => deps.halt(error),
+			],
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'fragment.with-rollback',
+				kind: 'fragment',
+				apply() {
+					return {
+						rollback: createPipelineRollback(rollback),
+					};
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('custom stage halted');
+		expect(rollback).toHaveBeenCalledTimes(1);
+	});
+
+	it.each([
+		[
+			'throws undefined',
+			() => {
+				throw undefined;
+			},
+		],
+		['rejects without a value', () => Promise.reject()],
+	])(
+		'rolls back and preserves rejection when a custom stage %s',
+		async (_label, failStage) => {
+			const rollback = jest.fn();
+			const reporter = createTestReporter();
+			const pipeline = makePipeline({
+				helperKinds: ['fragment'],
+				createContext: () => ({ reporter }),
+				createStages: (deps: any) => [
+					deps.makeHelperStage('fragment'),
+					failStage,
+				],
+			});
+
+			pipeline.use(
+				createHelper({
+					key: 'fragment.with-rollback',
+					kind: 'fragment',
+					apply() {
+						return {
+							rollback: createPipelineRollback(rollback),
+						};
+					},
+				})
+			);
+
+			await expect(
+				Promise.resolve().then(() => pipeline.run({}))
+			).rejects.toBeUndefined();
+			expect(rollback).toHaveBeenCalledTimes(1);
+		}
+	);
+
+	it('rolls back helpers when result materialization fails', async () => {
+		const rollback = jest.fn();
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['fragment'],
+			createContext: () => ({ reporter }),
+			createRunResult() {
+				throw new Error('result failed');
+			},
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'fragment.with-rollback',
+				kind: 'fragment',
+				apply() {
+					return {
+						rollback: createPipelineRollback(rollback),
+					};
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('result failed');
+		expect(rollback).toHaveBeenCalledTimes(1);
+	});
+
+	it('rolls back helpers and extensions when an explicit commit stage fails', async () => {
+		const order: string[] = [];
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['builder'],
+			createContext: () => ({ reporter }),
+			extensions: {
+				lifecycles: ['prepare'],
+			},
+			createStages: (deps: any) => [
+				deps.makeLifecycleStage('prepare'),
+				deps.makeHelperStage('builder'),
+				deps.commitStage,
+				deps.finalizeResult,
+			],
+		});
+
+		pipeline.extensions.use({
+			key: 'commit.failure',
+			register: () => ({
+				lifecycle: 'prepare',
+				hook: () => ({
+					commit: () => {
+						throw new Error('commit failed');
+					},
+					rollback: () => {
+						order.push('extension');
+					},
+				}),
+			}),
+		});
+		pipeline.use(
+			createHelper({
+				key: 'builder.with-rollback',
+				kind: 'builder',
+				apply() {
+					return {
+						rollback: createPipelineRollback(() => {
+							order.push('helper');
+						}),
+					};
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('commit failed');
+		expect(order).toEqual(['helper', 'extension']);
+	});
+
 	it('rolls back helpers in reverse order', async () => {
 		const rollbackOrder: string[] = [];
 		const { pipeline } = createTestPipeline();
@@ -152,6 +427,65 @@ describe('Helper Rollback', () => {
 		await expect(runPipeline(pipeline)).rejects.toThrow('builder failed');
 
 		expect(rollbackOrder).toEqual(['second', 'first']);
+	});
+
+	it('orders rollbacks by visitation when a helper wraps downstream execution', async () => {
+		const rollbackOrder: string[] = [];
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['builder'],
+			createContext: () => ({ reporter }),
+			createState: () => ({ value: 0 }),
+			createStages: (deps: any) => [
+				deps.makeHelperStage('builder', {
+					makeArgs: (state: any) => () => ({
+						context: state.context,
+						input: undefined,
+						output: state.userState,
+						reporter: state.reporter,
+					}),
+					writeOutput: () => {
+						throw new Error('write failed');
+					},
+				}),
+				deps.finalizeResult,
+			],
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'outer',
+				kind: 'builder',
+				priority: 2,
+				apply: async ({ output }, next) => {
+					const downstream = next ? await next(output) : output;
+					return {
+						output: downstream,
+						rollback: createPipelineRollback(() => {
+							rollbackOrder.push('outer');
+						}),
+					};
+				},
+			})
+		);
+		pipeline.use(
+			createHelper({
+				key: 'inner',
+				kind: 'builder',
+				priority: 1,
+				apply: ({ output }) => ({
+					output,
+					rollback: createPipelineRollback(() => {
+						rollbackOrder.push('inner');
+					}),
+				}),
+			})
+		);
+
+		await expect(Promise.resolve(pipeline.run({}))).rejects.toThrow(
+			'write failed'
+		);
+		expect(rollbackOrder).toEqual(['inner', 'outer']);
 	});
 
 	it('rolls back helpers respecting dependency order', async () => {

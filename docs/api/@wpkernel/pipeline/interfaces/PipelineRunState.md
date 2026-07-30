@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v0.12.6-beta.3**](../README.md)
+[**@wpkernel/pipeline v1.2.0**](../README.md)
 
 ---
 
 [@wpkernel/pipeline](../README.md) / PipelineRunState
 
-# Interface: PipelineRunState<TArtifact, TDiagnostic>
+# Interface: PipelineRunState&lt;TArtifact, TDiagnostic&gt;
 
 State returned from a pipeline run.
 
@@ -39,5 +39,5 @@ readonly diagnostics: readonly TDiagnostic[];
 ### steps
 
 ```ts
-readonly steps: readonly PipelineStep<string>[];
+readonly steps: readonly PipelineStep&lt;string&gt;[];
 ```
