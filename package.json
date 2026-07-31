@@ -53,7 +53,7 @@
 		"wp:clean": "pnpm wp:destroy && rm -rf .wp-env",
 		"wp:cli": "wp-env run cli",
 		"wp:logs": "wp-env logs",
-		"wp:logs:php": "wp-env logs wordpress",
+		"wp:logs:php": "wp-env logs tests --watch=false",
 		"wp:seed": "wp-env run tests-cli bash /var/www/html/wp-content/plugins/showcase/seeds/seed-all.sh",
 		"wp:seed:reset": "wp-env run tests-cli wp db reset --yes && wp-env run tests-cli bash /var/www/html/wp-content/plugins/showcase/seeds/seed-all.sh",
 		"wp:fresh": "wp-env start && pnpm wp:seed",
