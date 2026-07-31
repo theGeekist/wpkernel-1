@@ -66,6 +66,106 @@ exports[`wp-post mutation route builders emits create route statements with macr
     "nodeType": "Stmt_Expression",
   },
   {
+    "attributes": {},
+    "expr": {
+      "attributes": {},
+      "expr": {
+        "args": [
+          {
+            "attributes": {},
+            "byRef": false,
+            "name": null,
+            "nodeType": "Arg",
+            "unpack": false,
+            "value": {
+              "attributes": {},
+              "nodeType": "Scalar_String",
+              "value": "title",
+            },
+          },
+        ],
+        "attributes": {},
+        "name": {
+          "attributes": {},
+          "name": "get_param",
+          "nodeType": "Identifier",
+        },
+        "nodeType": "Expr_MethodCall",
+        "var": {
+          "attributes": {},
+          "name": "request",
+          "nodeType": "Expr_Variable",
+        },
+      },
+      "nodeType": "Expr_Assign",
+      "var": {
+        "attributes": {},
+        "dim": {
+          "attributes": {},
+          "nodeType": "Scalar_String",
+          "value": "post_title",
+        },
+        "nodeType": "Expr_ArrayDimFetch",
+        "var": {
+          "attributes": {},
+          "name": "post_data",
+          "nodeType": "Expr_Variable",
+        },
+      },
+    },
+    "nodeType": "Stmt_Expression",
+  },
+  {
+    "attributes": {},
+    "expr": {
+      "attributes": {},
+      "expr": {
+        "args": [
+          {
+            "attributes": {},
+            "byRef": false,
+            "name": null,
+            "nodeType": "Arg",
+            "unpack": false,
+            "value": {
+              "attributes": {},
+              "nodeType": "Scalar_String",
+              "value": "content",
+            },
+          },
+        ],
+        "attributes": {},
+        "name": {
+          "attributes": {},
+          "name": "get_param",
+          "nodeType": "Identifier",
+        },
+        "nodeType": "Expr_MethodCall",
+        "var": {
+          "attributes": {},
+          "name": "request",
+          "nodeType": "Expr_Variable",
+        },
+      },
+      "nodeType": "Expr_Assign",
+      "var": {
+        "attributes": {},
+        "dim": {
+          "attributes": {},
+          "nodeType": "Scalar_String",
+          "value": "post_content",
+        },
+        "nodeType": "Expr_ArrayDimFetch",
+        "var": {
+          "attributes": {},
+          "name": "post_data",
+          "nodeType": "Expr_Variable",
+        },
+      },
+    },
+    "nodeType": "Stmt_Expression",
+  },
+  {
     "attributes": {
       "comments": [
         {
@@ -1922,6 +2022,198 @@ exports[`wp-post mutation route builders emits update route statements with guar
     "nodeType": "Stmt_Expression",
   },
   {
+    "attributes": {},
+    "expr": {
+      "attributes": {},
+      "expr": {
+        "args": [
+          {
+            "attributes": {},
+            "byRef": false,
+            "name": null,
+            "nodeType": "Arg",
+            "unpack": false,
+            "value": {
+              "attributes": {},
+              "nodeType": "Scalar_String",
+              "value": "title",
+            },
+          },
+        ],
+        "attributes": {},
+        "name": {
+          "attributes": {},
+          "name": "get_param",
+          "nodeType": "Identifier",
+        },
+        "nodeType": "Expr_MethodCall",
+        "var": {
+          "attributes": {},
+          "name": "request",
+          "nodeType": "Expr_Variable",
+        },
+      },
+      "nodeType": "Expr_Assign",
+      "var": {
+        "attributes": {},
+        "name": "title",
+        "nodeType": "Expr_Variable",
+      },
+    },
+    "nodeType": "Stmt_Expression",
+  },
+  {
+    "attributes": {},
+    "cond": {
+      "attributes": {},
+      "left": {
+        "attributes": {},
+        "name": {
+          "attributes": {},
+          "nodeType": "Name",
+          "parts": [
+            "null",
+          ],
+        },
+        "nodeType": "Expr_ConstFetch",
+      },
+      "nodeType": "Expr_BinaryOp_NotIdentical",
+      "right": {
+        "attributes": {},
+        "name": "title",
+        "nodeType": "Expr_Variable",
+      },
+    },
+    "else": null,
+    "elseifs": [],
+    "nodeType": "Stmt_If",
+    "stmts": [
+      {
+        "attributes": {},
+        "expr": {
+          "attributes": {},
+          "expr": {
+            "attributes": {},
+            "name": "title",
+            "nodeType": "Expr_Variable",
+          },
+          "nodeType": "Expr_Assign",
+          "var": {
+            "attributes": {},
+            "dim": {
+              "attributes": {},
+              "nodeType": "Scalar_String",
+              "value": "post_title",
+            },
+            "nodeType": "Expr_ArrayDimFetch",
+            "var": {
+              "attributes": {},
+              "name": "post_data",
+              "nodeType": "Expr_Variable",
+            },
+          },
+        },
+        "nodeType": "Stmt_Expression",
+      },
+    ],
+  },
+  {
+    "attributes": {},
+    "expr": {
+      "attributes": {},
+      "expr": {
+        "args": [
+          {
+            "attributes": {},
+            "byRef": false,
+            "name": null,
+            "nodeType": "Arg",
+            "unpack": false,
+            "value": {
+              "attributes": {},
+              "nodeType": "Scalar_String",
+              "value": "content",
+            },
+          },
+        ],
+        "attributes": {},
+        "name": {
+          "attributes": {},
+          "name": "get_param",
+          "nodeType": "Identifier",
+        },
+        "nodeType": "Expr_MethodCall",
+        "var": {
+          "attributes": {},
+          "name": "request",
+          "nodeType": "Expr_Variable",
+        },
+      },
+      "nodeType": "Expr_Assign",
+      "var": {
+        "attributes": {},
+        "name": "content",
+        "nodeType": "Expr_Variable",
+      },
+    },
+    "nodeType": "Stmt_Expression",
+  },
+  {
+    "attributes": {},
+    "cond": {
+      "attributes": {},
+      "left": {
+        "attributes": {},
+        "name": {
+          "attributes": {},
+          "nodeType": "Name",
+          "parts": [
+            "null",
+          ],
+        },
+        "nodeType": "Expr_ConstFetch",
+      },
+      "nodeType": "Expr_BinaryOp_NotIdentical",
+      "right": {
+        "attributes": {},
+        "name": "content",
+        "nodeType": "Expr_Variable",
+      },
+    },
+    "else": null,
+    "elseifs": [],
+    "nodeType": "Stmt_If",
+    "stmts": [
+      {
+        "attributes": {},
+        "expr": {
+          "attributes": {},
+          "expr": {
+            "attributes": {},
+            "name": "content",
+            "nodeType": "Expr_Variable",
+          },
+          "nodeType": "Expr_Assign",
+          "var": {
+            "attributes": {},
+            "dim": {
+              "attributes": {},
+              "nodeType": "Scalar_String",
+              "value": "post_content",
+            },
+            "nodeType": "Expr_ArrayDimFetch",
+            "var": {
+              "attributes": {},
+              "name": "post_data",
+              "nodeType": "Expr_Variable",
+            },
+          },
+        },
+        "nodeType": "Stmt_Expression",
+      },
+    ],
+  },
+  {
     "attributes": {
       "comments": [
         {
@@ -2676,4 +2968,103 @@ exports[`wp-post mutation route builders emits update route statements with guar
     "nodeType": "Stmt_Return",
   },
 ]
+`;
+
+exports[`wp-post mutation route builders prints configured core post field mappings for create and update: core-post-fields-printed-php 1`] = `
+{
+  "create": "<?php
+
+$post_type = $this->getBookPostType();
+$post_data = ['post_type' => $post_type];
+$post_data['post_title'] = $request->get_param('title');
+$post_data['post_content'] = $request->get_param('content');
+$post_data['post_excerpt'] = $request->get_param('excerpt');
+// @wp-kernel resource.wpPost.mutation status-validation
+// @wp-kernel mutation:status normalise
+$status = $request->get_param('status');
+$post_data['post_status'] = $this->normaliseBookStatus($status);
+$post_id = wp_insert_post($post_data, true);
+if (is_wp_error($post_id)) {
+    return $post_id;
+}
+if (0 === $post_id) {
+    return new WP_Error('wpk_book_create_failed', 'Unable to create Book.', ['status' => 500]);
+}
+// @wp-kernel resource.wpPost.mutation sync-meta
+// @wp-kernel mutation:meta update
+$this->syncBookMeta($post_id, $request);
+// @wp-kernel resource.wpPost.mutation sync-taxonomies
+// @wp-kernel mutation:taxonomies update
+$taxonomy_result = $this->syncBookTaxonomies($post_id, $request);
+if (is_wp_error($taxonomy_result)) {
+    return $taxonomy_result;
+}
+// @wp-kernel resource.wpPost.mutation cache-priming
+// @wp-kernel mutation:cache prime
+// @wp-kernel cache:wp-post prime
+$post = get_post($post_id);
+if (!$post instanceof WP_Post) {
+    return new WP_Error('wpk_book_load_failed', 'Unable to load created Book.', ['status' => 500]);
+}
+return $this->prepareBookResponse($post, $request);
+",
+  "update": "<?php
+
+$id = $request->get_param('id');
+if (null === $id) {
+    return new WP_Error('wpk_book_missing_identifier', 'Missing identifier for Book.', ['status' => 400]);
+}
+$id = (int) $id;
+if ($id <= 0) {
+    return new WP_Error('wpk_book_invalid_identifier', 'Invalid identifier for Book.', ['status' => 400]);
+}
+$post = $this->resolveBookPost($id);
+if (!$post instanceof WP_Post) {
+    return new WP_Error('wpk_book_not_found', 'Book not found.', ['status' => 404]);
+}
+$post_data = ['ID' => $post->ID, 'post_type' => $this->getBookPostType()];
+$title = $request->get_param('title');
+if (null !== $title) {
+    $post_data['post_title'] = $title;
+}
+$content = $request->get_param('content');
+if (null !== $content) {
+    $post_data['post_content'] = $content;
+}
+$excerpt = $request->get_param('excerpt');
+if (null !== $excerpt) {
+    $post_data['post_excerpt'] = $excerpt;
+}
+// @wp-kernel resource.wpPost.mutation status-validation
+// @wp-kernel mutation:status normalise
+$status = $request->get_param('status');
+if (null !== $status) {
+    $post_data['post_status'] = $this->normaliseBookStatus($status);
+}
+$result = wp_update_post($post_data, true);
+if (is_wp_error($result)) {
+    return $result;
+}
+if (0 === $result) {
+    return new WP_Error('wpk_book_update_failed', 'Unable to update Book.', ['status' => 500]);
+}
+// @wp-kernel resource.wpPost.mutation sync-meta
+// @wp-kernel mutation:meta update
+$this->syncBookMeta($post->ID, $request);
+// @wp-kernel resource.wpPost.mutation sync-taxonomies
+// @wp-kernel mutation:taxonomies update
+$taxonomy_result = $this->syncBookTaxonomies($post->ID, $request);
+if (is_wp_error($taxonomy_result)) {
+    return $taxonomy_result;
+}
+// @wp-kernel resource.wpPost.mutation cache-priming
+// @wp-kernel mutation:cache prime
+// @wp-kernel cache:wp-post prime
+$updated = get_post($post->ID);
+if (!$updated instanceof WP_Post) {
+    return new WP_Error('wpk_book_load_failed', 'Unable to load updated Book.', ['status' => 500]);
+}
+return $this->prepareBookResponse($updated, $request);
+",
+}
 `;

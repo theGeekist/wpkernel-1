@@ -97,10 +97,15 @@ function buildResourceLocalizationArray(
 		buildArrayItem(buildScalarString(resource.resource), {
 			key: buildScalarString('resource'),
 		}),
-		// buildArrayItem(buildScalarString(resource.preferencesKey), {
-		// 	key: buildScalarString('preferencesKey'),
-		// }),
 	];
+
+	if (resource.preferencesKey) {
+		items.push(
+			buildArrayItem(buildScalarString(resource.preferencesKey), {
+				key: buildScalarString('preferencesKey'),
+			})
+		);
+	}
 
 	if (resource.menu) {
 		const menuArray = buildMenuLocalizationArray(resource.menu);

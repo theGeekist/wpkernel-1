@@ -25,7 +25,7 @@ import {
 } from '../../../common/utils';
 import { buildReturnIfWpError, buildWpErrorReturn } from '../../../errors';
 import type { BuildCreateRouteStatementsOptions } from './types';
-import { makeErrorCodeFactory } from './utils';
+import { buildCorePostFieldStatements, makeErrorCodeFactory } from './utils';
 
 /**
  * @param    options
@@ -61,6 +61,12 @@ export function buildCreateRouteStatements(
 				},
 			])
 		)
+	);
+
+	statements.push(
+		...buildCorePostFieldStatements({
+			resource: options.resource,
+		})
 	);
 
 	statements.push(

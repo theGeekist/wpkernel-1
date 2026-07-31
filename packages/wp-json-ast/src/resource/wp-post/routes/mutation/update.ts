@@ -36,7 +36,7 @@ import {
 import { buildReturnIfWpError, buildWpErrorReturn } from '../../../errors';
 import { buildRequestParamAssignmentStatement } from '../../../../common/request';
 import type { BuildUpdateRouteStatementsOptions } from './types';
-import { makeErrorCodeFactory } from './utils';
+import { buildCorePostFieldStatements, makeErrorCodeFactory } from './utils';
 
 /**
  * @param    options
@@ -115,6 +115,13 @@ export function buildUpdateRouteStatements(
 				},
 			])
 		)
+	);
+
+	statements.push(
+		...buildCorePostFieldStatements({
+			resource: options.resource,
+			guardWithNullCheck: true,
+		})
 	);
 
 	statements.push(

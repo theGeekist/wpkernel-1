@@ -9,11 +9,17 @@ export interface PluginLoaderProgramConfig {
 	readonly plugin: PluginLoaderMeta;
 	readonly phpGeneratedPath: string;
 	readonly resourceClassNames: readonly string[];
+	readonly resourceControllers?: readonly PluginLoaderControllerConfig[];
 	readonly contentModel?: PluginContentModelConfig;
 	readonly ui?: PluginLoaderUiConfig;
 }
+export interface PluginLoaderControllerConfig {
+	readonly className: string;
+	readonly appliedRequirePath?: string;
+}
 export interface PluginLoaderUiResourceConfig {
 	readonly resource: string;
+	readonly preferencesKey?: string;
 	readonly menu?: {
 		readonly slug?: string;
 		readonly title?: string;

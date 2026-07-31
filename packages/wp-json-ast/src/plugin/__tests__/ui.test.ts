@@ -1,4 +1,5 @@
 import {
+	buildLocalizationArray,
 	buildMenuLocalizationArray,
 	buildNamespaceStatements,
 	normaliseRelativeDirectory,
@@ -99,6 +100,20 @@ describe('plugin ui helpers', () => {
 				position: 12,
 			})
 		).not.toBeNull();
+	});
+
+	it('includes the configured preferences key in localized resources', () => {
+		const localization = buildLocalizationArray(minimalUi()) as any;
+		const resources = localization.items.find(
+			(item: any) => item.key?.value === 'resources'
+		).value;
+		const resource = resources.items[0].value;
+
+		expect(
+			resource.items.find(
+				(item: any) => item.key?.value === 'preferencesKey'
+			)?.value?.value
+		).toBe('demo/dataviews/job');
 	});
 
 	it('buildNamespaceStatements includes UI helpers when config provided', () => {

@@ -59,6 +59,47 @@ describe('buildPluginLoaderProgram', () => {
 		expect(program).toMatchSnapshot('plugin-loader-program-empty');
 	});
 
+	it('loads applied controller shims before instantiation', () => {
+		const program = buildPluginLoaderProgram({
+			origin: 'wpk.config.ts',
+			namespace: 'Demo\\Plugin',
+			sanitizedNamespace: 'demo-plugin',
+			plugin: {
+				name: 'Demo Plugin',
+				description: 'Bootstrap loader for Demo Plugin.',
+				version: '1.0.0',
+				requiresAtLeast: '6.7',
+				requiresPhp: '8.1',
+				textDomain: 'demo-plugin',
+				author: 'Demo',
+				license: 'GPL-2.0-or-later',
+			},
+			resourceClassNames: ['Demo\\Plugin\\Rest\\BooksController'],
+			resourceControllers: [
+				{
+					className: 'Demo\\Plugin\\Rest\\BooksController',
+					appliedRequirePath: '/inc/Rest/BooksController.php',
+				},
+			],
+			phpGeneratedPath,
+		});
+
+		const serialized = JSON.stringify(program);
+		const classmapIndex = serialized.indexOf('"name":"classmapPath"');
+		const requireIndex = serialized.indexOf('"nodeType":"Expr_Include"');
+		const instantiateIndex = serialized.indexOf('"nodeType":"Expr_New"');
+
+		expect(serialized).toContain(
+			'"nodeType":"Scalar_MagicConst_Dir"'
+		);
+		expect(serialized).toContain(
+			'"value":"/inc/Rest/BooksController.php"'
+		);
+		expect(classmapIndex).toBeGreaterThanOrEqual(0);
+		expect(requireIndex).toBeGreaterThan(classmapIndex);
+		expect(instantiateIndex).toBeGreaterThan(requireIndex);
+	});
+
 	it('honours custom generated PHP directory for classmap', () => {
 		const customPhpGeneratedPath = `${phpGeneratedPath}/custom`;
 		const program = buildPluginLoaderProgram({

@@ -13,6 +13,8 @@ import {
 	buildFullyQualifiedName,
 	buildIdentifier,
 	buildIfStatement,
+	buildInclude,
+	buildMagicConstant,
 	buildMethodCall,
 	buildName,
 	buildNew,
@@ -20,6 +22,8 @@ import {
 	buildScalarString,
 	buildVariable,
 	mergeNodeAttributes,
+	PHP_INCLUDE_TYPE,
+	type PhpExpr,
 	type PhpStmtFunction,
 } from '@wpkernel/php-json-ast';
 import {
@@ -28,7 +32,10 @@ import {
 	normaliseRelativeDirectory,
 	splitNamespace,
 } from './helpers';
-import type { PluginLoaderProgramConfig } from './types';
+import type {
+	PluginLoaderControllerConfig,
+	PluginLoaderProgramConfig,
+} from './types';
 
 export function buildGetControllersFunction(
 	config: PluginLoaderProgramConfig
@@ -40,13 +47,26 @@ export function buildGetControllersFunction(
 		phpGeneratedPath.length > 0
 			? `${phpGeneratedPath}/index.php`
 			: 'index.php';
+	const resourceControllers = resolveResourceControllers(config);
 
 	const returnArray = buildArray(
-		config.resourceClassNames.map((className) =>
+		resourceControllers.map(({ className }) =>
 			buildArrayItem(
 				buildNew(buildFullyQualifiedName(splitNamespace(className)))
 			)
 		)
+	);
+	const appliedControllerRequires = resourceControllers.flatMap(
+		(controller) =>
+			controller.appliedRequirePath
+				? [
+						buildExpressionStatement(
+							buildRequireOnceExpression(
+								controller.appliedRequirePath
+							)
+						),
+					]
+				: []
 	);
 
 	const fn = buildNodeFunction('get_wpkernel_controllers', {
@@ -131,6 +151,7 @@ export function buildGetControllersFunction(
 					),
 				]
 			),
+			...appliedControllerRequires,
 			buildReturn(returnArray),
 		],
 	});
@@ -143,6 +164,31 @@ export function buildGetControllersFunction(
 			]),
 		],
 	});
+}
+
+function resolveResourceControllers(
+	config: PluginLoaderProgramConfig
+): readonly PluginLoaderControllerConfig[] {
+	return (
+		config.resourceControllers ??
+		config.resourceClassNames.map((className) => ({ className }))
+	);
+}
+
+function buildRequireOnceExpression(requirePath: string): PhpExpr {
+	const normalisedPath = requirePath.replace(/\\/g, '/');
+	const suffix = normalisedPath.startsWith('/')
+		? normalisedPath
+		: `/${normalisedPath}`;
+
+	return buildInclude(
+		buildBinaryOperation(
+			'Concat',
+			buildMagicConstant('Dir'),
+			buildScalarString(suffix)
+		),
+		PHP_INCLUDE_TYPE.REQUIRE_ONCE
+	);
 }
 
 export function buildRegisterRoutesFunction(): PhpStmtFunction {
