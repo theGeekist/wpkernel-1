@@ -106,7 +106,10 @@ information/
 gutenberg/
 gutenberg
 **/AGENTS.md
-docs/internal/
+docs/internal/*
+!docs/internal/php-json-ast/
+docs/internal/php-json-ast/*
+!docs/internal/php-json-ast/authoring-roadmap.md
 artifacts/
-./.wpk/
+**/.wpk/
 .turbo

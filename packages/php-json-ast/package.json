@@ -54,6 +54,16 @@
 			"import": "./dist/php-driver.js",
 			"default": "./dist/php-driver.js"
 		},
+		"./codec": {
+			"types": "./dist/codec/public.d.ts",
+			"import": "./dist/codec.js",
+			"default": "./dist/codec.js"
+		},
+		"./authoring": {
+			"types": "./dist/authoring/public.d.ts",
+			"import": "./dist/authoring.js",
+			"default": "./dist/authoring.js"
+		},
 		"./php/ingest-program.php": {
 			"default": "./php/ingest-program.php"
 		},

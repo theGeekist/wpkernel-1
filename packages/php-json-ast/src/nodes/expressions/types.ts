@@ -147,6 +147,19 @@ export interface PhpExprConstFetch extends PhpExprBase {
 	readonly name: PhpName;
 }
 
+export type PhpIncludeType = 1 | 2 | 3 | 4;
+
+/**
+ * Represents a PHP include or require expression.
+ *
+ * @category PHP AST
+ */
+export interface PhpExprInclude extends PhpExprBase {
+	readonly nodeType: 'Expr_Include';
+	readonly expr: PhpExpr;
+	readonly type: number;
+}
+
 /**
  * Represents a PHP boolean NOT expression (e.g., `!$foo`).
  *
@@ -406,6 +419,7 @@ export type PhpExpr =
 	| PhpExprFuncCall
 	| PhpExprNew
 	| PhpExprConstFetch
+	| PhpExprInclude
 	| PhpExprBooleanNot
 	| PhpExprInstanceof
 	| PhpExprBinaryOp

@@ -104,3 +104,22 @@ export function buildScalarFloat(
 ): PhpScalarDNumber {
 	return buildNode<PhpScalarDNumber>('Scalar_Float', { value }, attributes);
 }
+
+/**
+ * Builds a PHP magic constant node such as `__DIR__` or `__FILE__`.
+ *
+ * @category PHP AST
+ * @param    name       - Magic constant name without surrounding underscores.
+ * @param    attributes - Optional attributes for the node.
+ * @returns A `PhpScalarMagicConst` node.
+ */
+export function buildMagicConstant(
+	name: string,
+	attributes?: PhpAttributes
+): PhpScalarMagicConst {
+	return buildNode<PhpScalarMagicConst>(
+		`Scalar_MagicConst_${name}`,
+		{},
+		attributes
+	);
+}

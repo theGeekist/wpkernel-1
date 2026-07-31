@@ -155,6 +155,8 @@ const config = createWPKLibConfig('@wpkernel/php-json-ast', {
 	types: 'src/types.ts',
 	modifiers: 'src/modifiers.ts',
 	'php-driver': 'src/php-driver.ts',
+	codec: 'src/codec/public.ts',
+	authoring: 'src/authoring/public.ts',
 });
 
 const existingPlugins = config.plugins ?? [];

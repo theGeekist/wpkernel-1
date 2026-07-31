@@ -1,8 +1,13 @@
 # @wpkernel/php-json-ast
 
-Utilities and type definitions for working with the JSON AST emitted by [`nikic/php-parser`](https://github.com/nikic/PHP-Parser).
+Typed TypeScript contracts, builders, and runtime bridges for working with the
+JSON AST emitted by
+[`nikic/php-parser`](https://github.com/nikic/PHP-Parser).
 
-> **Status:** Experimental. The package currently provides lightweight helpers that wrap raw JSON payloads and will soon host the full PHP builder implementation that lives in `@wpkernel/cli` today.
+> **Status:** Experimental. Low-level AST construction, PHP parsing/printing,
+> codemod ingestion, diagnostics, NodeFinder queries, and a BuilderFactory
+> prototype exist. The public API and the missing framework-neutral authoring
+> layer are being reorganised and qualified.
 
 ## Installation
 
@@ -12,17 +17,20 @@ pnpm add @wpkernel/php-json-ast
 
 ## Usage
 
+The current stable building blocks are the typed raw node constructors:
+
 ```ts
-import { isPhpJsonNode, normalisePhpAttributes } from '@wpkernel/php-json-ast';
+import {
+	buildReturn,
+	buildScalarString,
+	type PhpProgram,
+} from '@wpkernel/php-json-ast';
 
-const payload = JSON.parse(fs.readFileSync('ast.json', 'utf8'));
-
-if (!isPhpJsonNode(payload)) {
-	throw new Error('Unexpected payload');
-}
-
-const attributes = normalisePhpAttributes(payload.attributes);
+const program: PhpProgram = [buildReturn(buildScalarString('Hello'))];
 ```
+
+The package roadmap is introducing explicit `ast`, `authoring`, `source`, and
+`pipeline` entry points. New integrations should avoid unsupported deep imports.
 
 ## Contributing
 

@@ -19,6 +19,8 @@ import type {
 	PhpExprStaticCall,
 	PhpExprFuncCall,
 	PhpExprNew,
+	PhpExprInclude,
+	PhpIncludeType,
 	PhpExprPropertyFetch,
 	PhpExprNullsafePropertyFetch,
 	PhpExprBooleanNot,
@@ -34,6 +36,13 @@ import type {
 	PhpExprMatch,
 	PhpExprThrow,
 } from './types';
+
+export const PHP_INCLUDE_TYPE = {
+	INCLUDE: 1,
+	INCLUDE_ONCE: 2,
+	REQUIRE: 3,
+	REQUIRE_ONCE: 4,
+} as const satisfies Record<string, PhpIncludeType>;
 
 /**
  * Builds a PHP array expression node.
@@ -79,6 +88,27 @@ export function buildArrayItem(
 			byRef: options.byRef ?? false,
 			unpack: options.unpack ?? false,
 		},
+		attributes
+	);
+}
+
+/**
+ * Builds a PHP include or require expression.
+ *
+ * @category PHP AST
+ * @param    expr       - Path expression to include.
+ * @param    type       - Include/require operation type.
+ * @param    attributes - Optional attributes for the node.
+ * @returns A `PhpExprInclude` node.
+ */
+export function buildInclude(
+	expr: PhpExpr,
+	type: PhpIncludeType,
+	attributes?: PhpAttributes
+): PhpExprInclude {
+	return buildNode<PhpExprInclude>(
+		'Expr_Include',
+		{ expr, type },
 		attributes
 	);
 }

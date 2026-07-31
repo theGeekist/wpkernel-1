@@ -11,7 +11,9 @@ import {
 	buildClosureUse,
 	buildFuncCall,
 	buildIdentifier,
+	buildInclude,
 	buildInstanceof,
+	buildMagicConstant,
 	buildName,
 	buildNew,
 	buildNull,
@@ -28,6 +30,7 @@ import {
 	buildVariable,
 	buildMethodCall,
 	buildArrayCast,
+	PHP_INCLUDE_TYPE,
 	type PhpExpr,
 } from '../nodes';
 import { buildParam } from '../nodes/params';
@@ -57,6 +60,28 @@ describe('expression builders', () => {
 		expect(buildScalarBool(true).name.parts).toEqual(['true']);
 		expect(buildScalarBool(false).name.parts).toEqual(['false']);
 		expect(buildNull().name.parts).toEqual(['null']);
+	});
+
+	it('builds require-once expressions from magic directory paths', () => {
+		const path = buildBinaryOperation(
+			'Concat',
+			buildMagicConstant('Dir'),
+			buildScalarString('/inc/Controller.php')
+		);
+		const include = buildInclude(path, PHP_INCLUDE_TYPE.REQUIRE_ONCE);
+
+		expect(include).toMatchObject({
+			nodeType: 'Expr_Include',
+			type: 4,
+			expr: {
+				nodeType: 'Expr_BinaryOp_Concat',
+				left: { nodeType: 'Scalar_MagicConst_Dir' },
+				right: {
+					nodeType: 'Scalar_String',
+					value: '/inc/Controller.php',
+				},
+			},
+		});
 	});
 
 	it('creates scalar casts for all supported kinds', () => {
