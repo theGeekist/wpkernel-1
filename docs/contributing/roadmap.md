@@ -1,7 +1,15 @@
 # WPKernel Roadmap
 
-**Status**: Active development toward v1.0
-**Latest Release**: v0.11.0 (November 2025)
+**Status**: Active beta development; production qualification is incomplete
+
+**Workspace version**: v0.12.6-beta.3
+
+**Status audit**: 2026-07-31
+
+Package implementation, package verification, integration, packed
+qualification, release, and production qualification are tracked separately.
+The existence of a harness or passing unit tests does not mean the corresponding
+runtime path is production-qualified.
 
 ---
 
@@ -9,7 +17,10 @@
 
 ### Foundation (Sprints 0-1.5)
 
-Monorepo infrastructure, TypeScript strict mode, Vite 7 builds, testing harness (Jest + Playwright), CI/CD, documentation site, wp-env + Playground environments. 58+ test files, 970+ tests.
+Monorepo infrastructure, TypeScript strict mode, Vite 7 builds, Jest coverage,
+Playwright configuration, CI/CD, documentation site, and wp-env + Playground
+environments. The WordPress/browser E2E suite and required CI gate remain
+incomplete.
 
 ### Resources & Data (Sprint 1)
 
@@ -17,7 +28,10 @@ Monorepo infrastructure, TypeScript strict mode, Vite 7 builds, testing harness 
 
 ### E2E Utils (Sprint 2)
 
-`@wpkernel/e2e-utils` package with namespaced API, Playwright fixture, test helpers (auth, rest, store, events, db, project), utility unit tests separated from domain E2E tests. Full fixture integration.
+`@wpkernel/e2e-utils` package with namespaced API, Playwright fixture, test
+helpers (auth, REST, store, events, database, project), and utility unit tests.
+This marks package implementation, not completion of the currently absent
+domain E2E suite.
 
 ### Capabilities (Sprint 3)
 
@@ -55,6 +69,20 @@ Completed the bootstrap transition to `configureWPKernel()`, replaced global UI 
 
 ## 🚧 In Progress
 
+**PHP authoring and codegen qualification**
+
+Reorganise `@wpkernel/php-json-ast` around explicit AST, codec, authoring,
+source, and pipeline capabilities; keep `@wpkernel/wp-json-ast` as the
+WordPress semantic layer; repair CLI codemod adoption; and restore real
+WordPress/browser qualification.
+
+**Production truth loop**
+
+Restore a required packed-artifact path covering scaffold, generate, apply,
+plugin activation, authenticated REST behavior, admin/browser behavior, and
+repeat generation. The current smoke job proves toolchain mechanics but not
+WordPress runtime behavior.
+
 **Guided Examples & Bindings** (post-architecture polish)
 Deepen the learning surface with refreshed block binding walkthroughs, Interactivity API blueprints, and expanded showcase coverage that demonstrates the completed wpk architecture in practice.
 
@@ -62,15 +90,16 @@ Deepen the learning surface with refreshed block binding walkthroughs, Interacti
 
 ## 🔮 Upcoming
 
-**Sprint 6** - Admin Mount & UI Surface (minimal admin scaffolding)  
-**Sprint 7** - CLI Scaffolder (project initialization, resource generators)  
-**Sprint 9** - PHP Bridge (JS → PHP event mirroring, legacy plugin integration) ⬅️ **Next Up**  
-**Sprint 10** - Server Bindings (SSR for SEO-critical fields)  
-**Sprint 11** - SlotFill (UI extension points)  
-**Sprint 13** - CI Matrices & Playgrounds (expanded WP/PHP test matrices)  
-**Sprint 14-16** - Showcase App (public discovery, applications, admin pipeline)  
-**Sprint 17** - Hardening (performance, accessibility, i18n) - DataViews accessibility backlog: - Keyboard trap audit across bulk actions and inline forms - High contrast + dark mode sweep for table rows and selection chips - ARIA announcements for async bulk action results and preference errors - Documented escape hatches for screen reader only copy in ResourceDataView
-**Sprint 18** - Documentation v2 & Migration Guide
+- **Sprint 6** - Admin Mount & UI Surface (minimal admin scaffolding)
+- **Sprint 7 follow-up** - CLI upgrade, repair, and packed-consumer qualification
+- **Sprint 9** - PHP Bridge (JS → PHP event mirroring, legacy plugin integration)
+- **Sprint 10** - Server Bindings (SSR for SEO-critical fields)
+- **Sprint 11** - SlotFill (UI extension points)
+- **Sprint 13** - CI Matrices & Playgrounds (expanded WP/PHP test matrices)
+- **Sprint 14-16** - Showcase App (public discovery, applications, admin pipeline)
+- **Sprint 17** - Hardening (performance, accessibility, i18n), including
+  DataViews keyboard, contrast, ARIA announcement, and screen-reader guidance.
+- **Sprint 18** - Documentation v2 & Migration Guide
 
 **Note:** Sprint 8 (Jobs & background processing) has been descoped. Sprint 12 (Reporter & Transport Middleware) was completed as part of Sprint 4.5 (Unified Reporting).
 
@@ -78,15 +107,16 @@ Deepen the learning surface with refreshed block binding walkthroughs, Interacti
 
 ## Timeline
 
-| Phase            | Status     |
-| ---------------- | ---------- |
-| Alpha (v0.1.x)   | ✓ Complete |
-| Beta (v0.4.x)    | ✓ Complete |
-| **RC** (v0.10.x) | Planned    |
-| **v1.0**         | Planned    |
+| Phase                     | Status                                             |
+| ------------------------- | -------------------------------------------------- |
+| Alpha (v0.1.x)            | Complete                                           |
+| Beta (v0.4.x–v0.12.x)     | Active                                             |
+| PHP codegen qualification | Planned; roadmap baselined                         |
+| **RC**                    | Blocked on production truth loop and release gates |
+| **v1.0**                  | Planned                                            |
 
 ---
 
 **Get Involved**: [GitHub](https://github.com/wpkernel/wpkernel) · [Issues](https://github.com/wpkernel/wpkernel/issues) · [Contributing](https://wpkernel.dev/contributing/)
 
-_Last updated: November 5, 2025_
+_Last updated: July 31, 2026_
