@@ -328,6 +328,60 @@ describe('app-form builder (branches)', () => {
 		expect(content.match(/payload\.category =/gu)).toHaveLength(1);
 	});
 
+	it('uses the resource GET route when loading an edit record', async () => {
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+		const ir = makeIr({
+			resources: [
+				{
+					name: 'post',
+					id: 'post',
+					identity: { type: 'string', param: 'uuid' },
+					routes: [
+						{
+							method: 'GET',
+							path: '/acme/v1/posts/:uuid',
+						},
+					],
+					storage: { mode: 'wp-post' },
+				} as any,
+			],
+		});
+		ir.artifacts.surfaces = {
+			post: {
+				resource: 'post',
+				modulePath: 'path',
+				appDir: 'app',
+				generatedAppDir: 'generated/app',
+			} as any,
+		};
+
+		await createAppFormBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		expect(writes[0]?.contents).toContain(
+			'const fetchPath = `/acme/v1/posts/${editId}`;'
+		);
+	});
+
 	it('generates form without wp-post fields', async () => {
 		const { workspace, writes } = buildWorkspace();
 		const reporter = buildReporter();

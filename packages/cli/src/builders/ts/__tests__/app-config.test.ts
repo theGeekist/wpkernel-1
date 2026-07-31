@@ -143,6 +143,63 @@ describe('app-config builder', () => {
 		expect(configWrite?.contents).toContain("id: 'topics'");
 	});
 
+	it('deduplicates core, meta, and taxonomy DataViews fields', async () => {
+		const ir = makeIr();
+		const resource = makeResource({
+			name: 'application',
+			storage: {
+				mode: 'wp-post',
+				meta: {
+					status: { type: 'string' },
+					id: { type: 'string' },
+					priority: { type: 'integer' },
+				},
+				taxonomies: {
+					statusTaxonomy: { taxonomy: 'status' },
+					priorityTaxonomy: { taxonomy: 'priority' },
+				},
+			} as any,
+		});
+		ir.resources = [resource];
+		ir.artifacts.surfaces[resource.id] = {
+			resource: resource.name,
+			appDir: `/app/${resource.name}`,
+			generatedAppDir: `/generated/app/${resource.name}`,
+			pagePath: '',
+			formPath: '',
+			configPath: '',
+		};
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+
+		await createAppConfigBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content.match(/id: 'status'/gu)).toHaveLength(1);
+		expect(content.match(/id: 'priority'/gu)).toHaveLength(1);
+		expect(content.match(/'status'/gu)).toHaveLength(2);
+		expect(content.match(/'priority'/gu)).toHaveLength(2);
+	});
+
 	it('handles resources without storage gracefully', async () => {
 		const ir = makeIr();
 		const resource = makeResource({ name: 'ghost', storage: undefined });

@@ -105,7 +105,7 @@ export function JobQuickForm(props: JobFormProps) {
 			if (!isEdit || !editId) { setData({ ...defaultJobForm }); return; }
 			try {
 				setIsLoading(true); setError(null);
-				const fetchPath = `//v1/${editId}`;
+				const fetchPath = `/acme/v1/jobs/${editId}`;
 				const { data } = await wpkFetch({ path: fetchPath, method: 'GET' }) as { data: Partial<JobEntity> };
 				if (aborted) return;
 				const response = data;

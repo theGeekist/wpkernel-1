@@ -81,7 +81,7 @@ export function ApplicationQuickForm(props: ApplicationFormProps) {
 			if (!isEdit || !editId) { setData({ ...defaultApplicationForm }); return; }
 			try {
 				setIsLoading(true); setError(null);
-				const fetchPath = `//v1/${editId}`;
+				const fetchPath = `/acme/v1/applications/${editId}`;
 				const { data } = await wpkFetch({ path: fetchPath, method: 'GET' }) as { data: Partial<ApplicationEntity> };
 				if (aborted) return;
 				const response = data;

@@ -9,14 +9,7 @@ import type { ResourceDescriptor } from '../types';
 import type { IRArtifactsPlan, IRResource, IRv1 } from '../../ir/publicTypes';
 import { toPascalCase, toCamelCase } from '../../utils';
 
-type AppFormDescriptor = ResourceDescriptor & {
-	config?: {
-		namespace?: string;
-		routes?: {
-			get?: { path?: string };
-		};
-	};
-};
+type AppFormDescriptor = ResourceDescriptor;
 
 type WpPostStorage = NonNullable<IRResource['storage']> & {
 	readonly mode: 'wp-post';
@@ -131,7 +124,6 @@ async function runAppFormBuilder(options: BuilderApplyOptions): Promise<void> {
 		populateAppFormSourceFile({
 			sourceFile,
 			resource,
-			descriptor,
 			pascalName,
 			formInputType,
 			entityType,
@@ -168,7 +160,6 @@ export function createAppFormBuilder() {
 type PopulateAppFormParams = {
 	sourceFile: SourceFile;
 	resource: IRResource;
-	descriptor: AppFormDescriptor;
 	pascalName: string;
 	formInputType: string;
 	entityType: string;
@@ -180,7 +171,6 @@ type PopulateAppFormParams = {
 function populateAppFormSourceFile({
 	sourceFile,
 	resource,
-	descriptor,
 	pascalName,
 	formInputType,
 	entityType,
@@ -208,7 +198,6 @@ function populateAppFormSourceFile({
 		entityType,
 		formInputType,
 		resource,
-		descriptor,
 	});
 	addActionsBuilder(sourceFile, buildActionsName, entityType);
 }
@@ -633,7 +622,6 @@ type QuickFormParams = {
 	entityType: string;
 	formInputType: string;
 	resource: IRResource;
-	descriptor: AppFormDescriptor;
 };
 
 function writeQuickFormComponent({
@@ -643,9 +631,8 @@ function writeQuickFormComponent({
 	entityType,
 	formInputType,
 	resource,
-	descriptor,
 }: QuickFormParams): void {
-	const fetchInfo = resolveFetchInfo(descriptor);
+	const fetchInfo = resolveFetchInfo(resource);
 
 	sourceFile.addFunction({
 		name: quickFormName,
@@ -807,15 +794,24 @@ function writeFieldDependencies(
 }
 
 type FetchInfo = {
-	namespace: string;
-	pathSegment: string;
+	pathTemplate: string;
 };
 
-function resolveFetchInfo(descriptor: AppFormDescriptor): FetchInfo {
-	const namespace = (descriptor.config?.namespace ?? '').replace(/\\/g, '/');
-	const getPath = descriptor.config?.routes?.get?.path ?? '';
-	const pathSegment = getPath.split('/').pop()?.replace(':id', '') ?? '';
-	return { namespace, pathSegment };
+function resolveFetchInfo(resource: IRResource): FetchInfo {
+	const identityParam = resource.identity?.param ?? 'id';
+	const placeholders = [`:${identityParam}`, `{${identityParam}}`];
+	const getRoute = (resource.routes ?? []).find(
+		(route) =>
+			route.method.toUpperCase() === 'GET' &&
+			placeholders.some((placeholder) => route.path.includes(placeholder))
+	);
+	const routePath = getRoute?.path ?? `/${resource.name}/:${identityParam}`;
+	const pathTemplate = placeholders.reduce(
+		(path, placeholder) => path.replace(placeholder, '${editId}'),
+		routePath
+	);
+
+	return { pathTemplate };
 }
 
 function writeLoadEffect(
@@ -836,7 +832,7 @@ function writeLoadEffect(
 			writer.indent(() => {
 				writer.writeLine('setIsLoading(true); setError(null);');
 				writer.writeLine(
-					`const fetchPath = \`/${fetchInfo.namespace}/v1/${fetchInfo.pathSegment}\${editId}\`;`
+					`const fetchPath = \`${fetchInfo.pathTemplate}\`;`
 				);
 				writer.writeLine(
 					`const { data } = await wpkFetch({ path: fetchPath, method: 'GET' }) as { data: Partial<${entityType}> };`

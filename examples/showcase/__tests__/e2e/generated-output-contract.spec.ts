@@ -5,10 +5,23 @@ import { expect, test } from '@playwright/test';
 
 const showcaseRoot = resolve(process.cwd(), 'examples/showcase');
 
-test('old generator output loads controllers from the current layout', async () => {
-	const [pluginLoader, jobShim] = await Promise.all([
+test('generated output uses the applied controller layout and concrete edit routes', async () => {
+	const [pluginLoader, jobShim, jobForm, applicationForm, applicationConfig] =
+		await Promise.all([
 		readFile(resolve(showcaseRoot, 'plugin.php'), 'utf8'),
 		readFile(resolve(showcaseRoot, 'inc/Rest/JobController.php'), 'utf8'),
+		readFile(
+			resolve(showcaseRoot, 'src/app/job/@acme/jobs-admin/form.tsx'),
+			'utf8'
+		),
+		readFile(
+			resolve(showcaseRoot, 'src/app/application/form.tsx'),
+			'utf8'
+		),
+		readFile(
+			resolve(showcaseRoot, 'src/app/application/config.tsx'),
+			'utf8'
+		),
 	]);
 
 	expect
@@ -24,4 +37,12 @@ test('old generator output loads controllers from the current layout', async () 
 		.toContain(
 			"require_once(__DIR__ . '/../../.wpk/generate/php/Rest/JobController.php')"
 		);
+	expect.soft(jobForm).toContain(
+		'const fetchPath = `/acme/v1/jobs/${editId}`;'
+	);
+	expect.soft(applicationForm).toContain(
+		'const fetchPath = `/acme/v1/applications/${editId}`;'
+	);
+	expect(applicationConfig.match(/id: 'status'/gu)).toHaveLength(1);
+	expect(applicationConfig.match(/'status'/gu)).toHaveLength(2);
 });

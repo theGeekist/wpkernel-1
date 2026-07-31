@@ -80,7 +80,7 @@ export const jobDataViewConfig: ResourceDataViewConfig<Job, JobQuery> = {
 	],
 	defaultView: {
 		type: 'table',
-		fields: ['title', 'status', 'salary_min', 'salary_max', 'location', 'acme_job_department', 'acme_job_location', 'date',
+		fields: ['title', 'salary_min', 'salary_max', 'location', 'acme_job_department', 'acme_job_location', 'status', 'date',
 		],
 	},
 	mapQuery: (view): JobQuery => {

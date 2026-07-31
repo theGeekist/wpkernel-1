@@ -175,15 +175,17 @@ function generateFields(
 	writer: CodeBlockWriter,
 	resource: IRResource,
 	namespace: string
-) {
+): void {
 	const storage = resource.storage;
 	if (!storage) {
 		return;
 	}
+	const claimed = new Set<string>();
 
 	// ID
 	if (resource.identity?.param === 'id' || storage.mode === 'wp-post') {
 		writeField(writer, 'id', 'ID', 'integer', namespace, true, true);
+		claimed.add('id');
 	}
 
 	if (storage.mode === 'wp-post') {
@@ -198,12 +200,23 @@ function generateFields(
 				false,
 				"({ item }) => item.title || ''"
 			); // Accessor for title
+			claimed.add('title');
 		}
-		writeField(writer, 'status', 'Status', 'text', namespace, true, false);
-		writeField(writer, 'date', 'Date', 'datetime', namespace, true, true);
+		claimed.add('date');
 
-		writeMetaFields(writer, storage.meta, namespace);
-		writeTaxonomyFields(writer, storage.taxonomies, namespace);
+		const metaFields = collectMetaFieldEntries(storage.meta, claimed);
+		const taxonomyFields = collectTaxonomyFieldEntries(
+			storage.taxonomies,
+			claimed
+		);
+		const hasImplicitStatus = claimField(claimed, 'status');
+
+		if (hasImplicitStatus) {
+			writeField(writer, 'status', 'Status', 'text', namespace, true, false);
+		}
+		writeField(writer, 'date', 'Date', 'datetime', namespace, true, true);
+		writeMetaFields(writer, metaFields, namespace);
+		writeTaxonomyFields(writer, taxonomyFields, namespace);
 	}
 }
 
@@ -243,15 +256,10 @@ function mapMetaTypeToFieldType(type: string): string {
 
 function writeMetaFields(
 	writer: CodeBlockWriter,
-	meta: Record<string, ResourcePostMetaDescriptor> | undefined,
+	meta: readonly [string, ResourcePostMetaDescriptor][],
 	namespace: string
 ): void {
-	if (!meta) {
-		return;
-	}
-
-	for (const [key, descriptor] of Object.entries(meta)) {
-		const metaDesc = descriptor as ResourcePostMetaDescriptor;
+	for (const [key, metaDesc] of meta) {
 		const type = mapMetaTypeToFieldType(metaDesc.type);
 		const label = toTitleCase(key);
 		writeField(writer, key, label, type, namespace, true, true);
@@ -260,14 +268,10 @@ function writeMetaFields(
 
 function writeTaxonomyFields(
 	writer: CodeBlockWriter,
-	taxonomies: Record<string, { taxonomy?: string }> | undefined,
+	taxonomies: readonly [string, { taxonomy?: string }][],
 	namespace: string
 ): void {
-	if (!taxonomies) {
-		return;
-	}
-
-	for (const [key, config] of Object.entries(taxonomies)) {
+	for (const [key, config] of taxonomies) {
 		const taxonomy = config?.taxonomy ?? key;
 		const label = toTitleCase(taxonomy.replace(/^(acme_|wpk_)/, ''));
 
@@ -286,19 +290,50 @@ function writeTaxonomyFields(
 	}
 }
 
+function collectMetaFieldEntries(
+	meta: Record<string, ResourcePostMetaDescriptor> | undefined,
+	claimed: Set<string>
+): Array<[string, ResourcePostMetaDescriptor]> {
+	return Object.entries(meta ?? {}).filter(([key]) => claimField(claimed, key)) as Array<
+		[string, ResourcePostMetaDescriptor]
+	>;
+}
+
+function collectTaxonomyFieldEntries(
+	taxonomies: Record<string, { taxonomy?: string }> | undefined,
+	claimed: Set<string>
+): Array<[string, { taxonomy?: string }]> {
+	return Object.entries(taxonomies ?? {}).filter(([key, config]) =>
+		claimField(claimed, config?.taxonomy ?? key)
+	) as Array<[string, { taxonomy?: string }]>;
+}
+
+function claimField(claimed: Set<string>, field: string): boolean {
+	if (!field || claimed.has(field)) {
+		return false;
+	}
+	claimed.add(field);
+	return true;
+}
+
 function getVisibleFields(resource: IRResource): string[] {
 	const fields: string[] = [];
+	const claimed = new Set<string>();
+	const add = (field: string) => {
+		if (claimField(claimed, field)) {
+			fields.push(field);
+		}
+	};
 	const storage = resource.storage;
 
 	if (storage?.mode === 'wp-post') {
 		if (storage.supports?.includes('title')) {
-			fields.push('title');
+			add('title');
 		}
-		fields.push('status');
 
 		if (storage.meta) {
 			// Add first few meta fields
-			fields.push(...Object.keys(storage.meta).slice(0, 3));
+			Object.keys(storage.meta).slice(0, 3).forEach(add);
 		}
 
 		if (storage.taxonomies) {
@@ -306,10 +341,11 @@ function getVisibleFields(resource: IRResource): string[] {
 			const taxKeys = Object.values(storage.taxonomies)
 				.map((t) => t?.taxonomy)
 				.filter(Boolean) as string[];
-			fields.push(...taxKeys.slice(0, 2));
+			taxKeys.slice(0, 2).forEach(add);
 		}
 
-		fields.push('date');
+		add('status');
+		add('date');
 	}
 
 	return fields;

@@ -12,13 +12,6 @@ export const applicationDataViewConfig: ResourceDataViewConfig<Application, Appl
 			enableHiding: true,
 		},
 		{
-			id: 'status',
-			label: __('Status', 'acme-jobs'),
-			type: 'text',
-			enableSorting: true,
-			enableHiding: false,
-		},
-		{
 			id: 'date',
 			label: __('Date', 'acme-jobs'),
 			type: 'datetime',
@@ -49,7 +42,7 @@ export const applicationDataViewConfig: ResourceDataViewConfig<Application, Appl
 	],
 	defaultView: {
 		type: 'table',
-		fields: ['status', 'job_id', 'cv_attachment_id', 'status', 'date',
+		fields: ['job_id', 'cv_attachment_id', 'status', 'date',
 		],
 	},
 	mapQuery: (view): ApplicationQuery => {
