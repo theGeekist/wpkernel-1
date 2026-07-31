@@ -12,10 +12,8 @@ adapters and extensions riding on the shared `@wpkernel/pipeline` runtime.
 ## Quick links
 
 - [Package guide](../../docs/packages/cli.md)
-- [CLI migration phases](../../docs/cli-migration-phases.md)
-- [CLI MVP plan](../../docs/internal/cli-mvp-plan.md)
+- [WPKernel roadmap](../../docs/contributing/roadmap.md)
 - [API reference](../../docs/api/@wpkernel/cli/README.md)
-- [PHP codemod roadmap](../../docs/internal/php-json-ast-codemod-plan.md)
 
 ## Installation
 
@@ -75,9 +73,7 @@ cache invalidation and capability checks stay consistent.
 
 - Built on `@wpkernel/pipeline` helpers for deterministic execution, diagnostics, and rollback.
 - Adapters can register pipeline extensions that queue files or mutate the IR via `updateIr()`.
-- The CLI threads PHP codemod configuration into `@wpkernel/php-json-ast` helpers; consult the
-  [codemod plan](../../docs/internal/php-json-ast-codemod-plan.md) before enabling visitor stacks
-  or diagnostics in new pipelines.
+- The CLI threads PHP codemod configuration into `@wpkernel/php-json-ast` helpers.
 - `adapters.php` may return a `codemods` manifest (`files`, optional `configurationPath`, diagnostics/driver overrides); the builder calls `createPhpCodemodIngestionHelper` to run `runPhpCodemodIngestion`, emit `.codemod.*` artefacts, and requeue the transformed programs before writing.
 
 ## Validation & test utilities

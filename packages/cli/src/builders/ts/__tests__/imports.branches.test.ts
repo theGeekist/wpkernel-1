@@ -4,6 +4,7 @@ import {
 	buildModuleSpecifier,
 	findWorkspaceModule,
 	MODULE_SOURCE_EXTENSIONS,
+	prepareGeneratedModulePath,
 } from '../imports';
 import { makeWorkspaceMock } from '@cli-tests/workspace.test-support';
 
@@ -120,6 +121,44 @@ describe('imports (branches)', () => {
 
 			const result = await findWorkspaceModule(workspace, 'some/path');
 			expect(result).toBe('some/path.tsx');
+		});
+	});
+
+	describe('prepareGeneratedModulePath', () => {
+		it('removes a legacy bare module file before writing an index module', async () => {
+			const workspace = workspaceMock();
+			const legacyPath = 'generated-entry';
+			workspace.glob = jest
+				.fn()
+				.mockResolvedValueOnce([legacyPath])
+				.mockResolvedValueOnce([]);
+			workspace.rm = jest.fn(async () => undefined);
+
+			await prepareGeneratedModulePath(
+				workspace,
+				path.join(legacyPath, 'index.tsx')
+			);
+
+			expect(workspace.rm).toHaveBeenCalledWith(legacyPath, {
+				recursive: true,
+			});
+		});
+
+		it('preserves an existing module directory', async () => {
+			const workspace = workspaceMock();
+			const legacyPath = 'generated-entry';
+			workspace.glob = jest
+				.fn()
+				.mockResolvedValueOnce([legacyPath])
+				.mockResolvedValueOnce([path.join(legacyPath, 'index.tsx')]);
+			workspace.rm = jest.fn(async () => undefined);
+
+			await prepareGeneratedModulePath(
+				workspace,
+				path.join(legacyPath, 'index.tsx')
+			);
+
+			expect(workspace.rm).not.toHaveBeenCalled();
 		});
 	});
 

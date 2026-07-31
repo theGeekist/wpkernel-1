@@ -250,6 +250,84 @@ describe('app-form builder (branches)', () => {
 		);
 	});
 
+	it('lets explicit meta status replace the implicit core status field', async () => {
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+		const ir = makeIr({
+			resources: [
+				{
+					name: 'post',
+					id: 'post',
+					storage: {
+						mode: 'wp-post',
+						supports: ['title'],
+						meta: {
+							id: { type: 'string' },
+							title: { type: 'string' },
+							status: { type: 'string' },
+							rating: { type: 'number' },
+						},
+						taxonomies: {
+							statusTaxonomy: { taxonomy: 'status' },
+							ratingTaxonomy: { taxonomy: 'rating' },
+							category: { taxonomy: 'category' },
+							categoryDuplicate: { taxonomy: 'category' },
+						},
+					},
+				} as any,
+			],
+		});
+		ir.artifacts.surfaces = {
+			post: {
+				resource: 'post',
+				modulePath: 'path',
+				appDir: 'app',
+				generatedAppDir: 'generated/app',
+			} as any,
+		};
+
+		await createAppFormBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content.match(/status: undefined,/gu)).toHaveLength(1);
+		expect(content).not.toContain("status: 'publish',");
+		expect(content).not.toContain('meta.id');
+		expect(content).not.toContain('meta.title');
+		expect(content).toContain('meta.status = input.status;');
+		expect(content).not.toContain('payload.status = input.status;');
+		expect(content).not.toContain('statusField<PostFormInput>');
+		expect(
+			content.match(/textField<PostFormInput>\('status'/gu)
+		).toHaveLength(1);
+		expect(content).toContain('meta.rating = input.rating;');
+		expect(content).not.toContain("useTaxonomyOptions('status.list')");
+		expect(content).not.toContain("useTaxonomyOptions('rating.list')");
+		expect(
+			content.match(/selectField<PostFormInput>\('category'/gu)
+		).toHaveLength(1);
+		expect(content.match(/category: undefined,/gu)).toHaveLength(1);
+		expect(content.match(/payload\.category =/gu)).toHaveLength(1);
+	});
+
 	it('generates form without wp-post fields', async () => {
 		const { workspace, writes } = buildWorkspace();
 		const reporter = buildReporter();

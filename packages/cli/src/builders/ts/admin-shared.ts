@@ -28,6 +28,41 @@ export interface AdminScreenResourceDescriptor extends ResourceDescriptor {
 	readonly namespace?: string;
 	readonly menu?: IRUiResourceDescriptor['menu']; // reuse IR shape instead of `{ slug?: string }`
 }
+
+type ResourceWithAdminDataViews = {
+	readonly ui?: {
+		readonly admin?: {
+			readonly view?: string;
+			readonly dataviews?: unknown;
+		};
+	};
+};
+
+export function resolveAdminDataViews(
+	descriptor: ResourceDescriptor
+): AdminDataViewsWithInteractivity | undefined {
+	const configured =
+		descriptor.dataviews ??
+		(descriptor.resource as ResourceWithAdminDataViews | undefined)?.ui
+			?.admin?.dataviews ??
+		(descriptor as ResourceWithAdminDataViews).ui?.admin?.dataviews;
+
+	return configured && typeof configured === 'object'
+		? (configured as AdminDataViewsWithInteractivity)
+		: undefined;
+}
+
+export function usesAdminDataViews(descriptor: ResourceDescriptor): boolean {
+	const admin =
+		(descriptor.resource as ResourceWithAdminDataViews | undefined)?.ui
+			?.admin ?? (descriptor as ResourceWithAdminDataViews).ui?.admin;
+	const view = descriptor.adminView ?? admin?.view;
+	return (
+		Boolean(resolveAdminDataViews(descriptor)) ||
+		['dataviews', 'dataview'].includes(view ?? '')
+	);
+}
+
 const COMPONENT_EXTENSION_PATTERN = /\.(?:[tj]sx?|mjs|cjs)$/iu;
 function ensurePascalIdentifier(value: string, fallback: string): string {
 	const candidate = toPascalCase(value);
@@ -61,9 +96,7 @@ function slugifyRouteSegment(value: string, fallback: string): string {
 export function resolveMenuSlug(
 	descriptor: AdminScreenResourceDescriptor
 ): string | undefined {
-	const dataviews = descriptor.dataviews as
-		| AdminDataViewsWithInteractivity
-		| undefined;
+	const dataviews = resolveAdminDataViews(descriptor);
 	const screenConfig = dataviews?.screen ?? {};
 	const menu = descriptor.menu;
 	return screenConfig.menu?.slug ?? menu?.slug ?? undefined;
@@ -72,9 +105,7 @@ export function resolveMenuSlug(
 export function resolveAdminScreenRoute(
 	descriptor: AdminScreenResourceDescriptor
 ): string {
-	const dataviews = descriptor.dataviews as
-		| AdminDataViewsWithInteractivity
-		| undefined;
+	const dataviews = resolveAdminDataViews(descriptor);
 	const screenConfig = dataviews?.screen ?? {};
 	const configuredRoute = screenConfig.route;
 	const menuSlug = resolveMenuSlug(descriptor);
@@ -97,9 +128,7 @@ export function resolveAdminScreenRoute(
 export function resolveAdminScreenComponentMetadata(
 	descriptor: AdminScreenResourceDescriptor
 ): AdminScreenComponentMetadata {
-	const screenConfig =
-		(descriptor.dataviews as AdminDataViewsWithInteractivity | undefined)
-			?.screen ?? {};
+	const screenConfig = resolveAdminDataViews(descriptor)?.screen ?? {};
 	const defaultIdentifier = `${toPascalCase(descriptor.name)}AdminScreen`;
 
 	// Default to 'page' for the filename, mimicking Next.js/Showcase conventions
@@ -153,9 +182,7 @@ export function resolveAdminScreenComponentMetadata(
 export function resolveInteractivityFeature(
 	descriptor: ResourceDescriptor
 ): string {
-	const dataviews = descriptor.dataviews as
-		| AdminDataViewsWithInteractivity
-		| undefined;
+	const dataviews = resolveAdminDataViews(descriptor);
 	const feature = dataviews?.interactivity?.feature;
 
 	if (typeof feature === 'string') {

@@ -41,11 +41,41 @@ describe('ui fragment (branches)', () => {
 		const ui = await apply([
 			{
 				name: 'res1',
-				ui: { admin: { view: 'dataview' } }, // menu missing
+				ui: { admin: { view: 'dataviews' } }, // menu missing
 			},
 		]);
 		expect(ui.resources).toHaveLength(1);
 		expect(ui.resources[0].menu).toBeUndefined();
+	});
+
+	it('detects canonical dataviews metadata without an explicit view', async () => {
+		const ui = await apply([
+			{
+				name: 'res1',
+				ui: {
+					admin: {
+						dataviews: {
+							screen: {
+								menu: {
+									slug: 'canonical',
+									title: 'Canonical',
+								},
+							},
+						},
+					},
+				},
+			},
+		]);
+
+		expect(ui.resources).toEqual([
+			{
+				resource: 'res1',
+				menu: {
+					slug: 'canonical',
+					title: 'Canonical',
+				},
+			},
+		]);
 	});
 
 	it('handles empty menu config (returns undefined)', async () => {

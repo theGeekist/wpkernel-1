@@ -82,6 +82,23 @@ describe('createUiEntryBuilder', () => {
 		expect(contents).toContain('configureWPKernel');
 		expect(contents).toContain('adminScreens');
 		expect(contents).toContain('jobsAdminScreenRoute');
+		expect(contents).toContain(
+			'const Component = adminScreens[screenKey];'
+		);
+		expect(contents).toContain('if (!Component) return;');
+		expect(contents).toMatch(
+			/<Component\s+adminStore=\{\s*dataStore\s*\}\s*\/>/u
+		);
+		expect(contents).not.toContain('<component');
 		expect(contents).toContain('renderRoot');
+
+		const runtimePath = ir.artifacts.runtime?.runtime.generated;
+		const runtimeWrite = (workspace.write as jest.Mock).mock.calls.find(
+			([file]) => file === runtimePath
+		);
+		expect(runtimeWrite).toBeDefined();
+		const runtimeContents = runtimeWrite?.[1] as string;
+		expect(runtimeContents).toContain('export const capabilities');
+		expect(runtimeContents).toContain('export const adminScreenRuntime');
 	});
 });

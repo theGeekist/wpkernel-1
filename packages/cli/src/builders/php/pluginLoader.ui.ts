@@ -1,6 +1,28 @@
 import type { IRv1 } from '../../ir/publicTypes';
 import type { PluginLoaderUiConfig } from './types';
 
+type DataViewsConfig = {
+	readonly preferencesKey?: unknown;
+};
+
+function resolvePreferencesKey(
+	ir: IRv1,
+	resourceName: string,
+	namespace: string
+): string {
+	const resource = ir.resources.find(
+		(candidate) => candidate.name === resourceName
+	);
+	const dataviews = resource?.ui?.admin?.dataviews as
+		| DataViewsConfig
+		| undefined;
+	const configured = dataviews?.preferencesKey;
+
+	return typeof configured === 'string' && configured.trim().length > 0
+		? configured.trim()
+		: `${namespace}/dataviews/${resourceName}`;
+}
+
 export function buildUiConfig(ir: IRv1): PluginLoaderUiConfig | null {
 	const surfaces =
 		ir.artifacts.surfaces ??
@@ -28,7 +50,11 @@ export function buildUiConfig(ir: IRv1): PluginLoaderUiConfig | null {
 		resources: resourcesWithMenu.map((surface) => ({
 			resource: surface.resource,
 			menu: surface.menu,
-			preferencesKey: surface.resource,
+			preferencesKey: resolvePreferencesKey(
+				ir,
+				surface.resource,
+				loader.namespace
+			),
 		})),
 	};
 }

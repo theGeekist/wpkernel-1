@@ -26,6 +26,10 @@ export async function addPluginLoaderInstruction({
 }
 
 type PluginIr = NonNullable<BuilderApplyOptions['input']['ir']>;
+type ResourceControllerPlan = {
+	readonly className: string;
+	readonly appliedPath: string;
+};
 
 export async function emitPluginLoader({
 	options,
@@ -51,10 +55,24 @@ export async function emitPluginLoader({
 		pluginLoaderPath,
 	});
 
-	const resourceClassNames = buildResourceClassNames(ir);
+	const resourceControllers = buildResourceControllers(ir).map(
+		(controller) => ({
+			className: controller.className,
+			appliedRequirePath: buildAppliedRequirePath(
+				pluginLoaderPath,
+				controller.appliedPath
+			),
+		})
+	);
 	const uiConfig = buildUiConfig(ir);
-	const phpGeneratedPath = resolvePhpGeneratedPath(ir);
-	const generatedLoaderPath = path.posix.join(phpGeneratedPath, 'plugin.php');
+	const phpGeneratedPath = buildLoaderRelativePath(
+		pluginLoaderPath,
+		paths.phpGenerated
+	);
+	const generatedLoaderPath = path.posix.join(
+		paths.phpGenerated,
+		path.posix.basename(pluginLoaderPath)
+	);
 
 	const generatedContents = await readGeneratedLoader({
 		context,
@@ -65,7 +83,10 @@ export async function emitPluginLoader({
 		ir,
 		uiConfig,
 		phpGeneratedPath,
-		resourceClassNames,
+		resourceClassNames: resourceControllers.map(
+			(controller) => controller.className
+		),
+		resourceControllers,
 		context,
 		prettyPrinter,
 		generatedLoaderPath,
@@ -105,22 +126,60 @@ export async function emitPluginLoader({
 	} satisfies PlanInstruction;
 }
 
-function buildResourceClassNames(ir: PluginIr): string[] {
+function buildResourceControllers(ir: PluginIr): ResourceControllerPlan[] {
+	const phpPlan = ir.artifacts.php;
 	return ir.resources.map((resource) => {
-		if (resource.controllerClass) {
-			return resource.controllerClass;
-		}
 		const pascal = toPascalCase(resource.name);
-		return `${ir.php.namespace}\\Generated\\Rest\\${pascal}Controller`;
+		const fallbackClassName = `${pascal}Controller`;
+		const planned = phpPlan.controllers[resource.id];
+		const className = planned
+			? qualifyClassName(planned.namespace, planned.className)
+			: (resource.controllerClass ??
+				`${ir.php.namespace}\\Rest\\${fallbackClassName}`);
+		const appliedPath =
+			planned?.appliedPath ??
+			path.posix.join(
+				normaliseDirectory(ir.php.autoload),
+				'Rest',
+				`${fallbackClassName}.php`
+			);
+
+		return { className, appliedPath };
 	});
 }
 
-function resolvePhpGeneratedPath(ir: PluginIr): string {
-	const pluginLoaderPath = ir.artifacts?.php?.pluginLoaderPath;
-	if (pluginLoaderPath) {
-		return path.posix.dirname(pluginLoaderPath);
+function qualifyClassName(namespace: string, className: string): string {
+	const normalisedClass = className.replace(/^\\+/, '');
+	if (normalisedClass.includes('\\')) {
+		return normalisedClass;
 	}
-	return ir.php.outputDir;
+
+	return [namespace.replace(/\\+$/, ''), normalisedClass]
+		.filter(Boolean)
+		.join('\\');
+}
+
+function normaliseDirectory(value: string): string {
+	return value.replace(/\\/g, '/').replace(/^\.\/|\/$/g, '');
+}
+
+function buildLoaderRelativePath(
+	pluginLoaderPath: string,
+	targetPath: string
+): string {
+	return path.posix.relative(
+		path.posix.dirname(pluginLoaderPath),
+		targetPath
+	);
+}
+
+function buildAppliedRequirePath(
+	pluginLoaderPath: string,
+	controllerPath: string
+): string {
+	const loaderDirectory = path.posix.dirname(pluginLoaderPath);
+	const relativePath = path.posix.relative(loaderDirectory, controllerPath);
+	return relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
 }
 
 async function readExistingPlugin({
@@ -152,6 +211,7 @@ async function resolvePluginLoaderCode({
 	uiConfig,
 	phpGeneratedPath,
 	resourceClassNames,
+	resourceControllers,
 	context,
 	prettyPrinter,
 	generatedLoaderPath,
@@ -161,6 +221,10 @@ async function resolvePluginLoaderCode({
 	uiConfig: ReturnType<typeof buildUiConfig>;
 	phpGeneratedPath: string;
 	resourceClassNames: string[];
+	resourceControllers: ReadonlyArray<{
+		readonly className: string;
+		readonly appliedRequirePath: string;
+	}>;
 	context: BuilderApplyOptions['context'];
 	prettyPrinter: ReturnType<typeof buildPhpPrettyPrinter>;
 	generatedLoaderPath: string;
@@ -176,6 +240,7 @@ async function resolvePluginLoaderCode({
 		sanitizedNamespace: ir.meta.sanitizedNamespace,
 		plugin: ir.meta.plugin,
 		resourceClassNames,
+		resourceControllers,
 		phpGeneratedPath,
 	};
 

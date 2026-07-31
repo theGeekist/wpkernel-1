@@ -18,6 +18,26 @@ type AppFormDescriptor = ResourceDescriptor & {
 	};
 };
 
+type WpPostStorage = NonNullable<IRResource['storage']> & {
+	readonly mode: 'wp-post';
+};
+
+type PostMetaField = {
+	readonly key: string;
+	readonly descriptor: { readonly type?: string };
+};
+
+type PostTaxonomyField = {
+	readonly key: string;
+};
+
+type PostFormFields = {
+	readonly hasTitle: boolean;
+	readonly hasImplicitStatus: boolean;
+	readonly meta: readonly PostMetaField[];
+	readonly taxonomies: readonly PostTaxonomyField[];
+};
+
 function hasAppFormContext({
 	input,
 	reporter,
@@ -277,28 +297,21 @@ function addDefaultForm(
 					writer.indent(() => {
 						if (resource.storage?.mode === 'wp-post') {
 							const storage = resource.storage;
+							const fields = classifyPostFormFields(storage);
 
-							if (storage.supports?.includes('title')) {
+							if (fields.hasTitle) {
 								writer.writeLine("title: '',");
 							}
-							writer.writeLine("status: 'publish',");
-
-							if (storage.meta) {
-								for (const key of Object.keys(storage.meta)) {
-									writer.writeLine(`${key}: undefined,`);
-								}
+							if (fields.hasImplicitStatus) {
+								writer.writeLine("status: 'publish',");
 							}
 
-							if (storage.taxonomies) {
-								for (const [key, config] of Object.entries(
-									storage.taxonomies
-								)) {
-									const taxConfig = config as {
-										taxonomy?: string;
-									};
-									const taxKey = taxConfig.taxonomy ?? key;
-									writer.writeLine(`${taxKey}: undefined,`);
-								}
+							for (const field of fields.meta) {
+								writer.writeLine(`${field.key}: undefined,`);
+							}
+
+							for (const field of fields.taxonomies) {
+								writer.writeLine(`${field.key}: undefined,`);
 							}
 						}
 					});
@@ -349,34 +362,29 @@ function addPayloadBuilder(
 
 			if (resource.storage?.mode === 'wp-post') {
 				const storage = resource.storage;
+				const fields = classifyPostFormFields(storage);
 
-				if (storage.supports?.includes('title')) {
+				if (fields.hasTitle) {
 					writer.writeLine(
 						'if (input.title) payload.title = input.title;'
 					);
 				}
-				writer.writeLine(
-					'if (input.status) payload.status = input.status;'
-				);
-
-				if (storage.meta) {
-					for (const key of Object.keys(storage.meta)) {
-						writer.writeLine(
-							`if (input.${key} !== undefined) meta.${key} = input.${key};`
-						);
-					}
+				if (fields.hasImplicitStatus) {
+					writer.writeLine(
+						'if (input.status) payload.status = input.status;'
+					);
 				}
 
-				if (storage.taxonomies) {
-					for (const [key, config] of Object.entries(
-						storage.taxonomies
-					)) {
-						const taxConfig = config as { taxonomy?: string };
-						const taxKey = taxConfig.taxonomy ?? key;
-						writer.writeLine(
-							`if (input.${taxKey}) payload.${taxKey} = [input.${taxKey}];`
-						);
-					}
+				for (const field of fields.meta) {
+					writer.writeLine(
+						`if (input.${field.key} !== undefined) meta.${field.key} = input.${field.key};`
+					);
+				}
+
+				for (const field of fields.taxonomies) {
+					writer.writeLine(
+						`if (input.${field.key}) payload.${field.key} = [input.${field.key}];`
+					);
 				}
 			}
 
@@ -512,39 +520,35 @@ function writeFormInputType(
 
 function writePostFormInputFields(
 	writer: CodeBlockWriter,
-	storage: NonNullable<IRResource['storage']> & { mode: 'wp-post' }
+	storage: WpPostStorage
 ): void {
-	if (storage.supports?.includes('title')) {
+	const fields = classifyPostFormFields(storage);
+	if (fields.hasTitle) {
 		writer.writeLine('title?: string;');
 	}
-	writer.writeLine('status?: string;');
-	writeMetaFields(writer, storage.meta);
-	writeTaxonomyInputs(writer, storage.taxonomies);
+	if (fields.hasImplicitStatus) {
+		writer.writeLine('status?: string;');
+	}
+	writeMetaFields(writer, fields.meta);
+	writeTaxonomyInputs(writer, fields.taxonomies);
 }
 
 function writeMetaFields(
 	writer: CodeBlockWriter,
-	meta: Record<string, { type?: string }> | undefined
+	fields: readonly PostMetaField[]
 ): void {
-	if (!meta) {
-		return;
-	}
-	for (const [key, desc] of Object.entries(meta)) {
-		const metaType = mapMetaType(desc);
-		writer.writeLine(`${key}?: ${metaType};`);
+	for (const field of fields) {
+		const metaType = mapMetaType(field.descriptor);
+		writer.writeLine(`${field.key}?: ${metaType};`);
 	}
 }
 
 function writeTaxonomyInputs(
 	writer: CodeBlockWriter,
-	taxonomies: Record<string, { taxonomy?: string }> | undefined
+	fields: readonly PostTaxonomyField[]
 ): void {
-	if (!taxonomies) {
-		return;
-	}
-	for (const [key, config] of Object.entries(taxonomies)) {
-		const taxKey = config?.taxonomy ?? key;
-		writer.writeLine(`${taxKey}?: number; // Single select for now`);
+	for (const field of fields) {
+		writer.writeLine(`${field.key}?: number; // Single select for now`);
 	}
 }
 
@@ -556,6 +560,70 @@ function mapMetaType(desc: { type?: string }): 'number' | 'boolean' | 'string' {
 		return 'boolean';
 	}
 	return 'string';
+}
+
+/**
+ * Assign each form key to one source. Identity and supported title are
+ * reserved; explicit metadata and taxonomy fields take precedence over the
+ * implicit publish/draft status fallback.
+ *
+ * @param storage - WordPress post storage configuration to classify.
+ * @returns Deduplicated form fields grouped by semantic source.
+ */
+function classifyPostFormFields(storage: WpPostStorage): PostFormFields {
+	const hasTitle = storage.supports?.includes('title') ?? false;
+	const claimed = new Set<string>(['id']);
+	if (hasTitle) {
+		claimed.add('title');
+	}
+
+	const meta = collectPostMetaFields(storage, claimed);
+	const taxonomies = collectPostTaxonomyFields(storage, claimed);
+	const hasImplicitStatus = claimPostFormField(claimed, 'status');
+
+	return {
+		hasTitle,
+		hasImplicitStatus,
+		meta,
+		taxonomies,
+	};
+}
+
+function collectPostMetaFields(
+	storage: WpPostStorage,
+	claimed: Set<string>
+): PostMetaField[] {
+	const meta: PostMetaField[] = [];
+	for (const [key, descriptor] of Object.entries(storage.meta ?? {})) {
+		if (!claimPostFormField(claimed, key)) {
+			continue;
+		}
+		meta.push({ key, descriptor });
+	}
+	return meta;
+}
+
+function collectPostTaxonomyFields(
+	storage: WpPostStorage,
+	claimed: Set<string>
+): PostTaxonomyField[] {
+	const taxonomies: PostTaxonomyField[] = [];
+	for (const [key, config] of Object.entries(storage.taxonomies ?? {})) {
+		const taxonomy = (config as { taxonomy?: string }).taxonomy ?? key;
+		if (!claimPostFormField(claimed, taxonomy)) {
+			continue;
+		}
+		taxonomies.push({ key: taxonomy });
+	}
+	return taxonomies;
+}
+
+function claimPostFormField(claimed: Set<string>, key: string): boolean {
+	if (claimed.has(key)) {
+		return false;
+	}
+	claimed.add(key);
+	return true;
 }
 
 type QuickFormParams = {
@@ -609,14 +677,10 @@ function writeTaxonomyHooks(
 	if (resource.storage?.mode !== 'wp-post') {
 		return;
 	}
-	const { taxonomies } = resource.storage;
-	if (!taxonomies) {
-		return;
-	}
-	for (const [key, config] of Object.entries(taxonomies)) {
-		const taxKey = (config as { taxonomy?: string }).taxonomy ?? key;
-		const action = `${taxKey.replace(/_/g, '-')}.list`;
-		const hookName = `${toCamelCase(taxKey)}Options`;
+	const fields = classifyPostFormFields(resource.storage);
+	for (const field of fields.taxonomies) {
+		const action = `${field.key.replace(/_/g, '-')}.list`;
+		const hookName = `${toCamelCase(field.key)}Options`;
 		writer.writeLine(
 			`const ${hookName} = useTaxonomyOptions('${action}');`
 		);
@@ -679,56 +743,52 @@ function writeFieldsConfig(
 
 function writeBaseFieldDefinitions(
 	writer: CodeBlockWriter,
-	storage: NonNullable<IRResource['storage']> & { mode: 'wp-post' },
+	storage: WpPostStorage,
 	formInputType: string
 ): void {
-	if (storage.supports?.includes('title')) {
+	const fields = classifyPostFormFields(storage);
+	if (fields.hasTitle) {
 		writer.writeLine(
 			`textField<${formInputType}>('title', { label: 'Title', form: { required: true } }),`
 		);
 	}
-	writer.writeLine(
-		`statusField<${formInputType}>('status', [{ label: 'Publish', value: 'publish' }, { label: 'Draft', value: 'draft' }], { label: 'Status', form: { required: true } }),`
-	);
-	addMetaFieldDefinitions(writer, storage.meta, formInputType);
-	addTaxonomyFieldDefinitions(writer, storage.taxonomies, formInputType);
+	if (fields.hasImplicitStatus) {
+		writer.writeLine(
+			`statusField<${formInputType}>('status', [{ label: 'Publish', value: 'publish' }, { label: 'Draft', value: 'draft' }], { label: 'Status', form: { required: true } }),`
+		);
+	}
+	addMetaFieldDefinitions(writer, fields.meta, formInputType);
+	addTaxonomyFieldDefinitions(writer, fields.taxonomies, formInputType);
 }
 
 function addMetaFieldDefinitions(
 	writer: CodeBlockWriter,
-	meta: Record<string, { type?: string }> | undefined,
+	fields: readonly PostMetaField[],
 	formInputType: string
 ): void {
-	if (!meta) {
-		return;
-	}
-	for (const [key, desc] of Object.entries(meta)) {
-		const metaDesc = desc as { type?: string };
-		const label = toTitleCase(key);
+	for (const field of fields) {
+		const label = toTitleCase(field.key);
 		const isNumber =
-			metaDesc.type === 'number' || metaDesc.type === 'integer';
+			field.descriptor.type === 'number' ||
+			field.descriptor.type === 'integer';
 		const fieldWriter = isNumber ? 'numberField' : 'textField';
 		const edit = isNumber ? 'integer' : 'text';
 		writer.writeLine(
-			`${fieldWriter}<${formInputType}>('${key}', { label: '${label}', edit: '${edit}' }),`
+			`${fieldWriter}<${formInputType}>('${field.key}', { label: '${label}', edit: '${edit}' }),`
 		);
 	}
 }
 
 function addTaxonomyFieldDefinitions(
 	writer: CodeBlockWriter,
-	taxonomies: Record<string, { taxonomy?: string }> | undefined,
+	fields: readonly PostTaxonomyField[],
 	formInputType: string
 ): void {
-	if (!taxonomies) {
-		return;
-	}
-	for (const [key, config] of Object.entries(taxonomies)) {
-		const taxKey = (config as { taxonomy?: string }).taxonomy ?? key;
-		const label = toTitleCase(taxKey);
-		const hookName = `${toCamelCase(taxKey)}Options`;
+	for (const field of fields) {
+		const label = toTitleCase(field.key);
+		const hookName = `${toCamelCase(field.key)}Options`;
 		writer.writeLine(
-			`selectField<${formInputType}>('${taxKey}', ${hookName}.options, { label: '${label}', edit: 'select' }),`
+			`selectField<${formInputType}>('${field.key}', ${hookName}.options, { label: '${label}', edit: 'select' }),`
 		);
 	}
 }
@@ -740,13 +800,9 @@ function writeFieldDependencies(
 	if (resource.storage?.mode !== 'wp-post') {
 		return;
 	}
-	const { taxonomies } = resource.storage;
-	if (!taxonomies) {
-		return;
-	}
-	for (const [key, config] of Object.entries(taxonomies)) {
-		const taxKey = (config as { taxonomy?: string }).taxonomy ?? key;
-		writer.writeLine(`${toCamelCase(taxKey)}Options.options,`);
+	const fields = classifyPostFormFields(resource.storage);
+	for (const field of fields.taxonomies) {
+		writer.writeLine(`${toCamelCase(field.key)}Options.options,`);
 	}
 }
 

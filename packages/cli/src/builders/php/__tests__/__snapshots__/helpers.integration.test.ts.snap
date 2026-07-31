@@ -31,7 +31,7 @@ exports[`PHP helpers integration (flat pipeline) queues PHP programs with channe
     "kind": "persistence-registry",
   },
   {
-    "file": "plugin.php",
+    "file": ".wpk/generate/php/plugin.php",
     "kind": "plugin-loader",
   },
   {

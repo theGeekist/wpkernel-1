@@ -449,6 +449,29 @@ describe('createBundler', () => {
 		});
 	});
 
+	it('matches the DataViews build-style export before the package remap', () => {
+		const { alias } = buildRollupDriverArtifacts(null, {
+			hasDataViews: true,
+		}).config;
+		const importee = '@wordpress/dataviews/build-style/style.css';
+		const matchedAlias = alias.find(
+			(entry) =>
+				importee === entry.find || importee.startsWith(`${entry.find}/`)
+		);
+
+		expect(matchedAlias).toEqual({
+			find: '@wordpress/dataviews/build-style',
+			replacement: '@wordpress/dataviews/build-style',
+		});
+		expect(
+			alias.findIndex(
+				(entry) => entry.find === '@wordpress/dataviews/build-style'
+			)
+		).toBeLessThan(
+			alias.findIndex((entry) => entry.find === '@wordpress/dataviews')
+		);
+	});
+
 	it('skips generation outside the generate phase', async () => {
 		await withWorkspace(async ({ workspace, root: workspaceRoot }) => {
 			const builder = createBundler();

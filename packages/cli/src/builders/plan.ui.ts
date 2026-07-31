@@ -5,6 +5,7 @@ import { toWorkspaceRelative } from '../workspace';
 import { type PlanInstruction, type PlanDeletionSkip } from './types';
 import { resolvePlanPaths } from './plan.paths';
 import { statIfFile } from './plan.blocks';
+import { prepareGeneratedModulePath } from './ts/imports';
 
 export async function collectUiSurfaceInstructions({
 	options,
@@ -88,11 +89,13 @@ async function buildUiInstruction({
 	const incomingPath = path.posix.join(paths.planIncoming, filePair.applied);
 	const basePath = path.posix.join(paths.planBase, filePair.applied);
 
+	await prepareGeneratedModulePath(context.workspace, incomingPath);
 	await context.workspace.write(incomingPath, sourceContents, {
 		ensureDir: true,
 	});
 	output.queueWrite({ file: incomingPath, contents: sourceContents });
 
+	await prepareGeneratedModulePath(context.workspace, basePath);
 	const existingBase = await context.workspace.read(basePath);
 	if (existingBase === null) {
 		const targetSnapshot = await context.workspace.read(filePair.applied);

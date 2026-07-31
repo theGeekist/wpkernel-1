@@ -57,6 +57,16 @@ describe('createAdminScreenBuilder', () => {
 				sourcePath: path.join(root, 'wpk.config.ts'),
 			});
 			const irWithLayout = artifacts.ir;
+			(irWithLayout.resources[0] as any).ui = {
+				admin: {
+					view: 'dataviews',
+					dataviews: {
+						screen: {
+							wpkernelSymbol: 'createAdminDataViewScreen',
+						},
+					},
+				},
+			};
 			const baseArtifacts = buildTestArtifactsPlan(irWithLayout.layout);
 			// Wire surfaces/resources/runtime paths directly via artifacts so no layout lookups are required.
 			irWithLayout.artifacts = {
@@ -154,6 +164,10 @@ describe('createAdminScreenBuilder', () => {
 				irWithLayout.artifacts.runtime.runtime.applied
 			);
 			expect(screenContents).toContain(`from "${expectedRuntimeImport}"`);
+			expect(screenContents).toContain(
+				`import { adminScreenRuntime } from "${expectedRuntimeImport}";`
+			);
+			expect(screenContents).not.toContain('createAdminDataViewScreen');
 			expect(screenContents).toContain(
 				'export const jobAdminScreenRoute = "demo-namespace-job";'
 			);

@@ -211,10 +211,6 @@ function buildAliasEntries(
 	if (wantsDataViews) {
 		entries.push(
 			{
-				find: '@wordpress/dataviews',
-				replacement: '@wordpress/dataviews/wp',
-			},
-			{
 				find: '@wordpress/dataviews/wp/components',
 				replacement: '@wordpress/dataviews/wp/components',
 			},
@@ -229,6 +225,10 @@ function buildAliasEntries(
 			{
 				find: '@wordpress/dataviews/build-style',
 				replacement: '@wordpress/dataviews/build-style',
+			},
+			{
+				find: '@wordpress/dataviews',
+				replacement: '@wordpress/dataviews/wp',
 			}
 		);
 	}

@@ -476,6 +476,90 @@ describe('generation manifest helpers', () => {
 		expect(generatedArtifacts.length).toBeGreaterThan(0);
 	});
 
+	it('preserves configured surface subdirectories in runtime file pairs', () => {
+		const appDir = testLayout.resolve('app.applied');
+		const generatedAppDir = testLayout.resolve('app.generated');
+		const resourceAppDir = path.posix.join(appDir, 'books');
+		const resourceGeneratedAppDir = path.posix.join(
+			generatedAppDir,
+			'books'
+		);
+		const nestedDir = path.posix.join('screens', 'admin');
+		const ir = makeIr({
+			namespace: 'demo-plugin',
+			meta: makeIrMeta('demo-plugin', {
+				sanitizedNamespace: 'demo-plugin',
+			}),
+			artifacts: {
+				surfaces: {
+					'res:books': {
+						resource: 'books',
+						appDir: resourceAppDir,
+						generatedAppDir: resourceGeneratedAppDir,
+						pagePath: path.posix.join(
+							resourceAppDir,
+							nestedDir,
+							'BooksAdminScreen.tsx'
+						),
+						formPath: path.posix.join(
+							resourceAppDir,
+							nestedDir,
+							'form.tsx'
+						),
+						configPath: path.posix.join(
+							resourceAppDir,
+							nestedDir,
+							'config.tsx'
+						),
+					},
+				},
+			},
+		});
+
+		const manifest = buildGenerationManifestFromIr(ir);
+
+		expect(manifest.runtime?.files).toEqual(
+			expect.arrayContaining([
+				{
+					generated: path.posix.join(
+						resourceGeneratedAppDir,
+						nestedDir,
+						'BooksAdminScreen.tsx'
+					),
+					applied: path.posix.join(
+						resourceAppDir,
+						nestedDir,
+						'BooksAdminScreen.tsx'
+					),
+				},
+				{
+					generated: path.posix.join(
+						resourceGeneratedAppDir,
+						nestedDir,
+						'form.tsx'
+					),
+					applied: path.posix.join(
+						resourceAppDir,
+						nestedDir,
+						'form.tsx'
+					),
+				},
+				{
+					generated: path.posix.join(
+						resourceGeneratedAppDir,
+						nestedDir,
+						'config.tsx'
+					),
+					applied: path.posix.join(
+						resourceAppDir,
+						nestedDir,
+						'config.tsx'
+					),
+				},
+			])
+		);
+	});
+
 	it('diffs manifests to capture removed resources', () => {
 		const previous = {
 			version: 1 as const,

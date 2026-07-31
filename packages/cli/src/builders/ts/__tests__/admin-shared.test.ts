@@ -1,6 +1,9 @@
 import {
+	resolveAdminDataViews,
+	resolveAdminScreenComponentMetadata,
 	resolveInteractivityFeature,
 	resolveListRoutePath,
+	usesAdminDataViews,
 } from '../admin-shared';
 import type { AdminScreenResourceDescriptor } from '../admin-shared';
 
@@ -39,6 +42,41 @@ describe('admin-shared helpers', () => {
 				})
 			)
 		).toBe('admin-screen');
+	});
+
+	it('resolves canonical nested DataViews screen metadata from the resource', () => {
+		const descriptor = makeDescriptor({
+			resource: {
+				name: 'Job',
+				routes: [],
+				ui: {
+					admin: {
+						view: 'dataviews',
+						dataviews: {
+							interactivity: { feature: 'nested-feature' },
+							screen: {
+								component: '@acme/jobs-admin/JobListScreen',
+							},
+						},
+					},
+				},
+			} as any,
+			dataviews: undefined,
+		});
+
+		expect(usesAdminDataViews(descriptor)).toBe(true);
+		expect(resolveAdminDataViews(descriptor)).toEqual({
+			interactivity: { feature: 'nested-feature' },
+			screen: {
+				component: '@acme/jobs-admin/JobListScreen',
+			},
+		});
+		expect(resolveInteractivityFeature(descriptor)).toBe('nested-feature');
+		expect(resolveAdminScreenComponentMetadata(descriptor)).toEqual({
+			identifier: 'JobListScreen',
+			fileName: 'JobListScreen',
+			directories: ['@acme', 'jobs-admin'],
+		});
 	});
 
 	it('returns list route for first GET without params', () => {

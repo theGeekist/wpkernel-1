@@ -5,6 +5,7 @@ import {
 	buildScalarInt,
 	buildBooleanNot,
 	buildFuncCall,
+	buildFullyQualifiedName,
 	buildName,
 	buildArg,
 	buildClass,
@@ -54,7 +55,7 @@ export function buildShimProgram(options: BuildShimOptions) {
 		buildClass(
 			buildIdentifier(className),
 			{
-				extends: buildName(
+				extends: buildFullyQualifiedName(
 					generatedClassFqn
 						.split('\\')
 						.filter((segment) => segment.length > 0)
@@ -89,7 +90,7 @@ function buildClassExistsCall(fqn: string): PhpExpr {
 	return buildFuncCall(buildName(['class_exists']), [
 		buildArg(
 			buildNode('Expr_ClassConstFetch', {
-				class: buildName(
+				class: buildFullyQualifiedName(
 					fqn.split('\\').filter((segment) => segment.length > 0)
 				),
 				name: buildIdentifier('class'),
@@ -213,8 +214,12 @@ async function emitShim({
 
 	const existingBase = await context.workspace.readText(basePath);
 	if (existingBase === null) {
-		await context.workspace.write(basePath, code, { ensureDir: true });
-		output.queueWrite({ file: basePath, contents: code });
+		const existingTarget = await context.workspace.readText(targetFile);
+		const baseSnapshot = existingTarget ?? code;
+		await context.workspace.write(basePath, baseSnapshot, {
+			ensureDir: true,
+		});
+		output.queueWrite({ file: basePath, contents: baseSnapshot });
 	}
 
 	reporter.debug('createApplyPlanBuilder: queued shim instruction.', {

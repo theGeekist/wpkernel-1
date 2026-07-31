@@ -13,6 +13,32 @@ const DEFAULT_UI_ASSET_PATH = 'build/index.asset.json';
 const DEFAULT_UI_SCRIPT_PATH = 'build/index.js';
 const UI_LOCALIZATION_OBJECT = 'wpKernelUISettings';
 
+type DataViewsConfig = {
+	readonly screen?: {
+		readonly menu?: ResourceDataViewsMenuConfig | null;
+	};
+};
+
+type AdminUiConfig = {
+	readonly view?: string;
+	readonly dataviews?: DataViewsConfig | null;
+	/** @deprecated Legacy pre-DataViews menu location. */
+	readonly menu?: ResourceDataViewsMenuConfig | null;
+};
+
+function usesDataViews(admin: AdminUiConfig | undefined): boolean {
+	return (
+		Boolean(admin?.dataviews) ||
+		['dataviews', 'dataview'].includes(admin?.view ?? '')
+	);
+}
+
+function resolveMenuConfig(
+	admin: AdminUiConfig | undefined
+): ResourceDataViewsMenuConfig | null | undefined {
+	return admin?.dataviews?.screen?.menu ?? admin?.menu;
+}
+
 /**
  * Fragment key for UI aggregation.
  */
@@ -55,19 +81,13 @@ function collectUiResourceDescriptors(
 	const descriptors: IRUiResourceDescriptor[] = [];
 
 	for (const resource of resources) {
-		const admin = resource.ui?.admin as
-			| {
-					view?: string;
-					menu?: ResourceDataViewsMenuConfig | null;
-			  }
-			| undefined;
+		const admin = resource.ui?.admin as AdminUiConfig | undefined;
 
-		const usesDataViews = admin?.view === 'dataview';
-		if (!usesDataViews) {
+		if (!usesDataViews(admin)) {
 			continue;
 		}
 
-		const menu = normaliseMenu(admin?.menu);
+		const menu = normaliseMenu(resolveMenuConfig(admin));
 
 		descriptors.push(
 			menu

@@ -361,11 +361,12 @@ function buildUiFiles(ir: IRv1): GenerationManifestFilePair[] {
 		].filter(Boolean) as string[];
 
 		for (const surfacePath of surfacePaths) {
+			const relativeSurfacePath = path.posix.relative(
+				surface.appDir,
+				surfacePath
+			);
 			addPair(
-				path.posix.join(
-					surface.generatedAppDir,
-					path.posix.basename(surfacePath)
-				),
+				path.posix.join(surface.generatedAppDir, relativeSurfacePath),
 				surfacePath
 			);
 		}

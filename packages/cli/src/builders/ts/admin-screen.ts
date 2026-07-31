@@ -7,6 +7,7 @@ import type { Reporter } from '@wpkernel/core/reporter';
 import type { ResourceDescriptor } from '../types';
 import {
 	type AdminScreenResourceDescriptor,
+	resolveAdminDataViews,
 	resolveAdminScreenComponentMetadata,
 	resolveAdminScreenRoute,
 	resolveInteractivityFeature,
@@ -480,10 +481,15 @@ function ensureAdminDataViews(
 	descriptor: ResourceDescriptor,
 	reporter: Reporter | undefined
 ): AdminDataViewsWithInteractivity | null {
+	const dataviews = resolveAdminDataViews(descriptor);
+	if (dataviews) {
+		return dataviews;
+	}
+
 	reporter?.debug('admin screen builder: dataviews unavailable', {
 		resource: descriptor.key,
 	});
-	return {} as AdminDataViewsWithInteractivity;
+	return {};
 }
 
 export function resolveAdminNames(
@@ -495,11 +501,9 @@ export function resolveAdminNames(
 	)}DataViewConfig`;
 	const componentIdentifierCamel = toCamelCase(componentMeta.identifier);
 	const resourceSymbol =
-		(descriptor.dataviews as AdminDataViewsWithInteractivity)?.screen
-			?.resourceSymbol ?? toCamelCase(descriptor.name);
-	const wpkernelSymbol =
-		(descriptor.dataviews as AdminDataViewsWithInteractivity)?.screen
-			?.wpkernelSymbol ?? 'adminScreenRuntime';
+		resolveAdminDataViews(descriptor)?.screen?.resourceSymbol ??
+		toCamelCase(descriptor.name);
+	const wpkernelSymbol = 'adminScreenRuntime';
 
 	return {
 		dataViewConfigIdentifier,

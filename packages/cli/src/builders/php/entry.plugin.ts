@@ -69,6 +69,10 @@ export function createPhpPluginLoaderHelper(): BuilderHelper {
 }
 
 type UiConfig = ReturnType<typeof buildUiConfig>;
+type PluginLoaderControllerPlan = {
+	readonly className: string;
+	readonly appliedRequirePath: string;
+};
 
 export type GeneratePhaseInput = BuilderApplyOptions['input'] & {
 	phase: 'generate';
@@ -87,7 +91,11 @@ async function generatePluginLoader(options: {
 	const surfaces = Object.values(ir.artifacts.surfaces ?? {});
 	const uiConfig: UiConfig = buildUiConfig(ir);
 
-	const resourceClassNames = buildResourceClassNames(ir, phpPlan);
+	const resourceControllers = buildResourceControllers(ir, phpPlan);
+	const resourceClassNames = resourceControllers.map(
+		(controller) => controller.className
+	);
+	const phpGeneratedRoot = resolvePhpGeneratedRoot(ir, phpPlan);
 
 	await writeDebugUiFile({
 		workspace: context.workspace,
@@ -110,12 +118,14 @@ async function generatePluginLoader(options: {
 	const loaderConfig = buildLoaderConfig({
 		ir,
 		resourceClassNames,
+		resourceControllers,
 		uiConfig,
 		phpPlan,
+		phpGeneratedRoot,
 	});
 
 	const program = buildPluginLoaderProgram(loaderConfig);
-	const pluginRootDir = path.posix.dirname(phpPlan.pluginLoaderPath);
+	const pluginRootDir = phpGeneratedRoot;
 
 	const planner = buildProgramTargetPlanner({
 		workspace: context.workspace,
@@ -140,13 +150,17 @@ async function generatePluginLoader(options: {
 function buildLoaderConfig({
 	ir,
 	resourceClassNames,
+	resourceControllers,
 	uiConfig,
 	phpPlan,
+	phpGeneratedRoot,
 }: {
 	ir: GeneratePhaseInput['ir'];
 	resourceClassNames: string[];
+	resourceControllers: readonly PluginLoaderControllerPlan[];
 	uiConfig: UiConfig;
 	phpPlan: NonNullable<GeneratePhaseInput['ir']['artifacts']['php']>;
+	phpGeneratedRoot: string;
 }): Parameters<typeof buildPluginLoaderProgram>[0] {
 	const base = {
 		origin: ir.meta.origin,
@@ -154,7 +168,11 @@ function buildLoaderConfig({
 		sanitizedNamespace: ir.meta.sanitizedNamespace,
 		plugin: ir.meta.plugin,
 		resourceClassNames,
-		phpGeneratedPath: path.posix.dirname(phpPlan.pluginLoaderPath),
+		resourceControllers,
+		phpGeneratedPath: path.posix.relative(
+			path.posix.dirname(phpPlan.pluginLoaderPath),
+			phpGeneratedRoot
+		),
 		autoload:
 			phpPlan.autoload.strategy === 'composer'
 				? {
@@ -206,21 +224,75 @@ function canGeneratePluginLoader(
 	return input.phase === 'generate' && Boolean(input.ir);
 }
 
-function buildResourceClassNames(
+function buildResourceControllers(
 	ir: GeneratePhaseInput['ir'],
 	phpPlan: NonNullable<GeneratePhaseInput['ir']['artifacts']['php']>
-): string[] {
+): PluginLoaderControllerPlan[] {
+	const loaderDirectory = path.posix.dirname(phpPlan.pluginLoaderPath);
+
 	return ir.resources.map((resource) => {
 		const planned = phpPlan.controllers[resource.id];
-		if (planned?.className) {
-			return planned.className;
-		}
-		if (resource.controllerClass) {
-			return resource.controllerClass;
-		}
-		const pascal = toPascalCase(resource.name);
-		return `${ir.php.namespace}\\Generated\\Rest\\${pascal}Controller`;
+		const fallbackClassName = `${toPascalCase(resource.name)}Controller`;
+		const className = planned?.className
+			? qualifyControllerClassName(planned.namespace, planned.className)
+			: (resource.controllerClass ??
+				`${ir.php.namespace}\\Rest\\${fallbackClassName}`);
+		const appliedPath =
+			planned?.appliedPath ??
+			path.posix.join(
+				ir.php.autoload,
+				'Rest',
+				`${fallbackClassName}.php`
+			);
+		const relativePath = path.posix.relative(loaderDirectory, appliedPath);
+
+		return {
+			className,
+			appliedRequirePath: relativePath.startsWith('/')
+				? relativePath
+				: `/${relativePath}`,
+		};
 	});
+}
+
+function qualifyControllerClassName(
+	namespace: string,
+	className: string
+): string {
+	const normalisedClass = className.replace(/^\\+/, '');
+	if (normalisedClass.includes('\\')) {
+		return normalisedClass;
+	}
+
+	return [namespace.replace(/\\+$/, ''), normalisedClass]
+		.filter(Boolean)
+		.join('\\');
+}
+
+function resolvePhpGeneratedRoot(
+	ir: GeneratePhaseInput['ir'],
+	phpPlan: NonNullable<GeneratePhaseInput['ir']['artifacts']['php']>
+): string {
+	const firstController = Object.values(phpPlan.controllers)[0];
+	if (firstController?.generatedPath) {
+		return path.posix.dirname(
+			path.posix.dirname(firstController.generatedPath)
+		);
+	}
+
+	if (phpPlan.blocksRegistrarPath) {
+		return path.posix.dirname(
+			path.posix.dirname(phpPlan.blocksRegistrarPath)
+		);
+	}
+
+	if (phpPlan.blocksManifestPath) {
+		return path.posix.dirname(
+			path.posix.dirname(phpPlan.blocksManifestPath)
+		);
+	}
+
+	return ir.php.outputDir;
 }
 
 function buildContentModelConfig(ir: GeneratePhaseInput['ir']): ContentModel {

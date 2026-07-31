@@ -60,10 +60,14 @@ describe('createUiFragment', () => {
 					name: 'jobs',
 					ui: {
 						admin: {
-							view: 'dataview',
-							menu: {
-								slug: 'jobs',
-								title: 'Jobs',
+							view: 'dataviews',
+							dataviews: {
+								screen: {
+									menu: {
+										slug: 'jobs',
+										title: 'Jobs',
+									},
+								},
 							},
 						},
 					},
@@ -101,10 +105,14 @@ describe('createUiFragment', () => {
 					name: 'applications',
 					ui: {
 						admin: {
-							view: 'dataview',
-							menu: {
-								slug: '',
-								title: '',
+							view: 'dataviews',
+							dataviews: {
+								screen: {
+									menu: {
+										slug: '',
+										title: '',
+									},
+								},
 							},
 						},
 					},

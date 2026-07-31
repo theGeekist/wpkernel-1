@@ -127,6 +127,26 @@ export async function findWorkspaceModule(
 	return null;
 }
 
+export async function prepareGeneratedModulePath(
+	workspace: Workspace,
+	modulePath: string
+): Promise<void> {
+	const moduleName = path.basename(modulePath);
+	if (!['index.ts', 'index.tsx'].includes(moduleName)) {
+		return;
+	}
+
+	const legacyPath = path.dirname(modulePath);
+	const [legacyEntries, nestedEntries] = await Promise.all([
+		workspace.glob(legacyPath),
+		workspace.glob(`${legacyPath}/**`),
+	]);
+
+	if (legacyEntries.length > 0 && nestedEntries.length === 0) {
+		await workspace.rm(legacyPath, { recursive: true });
+	}
+}
+
 function stripExtension(modulePath: string): string {
 	for (const extension of MODULE_SOURCE_EXTENSIONS) {
 		if (modulePath.endsWith(extension)) {
@@ -148,11 +168,13 @@ function normaliseModuleSpecifier(specifier: string): string {
 async function ensureAdminRuntimeModule({
 	workspace,
 	runtimePath,
+	capabilitySource,
 }: {
 	readonly workspace: Workspace;
 	readonly runtimePath: string;
+	readonly capabilitySource?: string;
 }): Promise<string> {
-	const contents = [
+	const runtimeSource = [
 		"import type { WPKernelUIRuntime } from '@wpkernel/core/data';",
 		'',
 		'let runtime: WPKernelUIRuntime | undefined;',
@@ -167,7 +189,11 @@ async function ensureAdminRuntimeModule({
 		'};',
 		'',
 	].join('\n');
+	const contents = capabilitySource?.trim()
+		? `${capabilitySource.trim()}\n\n${runtimeSource}`
+		: runtimeSource;
 
+	await prepareGeneratedModulePath(workspace, runtimePath);
 	await workspace.write(runtimePath, contents, { ensureDir: true });
 	return runtimePath;
 }
@@ -177,6 +203,18 @@ export async function writeAdminRuntimeStub(
 	runtimePath: string
 ): Promise<void> {
 	await ensureAdminRuntimeModule({ workspace, runtimePath });
+}
+
+export async function writeAdminRuntimeModule(
+	workspace: Workspace,
+	runtimePath: string,
+	capabilitySource: string
+): Promise<void> {
+	await ensureAdminRuntimeModule({
+		workspace,
+		runtimePath,
+		capabilitySource,
+	});
 }
 
 export type TsMorphAccessor = {

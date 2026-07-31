@@ -155,7 +155,7 @@ describe('buildIr - core behaviours', () => {
 				},
 				ui: {
 					admin: {
-						view: 'dataview',
+						view: 'dataviews',
 						dataviews: buildDataViewsConfig(),
 					},
 				},
@@ -171,7 +171,88 @@ describe('buildIr - core behaviours', () => {
 
 		const uiResource = ir.ui?.resources?.[0];
 		expect(uiResource?.resource).toBe('job');
+		expect(ir.artifacts.runtime.entry.generated).toBe(
+			path.posix.join(ir.layout.resolve('entry.generated'), 'index.tsx')
+		);
+		expect(ir.artifacts.runtime.runtime.generated).toBe(
+			path.posix.join(ir.layout.resolve('runtime.generated'), 'index.ts')
+		);
+		expect(ir.artifacts.bundler.entryPoint).toBe(
+			ir.artifacts.runtime.entry.generated
+		);
+		expect(ir.artifacts.bundler.aliasRoot).toBe(
+			ir.layout.resolve('src.generated')
+		);
 	});
+
+	it.each([
+		{
+			label: 'simple',
+			component: 'ApplicationsAdminScreen',
+			expected: ['ApplicationsAdminScreen.tsx'],
+		},
+		{
+			label: 'nested',
+			component: 'screens/application/ApplicationsAdminScreen.tsx',
+			expected: ['screens', 'application', 'ApplicationsAdminScreen.tsx'],
+		},
+	])(
+		'plans $label configured admin screen and adjacent artifacts',
+		async ({ component, expected }) => {
+			const config = createBaseConfig();
+			config.resources = {
+				application: {
+					name: 'application',
+					schema: 'auto',
+					routes: {
+						list: {
+							path: '/test-namespace/v1/applications',
+							method: 'GET',
+						},
+					},
+					ui: {
+						admin: {
+							view: 'dataviews',
+							dataviews: {
+								screen: { component },
+							},
+						},
+					},
+				},
+			} as unknown as WPKernelConfigV1['resources'];
+
+			const ir = await buildIr({
+				config,
+				sourcePath: FIXTURE_CONFIG_PATH,
+				origin: 'wpk.config.ts',
+				namespace: config.namespace,
+			});
+			const [resource] = ir.resources;
+			if (!resource) {
+				throw new Error('Expected application resource.');
+			}
+
+			const surface = ir.artifacts.surfaces[resource.id];
+			const appDir = path.posix.join(
+				ir.layout.resolve('app.applied'),
+				resource.name
+			);
+			const componentDir = path.posix.dirname(
+				path.posix.join(appDir, ...expected)
+			);
+
+			expect(surface).toMatchObject({
+				appDir,
+				generatedAppDir: path.posix.join(
+					ir.layout.resolve('app.generated'),
+					resource.name
+				),
+				pagePath: path.posix.join(appDir, ...expected),
+				formPath: path.posix.join(componentDir, 'form.tsx'),
+				configPath: path.posix.join(componentDir, 'config.tsx'),
+			});
+		}
+	);
 
 	it('synthesises schemas when resources use auto mode', async () => {
 		const config = createBaseConfig();

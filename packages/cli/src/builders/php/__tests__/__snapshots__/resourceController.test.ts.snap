@@ -3400,6 +3400,56 @@ exports[`createPhpResourceControllerHelper queues resource controllers with reso
                 "nodeType": "Stmt_Expression",
               },
               {
+                "attributes": {},
+                "expr": {
+                  "attributes": {},
+                  "expr": {
+                    "args": [
+                      {
+                        "attributes": {},
+                        "byRef": false,
+                        "name": null,
+                        "nodeType": "Arg",
+                        "unpack": false,
+                        "value": {
+                          "attributes": {},
+                          "nodeType": "Scalar_String",
+                          "value": "title",
+                        },
+                      },
+                    ],
+                    "attributes": {},
+                    "name": {
+                      "attributes": {},
+                      "name": "get_param",
+                      "nodeType": "Identifier",
+                    },
+                    "nodeType": "Expr_MethodCall",
+                    "var": {
+                      "attributes": {},
+                      "name": "request",
+                      "nodeType": "Expr_Variable",
+                    },
+                  },
+                  "nodeType": "Expr_Assign",
+                  "var": {
+                    "attributes": {},
+                    "dim": {
+                      "attributes": {},
+                      "nodeType": "Scalar_String",
+                      "value": "post_title",
+                    },
+                    "nodeType": "Expr_ArrayDimFetch",
+                    "var": {
+                      "attributes": {},
+                      "name": "post_data",
+                      "nodeType": "Expr_Variable",
+                    },
+                  },
+                },
+                "nodeType": "Stmt_Expression",
+              },
+              {
                 "attributes": {
                   "comments": [
                     {
@@ -4629,6 +4679,102 @@ exports[`createPhpResourceControllerHelper queues resource controllers with reso
                   },
                 },
                 "nodeType": "Stmt_Expression",
+              },
+              {
+                "attributes": {},
+                "expr": {
+                  "attributes": {},
+                  "expr": {
+                    "args": [
+                      {
+                        "attributes": {},
+                        "byRef": false,
+                        "name": null,
+                        "nodeType": "Arg",
+                        "unpack": false,
+                        "value": {
+                          "attributes": {},
+                          "nodeType": "Scalar_String",
+                          "value": "title",
+                        },
+                      },
+                    ],
+                    "attributes": {},
+                    "name": {
+                      "attributes": {},
+                      "name": "get_param",
+                      "nodeType": "Identifier",
+                    },
+                    "nodeType": "Expr_MethodCall",
+                    "var": {
+                      "attributes": {},
+                      "name": "request",
+                      "nodeType": "Expr_Variable",
+                    },
+                  },
+                  "nodeType": "Expr_Assign",
+                  "var": {
+                    "attributes": {},
+                    "name": "title",
+                    "nodeType": "Expr_Variable",
+                  },
+                },
+                "nodeType": "Stmt_Expression",
+              },
+              {
+                "attributes": {},
+                "cond": {
+                  "attributes": {},
+                  "left": {
+                    "attributes": {},
+                    "name": {
+                      "attributes": {},
+                      "nodeType": "Name",
+                      "parts": [
+                        "null",
+                      ],
+                    },
+                    "nodeType": "Expr_ConstFetch",
+                  },
+                  "nodeType": "Expr_BinaryOp_NotIdentical",
+                  "right": {
+                    "attributes": {},
+                    "name": "title",
+                    "nodeType": "Expr_Variable",
+                  },
+                },
+                "else": null,
+                "elseifs": [],
+                "nodeType": "Stmt_If",
+                "stmts": [
+                  {
+                    "attributes": {},
+                    "expr": {
+                      "attributes": {},
+                      "expr": {
+                        "attributes": {},
+                        "name": "title",
+                        "nodeType": "Expr_Variable",
+                      },
+                      "nodeType": "Expr_Assign",
+                      "var": {
+                        "attributes": {},
+                        "dim": {
+                          "attributes": {},
+                          "nodeType": "Scalar_String",
+                          "value": "post_title",
+                        },
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "var": {
+                          "attributes": {},
+                          "name": "post_data",
+                          "nodeType": "Expr_Variable",
+                        },
+                      },
+                    },
+                    "nodeType": "Stmt_Expression",
+                  },
+                ],
               },
               {
                 "attributes": {

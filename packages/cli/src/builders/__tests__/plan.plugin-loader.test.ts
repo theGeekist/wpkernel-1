@@ -40,7 +40,34 @@ describe('plan.plugin-loader', () => {
 	it('emits loader instruction using IR artifact paths', async () => {
 		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'wpk-loader-'));
 		try {
-			const ir = makeIr();
+			const ir = makeIr({
+				namespace: 'Acme\\Jobs',
+				resources: [
+					{
+						id: 'job',
+						name: 'job',
+						schemaKey: 'job',
+						schemaProvenance: 'manual',
+						routes: [],
+						hash: {
+							algo: 'sha256',
+							inputs: ['resource'],
+							value: 'job-hash',
+						},
+						warnings: [],
+					},
+				],
+			});
+			ir.php.outputDir = '.custom/generated-php';
+			ir.artifacts.php.controllers = {
+				job: {
+					className: 'JobController',
+					namespace: 'Acme\\Jobs\\Rest',
+					appliedPath: 'inc/Rest/JobController.php',
+					generatedPath:
+						'.custom/generated-php/Rest/JobController.php',
+				},
+			};
 			const { plan, php } = ir.artifacts;
 			const options = makeOptions(root, ir);
 			const prettyPrinter = buildPhpPrettyPrinter({
@@ -61,6 +88,36 @@ describe('plan.plugin-loader', () => {
 					php.pluginLoaderPath
 				),
 			});
+			if (!instr || instr.action !== 'write') {
+				throw new Error('Expected a plugin loader write instruction.');
+			}
+			const code = await options.context.workspace.readText(
+				instr.incoming
+			);
+			const loaderCode = code ?? '';
+			expect(loaderCode).toContain(
+				"plugin_dir_path(__FILE__) . '.custom/generated-php/index.php'"
+			);
+			expect(loaderCode).toContain(
+				"require_once __DIR__ . '/inc/Rest/JobController.php';"
+			);
+			expect(loaderCode).toContain(
+				'return [new \\Acme\\Jobs\\Rest\\JobController()]'
+			);
+			expect(loaderCode.indexOf('$classmapPath')).toBeLessThan(
+				loaderCode.indexOf(
+					"require_once __DIR__ . '/inc/Rest/JobController.php';"
+				)
+			);
+			expect(
+				loaderCode.indexOf(
+					"require_once __DIR__ . '/inc/Rest/JobController.php';"
+				)
+			).toBeLessThan(
+				loaderCode.indexOf(
+					'return [new \\Acme\\Jobs\\Rest\\JobController()]'
+				)
+			);
 		} finally {
 			await fs.rm(root, { recursive: true, force: true });
 		}

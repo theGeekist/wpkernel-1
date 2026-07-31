@@ -9,6 +9,7 @@ import { buildWorkspace } from '../../workspace';
 function makeOptions(root: string) {
 	const workspace = buildWorkspace(root);
 	const ir = makeIr({
+		namespace: 'Acme\\Jobs',
 		resources: [
 			{
 				name: 'jobs',
@@ -62,14 +63,27 @@ function makeOptions(root: string) {
 		>[0]['options'],
 		prettyPrinter: buildPhpPrettyPrinter({ workspace }),
 		plan,
+		phpGenerated: ir.layout.resolve('php.generated'),
 	};
 }
 
 describe('plan.shims', () => {
 	it('emits shim instructions with layout paths and require guard', async () => {
 		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'wpk-shims-'));
-		const { options, prettyPrinter, plan } = makeOptions(root);
+		const { options, prettyPrinter, plan, phpGenerated } =
+			makeOptions(root);
 		try {
+			// Deliberately model a shim written by the legacy layout.
+			/* eslint-disable @wpkernel/no-hardcoded-layout-paths */
+			const existingShim =
+				"<?php\nrequire_once __DIR__ . '/../../.generated/php/Rest/JobsController.php';\n";
+			/* eslint-enable @wpkernel/no-hardcoded-layout-paths */
+			await options.context.workspace.write(
+				'inc/Rest/JobsController.php',
+				existingShim,
+				{ ensureDir: true }
+			);
+
 			const instructions = await collectResourceInstructions({
 				options,
 				prettyPrinter,
@@ -87,6 +101,25 @@ describe('plan.shims', () => {
 					'inc/Rest/JobsController.php'
 				),
 			});
+			if (!shim || shim.action !== 'write') {
+				throw new Error(
+					'Expected a controller shim write instruction.'
+				);
+			}
+			const code = await options.context.workspace.readText(
+				shim.incoming
+			);
+			const base = await options.context.workspace.readText(shim.base);
+			expect(base).toBe(existingShim);
+			expect(code).toContain(
+				'class JobsController extends \\Acme\\Jobs\\Generated\\Rest\\JobsController'
+			);
+			expect(code).toContain(
+				'class_exists(\\Acme\\Jobs\\Generated\\Rest\\JobsController::class)'
+			);
+			expect(code).toContain(
+				`require_once(__DIR__ . '/../../${phpGenerated}/Rest/JobsController.php')`
+			);
 		} finally {
 			await fs.rm(root, { recursive: true, force: true });
 		}

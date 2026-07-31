@@ -17,26 +17,35 @@ export type PlanLayoutPaths = {
 export function resolvePlanPaths(
 	options: BuilderApplyOptions
 ): PlanLayoutPaths {
-	const artifacts = getPlanArtifacts(options.input.ir);
-	return buildPlanPaths(artifacts);
+	const ir = getPlanIr(options.input.ir);
+	return buildPlanPaths(ir.artifacts, ir.php.outputDir);
 }
 
-function getPlanArtifacts(
-	ir?: BuilderApplyOptions['input']['ir']
-): NonNullable<NonNullable<BuilderApplyOptions['input']['ir']>['artifacts']> {
+function getPlanIr(ir?: BuilderApplyOptions['input']['ir']): NonNullable<
+	BuilderApplyOptions['input']['ir']
+> & {
+	artifacts: NonNullable<
+		NonNullable<BuilderApplyOptions['input']['ir']>['artifacts']
+	>;
+} {
 	if (!ir?.artifacts?.plan) {
 		throw new WPKernelError('DeveloperError', {
 			message: 'Plan paths cannot be resolved without an IR.',
 		});
 	}
 
-	return ir.artifacts;
+	return ir as NonNullable<BuilderApplyOptions['input']['ir']> & {
+		artifacts: NonNullable<
+			NonNullable<BuilderApplyOptions['input']['ir']>['artifacts']
+		>;
+	};
 }
 
 function buildPlanPaths(
 	artifacts: NonNullable<
 		NonNullable<BuilderApplyOptions['input']['ir']>['artifacts']
-	>
+	>,
+	phpOutputDir: string
 ): PlanLayoutPaths {
 	const runtimePlan = artifacts.runtime?.runtime;
 	const phpPlan = artifacts.php;
@@ -55,7 +64,7 @@ function buildPlanPaths(
 	};
 
 	if (phpPlan) {
-		paths.phpGenerated = resolvePhpGeneratedRoot(phpPlan);
+		paths.phpGenerated = resolvePhpGeneratedRoot(phpPlan, phpOutputDir);
 		paths.pluginLoader = phpPlan.pluginLoaderPath;
 	}
 
@@ -69,7 +78,8 @@ function buildPlanPaths(
 function resolvePhpGeneratedRoot(
 	phpPlan: NonNullable<
 		NonNullable<BuilderApplyOptions['input']['ir']>['artifacts']['php']
-	>
+	>,
+	phpOutputDir: string
 ): string {
 	if (phpPlan.controllers) {
 		const firstController = Object.values(phpPlan.controllers)[0];
@@ -92,5 +102,5 @@ function resolvePhpGeneratedRoot(
 		);
 	}
 
-	return path.posix.dirname(phpPlan.pluginLoaderPath);
+	return phpOutputDir;
 }

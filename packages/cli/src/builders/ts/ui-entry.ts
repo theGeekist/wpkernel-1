@@ -3,8 +3,9 @@ import { createHelper } from '../../runtime';
 import type { BuilderApplyOptions, BuilderHelper } from '../../runtime/types';
 import { resolveAdminScreenComponentMetadata } from './admin-shared';
 import { resolveAdminPaths } from './admin-screen';
-import { writeAdminRuntimeStub } from './imports';
+import { prepareGeneratedModulePath, writeAdminRuntimeModule } from './imports';
 import { loadTsMorph } from './runtime-loader';
+import { printCapabilityModule } from './capability';
 import type { SourceFile, VariableDeclarationKind } from 'ts-morph';
 import type { ResourceDescriptor } from '../types';
 import type {
@@ -152,9 +153,15 @@ async function emitUiEntry(options: {
 		return;
 	}
 
-	await writeAdminRuntimeStub(context.workspace, runtimePath);
+	const { source: capabilitySource } = await printCapabilityModule(ir);
+	await writeAdminRuntimeModule(
+		context.workspace,
+		runtimePath,
+		capabilitySource
+	);
 
 	const contents = entryPaths.sourceFile.getFullText();
+	await prepareGeneratedModulePath(context.workspace, entryPaths.entryPath);
 	await context.workspace.write(entryPaths.entryPath, contents, {
 		ensureDir: true,
 	});
@@ -377,8 +384,8 @@ function writeAdminScaffold(
 			writer.writeLine(
 				`const capability = rawCapabilities ? JSON.parse(rawCapabilities) : capabilities;`
 			);
-			writer.writeLine('const component = adminScreens[screenKey];');
-			writer.writeLine('if (!component) return;');
+			writer.writeLine('const Component = adminScreens[screenKey];');
+			writer.writeLine('if (!Component) return;');
 			writer.blankLine();
 			writer.writeLine(
 				'const bindingTarget = container.querySelector('.concat(
@@ -394,7 +401,7 @@ function writeAdminScaffold(
 					`const dataStore = (globalThis as KernelGlobal).__WP_KERNEL_ACTION_RUNTIME__ ?? configureWPKernel({ capability });`
 				);
 				writer.writeLine(
-					`const page = renderToString(<component adminStore={dataStore} />);`
+					`const page = renderToString(<Component adminStore={dataStore} />);`
 				);
 				writer.writeLine(
 					"bindingTarget.innerHTML = `<div data-wp-interactive='wpkernel/admin-screen' data-wp-context='{\"wpkernel/admin-screen\": {}}'>${page}</div>`;"

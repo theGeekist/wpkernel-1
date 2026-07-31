@@ -27,6 +27,7 @@ import {
 	collectUiSurfaceInstructions,
 	collectUiDeletionInstructions,
 } from './plan.ui';
+import { prepareGeneratedModulePath } from './ts/imports';
 import { collectDeletionInstructions } from './plan.cleanups';
 import { resolvePlanPaths } from './plan.paths';
 
@@ -369,11 +370,13 @@ async function buildJsRuntimePlan({
 		const incomingPath = path.posix.join(paths.planIncoming, file);
 		const basePath = path.posix.join(paths.planBase, pair.applied);
 
+		await prepareGeneratedModulePath(context.workspace, incomingPath);
 		await context.workspace.write(incomingPath, contents, {
 			ensureDir: true,
 		});
 		output.queueWrite({ file: incomingPath, contents });
 
+		await prepareGeneratedModulePath(context.workspace, basePath);
 		const existingBase = await context.workspace.readText(basePath);
 		if (existingBase === null) {
 			await context.workspace.write(basePath, contents, {

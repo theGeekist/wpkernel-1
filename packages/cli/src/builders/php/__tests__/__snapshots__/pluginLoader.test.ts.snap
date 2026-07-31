@@ -205,7 +205,7 @@ exports[`createPhpPluginLoaderHelper derives content model registration from wp-
                 "right": {
                   "attributes": {},
                   "nodeType": "Scalar_String",
-                  "value": "./index.php",
+                  "value": ".wpk/generate/php/index.php",
                 },
               },
               "nodeType": "Expr_Assign",
@@ -442,6 +442,28 @@ exports[`createPhpPluginLoaderHelper derives content model registration from wp-
             "attributes": {},
             "expr": {
               "attributes": {},
+              "expr": {
+                "attributes": {},
+                "left": {
+                  "attributes": {},
+                  "nodeType": "Scalar_MagicConst_Dir",
+                },
+                "nodeType": "Expr_BinaryOp_Concat",
+                "right": {
+                  "attributes": {},
+                  "nodeType": "Scalar_String",
+                  "value": "/inc/Rest/JobController.php",
+                },
+              },
+              "nodeType": "Expr_Include",
+              "type": 4,
+            },
+            "nodeType": "Stmt_Expression",
+          },
+          {
+            "attributes": {},
+            "expr": {
+              "attributes": {},
               "items": [
                 {
                   "attributes": {},
@@ -456,6 +478,8 @@ exports[`createPhpPluginLoaderHelper derives content model registration from wp-
                       "attributes": {},
                       "nodeType": "Name_FullyQualified",
                       "parts": [
+                        "acme-demo",
+                        "Rest",
                         "JobController",
                       ],
                     },
@@ -2011,7 +2035,7 @@ exports[`createPhpPluginLoaderHelper emits UI asset registration when dataview m
                 "right": {
                   "attributes": {},
                   "nodeType": "Scalar_String",
-                  "value": "./index.php",
+                  "value": ".wpk/generate/php/index.php",
                 },
               },
               "nodeType": "Expr_Assign",
@@ -2248,6 +2272,28 @@ exports[`createPhpPluginLoaderHelper emits UI asset registration when dataview m
             "attributes": {},
             "expr": {
               "attributes": {},
+              "expr": {
+                "attributes": {},
+                "left": {
+                  "attributes": {},
+                  "nodeType": "Scalar_MagicConst_Dir",
+                },
+                "nodeType": "Expr_BinaryOp_Concat",
+                "right": {
+                  "attributes": {},
+                  "nodeType": "Scalar_String",
+                  "value": "/inc/Rest/BooksController.php",
+                },
+              },
+              "nodeType": "Expr_Include",
+              "type": 4,
+            },
+            "nodeType": "Stmt_Expression",
+          },
+          {
+            "attributes": {},
+            "expr": {
+              "attributes": {},
               "items": [
                 {
                   "attributes": {},
@@ -2262,6 +2308,8 @@ exports[`createPhpPluginLoaderHelper emits UI asset registration when dataview m
                       "attributes": {},
                       "nodeType": "Name_FullyQualified",
                       "parts": [
+                        "demo-plugin",
+                        "Rest",
                         "BooksController",
                       ],
                     },
@@ -3737,6 +3785,22 @@ exports[`createPhpPluginLoaderHelper emits UI asset registration when dataview m
                                   "attributes": {},
                                   "nodeType": "Scalar_String",
                                   "value": "books",
+                                },
+                              },
+                              {
+                                "attributes": {},
+                                "byRef": false,
+                                "key": {
+                                  "attributes": {},
+                                  "nodeType": "Scalar_String",
+                                  "value": "preferencesKey",
+                                },
+                                "nodeType": "ArrayItem",
+                                "unpack": false,
+                                "value": {
+                                  "attributes": {},
+                                  "nodeType": "Scalar_String",
+                                  "value": "demo-plugin/dataviews/books",
                                 },
                               },
                               {
@@ -6361,7 +6425,7 @@ exports[`createPhpPluginLoaderHelper queues a plugin loader program with generat
                 "right": {
                   "attributes": {},
                   "nodeType": "Scalar_String",
-                  "value": "./index.php",
+                  "value": ".wpk/generate/php/index.php",
                 },
               },
               "nodeType": "Expr_Assign",
@@ -6598,6 +6662,50 @@ exports[`createPhpPluginLoaderHelper queues a plugin loader program with generat
             "attributes": {},
             "expr": {
               "attributes": {},
+              "expr": {
+                "attributes": {},
+                "left": {
+                  "attributes": {},
+                  "nodeType": "Scalar_MagicConst_Dir",
+                },
+                "nodeType": "Expr_BinaryOp_Concat",
+                "right": {
+                  "attributes": {},
+                  "nodeType": "Scalar_String",
+                  "value": "/inc/Rest/BooksController.php",
+                },
+              },
+              "nodeType": "Expr_Include",
+              "type": 4,
+            },
+            "nodeType": "Stmt_Expression",
+          },
+          {
+            "attributes": {},
+            "expr": {
+              "attributes": {},
+              "expr": {
+                "attributes": {},
+                "left": {
+                  "attributes": {},
+                  "nodeType": "Scalar_MagicConst_Dir",
+                },
+                "nodeType": "Expr_BinaryOp_Concat",
+                "right": {
+                  "attributes": {},
+                  "nodeType": "Scalar_String",
+                  "value": "/inc/Rest/AuthorsController.php",
+                },
+              },
+              "nodeType": "Expr_Include",
+              "type": 4,
+            },
+            "nodeType": "Stmt_Expression",
+          },
+          {
+            "attributes": {},
+            "expr": {
+              "attributes": {},
               "items": [
                 {
                   "attributes": {},
@@ -6612,6 +6720,8 @@ exports[`createPhpPluginLoaderHelper queues a plugin loader program with generat
                       "attributes": {},
                       "nodeType": "Name_FullyQualified",
                       "parts": [
+                        "DemoPlugin",
+                        "Rest",
                         "BooksController",
                       ],
                     },
@@ -6631,6 +6741,8 @@ exports[`createPhpPluginLoaderHelper queues a plugin loader program with generat
                       "attributes": {},
                       "nodeType": "Name_FullyQualified",
                       "parts": [
+                        "DemoPlugin",
+                        "Rest",
                         "AuthorsController",
                       ],
                     },
@@ -7118,7 +7230,7 @@ exports[`createPhpPluginLoaderHelper respects custom namespace structures: plugi
                 "right": {
                   "attributes": {},
                   "nodeType": "Scalar_String",
-                  "value": "./index.php",
+                  "value": ".wpk/generate/php/index.php",
                 },
               },
               "nodeType": "Expr_Assign",
@@ -7355,6 +7467,28 @@ exports[`createPhpPluginLoaderHelper respects custom namespace structures: plugi
             "attributes": {},
             "expr": {
               "attributes": {},
+              "expr": {
+                "attributes": {},
+                "left": {
+                  "attributes": {},
+                  "nodeType": "Scalar_MagicConst_Dir",
+                },
+                "nodeType": "Expr_BinaryOp_Concat",
+                "right": {
+                  "attributes": {},
+                  "nodeType": "Scalar_String",
+                  "value": "/inc/Rest/JobsController.php",
+                },
+              },
+              "nodeType": "Expr_Include",
+              "type": 4,
+            },
+            "nodeType": "Stmt_Expression",
+          },
+          {
+            "attributes": {},
+            "expr": {
+              "attributes": {},
               "items": [
                 {
                   "attributes": {},
@@ -7369,6 +7503,8 @@ exports[`createPhpPluginLoaderHelper respects custom namespace structures: plugi
                       "attributes": {},
                       "nodeType": "Name_FullyQualified",
                       "parts": [
+                        "DemoPlugin",
+                        "Rest",
                         "JobsController",
                       ],
                     },

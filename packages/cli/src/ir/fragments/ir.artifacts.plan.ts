@@ -34,6 +34,9 @@ import type {
 import { toPascalCase } from '../../utils';
 
 const ARTIFACTS_FRAGMENT_KEY = 'ir.artifacts.plan';
+const DEFAULT_ENTRY_MODULE = 'index.tsx';
+const DEFAULT_RUNTIME_MODULE = 'index.ts';
+const COMPONENT_EXTENSION_PATTERN = /\.(?:[tj]sx?|mjs|cjs)$/iu;
 
 type LayoutDraft = NonNullable<
 	IrFragmentApplyOptions['input']['draft']['layout']
@@ -217,12 +220,24 @@ function buildRuntimePlans(
 
 	return {
 		entry: {
-			generated: layout.resolve('entry.generated'),
-			applied: layout.resolve('entry.applied'),
+			generated: resolveModulePath(
+				layout.resolve('entry.generated'),
+				DEFAULT_ENTRY_MODULE
+			),
+			applied: resolveModulePath(
+				layout.resolve('entry.applied'),
+				DEFAULT_ENTRY_MODULE
+			),
 		},
 		runtime: {
-			generated: layout.resolve('runtime.generated'),
-			applied: layout.resolve('runtime.applied'),
+			generated: resolveModulePath(
+				layout.resolve('runtime.generated'),
+				DEFAULT_RUNTIME_MODULE
+			),
+			applied: resolveModulePath(
+				layout.resolve('runtime.applied'),
+				DEFAULT_RUNTIME_MODULE
+			),
 		},
 		blocksRegistrarPath: path.posix.join(
 			blocksGenerated,
@@ -230,6 +245,12 @@ function buildRuntimePlans(
 		),
 		uiLoader: ui?.loader,
 	};
+}
+
+function resolveModulePath(candidate: string, defaultFile: string): string {
+	return path.posix.extname(candidate)
+		? candidate
+		: path.posix.join(candidate, defaultFile);
 }
 
 /**
@@ -255,7 +276,7 @@ function buildBundlerPlan(
 	const runtimeEntry = path.posix.extname(runtimeEntrySource)
 		? runtimeEntrySource
 		: path.posix.join(runtimeEntrySource, 'index.tsx');
-	const aliasRoot = path.posix.dirname(runtime.runtime.generated);
+	const aliasRoot = layout.resolve('src.generated');
 
 	return {
 		configPath: layout.resolve('bundler.config'),
@@ -422,17 +443,48 @@ function buildSurfacePlans(
 		const slug = resource.name;
 		const appDir = path.posix.join(appAppliedRoot, slug);
 		const generatedAppDir = path.posix.join(appGeneratedRoot, slug);
+		const surfacePaths = resolveSurfacePaths(appDir, resource);
 		acc[resource.id] = {
 			resource: resource.name,
 			menu: uiResource.menu,
 			appDir,
 			generatedAppDir,
-			pagePath: path.posix.join(appDir, 'page.tsx'),
-			formPath: path.posix.join(appDir, 'form.tsx'),
-			configPath: path.posix.join(appDir, 'config.tsx'),
+			...surfacePaths,
 		};
 		return acc;
 	}, Object.create(null));
+}
+
+function resolveSurfacePaths(
+	appDir: string,
+	resource: ResourcesDraft[number]
+): Pick<
+	IRArtifactsPlan['surfaces'][string],
+	'pagePath' | 'formPath' | 'configPath'
+> {
+	const admin = resource.ui?.admin as
+		| {
+				readonly dataviews?: {
+					readonly screen?: {
+						readonly component?: unknown;
+					} | null;
+				} | null;
+		  }
+		| undefined;
+	const configured = admin?.dataviews?.screen?.component;
+	const component = typeof configured === 'string' ? configured.trim() : '';
+	const withoutExtension = component
+		.replace(/\\/gu, '/')
+		.replace(COMPONENT_EXTENSION_PATTERN, '');
+	const segments = withoutExtension.split('/').filter(Boolean);
+	const fileName = segments.pop() ?? 'page';
+	const componentDir = path.posix.join(appDir, ...segments);
+
+	return {
+		pagePath: path.posix.join(componentDir, `${fileName}.tsx`),
+		formPath: path.posix.join(componentDir, 'form.tsx'),
+		configPath: path.posix.join(componentDir, 'config.tsx'),
+	};
 }
 
 /**

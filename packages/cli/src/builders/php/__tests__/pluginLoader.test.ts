@@ -82,6 +82,14 @@ describe('createPhpPluginLoaderHelper', () => {
 		expect(path.posix.basename(entry?.file ?? '')).toBe(
 			path.posix.basename(ir.artifacts?.php?.pluginLoaderPath ?? '')
 		);
+		expect(entry?.file).toBe(
+			context.workspace.resolve(
+				path.posix.join(
+					ir.layout.resolve('php.generated'),
+					path.posix.basename(ir.artifacts.php.pluginLoaderPath)
+				)
+			)
+		);
 		expect(entry?.docblock).toEqual([]);
 		expect(entry?.metadata).toEqual({ kind: 'plugin-loader' });
 		expect(entry?.program).toMatchSnapshot('plugin-loader-program');
