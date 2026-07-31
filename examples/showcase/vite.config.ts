@@ -1,63 +1,58 @@
 import { defineConfig, type UserConfig } from 'vite';
 import { v4wp } from '@kucrut/vite-for-wp';
+import fs from 'node:fs';
+import path from 'node:path';
+import bundlerConfig from './.wpk/bundler/config.json';
 
-import packageJson from './package.json';
+const isProduction = process.env.NODE_ENV === 'production';
+const sourceMapConfig = isProduction
+  ? bundlerConfig.sourcemap?.production ?? false
+  : bundlerConfig.sourcemap?.development ?? true;
+const assetFilename = path.basename(bundlerConfig.assetManifest?.path ?? 'index.asset.json');
+const assetSource = path.resolve(process.cwd(), '.wpk', 'bundler', 'assets', assetFilename);
+const assetTarget = path.resolve(process.cwd(), bundlerConfig.assetManifest?.path ?? 'build/index.asset.json');
 
-const peerDependencies = Object.keys(packageJson.peerDependencies ?? {});
+const emitBundlerAssetManifest = () => ({
+  name: 'wpkernel-emit-asset-manifest',
+  generateBundle() {
+    if (!fs.existsSync(assetSource)) {
+      this.warn(`WPKernel asset manifest not found at ${assetSource}`);
+      return;
+    }
+    fs.mkdirSync(path.dirname(assetTarget), { recursive: true });
+    fs.copyFileSync(assetSource, assetTarget);
+  },
+});
 
-function resolveGlobalName(dependency: string): string {
-	if (dependency === 'react') {
-		return 'React';
-	}
-
-	if (dependency === 'react-dom') {
-		return 'ReactDOM';
-	}
-
-	if (dependency.startsWith('@wordpress/')) {
-		const [, namespace] = dependency.split('/');
-		return `wp.${namespace ?? ''}`;
-	}
-
-	return dependency;
-}
-
-export default defineConfig(
-	(): UserConfig => ({
-		plugins: [
-			v4wp({
-				input: {
-					index: 'src/index.ts',
-				},
-				outDir: 'build',
-			}),
-		],
-		build: {
-			sourcemap: true,
-			rollupOptions: {
-				external: [
-					...peerDependencies,
-					'react/jsx-runtime',
-					'react/jsx-dev-runtime',
-				],
-				output: {
-					format: 'esm',
-					entryFileNames: '[name].js',
-					globals: Object.fromEntries(
-						peerDependencies.map((dependency) => [
-							dependency,
-							resolveGlobalName(dependency),
-						])
-					),
-				},
-			},
-		},
-		optimizeDeps: {
-			exclude: [
-				...peerDependencies,
-				'react/jsx-runtime',
-				'react/jsx-dev-runtime',
-			],
-		},
-	})
-);
+export default defineConfig((): UserConfig => ({
+  plugins: [
+    v4wp({
+      input: bundlerConfig.input,
+      outDir: bundlerConfig.outputDir,
+    }),
+    emitBundlerAssetManifest(),
+  ],
+  build: {
+    sourcemap: sourceMapConfig,
+    rollupOptions: {
+      external: bundlerConfig.external,
+      output: {
+        entryFileNames: '[name].js',
+        format: bundlerConfig.format,
+        globals: bundlerConfig.globals,
+      },
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && typeof warning.message === 'string' && warning.message.includes('"use client"')) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
+  esbuild: {
+    jsxFactory: 'wp.element.createElement',
+    jsxFragment: 'wp.element.Fragment',
+  },
+  optimizeDeps: bundlerConfig.optimizeDeps,
+  resolve: { alias: bundlerConfig.alias },
+}));

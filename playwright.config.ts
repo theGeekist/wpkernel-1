@@ -12,12 +12,15 @@ const TEST_ENV = (process.env.TEST_ENV || 'wp-env') as 'wp-env' | 'playground';
 const ENV_CONFIG = {
 	'wp-env': {
 		baseURL: 'http://localhost:8889',
-		webServerCommand: 'pnpm wp:start',
-		webServerTimeout: 120 * 1000, // 2 minutes for Docker startup
-		autoStart: true, // wp-env can be auto-started (exits after starting)
+		readinessURL: 'http://127.0.0.1:8891/ready',
+		webServerCommand:
+			'node ./examples/showcase/__tests__/e2e/support/wordpress-web-server.mjs',
+		webServerTimeout: 300 * 1000,
+		autoStart: true,
 	},
 	playground: {
 		baseURL: 'http://127.0.0.1:9400', // Match Playground's actual output (uses 127.0.0.1 not localhost)
+		readinessURL: 'http://127.0.0.1:9400',
 		webServerCommand: 'pnpm playground',
 		webServerTimeout: 60 * 1000, // 1 minute for Playground startup
 		autoStart: false, // Playground runs in foreground, must be started manually
@@ -33,6 +36,8 @@ const config = ENV_CONFIG[TEST_ENV];
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
+	globalTeardown: './examples/showcase/__tests__/e2e/global-teardown.ts',
+
 	// Test directory - showcase e2e tests
 	testDir: './examples/showcase/__tests__/e2e',
 
@@ -110,18 +115,22 @@ export default defineConfig({
 	// Run your local dev server before starting the tests
 	// Note: Playground must be started manually (it runs in foreground)
 	// wp-env can be auto-started (it daemonizes after starting)
-	...(process.env.CI || !config.autoStart
-		? {}
-		: {
+	...(config.autoStart
+		? {
 				webServer: {
 					command: config.webServerCommand,
-					url: config.baseURL,
-					reuseExistingServer: true,
+					url: config.readinessURL,
+					reuseExistingServer: false,
 					timeout: config.webServerTimeout,
+					gracefulShutdown: {
+						signal: 'SIGTERM',
+						timeout: 15_000,
+					},
 					stdout: 'pipe',
 					stderr: 'pipe',
 				},
-			}),
+			}
+		: {}),
 
 	// Global timeout for each test (60 seconds)
 	timeout: 60 * 1000,
