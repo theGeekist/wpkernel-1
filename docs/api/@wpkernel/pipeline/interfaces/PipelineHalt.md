@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineHalt
 
-# Interface: PipelineHalt&lt;TRunResult&gt;
+# Interface: PipelineHalt<TRunResult>
 
 Terminal result produced by a custom pipeline stage.
 

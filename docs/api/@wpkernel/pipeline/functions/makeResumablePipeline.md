@@ -7,7 +7,7 @@
 # Function: makeResumablePipeline()
 
 ```ts
-function makeResumablePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;(options): ResumablePipeline&lt;TRunOptions, TRunResult, TContext, TReporter, AgnosticState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;&gt;;
+function makeResumablePipeline<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>(options): ResumablePipeline<TRunOptions, TRunResult, TContext, TReporter, AgnosticState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>>;
 ```
 
 ## Type Parameters
@@ -34,7 +34,7 @@ function makeResumablePipeline&lt;TRunOptions, TContext, TReporter, TUserState, 
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TUserState`, `TDiagnostic`>
 
 ### TKind
 
@@ -44,8 +44,8 @@ function makeResumablePipeline&lt;TRunOptions, TContext, TReporter, TUserState, 
 
 ### options
 
-[`AgnosticPipelineOptions`](../interfaces/AgnosticPipelineOptions.md)&lt;`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`&gt;
+[`AgnosticPipelineOptions`](../interfaces/AgnosticPipelineOptions.md)<`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`>
 
 ## Returns
 
-[`ResumablePipeline`](../interfaces/ResumablePipeline.md)&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `AgnosticState`&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;&gt;
+[`ResumablePipeline`](../interfaces/ResumablePipeline.md)<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `AgnosticState`<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>>

@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStageState
 
-# Interface: PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;
+# Interface: PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>
 
 ## Type Parameters
 
@@ -49,7 +49,7 @@ readonly diagnostics: readonly TDiagnostic[];
 ### executedLifecycles
 
 ```ts
-readonly executedLifecycles: ReadonlySet&lt;string&gt;;
+readonly executedLifecycles: ReadonlySet<string>;
 ```
 
 ---
@@ -73,7 +73,7 @@ readonly runOptions: TRunOptions;
 ### steps
 
 ```ts
-readonly steps: readonly PipelineStep&lt;string&gt;[];
+readonly steps: readonly PipelineStep<string>[];
 ```
 
 ---
@@ -89,7 +89,7 @@ readonly userState: TUserState;
 ### helperExecution?
 
 ```ts
-readonly optional helperExecution: ReadonlyMap&lt;string, HelperExecutionSnapshot&lt;string&gt;&gt;;
+readonly optional helperExecution: ReadonlyMap<string, HelperExecutionSnapshot<string>>;
 ```
 
 ---

@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / HelperNext
 
-# Interface: HelperNext()&lt;TOutput&gt;
+# Interface: HelperNext()<TOutput>
 
 Explicit continuation for wrapping the remainder of a helper chain.
 
@@ -21,7 +21,7 @@ produced by those helpers.
 ## Call Signature
 
 ```ts
-HelperNext(): MaybePromise&lt;TOutput&gt;;
+HelperNext(): MaybePromise<TOutput>;
 ```
 
 Explicit continuation for wrapping the remainder of a helper chain.
@@ -32,12 +32,12 @@ produced by those helpers.
 
 ### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TOutput`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TOutput`>
 
 ## Call Signature
 
 ```ts
-HelperNext(output): MaybePromise&lt;TOutput&gt;;
+HelperNext(output): MaybePromise<TOutput>;
 ```
 
 Explicit continuation for wrapping the remainder of a helper chain.
@@ -54,4 +54,4 @@ produced by those helpers.
 
 ### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TOutput`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TOutput`>

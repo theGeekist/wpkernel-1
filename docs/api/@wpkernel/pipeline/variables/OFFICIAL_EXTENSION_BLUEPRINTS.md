@@ -18,7 +18,7 @@ Blueprint catalogue for official extensions that the pipeline team will own.
 import { OFFICIAL_EXTENSION_BLUEPRINTS } from '@wpkernel/pipeline/extensions';
 
 const liveRunner = OFFICIAL_EXTENSION_BLUEPRINTS.find(
-	(entry) =&gt; entry.id === 'live-runner'
+	(entry) => entry.id === 'live-runner'
 );
 
 if (liveRunner?.factory) {

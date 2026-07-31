@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / CreateHelperOptions
 
-# Interface: CreateHelperOptions&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
+# Interface: CreateHelperOptions<TContext, TInput, TOutput, TReporter, TKind>
 
 Options for creating a new helper.
 
@@ -35,7 +35,7 @@ Options for creating a new helper.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
+readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
 ```
 
 ---

@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / CreatePipelineOptions
 
-# Interface: CreatePipelineOptions&lt;TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt;
+# Interface: CreatePipelineOptions<TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
 
 Options for creating a pipeline.
 
@@ -40,7 +40,7 @@ Options for creating a pipeline.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](PipelineRunState.md)&lt;`TArtifact`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](PipelineRunState.md)<`TArtifact`, `TDiagnostic`>
 
 ### TFragmentInput
 
@@ -68,18 +68,18 @@ Options for creating a pipeline.
 
 ### TFragmentHelper
 
-`TFragmentHelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
+`TFragmentHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
+`TBuilderHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## Properties
 
 ### createBuilderArgs()
 
 ```ts
-readonly createBuilderArgs: (options) =&gt; HelperApplyOptions&lt;TContext, TBuilderInput, TBuilderOutput, TReporter&gt;;
+readonly createBuilderArgs: (options) => HelperApplyOptions<TContext, TBuilderInput, TBuilderOutput, TReporter>;
 ```
 
 #### Parameters
@@ -108,14 +108,14 @@ readonly createBuilderArgs: (options) =&gt; HelperApplyOptions&lt;TContext, TBui
 
 #### Returns
 
-[`HelperApplyOptions`](HelperApplyOptions.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`&gt;
+[`HelperApplyOptions`](HelperApplyOptions.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`>
 
 ---
 
 ### createBuildOptions()
 
 ```ts
-readonly createBuildOptions: (options) =&gt; TBuildOptions;
+readonly createBuildOptions: (options) => TBuildOptions;
 ```
 
 #### Parameters
@@ -133,7 +133,7 @@ readonly createBuildOptions: (options) =&gt; TBuildOptions;
 ### createContext()
 
 ```ts
-readonly createContext: (options) =&gt; TContext;
+readonly createContext: (options) => TContext;
 ```
 
 #### Parameters
@@ -151,7 +151,7 @@ readonly createContext: (options) =&gt; TContext;
 ### createFragmentArgs()
 
 ```ts
-readonly createFragmentArgs: (options) =&gt; HelperApplyOptions&lt;TContext, TFragmentInput, TFragmentOutput, TReporter&gt;;
+readonly createFragmentArgs: (options) => HelperApplyOptions<TContext, TFragmentInput, TFragmentOutput, TReporter>;
 ```
 
 #### Parameters
@@ -180,14 +180,14 @@ readonly createFragmentArgs: (options) =&gt; HelperApplyOptions&lt;TContext, TFr
 
 #### Returns
 
-[`HelperApplyOptions`](HelperApplyOptions.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`&gt;
+[`HelperApplyOptions`](HelperApplyOptions.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`>
 
 ---
 
 ### createFragmentState()
 
 ```ts
-readonly createFragmentState: (options) =&gt; TDraft;
+readonly createFragmentState: (options) => TDraft;
 ```
 
 #### Parameters
@@ -215,7 +215,7 @@ readonly createFragmentState: (options) =&gt; TDraft;
 ### finalizeFragmentState()
 
 ```ts
-readonly finalizeFragmentState: (options) =&gt; TArtifact;
+readonly finalizeFragmentState: (options) => TArtifact;
 ```
 
 #### Parameters
@@ -236,7 +236,7 @@ readonly finalizeFragmentState: (options) =&gt; TArtifact;
 
 ###### helpers
 
-[`FragmentFinalizationMetadata`](FragmentFinalizationMetadata.md)&lt;`TFragmentKind`&gt;
+[`FragmentFinalizationMetadata`](FragmentFinalizationMetadata.md)<`TFragmentKind`>
 
 ###### options
 
@@ -251,7 +251,7 @@ readonly finalizeFragmentState: (options) =&gt; TArtifact;
 ### adoptBuilderOutput()?
 
 ```ts
-readonly optional adoptBuilderOutput: (options) =&gt; TArtifact;
+readonly optional adoptBuilderOutput: (options) => TArtifact;
 ```
 
 Adopts a replacement builder output into the artifact returned by the run.
@@ -280,7 +280,7 @@ intentionally stage-local.
 ### adoptFragmentOutput()?
 
 ```ts
-readonly optional adoptFragmentOutput: (options) =&gt; TDraft;
+readonly optional adoptFragmentOutput: (options) => TDraft;
 ```
 
 Adopts a replacement fragment output into the draft used for finalization.
@@ -329,7 +329,7 @@ executed in a different pipeline stage).
 ### createConflictDiagnostic()?
 
 ```ts
-readonly optional createConflictDiagnostic: (options) =&gt; TDiagnostic;
+readonly optional createConflictDiagnostic: (options) => TDiagnostic;
 ```
 
 #### Parameters
@@ -357,7 +357,7 @@ readonly optional createConflictDiagnostic: (options) =&gt; TDiagnostic;
 ### createError()?
 
 ```ts
-readonly optional createError: (code, message) =&gt; Error;
+readonly optional createError: (code, message) => Error;
 ```
 
 #### Parameters
@@ -379,7 +379,7 @@ readonly optional createError: (code, message) =&gt; Error;
 ### createExtensionHookOptions()?
 
 ```ts
-readonly optional createExtensionHookOptions: (options) =&gt; PipelineExtensionHookOptions&lt;TContext, TRunOptions, TArtifact&gt;;
+readonly optional createExtensionHookOptions: (options) => PipelineExtensionHookOptions<TContext, TRunOptions, TArtifact>;
 ```
 
 #### Parameters
@@ -408,14 +408,14 @@ readonly optional createExtensionHookOptions: (options) =&gt; PipelineExtensionH
 
 #### Returns
 
-[`PipelineExtensionHookOptions`](PipelineExtensionHookOptions.md)&lt;`TContext`, `TRunOptions`, `TArtifact`&gt;
+[`PipelineExtensionHookOptions`](PipelineExtensionHookOptions.md)<`TContext`, `TRunOptions`, `TArtifact`>
 
 ---
 
 ### createMissingDependencyDiagnostic()?
 
 ```ts
-readonly optional createMissingDependencyDiagnostic: (options) =&gt; TDiagnostic;
+readonly optional createMissingDependencyDiagnostic: (options) => TDiagnostic;
 ```
 
 #### Parameters
@@ -443,7 +443,7 @@ readonly optional createMissingDependencyDiagnostic: (options) =&gt; TDiagnostic
 ### createRunResult()?
 
 ```ts
-readonly optional createRunResult: (options) =&gt; TRunResult;
+readonly optional createRunResult: (options) => TRunResult;
 ```
 
 #### Parameters
@@ -468,7 +468,7 @@ readonly `TDiagnostic`[]
 
 ###### helpers
 
-[`PipelineExecutionMetadata`](PipelineExecutionMetadata.md)&lt;`TFragmentKind`, `TBuilderKind`&gt;
+[`PipelineExecutionMetadata`](PipelineExecutionMetadata.md)<`TFragmentKind`, `TBuilderKind`>
 
 ###### options
 
@@ -476,7 +476,7 @@ readonly `TDiagnostic`[]
 
 ###### steps
 
-readonly [`PipelineStep`](PipelineStep.md)&lt;`string`&gt;[]
+readonly [`PipelineStep`](PipelineStep.md)<`string`>[]
 
 #### Returns
 
@@ -487,7 +487,7 @@ readonly [`PipelineStep`](PipelineStep.md)&lt;`string`&gt;[]
 ### createUnusedHelperDiagnostic()?
 
 ```ts
-readonly optional createUnusedHelperDiagnostic: (options) =&gt; TDiagnostic;
+readonly optional createUnusedHelperDiagnostic: (options) => TDiagnostic;
 ```
 
 #### Parameters
@@ -531,7 +531,7 @@ fragments).
 ### onDiagnostic()?
 
 ```ts
-readonly optional onDiagnostic: (options) =&gt; void;
+readonly optional onDiagnostic: (options) => void;
 ```
 
 Optional hook invoked whenever a diagnostic is emitted during a run.
@@ -560,7 +560,7 @@ pipeline executes instead of waiting for the final run result.
 ### onExtensionRollbackError()?
 
 ```ts
-readonly optional onExtensionRollbackError: (options) =&gt; void;
+readonly optional onExtensionRollbackError: (options) => void;
 ```
 
 #### Parameters
@@ -596,7 +596,7 @@ readonly `string`[]
 ### onHelperRollbackError()?
 
 ```ts
-readonly optional onHelperRollbackError: (options) =&gt; void;
+readonly optional onHelperRollbackError: (options) => void;
 ```
 
 #### Parameters

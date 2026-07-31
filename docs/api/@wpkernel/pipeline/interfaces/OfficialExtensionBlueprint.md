@@ -61,5 +61,5 @@ readonly summary: string;
 ### factory?
 
 ```ts
-readonly optional factory: ExtensionFactorySignature&lt;unknown&gt;;
+readonly optional factory: ExtensionFactorySignature<unknown>;
 ```

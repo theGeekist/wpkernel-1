@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineHelperStageOptions
 
-# Interface: PipelineHelperStageOptions&lt;TState, TContext, TInput, TOutput, TReporter, TKind, THelper&gt;
+# Interface: PipelineHelperStageOptions<TState, TContext, TInput, TOutput, TReporter, TKind, THelper>
 
 Options for constructing a typed helper stage.
 
@@ -36,14 +36,14 @@ Options for constructing a typed helper stage.
 
 ### THelper
 
-`THelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+`THelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
 
 ## Properties
 
 ### makeArgs()?
 
 ```ts
-readonly optional makeArgs: (state) =&gt; (entry) =&gt; HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;;
+readonly optional makeArgs: (state) => (entry) => HelperApplyOptions<TContext, TInput, TOutput, TReporter>;
 ```
 
 #### Parameters
@@ -55,25 +55,25 @@ readonly optional makeArgs: (state) =&gt; (entry) =&gt; HelperApplyOptions&lt;TC
 #### Returns
 
 ```ts
-(entry): HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;;
+(entry): HelperApplyOptions<TContext, TInput, TOutput, TReporter>;
 ```
 
 ##### Parameters
 
 ###### entry
 
-[`PipelineRegisteredHelper`](PipelineRegisteredHelper.md)&lt;`THelper`&gt;
+[`PipelineRegisteredHelper`](PipelineRegisteredHelper.md)<`THelper`>
 
 ##### Returns
 
-[`HelperApplyOptions`](HelperApplyOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`&gt;
+[`HelperApplyOptions`](HelperApplyOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`>
 
 ---
 
 ### onVisited()?
 
 ```ts
-readonly optional onVisited: (state, visited, registered, rollbacks, output) =&gt; TState;
+readonly optional onVisited: (state, visited, registered, rollbacks, output) => TState;
 ```
 
 #### Parameters
@@ -84,15 +84,15 @@ readonly optional onVisited: (state, visited, registered, rollbacks, output) =&g
 
 ##### visited
 
-`ReadonlySet`&lt;`string`&gt;
+`ReadonlySet`<`string`>
 
 ##### registered
 
-readonly [`PipelineRegisteredHelper`](PipelineRegisteredHelper.md)&lt;`THelper`&gt;[]
+readonly [`PipelineRegisteredHelper`](PipelineRegisteredHelper.md)<`THelper`>[]
 
 ##### rollbacks
 
-readonly [`PipelineHelperRollback`](PipelineHelperRollback.md)&lt;`THelper`&gt;[]
+readonly [`PipelineHelperRollback`](PipelineHelperRollback.md)<`THelper`>[]
 
 ##### output
 
@@ -107,7 +107,7 @@ readonly [`PipelineHelperRollback`](PipelineHelperRollback.md)&lt;`THelper`&gt;[
 ### writeOutput()?
 
 ```ts
-readonly optional writeOutput: (state, output) =&gt; TState;
+readonly optional writeOutput: (state, output) => TState;
 ```
 
 #### Parameters

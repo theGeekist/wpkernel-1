@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineHelperRollback
 
-# Interface: PipelineHelperRollback&lt;THelper&gt;
+# Interface: PipelineHelperRollback<THelper>
 
 A rollback captured while executing a helper stage.
 

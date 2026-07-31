@@ -16,7 +16,7 @@ if the pipeline encounters a failure, enabling cleanup and state restoration.
 ### run()
 
 ```ts
-readonly run: () =&gt; unknown;
+readonly run: () => unknown;
 ```
 
 #### Returns

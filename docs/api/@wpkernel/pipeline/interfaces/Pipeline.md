@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / Pipeline
 
-# Interface: Pipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt;
+# Interface: Pipeline<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
 
 A pipeline instance with helper registration and execution methods.
 
@@ -64,11 +64,11 @@ A pipeline instance with helper registration and execution methods.
 
 ### TFragmentHelper
 
-`TFragmentHelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
+`TFragmentHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
+`TBuilderHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## Properties
 
@@ -89,7 +89,7 @@ readonly builders: object;
 #### use()
 
 ```ts
-use: (helper) =&gt; void;
+use: (helper) => void;
 ```
 
 ##### Parameters
@@ -113,14 +113,14 @@ readonly extensions: object;
 #### use()
 
 ```ts
-use: (extension) =&gt; unknown;
+use: (extension) => unknown;
 ```
 
 ##### Parameters
 
 ###### extension
 
-`StandardPipelineExtension`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TBuildOptions`, `TArtifact`, `TFragmentInput`, `TFragmentOutput`, `TBuilderInput`, `TBuilderOutput`, `TDiagnostic`, `TFragmentKind`, `TBuilderKind`, `TFragmentHelper`, `TBuilderHelper`&gt;
+`StandardPipelineExtension`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TBuildOptions`, `TArtifact`, `TFragmentInput`, `TFragmentOutput`, `TBuilderInput`, `TBuilderOutput`, `TDiagnostic`, `TFragmentKind`, `TBuilderKind`, `TFragmentHelper`, `TBuilderHelper`>
 
 ##### Returns
 
@@ -145,7 +145,7 @@ readonly ir: object;
 #### use()
 
 ```ts
-use: (helper) =&gt; void;
+use: (helper) => void;
 ```
 
 ##### Parameters
@@ -163,7 +163,7 @@ use: (helper) =&gt; void;
 ### run()
 
 ```ts
-run: (options) =&gt; MaybePromise&lt;TRunResult&gt;;
+run: (options) => MaybePromise<TRunResult>;
 ```
 
 #### Parameters
@@ -174,21 +174,21 @@ run: (options) =&gt; MaybePromise&lt;TRunResult&gt;;
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult`>
 
 ---
 
 ### use()
 
 ```ts
-use: (helper) =&gt; void;
+use: (helper) => void;
 ```
 
 #### Parameters
 
 ##### helper
 
-`TFragmentHelper` | `TBuilderHelper` | [`Helper`](Helper.md)&lt;`TContext`, `unknown`, `unknown`, `TReporter`, `string`&gt;
+`TFragmentHelper` | `TBuilderHelper` | [`Helper`](Helper.md)<`TContext`, `unknown`, `unknown`, `TReporter`, `string`>
 
 #### Returns
 

@@ -7,7 +7,7 @@
 # Function: makePipeline()
 
 ```ts
-function makePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;(options): AgnosticPipeline&lt;TRunOptions, TRunResult, TContext, TReporter&gt;;
+function makePipeline<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>(options): AgnosticPipeline<TRunOptions, TRunResult, TContext, TReporter>;
 ```
 
 ## Type Parameters
@@ -34,7 +34,7 @@ function makePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnost
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TUserState`, `TDiagnostic`>
 
 ### TKind
 
@@ -44,8 +44,8 @@ function makePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnost
 
 ### options
 
-[`AgnosticPipelineOptions`](../interfaces/AgnosticPipelineOptions.md)&lt;`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`&gt;
+[`AgnosticPipelineOptions`](../interfaces/AgnosticPipelineOptions.md)<`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`>
 
 ## Returns
 
-`AgnosticPipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`&gt;
+`AgnosticPipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`>

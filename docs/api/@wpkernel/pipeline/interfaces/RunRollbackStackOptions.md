@@ -21,7 +21,7 @@ readonly source: "extension" | "helper";
 ### onError()?
 
 ```ts
-readonly optional onError: (args) =&gt; void;
+readonly optional onError: (args) => void;
 ```
 
 #### Parameters

@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStageDependencies
 
-# Interface: PipelineStageDependencies&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult, TKind&gt;
+# Interface: PipelineStageDependencies<TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult, TKind>
 
 Stable, domain-neutral dependencies supplied to `createStages`.
 
@@ -32,7 +32,7 @@ Stable, domain-neutral dependencies supplied to `createStages`.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](PipelineRunState.md)<`TUserState`, `TDiagnostic`>
 
 ### TKind
 
@@ -43,7 +43,7 @@ Stable, domain-neutral dependencies supplied to `createStages`.
 ### commitStage
 
 ```ts
-readonly commitStage: PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly commitStage: PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 ---
@@ -51,7 +51,7 @@ readonly commitStage: PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserS
 ### diagnostics
 
 ```ts
-readonly diagnostics: PipelineStageDiagnostics&lt;TDiagnostic, TKind&gt;;
+readonly diagnostics: PipelineStageDiagnostics<TDiagnostic, TKind>;
 ```
 
 ---
@@ -73,7 +73,7 @@ readonly optional lifecycles: readonly string[];
 ### finalizeResult
 
 ```ts
-readonly finalizeResult: PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly finalizeResult: PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 ---
@@ -81,7 +81,7 @@ readonly finalizeResult: PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUs
 ### halt()
 
 ```ts
-readonly halt: (error?) =&gt; PipelineHalt&lt;TRunResult&gt;;
+readonly halt: (error?) => PipelineHalt<TRunResult>;
 ```
 
 #### Parameters
@@ -92,14 +92,14 @@ readonly halt: (error?) =&gt; PipelineHalt&lt;TRunResult&gt;;
 
 #### Returns
 
-[`PipelineHalt`](PipelineHalt.md)&lt;`TRunResult`&gt;
+[`PipelineHalt`](PipelineHalt.md)<`TRunResult`>
 
 ---
 
 ### isHalt()
 
 ```ts
-readonly isHalt: (value) =&gt; value is PipelineHalt&lt;TRunResult&gt;;
+readonly isHalt: (value) => value is PipelineHalt<TRunResult>;
 ```
 
 #### Parameters
@@ -110,14 +110,14 @@ readonly isHalt: (value) =&gt; value is PipelineHalt&lt;TRunResult&gt;;
 
 #### Returns
 
-`value is PipelineHalt&lt;TRunResult&gt;`
+`value is PipelineHalt<TRunResult>`
 
 ---
 
 ### makeHelperStage()
 
 ```ts
-readonly makeHelperStage: &lt;TInput, TOutput, TSelectedKind, THelper&gt;(kind, options?) =&gt; PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly makeHelperStage: <TInput, TOutput, TSelectedKind, THelper>(kind, options?) => PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 #### Type Parameters
@@ -136,7 +136,7 @@ readonly makeHelperStage: &lt;TInput, TOutput, TSelectedKind, THelper&gt;(kind, 
 
 ##### THelper
 
-`THelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt;
+`THelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`> = [`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`>
 
 #### Parameters
 
@@ -146,18 +146,18 @@ readonly makeHelperStage: &lt;TInput, TOutput, TSelectedKind, THelper&gt;(kind, 
 
 ##### options?
 
-[`PipelineHelperStageOptions`](PipelineHelperStageOptions.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`, `THelper`&gt;
+[`PipelineHelperStageOptions`](PipelineHelperStageOptions.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`, `THelper`>
 
 #### Returns
 
-[`PipelineStage`](../type-aliases/PipelineStage.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TRunResult`&gt;
+[`PipelineStage`](../type-aliases/PipelineStage.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TRunResult`>
 
 ---
 
 ### makeLifecycleStage()
 
 ```ts
-readonly makeLifecycleStage: (lifecycle) =&gt; PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly makeLifecycleStage: (lifecycle) => PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 #### Parameters
@@ -168,21 +168,21 @@ readonly makeLifecycleStage: (lifecycle) =&gt; PipelineStage&lt;PipelineStageSta
 
 #### Returns
 
-[`PipelineStage`](../type-aliases/PipelineStage.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TRunResult`&gt;
+[`PipelineStage`](../type-aliases/PipelineStage.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TRunResult`>
 
 ---
 
 ### pause()?
 
 ```ts
-readonly optional pause: (state, options?) =&gt; PipelinePaused&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;&gt;;
+readonly optional pause: (state, options?) => PipelinePaused<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>>;
 ```
 
 #### Parameters
 
 ##### state
 
-[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;
+[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>
 
 ##### options?
 
@@ -190,4 +190,4 @@ readonly optional pause: (state, options?) =&gt; PipelinePaused&lt;PipelineStage
 
 #### Returns
 
-[`PipelinePaused`](PipelinePaused.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;&gt;
+[`PipelinePaused`](PipelinePaused.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>>

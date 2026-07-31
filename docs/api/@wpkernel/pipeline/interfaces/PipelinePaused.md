@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelinePaused
 
-# Interface: PipelinePaused&lt;TState&gt;
+# Interface: PipelinePaused<TState>
 
 Pause result returned from a pipeline run.
 
@@ -27,5 +27,5 @@ readonly __paused: true;
 ### snapshot
 
 ```ts
-readonly snapshot: PipelinePauseSnapshot&lt;TState&gt;;
+readonly snapshot: PipelinePauseSnapshot<TState>;
 ```

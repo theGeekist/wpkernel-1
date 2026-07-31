@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / AgnosticPipelineOptions
 
-# Interface: AgnosticPipelineOptions&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;
+# Interface: AgnosticPipelineOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>
 
 Options for creating an agnostic core pipeline.
 
@@ -35,7 +35,7 @@ allowing purely configuration-driven helper kinds.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](PipelineRunState.md)<`TUserState`, `TDiagnostic`>
 
 ### TKind
 
@@ -46,7 +46,7 @@ allowing purely configuration-driven helper kinds.
 ### createContext()
 
 ```ts
-readonly createContext: (options) =&gt; TContext;
+readonly createContext: (options) => TContext;
 ```
 
 #### Parameters
@@ -74,7 +74,7 @@ List of helper kinds to manage registered helpers for.
 ### createConflictDiagnostic()?
 
 ```ts
-readonly optional createConflictDiagnostic: (options) =&gt; TDiagnostic;
+readonly optional createConflictDiagnostic: (options) => TDiagnostic;
 ```
 
 #### Parameters
@@ -102,7 +102,7 @@ readonly optional createConflictDiagnostic: (options) =&gt; TDiagnostic;
 ### createError()?
 
 ```ts
-readonly optional createError: (code, message) =&gt; Error;
+readonly optional createError: (code, message) => Error;
 ```
 
 #### Parameters
@@ -124,7 +124,7 @@ readonly optional createError: (code, message) =&gt; Error;
 ### createMissingDependencyDiagnostic()?
 
 ```ts
-readonly optional createMissingDependencyDiagnostic: (options) =&gt; TDiagnostic;
+readonly optional createMissingDependencyDiagnostic: (options) => TDiagnostic;
 ```
 
 #### Parameters
@@ -152,7 +152,7 @@ readonly optional createMissingDependencyDiagnostic: (options) =&gt; TDiagnostic
 ### createRunResult()?
 
 ```ts
-readonly optional createRunResult: (options) =&gt; TRunResult;
+readonly optional createRunResult: (options) => TRunResult;
 ```
 
 Adapts the generic run result (state) into the desired TRunResult.
@@ -179,11 +179,11 @@ readonly `TDiagnostic`[]
 
 ###### state
 
-[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;
+[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>
 
 ###### steps
 
-readonly [`PipelineStep`](PipelineStep.md)&lt;`string`&gt;[]
+readonly [`PipelineStep`](PipelineStep.md)<`string`>[]
 
 #### Returns
 
@@ -194,7 +194,7 @@ readonly [`PipelineStep`](PipelineStep.md)&lt;`string`&gt;[]
 ### createStages()?
 
 ```ts
-readonly optional createStages: (deps) =&gt; readonly PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;[];
+readonly optional createStages: (deps) => readonly PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>[];
 ```
 
 Factory for pipeline stages.
@@ -205,18 +205,18 @@ Use this to reinstate standard pipeline behaviors or implement custom flows.
 
 ##### deps
 
-[`PipelineStageDependencies`](PipelineStageDependencies.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`, `TRunResult`, `TKind`&gt;
+[`PipelineStageDependencies`](PipelineStageDependencies.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`, `TRunResult`, `TKind`>
 
 #### Returns
 
-readonly [`PipelineStage`](../type-aliases/PipelineStage.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TRunResult`&gt;[]
+readonly [`PipelineStage`](../type-aliases/PipelineStage.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TRunResult`>[]
 
 ---
 
 ### createState()?
 
 ```ts
-readonly optional createState: (options) =&gt; TUserState;
+readonly optional createState: (options) => TUserState;
 ```
 
 Factory for initial state.
@@ -243,7 +243,7 @@ Consumers can seed the state with arbitrary data needed by their stages.
 ### createUnusedHelperDiagnostic()?
 
 ```ts
-readonly optional createUnusedHelperDiagnostic: (options) =&gt; TDiagnostic;
+readonly optional createUnusedHelperDiagnostic: (options) => TDiagnostic;
 ```
 
 #### Parameters
@@ -281,7 +281,7 @@ readonly optional lifecycles: readonly string[];
 ### onDiagnostic()?
 
 ```ts
-readonly optional onDiagnostic: (options) =&gt; void;
+readonly optional onDiagnostic: (options) => void;
 ```
 
 Callback for observing diagnostics as they are added.
@@ -307,7 +307,7 @@ Callback for observing diagnostics as they are added.
 ### onExtensionRollbackError()?
 
 ```ts
-readonly optional onExtensionRollbackError: (options) =&gt; void;
+readonly optional onExtensionRollbackError: (options) => void;
 ```
 
 #### Parameters
@@ -343,7 +343,7 @@ readonly `string`[]
 ### providedKeys?
 
 ```ts
-readonly optional providedKeys: Partial&lt;Record&lt;TKind, readonly string[]&gt;&gt;;
+readonly optional providedKeys: Partial<Record<TKind, readonly string[]>>;
 ```
 
 Map of helper keys that should be treated as "already satisfied" for dependency resolution.

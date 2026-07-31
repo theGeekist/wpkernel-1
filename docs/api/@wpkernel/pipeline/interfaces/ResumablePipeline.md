@@ -4,13 +4,13 @@
 
 [@wpkernel/pipeline](../README.md) / ResumablePipeline
 
-# Interface: ResumablePipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TState&gt;
+# Interface: ResumablePipeline<TRunOptions, TRunResult, TContext, TReporter, TState>
 
 A resumable pipeline instance.
 
 ## Extends
 
-- `PipelineBase`&lt;`TRunOptions`, `TContext`, `TReporter`, `ResumablePipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`&gt;&gt;
+- `PipelineBase`<`TRunOptions`, `TContext`, `TReporter`, `ResumablePipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`>>
 
 ## Type Parameters
 
@@ -45,14 +45,14 @@ readonly extensions: object;
 #### use()
 
 ```ts
-use: (extension) =&gt; unknown;
+use: (extension) => unknown;
 ```
 
 ##### Parameters
 
 ###### extension
 
-[`PipelineExtension`](PipelineExtension.md)&lt;`ResumablePipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`&gt;, `TContext`, `TRunOptions`, `unknown`&gt;
+[`PipelineExtension`](PipelineExtension.md)<`ResumablePipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`>, `TContext`, `TRunOptions`, `unknown`>
 
 ##### Returns
 
@@ -69,14 +69,14 @@ PipelineBase.extensions;
 ### resume()
 
 ```ts
-resume: (snapshot, resumeInput?) =&gt; MaybePromise&lt;TRunResult | PipelinePaused&lt;TState&gt;&gt;;
+resume: (snapshot, resumeInput?) => MaybePromise<TRunResult | PipelinePaused<TState>>;
 ```
 
 #### Parameters
 
 ##### snapshot
 
-[`PipelinePauseSnapshot`](PipelinePauseSnapshot.md)&lt;`TState`&gt;
+[`PipelinePauseSnapshot`](PipelinePauseSnapshot.md)<`TState`>
 
 ##### resumeInput?
 
@@ -84,14 +84,14 @@ resume: (snapshot, resumeInput?) =&gt; MaybePromise&lt;TRunResult | PipelinePaus
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)&lt;`TState`&gt;&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)<`TState`>>
 
 ---
 
 ### run()
 
 ```ts
-run: (options) =&gt; MaybePromise&lt;TRunResult | PipelinePaused&lt;TState&gt;&gt;;
+run: (options) => MaybePromise<TRunResult | PipelinePaused<TState>>;
 ```
 
 #### Parameters
@@ -102,14 +102,14 @@ run: (options) =&gt; MaybePromise&lt;TRunResult | PipelinePaused&lt;TState&gt;&g
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)&lt;`TState`&gt;&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)<`TState`>>
 
 ---
 
 ### use()
 
 ```ts
-use: &lt;TInput, TOutput, TKind&gt;(helper) =&gt; void;
+use: <TInput, TOutput, TKind>(helper) => void;
 ```
 
 Generic helper registration.
@@ -132,7 +132,7 @@ Generic helper registration.
 
 ##### helper
 
-[`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+[`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
 
 #### Returns
 
@@ -149,7 +149,7 @@ PipelineBase.use;
 ### providedKeys?
 
 ```ts
-readonly optional providedKeys: Record&lt;string, readonly string[]&gt;;
+readonly optional providedKeys: Record<string, readonly string[]>;
 ```
 
 Map of helper keys that should be treated as "already satisfied" for dependency resolution.

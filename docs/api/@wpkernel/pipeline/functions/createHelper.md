@@ -7,7 +7,7 @@
 # Function: createHelper()
 
 ```ts
-function createHelper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;(options): Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;;
+function createHelper<TContext, TInput, TOutput, TReporter, TKind>(options): Helper<TContext, TInput, TOutput, TReporter, TKind>;
 ```
 
 Creates a pipeline helper-the fundamental building block of WPKernel's code generation system.
@@ -98,11 +98,11 @@ This design enables:
 
 ### options
 
-[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
 
 ## Returns
 
-[`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+[`Helper`](../interfaces/Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
 
 ## Examples
 
@@ -116,10 +116,10 @@ const addPHPTag = createHelper({
   mode: 'extend',
   priority: 100, // Run early in pipeline
   origin: 'wp-kernel-core',
-  apply: ({ fragment }) =&gt; {
+  apply: ({ fragment }) => {
     fragment.children.unshift({
       kind: 'text',
-      text: '&lt;?php\n',
+      text: '<?php\n',
     });
   },
 });
@@ -131,7 +131,7 @@ const addNamespaceDeclaration = createHelper({
   key: 'add-namespace',
   kind: 'fragment',
   dependsOn: ['detect-namespace'], // Won't run until this completes
-  apply: ({ fragment, context }) =&gt; {
+  apply: ({ fragment, context }) => {
     const ns = context.detectedNamespace;
     fragment.children.push({
       kind: 'namespace',
@@ -147,7 +147,7 @@ import { createHelper, createPipelineRollback } from '@wpkernel/pipeline';
 const writeFileHelper = createHelper({
   key: 'write-file',
   kind: 'builder',
-  apply: ({ output, context }) =&gt; {
+  apply: ({ output, context }) => {
     const path = context.outputPath;
     const before = [...output]; // Capture current in-memory state
 
@@ -155,7 +155,7 @@ const writeFileHelper = createHelper({
 
     return {
       rollback: createPipelineRollback(
-        () =&gt; {
+        () => {
           output.length = 0;
           output.push(...before);
         },
@@ -174,7 +174,7 @@ const formatCodeHelper = createHelper({
   key: 'format-code',
   kind: 'builder',
   dependsOn: ['write-file'],
-  apply: async ({ output, context }) =&gt; {
+  apply: async ({ output, context }) => {
     try {
       const formatted = await prettier.format(output.join(''), {
         parser: 'php',

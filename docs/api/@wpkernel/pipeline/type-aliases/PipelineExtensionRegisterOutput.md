@@ -4,13 +4,13 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineExtensionRegisterOutput
 
-# Type Alias: PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt;
+# Type Alias: PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact>
 
 ```ts
-type PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt; =
+type PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact> =
   | void
-  | PipelineExtensionHook&lt;TContext, TOptions, TArtifact&gt;
-| PipelineExtensionHookRegistration&lt;TContext, TOptions, TArtifact&gt;;
+  | PipelineExtensionHook<TContext, TOptions, TArtifact>
+| PipelineExtensionHookRegistration<TContext, TOptions, TArtifact>;
 ```
 
 ## Type Parameters
