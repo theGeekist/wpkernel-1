@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -31,7 +31,10 @@ A pipeline extension descriptor.
 ### register()
 
 ```ts
-register: (pipeline) => MaybePromise<PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact>>;
+register: (pipeline) =>
+	MaybePromise<
+		PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact>
+	>;
 ```
 
 #### Parameters

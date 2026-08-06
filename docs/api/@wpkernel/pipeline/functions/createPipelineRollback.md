@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -45,12 +45,12 @@ A rollback descriptor with the run function and metadata
 
 ```typescript
 const rollback = createPipelineRollback(
-  () => {
-    cleanup();
-  },
-  {
-    key: 'my-helper',
-    label: 'Restore previous state',
-  }
+	() => {
+		cleanup();
+	},
+	{
+		key: 'my-helper',
+		label: 'Restore previous state',
+	}
 );
 ```

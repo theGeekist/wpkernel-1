@@ -64,6 +64,14 @@ readonly optional contentModel: PluginContentModelConfig;
 
 ---
 
+### resourceControllers?
+
+```ts
+readonly optional resourceControllers: readonly PluginLoaderControllerConfig[];
+```
+
+---
+
 ### ui?
 
 ```ts

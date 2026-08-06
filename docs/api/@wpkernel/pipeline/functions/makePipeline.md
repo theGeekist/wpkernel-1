@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -7,7 +7,15 @@
 # Function: makePipeline()
 
 ```ts
-function makePipeline<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>(options): AgnosticPipeline<TRunOptions, TRunResult, TContext, TReporter>;
+function makePipeline<
+	TRunOptions,
+	TContext,
+	TReporter,
+	TUserState,
+	TDiagnostic,
+	TRunResult,
+	TKind,
+>(options): AgnosticPipeline<TRunOptions, TRunResult, TContext, TReporter>;
 ```
 
 ## Type Parameters

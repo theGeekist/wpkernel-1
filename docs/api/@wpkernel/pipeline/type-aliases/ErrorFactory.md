@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -37,5 +37,5 @@ An Error instance
 
 ```typescript
 const createError = (code: string, message: string) =>
-  new MyCustomError(code, { message });
+	new MyCustomError(code, { message });
 ```

@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -7,7 +7,23 @@
 # Function: makeResumablePipeline()
 
 ```ts
-function makeResumablePipeline<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>(options): ResumablePipeline<TRunOptions, TRunResult, TContext, TReporter, AgnosticState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>>;
+function makeResumablePipeline<
+	TRunOptions,
+	TContext,
+	TReporter,
+	TUserState,
+	TDiagnostic,
+	TRunResult,
+	TKind,
+>(
+	options
+): ResumablePipeline<
+	TRunOptions,
+	TRunResult,
+	TContext,
+	TReporter,
+	AgnosticState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>
+>;
 ```
 
 ## Type Parameters

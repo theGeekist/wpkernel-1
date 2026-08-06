@@ -1,50 +1,36 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "react",
-    "jsxFactory": "wp.element.createElement",
-    "jsxFragmentFactory": "wp.element.Fragment",
-    "strict": true,
-    "esModuleInterop": true,
-    "moduleDetection": "force",
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "types": [
-      "node",
-      "@wordpress/element"
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "src/app/application/*"
-      ],
-      "@/admin/*": [
-        "src/app/application/admin/*"
-      ],
-      "@/resources/*": [
-        "src/app/application/resources/*"
-      ]
-    }
-  },
-  "include": [
-    "src/app/application/**/*",
-    "src/app/job/**/*",
-    "src/blocks/src/blocks/application/**/*",
-    "src/blocks/src/blocks/job/**/*",
-    "src/blocks/src/blocks/jobcategory/**/*",
-    "src/blocks/src/blocks/settings/**/*",
-    "src/blocks/src/blocks/statuscache/**/*",
-    "inc/Rest/**/*",
-    "wpk.config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    ".wpk/bundler/**/*"
-  ]
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"jsx": "react",
+		"jsxFactory": "wp.element.createElement",
+		"jsxFragmentFactory": "wp.element.Fragment",
+		"strict": true,
+		"esModuleInterop": true,
+		"moduleDetection": "force",
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"types": ["node", "@wordpress/element"],
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/app/application/*"],
+			"@/admin/*": ["src/app/application/admin/*"],
+			"@/resources/*": ["src/app/application/resources/*"]
+		}
+	},
+	"include": [
+		"src/app/application/**/*",
+		"src/app/job/**/*",
+		"src/blocks/src/blocks/application/**/*",
+		"src/blocks/src/blocks/job/**/*",
+		"src/blocks/src/blocks/jobcategory/**/*",
+		"src/blocks/src/blocks/settings/**/*",
+		"src/blocks/src/blocks/statuscache/**/*",
+		"inc/Rest/**/*",
+		"wpk.config.ts"
+	],
+	"exclude": ["node_modules", "dist", "build", ".wpk/bundler/**/*"]
 }

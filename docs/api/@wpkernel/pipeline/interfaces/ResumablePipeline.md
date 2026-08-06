@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -69,7 +69,8 @@ PipelineBase.extensions;
 ### resume()
 
 ```ts
-resume: (snapshot, resumeInput?) => MaybePromise<TRunResult | PipelinePaused<TState>>;
+resume: (snapshot, resumeInput?) =>
+	MaybePromise<TRunResult | PipelinePaused<TState>>;
 ```
 
 #### Parameters

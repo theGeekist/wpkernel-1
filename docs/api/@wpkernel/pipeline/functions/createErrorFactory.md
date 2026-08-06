@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -30,13 +30,13 @@ An error factory function
 
 ```typescript
 class WPKernelError extends Error {
-  constructor(code: string, options: { message: string }) {
-    super(options.message);
-    this.name = code;
-  }
+	constructor(code: string, options: { message: string }) {
+		super(options.message);
+		this.name = code;
+	}
 }
 
 const createError = createErrorFactory(
-  (code, message) => new WPKernelError(code, { message })
+	(code, message) => new WPKernelError(code, { message })
 );
 ```

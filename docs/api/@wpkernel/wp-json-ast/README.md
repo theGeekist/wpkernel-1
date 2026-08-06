@@ -96,6 +96,7 @@
 - [PhpChannelHelperOptions](interfaces/PhpChannelHelperOptions.md)
 - [PhpChannelHelpers](interfaces/PhpChannelHelpers.md)
 - [PhpProgramAction](interfaces/PhpProgramAction.md)
+- [PluginLoaderControllerConfig](interfaces/PluginLoaderControllerConfig.md)
 - [PluginLoaderMeta](interfaces/PluginLoaderMeta.md)
 - [PluginLoaderProgramConfig](interfaces/PluginLoaderProgramConfig.md)
 - [ProgramTargetFile](interfaces/ProgramTargetFile.md)

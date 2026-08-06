@@ -16,7 +16,7 @@ type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (
 Function signature for a pipeline helper's apply method.
 
 This function is responsible for transforming the pipeline's input and output.
-It can optionally call `next()` to pass control to the next helper in the pipeline.
+It can optionally call `next()` to wrap the remainder of the helper chain.
 
 Helpers can also return a result object with transformed output and optional rollback
 for cleanup if the pipeline fails after the helper executes.
@@ -57,9 +57,9 @@ Options for the apply function, including context, input, output, and reporter.
 
 ### next?
 
-() => `MaybePromise`<`void`>
+`HelperNext`<`TOutput`>
 
-Optional function to call the next helper in the pipeline.
+Optional continuation that returns the downstream output.
 
 ## Returns
 

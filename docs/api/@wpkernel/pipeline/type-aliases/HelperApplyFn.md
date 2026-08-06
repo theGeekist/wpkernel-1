@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -7,9 +7,10 @@
 # Type Alias: HelperApplyFn<TContext, TInput, TOutput, TReporter>
 
 ```ts
-type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (options, next?) => MaybePromise<
-  | HelperApplyResult<TOutput>
-| void>;
+type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (
+	options,
+	next?
+) => MaybePromise<HelperApplyResult<TOutput> | void>;
 ```
 
 Function signature for a pipeline helper's apply method.

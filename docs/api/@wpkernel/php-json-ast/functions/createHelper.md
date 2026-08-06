@@ -52,10 +52,11 @@ The pipeline automatically:
 
 ### Apply results & rollback
 
-Helpers typically perform their work by mutating the provided `fragment` or `output` in place and optionally calling `next()` to continue the chain.
-For more advanced scenarios, a helper can **also return** a result object:
+Helpers may mutate the provided `fragment` or `output` in place, or return a replacement output for immutable composition.
+Calling `next(output?)` is an advanced escape hatch for wrapping the remainder of the chain; it returns the final downstream output.
+A helper can return a result object containing:
 
-- `output` — an updated output value to feed into subsequent helpers
+- `output` — an updated output value to feed into subsequent helpers, or the final post-`next()` replacement
 - `rollback` — a rollback operation created via `createPipelineRollback`, which will be executed if the pipeline fails after this helper completes
 
 Returning a result object is opt-in; existing helpers that return `void` remain valid and continue to behave as before.

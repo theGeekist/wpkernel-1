@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -8,9 +8,9 @@
 
 ```ts
 type PipelineDiagnostic<TKind> =
-  | ConflictDiagnostic<TKind>
-  | MissingDependencyDiagnostic<TKind>
-| UnusedHelperDiagnostic<TKind>;
+	| ConflictDiagnostic<TKind>
+	| MissingDependencyDiagnostic<TKind>
+	| UnusedHelperDiagnostic<TKind>;
 ```
 
 Union of all diagnostic types.

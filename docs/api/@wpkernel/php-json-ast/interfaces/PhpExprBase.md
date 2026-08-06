@@ -25,6 +25,7 @@ Base interface for all PHP expression nodes.
 - [`PhpExprFuncCall`](PhpExprFuncCall.md)
 - [`PhpExprNew`](PhpExprNew.md)
 - [`PhpExprConstFetch`](PhpExprConstFetch.md)
+- [`PhpExprInclude`](PhpExprInclude.md)
 - [`PhpExprBooleanNot`](PhpExprBooleanNot.md)
 - [`PhpExprInstanceof`](PhpExprInstanceof.md)
 - [`PhpExprBinaryOp`](PhpExprBinaryOp.md)

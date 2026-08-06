@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -8,9 +8,9 @@
 
 ```ts
 type PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact> =
-  | void
-  | PipelineExtensionHook<TContext, TOptions, TArtifact>
-| PipelineExtensionHookRegistration<TContext, TOptions, TArtifact>;
+	| void
+	| PipelineExtensionHook<TContext, TOptions, TArtifact>
+	| PipelineExtensionHookRegistration<TContext, TOptions, TArtifact>;
 ```
 
 ## Type Parameters

@@ -19,6 +19,7 @@ type PhpExpr =
 	| PhpExprFuncCall
 	| PhpExprNew
 	| PhpExprConstFetch
+	| PhpExprInclude
 	| PhpExprBooleanNot
 	| PhpExprInstanceof
 	| PhpExprBinaryOp

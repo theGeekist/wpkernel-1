@@ -34,6 +34,7 @@
 - [PhpExprCoalesce](interfaces/PhpExprCoalesce.md)
 - [PhpExprConstFetch](interfaces/PhpExprConstFetch.md)
 - [PhpExprFuncCall](interfaces/PhpExprFuncCall.md)
+- [PhpExprInclude](interfaces/PhpExprInclude.md)
 - [PhpExprInstanceof](interfaces/PhpExprInstanceof.md)
 - [PhpExprMatch](interfaces/PhpExprMatch.md)
 - [PhpExprMethodCall](interfaces/PhpExprMethodCall.md)
@@ -194,6 +195,7 @@
 - [PhpBuilderFactoryUseKind](type-aliases/PhpBuilderFactoryUseKind.md)
 - [PhpFileAst](type-aliases/PhpFileAst.md)
 - [PhpFileMetadata](type-aliases/PhpFileMetadata.md)
+- [PhpIncludeType](type-aliases/PhpIncludeType.md)
 - [PhpJsonAst](type-aliases/PhpJsonAst.md)
 - [PhpJsonNode](type-aliases/PhpJsonNode.md)
 - [PhpNodeFinderQueryKey](type-aliases/PhpNodeFinderQueryKey.md)
@@ -216,6 +218,7 @@
 ### Other
 
 - [DEFAULT_CODEMOD_STACK_KEY](variables/DEFAULT_CODEMOD_STACK_KEY.md)
+- [PHP_INCLUDE_TYPE](variables/PHP_INCLUDE_TYPE.md)
 
 ## Functions
 
@@ -253,7 +256,9 @@
 - [buildGroupUse](functions/buildGroupUse.md)
 - [buildIdentifier](functions/buildIdentifier.md)
 - [buildIfStatement](functions/buildIfStatement.md)
+- [buildInclude](functions/buildInclude.md)
 - [buildInstanceof](functions/buildInstanceof.md)
+- [buildMagicConstant](functions/buildMagicConstant.md)
 - [buildMatch](functions/buildMatch.md)
 - [buildMatchArm](functions/buildMatchArm.md)
 - [buildMethodCall](functions/buildMethodCall.md)

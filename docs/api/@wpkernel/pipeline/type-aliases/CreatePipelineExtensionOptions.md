@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.2.0**](../README.md)
+[**@wpkernel/pipeline v1.2.1**](../README.md)
 
 ---
 
@@ -8,8 +8,18 @@
 
 ```ts
 type CreatePipelineExtensionOptions<TPipeline, TContext, TOptions, TArtifact> =
-  | CreatePipelineExtensionWithRegister<TPipeline, TContext, TOptions, TArtifact>
-| CreatePipelineExtensionWithSetup<TPipeline, TContext, TOptions, TArtifact>;
+	| CreatePipelineExtensionWithRegister<
+			TPipeline,
+			TContext,
+			TOptions,
+			TArtifact
+	  >
+	| CreatePipelineExtensionWithSetup<
+			TPipeline,
+			TContext,
+			TOptions,
+			TArtifact
+	  >;
 ```
 
 ## Type Parameters
