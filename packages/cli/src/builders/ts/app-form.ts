@@ -807,7 +807,8 @@ function resolveFetchInfo(resource: IRResource): FetchInfo {
 	);
 	const routePath = getRoute?.path ?? `/${resource.name}/:${identityParam}`;
 	const pathTemplate = placeholders.reduce(
-		(path, placeholder) => path.replace(placeholder, '${editId}'),
+		(candidatePath, placeholder) =>
+			candidatePath.replace(placeholder, '${editId}'),
 		routePath
 	);
 

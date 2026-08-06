@@ -212,7 +212,15 @@ function generateFields(
 		const hasImplicitStatus = claimField(claimed, 'status');
 
 		if (hasImplicitStatus) {
-			writeField(writer, 'status', 'Status', 'text', namespace, true, false);
+			writeField(
+				writer,
+				'status',
+				'Status',
+				'text',
+				namespace,
+				true,
+				false
+			);
 		}
 		writeField(writer, 'date', 'Date', 'datetime', namespace, true, true);
 		writeMetaFields(writer, metaFields, namespace);
@@ -294,9 +302,9 @@ function collectMetaFieldEntries(
 	meta: Record<string, ResourcePostMetaDescriptor> | undefined,
 	claimed: Set<string>
 ): Array<[string, ResourcePostMetaDescriptor]> {
-	return Object.entries(meta ?? {}).filter(([key]) => claimField(claimed, key)) as Array<
-		[string, ResourcePostMetaDescriptor]
-	>;
+	return Object.entries(meta ?? {}).filter(([key]) =>
+		claimField(claimed, key)
+	) as Array<[string, ResourcePostMetaDescriptor]>;
 }
 
 function collectTaxonomyFieldEntries(
