@@ -89,12 +89,8 @@ describe('buildPluginLoaderProgram', () => {
 		const requireIndex = serialized.indexOf('"nodeType":"Expr_Include"');
 		const instantiateIndex = serialized.indexOf('"nodeType":"Expr_New"');
 
-		expect(serialized).toContain(
-			'"nodeType":"Scalar_MagicConst_Dir"'
-		);
-		expect(serialized).toContain(
-			'"value":"/inc/Rest/BooksController.php"'
-		);
+		expect(serialized).toContain('"nodeType":"Scalar_MagicConst_Dir"');
+		expect(serialized).toContain('"value":"/inc/Rest/BooksController.php"');
 		expect(classmapIndex).toBeGreaterThanOrEqual(0);
 		expect(requireIndex).toBeGreaterThan(classmapIndex);
 		expect(instantiateIndex).toBeGreaterThan(requireIndex);
