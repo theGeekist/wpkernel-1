@@ -20,6 +20,7 @@ const qualificationRoot = mkdtempSync(
 const source = String.raw`
 import {
 	createHelper,
+	isPromiseLike,
 	makePipeline,
 	type Helper,
 	type MaybePromise,
@@ -151,7 +152,7 @@ pipeline.use(
 				nodes: [...output.nodes, 'before-next'],
 				revision: output.revision + 1,
 			});
-			if (downstream instanceof Promise) {
+			if (isPromiseLike(downstream)) {
 				throw new Error('A synchronous helper chain became asynchronous.');
 			}
 			return {
@@ -165,7 +166,7 @@ pipeline.use(
 );
 
 export const result = pipeline.run({ source: 'post:1' });
-if (result instanceof Promise) {
+if (isPromiseLike(result)) {
 	throw new Error('A synchronous pipeline returned a Promise.');
 }
 const expected = ['first', 'before-next', 'after-next', 'custom-stage'];

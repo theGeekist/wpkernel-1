@@ -1,5 +1,60 @@
 import type { MaybePromise } from './types';
 
+type ThenMethod = (
+	onFulfilled: (value: unknown) => unknown,
+	onRejected?: (reason: unknown) => unknown
+) => unknown;
+
+/**
+ * Find a data-property `then` without invoking accessors or proxy traps.
+ * Values that cannot be inspected safely remain synchronous data.
+ *
+ * @param value - Candidate value to inspect.
+ */
+function findThenMethod(value: unknown): ThenMethod | null {
+	if (
+		(typeof value !== 'object' || value === null) &&
+		typeof value !== 'function'
+	) {
+		return null;
+	}
+
+	const seen = new Set<object>();
+	let cursor: object | null = value;
+	try {
+		while (cursor !== null && !seen.has(cursor)) {
+			seen.add(cursor);
+			const descriptor = Object.getOwnPropertyDescriptor(cursor, 'then');
+			if (descriptor !== undefined) {
+				return 'value' in descriptor &&
+					typeof descriptor.value === 'function'
+					? (descriptor.value as ThenMethod)
+					: null;
+			}
+			cursor = Object.getPrototypeOf(cursor);
+		}
+	} catch {
+		return null;
+	}
+	return null;
+}
+
+/**
+ * Adopt a previously inspected thenable without reading `.then` again.
+ *
+ * @param value - Original thenable receiver.
+ * @param then  - Captured data-property method.
+ */
+function adoptThenable<T>(value: unknown, then: ThenMethod): Promise<T> {
+	return new Promise<T>((resolve, reject) => {
+		try {
+			then.call(value, resolve as (value: unknown) => unknown, reject);
+		} catch (error) {
+			reject(error);
+		}
+	});
+}
+
 /**
  * Type guard to check if a value is promise-like (has a `.then` method).
  *
@@ -9,14 +64,7 @@ import type { MaybePromise } from './types';
  * @internal
  */
 export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
-	if (
-		(typeof value !== 'object' || value === null) &&
-		typeof value !== 'function'
-	) {
-		return false;
-	}
-
-	return typeof (value as PromiseLike<unknown>).then === 'function';
+	return findThenMethod(value) !== null;
 }
 
 /**
@@ -39,11 +87,12 @@ export function maybeThen<T, TResult>(
 		throw new TypeError('maybeThen: onFulfilled is not a function');
 	}
 
-	if (isPromiseLike(value)) {
-		return Promise.resolve(value).then(onFulfilled);
+	const then = findThenMethod(value);
+	if (then !== null) {
+		return adoptThenable<T>(value, then).then(onFulfilled);
 	}
 
-	return onFulfilled(value);
+	return onFulfilled(value as T);
 }
 
 /**
@@ -65,8 +114,11 @@ export function maybeTry<T>(
 	try {
 		const result = run();
 
-		if (isPromiseLike(result)) {
-			return Promise.resolve(result).catch((error) => onError(error));
+		const then = findThenMethod(result);
+		if (then !== null) {
+			return adoptThenable<T>(result, then).catch((error) =>
+				onError(error)
+			);
 		}
 
 		return result;
@@ -113,8 +165,9 @@ export function processSequentially<T>(
 			const item = items[index]!;
 			const result = handler(item, index);
 
-			if (isPromiseLike(result)) {
-				return Promise.resolve(result).then(() =>
+			const then = findThenMethod(result);
+			if (then !== null) {
+				return adoptThenable<void>(result, then).then(() =>
 					iterate(advance(index))
 				);
 			}
@@ -160,8 +213,29 @@ export const composeK =
 export function maybeAll<T>(
 	values: readonly MaybePromise<T>[]
 ): MaybePromise<T[]> {
-	if (values.some(isPromiseLike)) {
-		return Promise.all(values);
+	const methods = values.map(findThenMethod);
+	if (methods.every((method) => method === null)) {
+		return values.slice() as T[];
 	}
-	return values as T[];
+
+	const boxed = values.map((value, index) => {
+		const then = methods[index];
+		if (then === null || then === undefined) {
+			return Promise.resolve({ value: value as T });
+		}
+		return new Promise<{ value: T }>((resolve, reject) => {
+			try {
+				then.call(
+					value,
+					(resolved) => resolve({ value: resolved as T }),
+					reject
+				);
+			} catch (error) {
+				reject(error);
+			}
+		});
+	});
+	return Promise.all(boxed).then((resolved) =>
+		resolved.map(({ value }) => value)
+	);
 }

@@ -1,10 +1,10 @@
 import type { PipelineRollback } from './rollback.js';
 
 /**
- * A type that can be either a value or a Promise of a value.
+ * A type that can be either a value or a promise-compatible thenable.
  * @public
  */
-export type MaybePromise<T> = T | Promise<T>;
+export type MaybePromise<T> = T | PromiseLike<T>;
 
 /**
  * Helper kind identifier.

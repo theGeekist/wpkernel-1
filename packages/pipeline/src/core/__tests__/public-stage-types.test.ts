@@ -1,4 +1,5 @@
 import {
+	isPromiseLike,
 	makePipeline,
 	type Helper,
 	type MaybePromise,
@@ -71,7 +72,7 @@ describe('public custom-stage types', () => {
 				});
 				// @ts-expect-error replacement output must be CompilerState
 				next('invalid-output');
-				return downstream instanceof Promise
+				return isPromiseLike(downstream)
 					? downstream.then((finalOutput) => ({
 							output: finalOutput,
 						}))
