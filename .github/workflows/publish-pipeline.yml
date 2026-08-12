@@ -53,14 +53,14 @@ jobs:
             - name: Typecheck source
               run: pnpm --filter @wpkernel/pipeline typecheck
 
+            - name: Build
+              run: pnpm --filter @wpkernel/pipeline build
+
             - name: Typecheck tests
               run: pnpm --filter @wpkernel/pipeline typecheck:tests
 
             - name: Test with coverage
               run: pnpm --filter @wpkernel/pipeline test:coverage
-
-            - name: Build
-              run: pnpm --filter @wpkernel/pipeline build
 
             - name: Pack and qualify the release archive
               id: archive
