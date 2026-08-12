@@ -44,6 +44,74 @@ function createContext() {
 }
 
 describe('createReleasePackReadinessHelper', () => {
+	it('tracks only supported default package entry points', async () => {
+		const existing = new Set([
+			path.join(repoRoot, 'pnpm-workspace.yaml'),
+			path.join(repoRoot, 'packages', 'core', 'dist', 'index.js'),
+			path.join(repoRoot, 'packages', 'core', 'dist', 'index.d.ts'),
+			path.join(repoRoot, 'packages', 'pipeline', 'dist', 'index.js'),
+			path.join(repoRoot, 'packages', 'pipeline', 'dist', 'index.d.ts'),
+			path.join(repoRoot, 'packages', 'cli', 'dist', 'index.js'),
+			path.join(repoRoot, 'packages', 'cli', 'dist', 'index.d.ts'),
+			path.join(repoRoot, 'packages', 'php-json-ast', 'dist', 'index.js'),
+			path.join(
+				repoRoot,
+				'packages',
+				'php-json-ast',
+				'dist',
+				'index.d.ts'
+			),
+			path.join(
+				repoRoot,
+				'packages',
+				'php-json-ast',
+				'dist',
+				'php-driver.js'
+			),
+			path.join(
+				repoRoot,
+				'packages',
+				'php-json-ast',
+				'dist',
+				'php-driver.d.ts'
+			),
+			path.join(
+				repoRoot,
+				'packages',
+				'php-json-ast',
+				'php',
+				'ingest-program.php'
+			),
+			path.join(
+				repoRoot,
+				'packages',
+				'php-json-ast',
+				'php',
+				'pretty-print.php'
+			),
+			path.join(
+				repoRoot,
+				'packages',
+				'php-json-ast',
+				'vendor',
+				'autoload.php'
+			),
+			path.join(repoRoot, 'packages', 'create-wpk', 'dist', 'index.js'),
+		]);
+		const access = createAccessMock(async (targetPath) => {
+			if (!existing.has(targetPath)) {
+				throw makeNoEntry(targetPath);
+			}
+		});
+		const helper = createReleasePackReadinessHelper({
+			dependencies: { access },
+		});
+
+		const detection = await helper.detect(createContext());
+
+		expect(detection.status).toBe('ready');
+	});
+
 	it('reports ready when all artefacts exist', async () => {
 		const access = createAccessMock(async (targetPath) => {
 			if (targetPath === path.join(repoRoot, 'pnpm-workspace.yaml')) {

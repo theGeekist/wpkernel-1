@@ -59,10 +59,6 @@ const DEFAULT_MANIFEST: readonly ReleasePackManifestEntry[] = [
 		expectedArtifacts: [
 			path.join('dist', 'index.js'),
 			path.join('dist', 'index.d.ts'),
-			path.join('dist', 'core', 'index.js'),
-			path.join('dist', 'core', 'index.d.ts'),
-			path.join('dist', 'extensions', 'index.js'),
-			path.join('dist', 'core', 'extensions', 'index.d.ts'),
 		],
 	},
 	{
