@@ -1,4 +1,5 @@
 import { makePipeline } from '../makePipeline';
+import { createPipelineRollback } from '../rollback';
 import type { PipelineReporter } from '../types';
 
 describe('Multi-Lifecycle Rollback Bug', () => {
@@ -91,5 +92,71 @@ describe('Multi-Lifecycle Rollback Bug', () => {
 		}
 
 		expect(order2).toBeLessThan(order1);
+	});
+
+	it('unwinds helpers and extensions in reverse execution chronology', async () => {
+		const chronology: string[] = [];
+		const pipeline = makePipeline({
+			...baseOptions,
+			helperKinds: ['before', 'after', 'failure'],
+			createStages: (deps: any) => [
+				deps.makeHelperStage('before'),
+				deps.makeLifecycleStage('between'),
+				deps.makeHelperStage('after', {
+					writeOutput: (state: any, userState: unknown) => ({
+						context: state.context,
+						reporter: state.reporter,
+						runOptions: state.runOptions,
+						userState,
+						steps: state.steps,
+						diagnostics: state.diagnostics,
+						executedLifecycles: state.executedLifecycles,
+					}),
+				}),
+				deps.makeHelperStage('failure'),
+			],
+		});
+
+		for (const kind of ['before', 'after'] as const) {
+			pipeline.use({
+				key: kind,
+				kind,
+				mode: 'extend',
+				priority: 0,
+				dependsOn: [],
+				apply: ({ output }: any) => ({
+					output,
+					rollback: createPipelineRollback(() =>
+						chronology.push(kind)
+					),
+				}),
+			});
+		}
+		pipeline.extensions.use({
+			key: 'between',
+			register: () => ({
+				lifecycle: 'between',
+				hook: () => ({
+					rollback: () => {
+						chronology.push('extension');
+					},
+				}),
+			}),
+		});
+		pipeline.use({
+			key: 'failure',
+			kind: 'failure',
+			mode: 'extend',
+			priority: 0,
+			dependsOn: [],
+			apply: () => {
+				throw new Error('failed');
+			},
+		});
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('failed');
+		expect(chronology).toEqual(['after', 'extension', 'before']);
 	});
 });

@@ -250,8 +250,7 @@ export function makeHelperStageFactory<
 				helper.apply(args, next));
 
 		const registerPipelineRollback = (
-			rollbacks: RollbackEntry<THelper>[],
-			baseOffset: number
+			rollbacks: RollbackEntry<THelper>[]
 		) => {
 			const stageRollbacks = new Map<number, RollbackEntry<THelper>>();
 
@@ -274,11 +273,7 @@ export function makeHelperStageFactory<
 						const ordered = Array.from(stageRollbacks.entries())
 							.sort(([left], [right]) => left - right)
 							.map(([, entry]) => entry);
-						rollbacks.splice(
-							baseOffset,
-							rollbacks.length - baseOffset,
-							...ordered
-						);
+						rollbacks.splice(0, rollbacks.length, ...ordered);
 					}
 				}
 			};
@@ -315,10 +310,7 @@ export function makeHelperStageFactory<
 				helperExecution,
 			} as TState;
 
-			const rollbacks = [
-				...(spec.readRollbacks?.(state as TState) ?? []),
-			] as RollbackEntry<THelper>[];
-			const rollbackBaseOffset = rollbacks.length;
+			const rollbacks: RollbackEntry<THelper>[] = [];
 
 			const rollbackContext = toRollbackContext(state as TState);
 			const program = createHelpersProgram<
@@ -344,17 +336,18 @@ export function makeHelperStageFactory<
 					const visitedState = spec.onVisited(
 						nextState,
 						visited,
-						rollbacks.slice(rollbackBaseOffset),
+						rollbacks,
 						output
 					);
 					return spec.writeRollbacks
-						? spec.writeRollbacks(visitedState, rollbacks)
+						? spec.writeRollbacks(
+								visitedState,
+								rollbacks,
+								state as TState
+							)
 						: visitedState;
 				},
-				registerRollback: registerPipelineRollback(
-					rollbacks,
-					rollbackBaseOffset
-				),
+				registerRollback: registerPipelineRollback(rollbacks),
 			});
 
 			const rollbackPlan: HelperRollbackPlan<

@@ -31,7 +31,11 @@ import type {
 	PipelineStage as PublicPipelineStage,
 	PipelineStageState,
 } from '../types';
-import { rollbackStateToHalt } from './rollback';
+import {
+	appendExtensionRollbackSegment,
+	appendHelperRollbackSegment,
+	rollbackStateToHalt,
+} from './rollback';
 import { commitPendingExtensions } from './commit';
 import { runExtensionHooks } from '../extensions';
 import { createRollbackErrorMetadata } from '../rollback';
@@ -139,7 +143,7 @@ export const createAgnosticStages = <
 		pushStep: runContext.pushStep,
 		toRollbackContext: (state: RunnerState) => ({
 			context: state.context,
-			extensionStack: state.extensionStack,
+			rollbackJournal: state.rollbackJournal,
 			onExtensionRollbackError: state.onExtensionRollbackError,
 		}),
 		halt,
@@ -192,12 +196,17 @@ export const createAgnosticStages = <
 					state
 				);
 			},
-			writeRollbacks: (state: RunnerState, rollbacks: unknown[]) => ({
+			writeRollbacks: (
+				state: RunnerState,
+				rollbacks: unknown[],
+				initialState: RunnerState
+			) => ({
 				...state,
-				helperRollbackStack:
-					rollbacks as RunnerState['helperRollbackStack'],
+				rollbackJournal: appendHelperRollbackSegment(
+					initialState.rollbackJournal,
+					rollbacks as RollbackEntry<{ readonly key: string }>[]
+				),
 			}),
-			readRollbacks: (state: RunnerState) => state.helperRollbackStack,
 			invoke: ({
 				helper,
 				args,
@@ -302,6 +311,10 @@ export const createAgnosticStages = <
 						return {
 							...state,
 							executedLifecycles,
+							rollbackJournal: appendExtensionRollbackSegment(
+								state.rollbackJournal,
+								newExtensionState
+							),
 							extensionStack: [
 								...state.extensionStack,
 								newExtensionState,

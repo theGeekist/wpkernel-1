@@ -232,9 +232,10 @@ The pipeline supports robust rollback for both helper application and extension 
 
 - **Extensions**: Can provide transactional overhead via the `commit` phase. If extensive failure occurs, `rollback` hooks are triggered.
 - **Helpers**: Can return a `rollback` function in their result. These are executed LIFO if a later failure occurs.
-- **Robustness**: Helper rollbacks complete LIFO before extension rollbacks,
-  and each layer continues after individual rollback failures while collecting
-  and reporting them.
+- **Robustness**: One transaction journal records helper stages and extension
+  lifecycles in execution order, then unwinds them in strict reverse chronology.
+  Rollback continues after individual failures while collecting and reporting
+  them.
 
 ### Re-run Semantics
 

@@ -145,8 +145,8 @@ describe('makeResumablePipeline', () => {
 		expect(resumed.artifact.liveHandle).toBe(liveHandle);
 	});
 
-	it('preserves helper rollbacks while paused and unwinds them on a later resumed failure', async () => {
-		const rollback = jest.fn();
+	it('preserves rollback chronology across pause and resume', async () => {
+		const chronology: string[] = [];
 		const pipeline: PausePipeline = makeResumablePipeline<
 			PauseRunOptions,
 			PauseContext,
@@ -159,6 +159,7 @@ describe('makeResumablePipeline', () => {
 			createState: () => ({ count: 0 }),
 			createStages: (deps: any) => [
 				deps.makeHelperStage('work'),
+				deps.makeLifecycleStage('before-pause'),
 				(state: any) =>
 					state.resumeInput
 						? state
@@ -177,24 +178,37 @@ describe('makeResumablePipeline', () => {
 				kind: 'work',
 				apply() {
 					return {
-						rollback: createPipelineRollback(rollback),
+						rollback: createPipelineRollback(() =>
+							chronology.push('helper')
+						),
 					};
 				},
 			})
 		);
+		pipeline.extensions.use({
+			key: 'before-pause',
+			register: () => ({
+				lifecycle: 'before-pause',
+				hook: () => ({
+					rollback: () => {
+						chronology.push('extension');
+					},
+				}),
+			}),
+		});
 
 		const initial = await pipeline.run({});
 		const paused = initial as PipelinePaused<PausePipelineState>;
 
 		expect(paused.__paused).toBe(true);
-		expect(rollback).not.toHaveBeenCalled();
+		expect(chronology).toEqual([]);
 
 		await expect(
 			Promise.resolve().then(() =>
 				pipeline.resume(paused.snapshot, { resumed: true })
 			)
 		).rejects.toThrow('resumed stage failed');
-		expect(rollback).toHaveBeenCalledTimes(1);
+		expect(chronology).toEqual(['extension', 'helper']);
 	});
 
 	it('unwinds helpers when an initial resumable run returns an error halt', async () => {

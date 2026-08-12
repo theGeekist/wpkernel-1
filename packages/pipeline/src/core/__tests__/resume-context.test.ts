@@ -36,7 +36,7 @@ describe('prepareResumeContext', () => {
 			diagnostics: [],
 			diagnosticManager,
 			executedLifecycles: new Set(),
-			helperRollbackStack: [],
+			rollbackJournal: [],
 			extensionStack: [],
 			committedExtensionStates: new Set(),
 		};

@@ -2,9 +2,11 @@ import { rollbackStateToHalt } from '../runner/rollback';
 import type { PipelineRollback } from '../rollback';
 
 describe('runner rollback coverage', () => {
-	it('rolls back the authoritative extension stack', async () => {
+	it('rolls back one journal in reverse execution chronology', async () => {
 		const handlerCalls: unknown[] = [];
-		const rollback = jest.fn(() => {
+		const chronology: string[] = [];
+		const extensionRollback = jest.fn(() => {
+			chronology.push('extension');
 			throw new Error('rollback failed');
 		});
 		const hook = {
@@ -14,24 +16,42 @@ describe('runner rollback coverage', () => {
 		};
 		const state = {
 			context: {},
-			extensionStack: [
+			rollbackJournal: [
 				{
-					artifact: {},
-					results: [{ hook, result: { rollback } }],
-					hooks: [hook],
+					source: 'helper' as const,
+					entries: [
+						{
+							helper: { key: 'first-helper' },
+							rollback: {
+								run: () => chronology.push('first-helper'),
+							} as PipelineRollback,
+						},
+					],
+				},
+				{
+					source: 'extension' as const,
+					state: {
+						artifact: {},
+						results: [
+							{ hook, result: { rollback: extensionRollback } },
+						],
+						hooks: [hook],
+					},
+				},
+				{
+					source: 'helper' as const,
+					entries: [
+						{
+							helper: { key: 'last-helper' },
+							rollback: {
+								run: () => chronology.push('last-helper'),
+							} as PipelineRollback,
+						},
+					],
 				},
 			],
 			onExtensionRollbackError: (event: { error: unknown }) =>
 				handlerCalls.push(event.error),
-			helperRollbackStack: [
-				{
-					helper: { key: 'helper' },
-					rollback: {
-						key: 'rb',
-						run: () => undefined,
-					} as PipelineRollback,
-				},
-			],
 		};
 		const error = new Error('fail');
 
@@ -40,7 +60,12 @@ describe('runner rollback coverage', () => {
 			error: failure,
 		}));
 
-		expect(rollback).toHaveBeenCalledTimes(1);
+		expect(extensionRollback).toHaveBeenCalledTimes(1);
+		expect(chronology).toEqual([
+			'last-helper',
+			'extension',
+			'first-helper',
+		]);
 		expect(handlerCalls).toEqual([expect.any(Error)]);
 		expect(halt).toMatchObject({
 			__halt: true,
@@ -48,5 +73,35 @@ describe('runner rollback coverage', () => {
 			__rollbackApplied: true,
 			error,
 		});
+	});
+
+	it('attributes reused rollback descriptors to each helper occurrence', async () => {
+		const sharedRollback: PipelineRollback = {
+			run: () => {
+				throw new Error('rollback failed');
+			},
+		};
+		const helperKeys: string[] = [];
+		const state = {
+			context: {},
+			rollbackJournal: [
+				{
+					source: 'helper' as const,
+					entries: [
+						{ helper: { key: 'first' }, rollback: sharedRollback },
+						{ helper: { key: 'second' }, rollback: sharedRollback },
+					],
+				},
+			],
+		};
+
+		await rollbackStateToHalt(
+			state,
+			new Error('pipeline failed'),
+			(error) => ({ __halt: true, error }),
+			({ helper }) => helperKeys.push(helper.key)
+		);
+
+		expect(helperKeys).toEqual(['second', 'first']);
 	});
 });

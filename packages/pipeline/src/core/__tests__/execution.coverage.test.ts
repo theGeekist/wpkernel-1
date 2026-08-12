@@ -103,7 +103,7 @@ describe('execution coverage', () => {
 			diagnostics: [],
 			diagnosticManager: createAgnosticDiagnosticManager(),
 			executedLifecycles: new Set(),
-			helperRollbackStack: [],
+			rollbackJournal: [],
 			extensionStack: [],
 			committedExtensionStates: new Set(),
 			...overrides,

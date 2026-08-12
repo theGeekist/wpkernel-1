@@ -128,7 +128,7 @@ export const prepareContext = <
 		helperOrders,
 		extensionHooks: [...dependencies.extensionHooks],
 		executedLifecycles: new Set(),
-		helperRollbackStack: [],
+		rollbackJournal: [],
 
 		extensionStack: [],
 		onExtensionRollbackError: dependencies.options.onExtensionRollbackError

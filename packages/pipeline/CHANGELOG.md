@@ -5,6 +5,14 @@ versioned and released independently from the WPKernel monorepo.
 
 ## Unreleased
 
+### Changed
+
+- Replaced separate helper and extension rollback stacks with one transaction
+  journal. Rollback now follows strict reverse execution chronology across
+  helper stages and extension lifecycles, including failures after pause,
+  resume, and commit checkpoints. For execution `A → E → B`, rollback is now
+  `B → E → A`; previously all helpers unwound before extensions.
+
 ## 1.3.0 — 2026-08-12
 
 ### Changed

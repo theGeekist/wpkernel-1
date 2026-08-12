@@ -183,7 +183,7 @@ describe('stage-factories coverage', () => {
 			pushStep: () => undefined,
 			toRollbackContext: (state) => ({
 				context: (state as any).context,
-				extensionStack: [],
+				rollbackJournal: [],
 			}),
 			halt: () => ({ __halt: true }),
 			isHalt: (value: unknown): value is { __halt: true } =>

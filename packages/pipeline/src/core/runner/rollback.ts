@@ -5,12 +5,108 @@ import type {
 	MaybePromise,
 	PipelineExtensionRollbackErrorMetadata,
 } from '../types';
+import type { PipelineRollback } from '../rollback';
 import type {
+	ExtensionLifecycleState,
 	Halt,
 	HelperRollbackPlan,
 	RollbackContext,
 	RollbackEntry,
+	RollbackJournalEntry,
 } from './types';
+
+export function appendHelperRollbackSegment<
+	TContext,
+	TOptions,
+	TArtifact,
+	THelper extends { readonly key: string },
+>(
+	journal: RollbackJournalEntry<TContext, TOptions, TArtifact>[],
+	entries: readonly RollbackEntry<THelper>[]
+): RollbackJournalEntry<TContext, TOptions, TArtifact>[] {
+	return entries.length === 0
+		? journal
+		: [...journal, { source: 'helper', entries }];
+}
+
+export function appendExtensionRollbackSegment<TContext, TOptions, TArtifact>(
+	journal: RollbackJournalEntry<TContext, TOptions, TArtifact>[],
+	state: ExtensionLifecycleState<TContext, TOptions, TArtifact>
+): RollbackJournalEntry<TContext, TOptions, TArtifact>[] {
+	return state.results.some((execution) => execution.result.rollback)
+		? [...journal, { source: 'extension', state }]
+		: journal;
+}
+
+function runRollbackJournal<TContext, TOptions, TArtifact>(
+	context: TContext,
+	journal: readonly RollbackJournalEntry<TContext, TOptions, TArtifact>[],
+	onHelperRollbackError?: HelperRollbackPlan<
+		TContext,
+		TOptions,
+		TArtifact,
+		{ readonly key: string }
+	>['onHelperRollbackError'],
+	onExtensionRollbackError?: RollbackContext<
+		TContext,
+		TOptions,
+		TArtifact
+	>['onExtensionRollbackError']
+): MaybePromise<void> {
+	return processSequentially(
+		journal,
+		(entry) => {
+			if (entry.source === 'extension') {
+				return rollbackExtensionResults(
+					entry.state.results,
+					entry.state.hooks,
+					({ error, extensionKeys }) =>
+						onExtensionRollbackError?.({
+							error,
+							extensionKeys,
+							errorMetadata: createRollbackErrorMetadata(error),
+						})
+				);
+			}
+
+			const helperRollbacks: readonly {
+				readonly helper: { readonly key: string };
+				readonly rollback: PipelineRollback;
+			}[] = entry.entries.map(({ helper, rollback }) => ({
+				helper,
+				rollback: {
+					key: rollback.key,
+					label: rollback.label,
+					run: () => rollback.run(),
+				},
+			}));
+			const helperByRollback = new Map(
+				helperRollbacks.map(({ helper, rollback }) => [
+					rollback,
+					helper,
+				])
+			);
+			return runRollbackStack(
+				helperRollbacks.map(({ rollback }) => rollback),
+				{
+					source: 'helper',
+					onError: ({ error, metadata, entry: rollback }) => {
+						const helper = helperByRollback.get(rollback);
+						if (helper) {
+							onHelperRollbackError?.({
+								error,
+								helper,
+								errorMetadata: metadata,
+								context,
+							});
+						}
+					},
+				}
+			);
+		},
+		'reverse'
+	);
+}
 
 /**
  * Executes a rollback plan for a helper stage failure.
@@ -28,68 +124,23 @@ export function runHelperRollbackPlan<
 ): MaybePromise<void> {
 	const { context, rollbackContext, helperRollbacks, onHelperRollbackError } =
 		plan;
-
-	const rollbackExtensions = (): MaybePromise<void> =>
-		processSequentially(
-			rollbackContext.extensionStack,
-			(extensionState) =>
-				maybeTry(
-					() =>
-						rollbackExtensionResults(
-							extensionState.results,
-							extensionState.hooks,
-							({ error, extensionKeys }) =>
-								rollbackContext.onExtensionRollbackError?.({
-									error,
-									extensionKeys,
-									errorMetadata:
-										createRollbackErrorMetadata(error),
-								})
-						),
-					() => undefined
-				),
-			'reverse'
-		);
-
-	const runHelperRollbacks = (): MaybePromise<void> =>
-		maybeThen(
-			runRollbackStack(
-				helperRollbacks.map((entry: RollbackEntry<THelper>) => ({
-					...entry.rollback,
-					key: entry.helper.key,
-				})),
-				{
-					source: 'helper',
-					onError: ({
-						error: rbError,
-						metadata,
-						entry,
-					}: {
-						error: unknown;
-						metadata: PipelineExtensionRollbackErrorMetadata;
-						entry: { key?: string };
-					}) => {
-						const helperEntry = helperRollbacks.find(
-							(candidate: RollbackEntry<THelper>) =>
-								candidate.helper.key === (entry.key ?? '')
-						);
-						if (helperEntry && onHelperRollbackError) {
-							onHelperRollbackError({
-								error: rbError,
-								helper: helperEntry.helper,
-								errorMetadata: metadata,
-								context,
-							});
-						}
-					},
-				}
-			),
-			rollbackExtensions
-		);
+	const journal = appendHelperRollbackSegment(
+		[...rollbackContext.rollbackJournal],
+		helperRollbacks
+	);
 
 	const swallowRollbackFailure = () => undefined;
 
-	return maybeTry(runHelperRollbacks, swallowRollbackFailure);
+	return maybeTry(
+		() =>
+			runRollbackJournal(
+				context,
+				journal,
+				onHelperRollbackError,
+				rollbackContext.onExtensionRollbackError
+			),
+		swallowRollbackFailure
+	);
 }
 
 export function runRollbackToHalt<
@@ -110,21 +161,13 @@ export function runRollbackToHalt<
 	}));
 }
 
-export function rollbackStateToHalt<
-	TRunResult,
-	TContext,
-	TOptions,
-	TArtifact,
-	THelper extends { key: string },
->(
-	state: RollbackContext<TContext, TOptions, TArtifact> & {
-		readonly helperRollbackStack: RollbackEntry<THelper>[];
-	},
+export function rollbackStateToHalt<TRunResult, TContext, TOptions, TArtifact>(
+	state: RollbackContext<TContext, TOptions, TArtifact>,
 	error: unknown,
 	halt: (error?: unknown) => Halt<TRunResult>,
 	onHelperRollbackError?: (options: {
 		readonly error: unknown;
-		readonly helper: THelper;
+		readonly helper: { readonly key: string };
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TContext;
 	}) => void
@@ -133,7 +176,7 @@ export function rollbackStateToHalt<
 		{
 			context: state.context,
 			rollbackContext: state,
-			helperRollbacks: state.helperRollbackStack,
+			helperRollbacks: [],
 			onHelperRollbackError,
 		},
 		halt,

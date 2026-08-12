@@ -33,6 +33,22 @@ export interface ExtensionLifecycleState<TContext, TOptions, TUserState> {
 	>[];
 }
 
+export type RollbackJournalEntry<TContext, TOptions, TUserState> =
+	| {
+			readonly source: 'helper';
+			readonly entries: readonly RollbackEntry<{
+				readonly key: string;
+			}>[];
+	  }
+	| {
+			readonly source: 'extension';
+			readonly state: ExtensionLifecycleState<
+				TContext,
+				TOptions,
+				TUserState
+			>;
+	  };
+
 export type ExtensionRollbackHandler = (options: {
 	readonly error: unknown;
 	readonly extensionKeys: readonly string[];
@@ -138,14 +154,12 @@ export interface AgnosticState<
 	readonly stageIndex?: number;
 	readonly resumeInput?: unknown;
 
-	/**
-	 * Rollbacks registered by successfully completed helpers, in visitation
-	 * order across all helper stages in the current run.
-	 */
-	readonly helperRollbackStack: Array<{
-		readonly helper: { readonly key: string };
-		readonly rollback: PipelineRollback;
-	}>;
+	/** Rollback-bearing work recorded in forward execution order. */
+	readonly rollbackJournal: RollbackJournalEntry<
+		TContext,
+		TRunOptions,
+		TUserState
+	>[];
 
 	readonly extensionStack: ExtensionLifecycleState<
 		TContext,
@@ -169,7 +183,7 @@ export type Halt<TRunResult> = PipelineHalt<TRunResult>;
 
 export type RollbackContext<TContext, TOptions, TUserState> = {
 	readonly context: TContext;
-	readonly extensionStack: ExtensionLifecycleState<
+	readonly rollbackJournal: readonly RollbackJournalEntry<
 		TContext,
 		TOptions,
 		TUserState
@@ -404,7 +418,8 @@ export type HelperStageSpec<
 	readonly writeOutput?: (state: TState, output: TOutput) => TState;
 	readonly writeRollbacks?: (
 		state: TState,
-		rollbacks: RollbackEntry<THelper>[]
+		rollbacks: RollbackEntry<THelper>[],
+		initialState: TState
 	) => TState;
 	readonly onVisited: (
 		state: TState,
@@ -412,9 +427,6 @@ export type HelperStageSpec<
 		rollbacks: RollbackEntry<THelper>[],
 		output: TOutput
 	) => TState;
-	readonly readRollbacks?: (
-		state: TState
-	) => RollbackEntry<THelper>[] | undefined;
 };
 
 export type HelperRollbackPlan<
@@ -428,7 +440,7 @@ export type HelperRollbackPlan<
 	readonly helperRollbacks: readonly RollbackEntry<THelper>[];
 	readonly onHelperRollbackError?: (options: {
 		readonly error: unknown;
-		readonly helper: THelper;
+		readonly helper: { readonly key: string };
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TContext;
 	}) => void;
