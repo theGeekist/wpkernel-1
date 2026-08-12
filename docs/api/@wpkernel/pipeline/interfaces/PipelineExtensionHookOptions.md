@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineExtensionHookOptions
 
-# Interface: PipelineExtensionHookOptions&lt;TContext, TOptions, TArtifact&gt;
+# Interface: PipelineExtensionHookOptions<TContext, TOptions, TArtifact>
 
 Immutable invocation data supplied to an extension hook.
 

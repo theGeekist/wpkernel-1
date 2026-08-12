@@ -11,7 +11,7 @@
 ### dependencies?
 
 ```ts
-readonly optional dependencies: Partial&lt;ReleasePackDependencies&gt;;
+readonly optional dependencies: Partial<ReleasePackDependencies>;
 ```
 
 ***

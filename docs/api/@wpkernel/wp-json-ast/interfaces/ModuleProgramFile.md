@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ModuleProgramFile
 
-# Interface: ModuleProgramFile&lt;TMetadata&gt;
+# Interface: ModuleProgramFile<TMetadata>
 
 ## Type Parameters
 

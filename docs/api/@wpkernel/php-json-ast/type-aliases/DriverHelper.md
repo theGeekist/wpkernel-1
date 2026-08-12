@@ -7,5 +7,5 @@
 # Type Alias: DriverHelper
 
 ```ts
-type DriverHelper = Helper&lt;DriverContext, BuilderInput, BuilderOutput, Reporter, "builder"&gt;;
+type DriverHelper = Helper<DriverContext, BuilderInput, BuilderOutput, Reporter, "builder">;
 ```

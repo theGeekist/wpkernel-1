@@ -4,10 +4,10 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ProgramTargetPlannerStrategy
 
-# Type Alias: ProgramTargetPlannerStrategy&lt;TFile&gt;
+# Type Alias: ProgramTargetPlannerStrategy<TFile>
 
 ```ts
-type ProgramTargetPlannerStrategy&lt;TFile&gt; = object;
+type ProgramTargetPlannerStrategy<TFile> = object;
 ```
 
 ## Type Parameters
@@ -21,14 +21,14 @@ type ProgramTargetPlannerStrategy&lt;TFile&gt; = object;
 ### resolveFilePath()?
 
 ```ts
-readonly optional resolveFilePath: (context) =&gt; string;
+readonly optional resolveFilePath: (context) => string;
 ```
 
 #### Parameters
 
 ##### context
 
-[`ResolveFilePathStrategyContext`](../interfaces/ResolveFilePathStrategyContext.md)&lt;`TFile`&gt;
+[`ResolveFilePathStrategyContext`](../interfaces/ResolveFilePathStrategyContext.md)<`TFile`>
 
 #### Returns
 

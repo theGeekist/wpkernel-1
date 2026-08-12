@@ -11,7 +11,7 @@
 ### buildIdentityGuardStatements()
 
 ```ts
-readonly buildIdentityGuardStatements: (options) =&gt; readonly PhpStmt[];
+readonly buildIdentityGuardStatements: (options) => readonly PhpStmt[];
 ```
 
 #### Parameters
@@ -29,7 +29,7 @@ readonly `PhpStmt`[]
 ### resolveIdentityConfig()
 
 ```ts
-readonly resolveIdentityConfig: (resource) =&gt; ResolvedIdentity;
+readonly resolveIdentityConfig: (resource) => ResolvedIdentity;
 ```
 
 #### Parameters

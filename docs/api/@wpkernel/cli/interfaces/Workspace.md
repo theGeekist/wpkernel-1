@@ -17,7 +17,7 @@ Kernel-aware workspace contract used by CLI generators.
 ### begin()
 
 ```ts
-begin: (label?) =&gt; void;
+begin: (label?) => void;
 ```
 
 #### Parameters
@@ -35,7 +35,7 @@ begin: (label?) =&gt; void;
 ### commit()
 
 ```ts
-commit: (label?) =&gt; Promise&lt;FileManifest&gt;;
+commit: (label?) => Promise<FileManifest>;
 ```
 
 #### Parameters
@@ -46,14 +46,14 @@ commit: (label?) =&gt; Promise&lt;FileManifest&gt;;
 
 #### Returns
 
-`Promise`&lt;[`FileManifest`](FileManifest.md)&gt;
+`Promise`<[`FileManifest`](FileManifest.md)>
 
 ***
 
 ### cwd()
 
 ```ts
-cwd: () =&gt; string;
+cwd: () => string;
 ```
 
 #### Returns
@@ -65,10 +65,10 @@ cwd: () =&gt; string;
 ### dryRun()
 
 ```ts
-dryRun: &lt;T&gt;(fn) =&gt; Promise&lt;{
+dryRun: <T>(fn) => Promise<{
   manifest: FileManifest;
   result: T;
-}&gt;;
+}>;
 ```
 
 #### Type Parameters
@@ -81,21 +81,21 @@ dryRun: &lt;T&gt;(fn) =&gt; Promise&lt;{
 
 ##### fn
 
-() =&gt; `Promise`&lt;`T`&gt;
+() => `Promise`<`T`>
 
 #### Returns
 
-`Promise`&lt;\{
+`Promise`<\{
   `manifest`: [`FileManifest`](FileManifest.md);
   `result`: `T`;
-\}&gt;
+\}>
 
 ***
 
 ### exists()
 
 ```ts
-exists: (target) =&gt; Promise&lt;boolean&gt;;
+exists: (target) => Promise<boolean>;
 ```
 
 #### Parameters
@@ -106,7 +106,7 @@ exists: (target) =&gt; Promise&lt;boolean&gt;;
 
 #### Returns
 
-`Promise`&lt;`boolean`&gt;
+`Promise`<`boolean`>
 
 #### Inherited from
 
@@ -119,7 +119,7 @@ WorkspaceLike.exists
 ### glob()
 
 ```ts
-glob: (pattern) =&gt; Promise&lt;string[]&gt;;
+glob: (pattern) => Promise<string[]>;
 ```
 
 #### Parameters
@@ -130,14 +130,14 @@ glob: (pattern) =&gt; Promise&lt;string[]&gt;;
 
 #### Returns
 
-`Promise`&lt;`string`[]&gt;
+`Promise`<`string`[]>
 
 ***
 
 ### read()
 
 ```ts
-read: (file) =&gt; Promise&lt;Buffer&lt;ArrayBufferLike&gt; | null&gt;;
+read: (file) => Promise<Buffer<ArrayBufferLike> | null>;
 ```
 
 #### Parameters
@@ -148,14 +148,14 @@ read: (file) =&gt; Promise&lt;Buffer&lt;ArrayBufferLike&gt; | null&gt;;
 
 #### Returns
 
-`Promise`&lt;`Buffer`&lt;`ArrayBufferLike`&gt; \| `null`&gt;
+`Promise`<`Buffer`<`ArrayBufferLike`> \| `null`>
 
 ***
 
 ### readText()
 
 ```ts
-readText: (file) =&gt; Promise&lt;string | null&gt;;
+readText: (file) => Promise<string | null>;
 ```
 
 #### Parameters
@@ -166,14 +166,14 @@ readText: (file) =&gt; Promise&lt;string | null&gt;;
 
 #### Returns
 
-`Promise`&lt;`string` \| `null`&gt;
+`Promise`<`string` \| `null`>
 
 ***
 
 ### resolve()
 
 ```ts
-resolve: (...segments) =&gt; string;
+resolve: (...segments) => string;
 ```
 
 #### Parameters
@@ -197,7 +197,7 @@ WorkspaceLike.resolve
 ### rm()
 
 ```ts
-rm: (target, options?) =&gt; Promise&lt;void&gt;;
+rm: (target, options?) => Promise<void>;
 ```
 
 #### Parameters
@@ -212,14 +212,14 @@ rm: (target, options?) =&gt; Promise&lt;void&gt;;
 
 #### Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>
 
 ***
 
 ### rollback()
 
 ```ts
-rollback: (label?) =&gt; Promise&lt;FileManifest&gt;;
+rollback: (label?) => Promise<FileManifest>;
 ```
 
 #### Parameters
@@ -230,7 +230,7 @@ rollback: (label?) =&gt; Promise&lt;FileManifest&gt;;
 
 #### Returns
 
-`Promise`&lt;[`FileManifest`](FileManifest.md)&gt;
+`Promise`<[`FileManifest`](FileManifest.md)>
 
 ***
 
@@ -251,7 +251,7 @@ WorkspaceLike.root
 ### threeWayMerge()
 
 ```ts
-threeWayMerge: (file, base, current, incoming, options?) =&gt; Promise&lt;"conflict" | "clean"&gt;;
+threeWayMerge: (file, base, current, incoming, options?) => Promise<"conflict" | "clean">;
 ```
 
 #### Parameters
@@ -278,14 +278,14 @@ threeWayMerge: (file, base, current, incoming, options?) =&gt; Promise&lt;"confl
 
 #### Returns
 
-`Promise`&lt;`"conflict"` \| `"clean"`&gt;
+`Promise`<`"conflict"` \| `"clean"`>
 
 ***
 
 ### tmpDir()
 
 ```ts
-tmpDir: (prefix?) =&gt; Promise&lt;string&gt;;
+tmpDir: (prefix?) => Promise<string>;
 ```
 
 #### Parameters
@@ -296,14 +296,14 @@ tmpDir: (prefix?) =&gt; Promise&lt;string&gt;;
 
 #### Returns
 
-`Promise`&lt;`string`&gt;
+`Promise`<`string`>
 
 ***
 
 ### write()
 
 ```ts
-write: (file, data, options?) =&gt; Promise&lt;void&gt;;
+write: (file, data, options?) => Promise<void>;
 ```
 
 #### Parameters
@@ -314,7 +314,7 @@ write: (file, data, options?) =&gt; Promise&lt;void&gt;;
 
 ##### data
 
-`string` | `Buffer`&lt;`ArrayBufferLike`&gt;
+`string` | `Buffer`<`ArrayBufferLike`>
 
 ##### options?
 
@@ -322,14 +322,14 @@ write: (file, data, options?) =&gt; Promise&lt;void&gt;;
 
 #### Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>
 
 ***
 
 ### writeJson()
 
 ```ts
-writeJson: &lt;T&gt;(file, value, options?) =&gt; Promise&lt;void&gt;;
+writeJson: <T>(file, value, options?) => Promise<void>;
 ```
 
 #### Type Parameters
@@ -354,4 +354,4 @@ writeJson: &lt;T&gt;(file, value, options?) =&gt; Promise&lt;void&gt;;
 
 #### Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>

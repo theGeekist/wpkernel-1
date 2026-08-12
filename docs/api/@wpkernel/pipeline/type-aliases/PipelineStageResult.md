@@ -4,13 +4,13 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStageResult
 
-# Type Alias: PipelineStageResult&lt;TState, TRunResult&gt;
+# Type Alias: PipelineStageResult<TState, TRunResult>
 
 ```ts
-type PipelineStageResult&lt;TState, TRunResult&gt; =
+type PipelineStageResult<TState, TRunResult> =
   | TState
-  | PipelinePaused&lt;TState&gt;
-| PipelineHalt&lt;TRunResult&gt;;
+  | PipelinePaused<TState>
+| PipelineHalt<TRunResult>;
 ```
 
 Complete result union accepted from a custom stage.

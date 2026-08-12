@@ -7,15 +7,15 @@
 # Function: createTsxRuntimeReadinessHelper()
 
 ```ts
-function createTsxRuntimeReadinessHelper(overrides): ReadinessHelper&lt;TsxRuntimeState&gt;;
+function createTsxRuntimeReadinessHelper(overrides): ReadinessHelper<TsxRuntimeState>;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`&lt;[`TsxRuntimeDependencies`](../interfaces/TsxRuntimeDependencies.md)&gt; = `{}`
+`Partial`<[`TsxRuntimeDependencies`](../interfaces/TsxRuntimeDependencies.md)> = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`TsxRuntimeState`](../interfaces/TsxRuntimeState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`TsxRuntimeState`](../interfaces/TsxRuntimeState.md)>

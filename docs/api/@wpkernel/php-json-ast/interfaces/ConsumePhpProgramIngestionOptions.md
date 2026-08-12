@@ -43,7 +43,7 @@ readonly optional reporter: Reporter;
 ### resolveFilePath()?
 
 ```ts
-readonly optional resolveFilePath: (message) =&gt; string;
+readonly optional resolveFilePath: (message) => string;
 ```
 
 #### Parameters

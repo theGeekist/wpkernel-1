@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / ConflictDiagnostic
 
-# Interface: ConflictDiagnostic&lt;TKind&gt;
+# Interface: ConflictDiagnostic<TKind>
 
 Fatal diagnostic emitted when two override helpers claim the same key.
 

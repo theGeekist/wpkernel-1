@@ -7,7 +7,7 @@
 # Type Alias: PathParams
 
 ```ts
-type PathParams = Record&lt;string, string | number | boolean&gt;;
+type PathParams = Record<string, string | number | boolean>;
 ```
 
 Path parameter values (string, number, or boolean)

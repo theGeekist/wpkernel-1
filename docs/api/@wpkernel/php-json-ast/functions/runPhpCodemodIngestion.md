@@ -7,7 +7,7 @@
 # Function: runPhpCodemodIngestion()
 
 ```ts
-function runPhpCodemodIngestion(options): Promise&lt;PhpCodemodIngestionResult&gt;;
+function runPhpCodemodIngestion(options): Promise<PhpCodemodIngestionResult>;
 ```
 
 ## Parameters
@@ -18,4 +18,4 @@ function runPhpCodemodIngestion(options): Promise&lt;PhpCodemodIngestionResult&g
 
 ## Returns
 
-`Promise`&lt;[`PhpCodemodIngestionResult`](../interfaces/PhpCodemodIngestionResult.md)&gt;
+`Promise`<[`PhpCodemodIngestionResult`](../interfaces/PhpCodemodIngestionResult.md)>

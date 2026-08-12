@@ -13,7 +13,7 @@ Summary returned after running a readiness plan.
 ### outcomes
 
 ```ts
-readonly outcomes: ReadinessOutcome&lt;unknown&gt;[];
+readonly outcomes: ReadinessOutcome<unknown>[];
 ```
 
 ***

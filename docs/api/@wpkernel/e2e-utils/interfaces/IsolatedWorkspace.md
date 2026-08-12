@@ -15,12 +15,12 @@
 ### dispose()
 
 ```ts
-dispose: () =&gt; void | Promise&lt;void&gt;;
+dispose: () => void | Promise<void>;
 ```
 
 #### Returns
 
-`void` \| `Promise`&lt;`void`&gt;
+`void` \| `Promise`<`void`>
 
 #### Inherited from
 
@@ -53,7 +53,7 @@ Absolute path to the workspace root
 ### run()
 
 ```ts
-run: (command, args?, options?) =&gt; Promise&lt;CliTranscript&gt;;
+run: (command, args?, options?) => Promise<CliTranscript>;
 ```
 
 Run a command within the workspace root.
@@ -80,7 +80,7 @@ spawn overrides
 
 #### Returns
 
-`Promise`&lt;[`CliTranscript`](CliTranscript.md)&gt;
+`Promise`<[`CliTranscript`](CliTranscript.md)>
 
 ***
 

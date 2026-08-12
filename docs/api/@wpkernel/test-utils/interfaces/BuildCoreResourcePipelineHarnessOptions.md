@@ -4,7 +4,7 @@
 
 [@wpkernel/test-utils](../README.md) / BuildCoreResourcePipelineHarnessOptions
 
-# Interface: BuildCoreResourcePipelineHarnessOptions&lt;T, TQuery&gt;
+# Interface: BuildCoreResourcePipelineHarnessOptions<T, TQuery>
 
 Options for building a `CoreResourcePipelineHarness`.
 
@@ -33,14 +33,14 @@ The namespace for the reporter.
 ### pipelineFactory()?
 
 ```ts
-readonly optional pipelineFactory: () =&gt; ResourcePipeline&lt;T, TQuery&gt;;
+readonly optional pipelineFactory: () => ResourcePipeline<T, TQuery>;
 ```
 
 A factory function to create the resource pipeline.
 
 #### Returns
 
-`ResourcePipeline`&lt;`T`, `TQuery`&gt;
+`ResourcePipeline`<`T`, `TQuery`>
 
 ***
 

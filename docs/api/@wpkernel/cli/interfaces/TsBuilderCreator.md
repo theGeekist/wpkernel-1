@@ -16,7 +16,7 @@ based on the provided context.
 ### create()
 
 ```ts
-create: (context) =&gt; Promise&lt;void&gt;;
+create: (context) => Promise<void>;
 ```
 
 The function that creates the TypeScript artifact.
@@ -29,7 +29,7 @@ The function that creates the TypeScript artifact.
 
 #### Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>
 
 ***
 

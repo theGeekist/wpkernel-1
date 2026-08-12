@@ -4,7 +4,7 @@
 
 [@wpkernel/php-json-ast](../README.md) / HelperDescriptor
 
-# Interface: HelperDescriptor&lt;TKind&gt;
+# Interface: HelperDescriptor<TKind>
 
 Stable metadata used to register, order and diagnose a helper.
 

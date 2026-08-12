@@ -7,15 +7,15 @@
 # Function: createPhpRuntimeReadinessHelper()
 
 ```ts
-function createPhpRuntimeReadinessHelper(overrides): ReadinessHelper&lt;PhpRuntimeState&gt;;
+function createPhpRuntimeReadinessHelper(overrides): ReadinessHelper<PhpRuntimeState>;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`&lt;[`PhpRuntimeDependencies`](../interfaces/PhpRuntimeDependencies.md)&gt; = `{}`
+`Partial`<[`PhpRuntimeDependencies`](../interfaces/PhpRuntimeDependencies.md)> = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`PhpRuntimeState`](../interfaces/PhpRuntimeState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`PhpRuntimeState`](../interfaces/PhpRuntimeState.md)>

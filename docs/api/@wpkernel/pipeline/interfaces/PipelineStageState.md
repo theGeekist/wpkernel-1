@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStageState
 
-# Interface: PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;
+# Interface: PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>
 
 Public state threaded through custom pipeline stages.
 
@@ -22,7 +22,7 @@ the stage that paused and exposes the caller's resume value through
 ## Example
 
 ```ts
-const increment = (state: PipelineStageState&lt;Options, State, Context&gt;) =&gt; ({
+const increment = (state: PipelineStageState<Options, State, Context>) => ({
   ...state,
   userState: { ...state.userState, count: state.userState.count + 1 },
 });
@@ -85,7 +85,7 @@ Diagnostics recorded so far.
 ### executedLifecycles
 
 ```ts
-readonly executedLifecycles: ReadonlySet&lt;string&gt;;
+readonly executedLifecycles: ReadonlySet<string>;
 ```
 
 Extension lifecycle names already executed by this run.
@@ -115,7 +115,7 @@ Original options supplied to the run.
 ### steps
 
 ```ts
-readonly steps: readonly PipelineStep&lt;string&gt;[];
+readonly steps: readonly PipelineStep<string>[];
 ```
 
 Helpers executed so far.
@@ -135,7 +135,7 @@ User-owned state that stages may replace immutably.
 ### helperExecution?
 
 ```ts
-readonly optional helperExecution: ReadonlyMap&lt;string, HelperExecutionSnapshot&lt;string&gt;&gt;;
+readonly optional helperExecution: ReadonlyMap<string, HelperExecutionSnapshot<string>>;
 ```
 
 Execution summary by helper kind after helper stages complete.

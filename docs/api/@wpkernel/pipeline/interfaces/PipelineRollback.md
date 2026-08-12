@@ -32,7 +32,7 @@ import {
 
 const allocations = new Set(['temporary']);
 const rollback: PipelineRollback = createPipelineRollback(
-  () =&gt; allocations.delete('temporary'),
+  () => allocations.delete('temporary'),
   { key: 'allocate', label: 'Release temporary allocation' }
 );
 ```
@@ -42,7 +42,7 @@ const rollback: PipelineRollback = createPipelineRollback(
 ### run()
 
 ```ts
-readonly run: () =&gt; unknown;
+readonly run: () => unknown;
 ```
 
 Cleanup operation invoked at most once by one rollback traversal.

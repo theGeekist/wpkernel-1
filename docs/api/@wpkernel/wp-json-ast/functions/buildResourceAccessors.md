@@ -7,7 +7,7 @@
 # Function: buildResourceAccessors()
 
 ```ts
-function buildResourceAccessors&lt;TStorageKind&gt;(options): ResourceAccessors&lt;TStorageKind&gt;;
+function buildResourceAccessors<TStorageKind>(options): ResourceAccessors<TStorageKind>;
 ```
 
 ## Type Parameters
@@ -20,8 +20,8 @@ function buildResourceAccessors&lt;TStorageKind&gt;(options): ResourceAccessors&
 
 ### options
 
-[`BuildResourceAccessorsOptions`](../interfaces/BuildResourceAccessorsOptions.md)&lt;`TStorageKind`&gt;
+[`BuildResourceAccessorsOptions`](../interfaces/BuildResourceAccessorsOptions.md)<`TStorageKind`>
 
 ## Returns
 
-[`ResourceAccessors`](../interfaces/ResourceAccessors.md)&lt;`TStorageKind`&gt;
+[`ResourceAccessors`](../interfaces/ResourceAccessors.md)<`TStorageKind`>

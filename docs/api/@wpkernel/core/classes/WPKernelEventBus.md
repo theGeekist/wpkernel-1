@@ -30,7 +30,7 @@ new WPKernelEventBus(): WPKernelEventBus;
 ### emit()
 
 ```ts
-emit&lt;K&gt;(event, payload): void;
+emit<K>(event, payload): void;
 ```
 
 Emit the specified event and execute every registered listener. Any
@@ -62,7 +62,7 @@ outside of production.
 ### off()
 
 ```ts
-off&lt;K&gt;(event, listener): void;
+off<K>(event, listener): void;
 ```
 
 Remove a previously registered listener. Calling this method for a
@@ -82,7 +82,7 @@ listener that was never registered is a no-op.
 
 ##### listener
 
-[`Listener`](../type-aliases/Listener.md)&lt;[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]&gt;
+[`Listener`](../type-aliases/Listener.md)<[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]>
 
 #### Returns
 
@@ -93,7 +93,7 @@ listener that was never registered is a no-op.
 ### on()
 
 ```ts
-on&lt;K&gt;(event, listener): () =&gt; void;
+on<K>(event, listener): () => void;
 ```
 
 Register a listener that remains active until the returned teardown
@@ -113,7 +113,7 @@ function is called.
 
 ##### listener
 
-[`Listener`](../type-aliases/Listener.md)&lt;[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]&gt;
+[`Listener`](../type-aliases/Listener.md)<[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]>
 
 #### Returns
 
@@ -130,7 +130,7 @@ function is called.
 ### once()
 
 ```ts
-once&lt;K&gt;(event, listener): () =&gt; void;
+once<K>(event, listener): () => void;
 ```
 
 Register a listener that runs only once for the next occurrence of
@@ -150,7 +150,7 @@ the event and then tears itself down.
 
 ##### listener
 
-[`Listener`](../type-aliases/Listener.md)&lt;[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]&gt;
+[`Listener`](../type-aliases/Listener.md)<[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]>
 
 #### Returns
 

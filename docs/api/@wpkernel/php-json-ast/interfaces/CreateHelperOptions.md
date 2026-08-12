@@ -4,7 +4,7 @@
 
 [@wpkernel/php-json-ast](../README.md) / CreateHelperOptions
 
-# Interface: CreateHelperOptions&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
+# Interface: CreateHelperOptions<TContext, TInput, TOutput, TReporter, TKind>
 
 Input accepted by `createHelper`.
 
@@ -50,7 +50,7 @@ Literal helper kind represented by the descriptor.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
+readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
 ```
 
 Helper implementation.

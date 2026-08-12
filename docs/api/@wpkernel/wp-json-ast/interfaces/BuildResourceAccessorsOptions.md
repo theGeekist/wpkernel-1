@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / BuildResourceAccessorsOptions
 
-# Interface: BuildResourceAccessorsOptions&lt;TStorageKind&gt;
+# Interface: BuildResourceAccessorsOptions<TStorageKind>
 
 ## Type Parameters
 
@@ -17,5 +17,5 @@
 ### storages
 
 ```ts
-readonly storages: readonly ResourceStorageRegistration&lt;TStorageKind&gt;[];
+readonly storages: readonly ResourceStorageRegistration<TStorageKind>[];
 ```

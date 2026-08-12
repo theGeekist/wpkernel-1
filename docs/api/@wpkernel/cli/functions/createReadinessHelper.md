@@ -7,7 +7,7 @@
 # Function: createReadinessHelper()
 
 ```ts
-function createReadinessHelper&lt;State&gt;(helper): ReadinessHelper&lt;State&gt;;
+function createReadinessHelper<State>(helper): ReadinessHelper<State>;
 ```
 
 Creates an immutable readiness helper definition.
@@ -22,8 +22,8 @@ Creates an immutable readiness helper definition.
 
 ### helper
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;`State`&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`State`>
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;`State`&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`State`>

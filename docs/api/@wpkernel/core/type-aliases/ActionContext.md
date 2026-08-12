@@ -53,7 +53,7 @@ async function CreatePost(ctx: ActionContext, input: CreatePostInput) {
 ### capability
 
 ```ts
-readonly capability: Pick&lt;CapabilityHelpers&lt;Record&lt;string, unknown&gt;&gt;, "assert" | "can"&gt;;
+readonly capability: Pick<CapabilityHelpers<Record<string, unknown>>, "assert" | "can">;
 ```
 
 Capability enforcement helpers.
@@ -63,7 +63,7 @@ Capability enforcement helpers.
 ### emit()
 
 ```ts
-emit: (eventName, payload) =&gt; void;
+emit: (eventName, payload) => void;
 ```
 
 Emit canonical events.
@@ -87,7 +87,7 @@ Emit canonical events.
 ### invalidate()
 
 ```ts
-invalidate: (patterns, options?) =&gt; void;
+invalidate: (patterns, options?) => void;
 ```
 
 Invalidate cache keys.

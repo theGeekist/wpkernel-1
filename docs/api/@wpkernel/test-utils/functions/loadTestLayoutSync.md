@@ -19,7 +19,7 @@ Mirrors the CLI test helper API.
 
 #### overrides?
 
-`Record`&lt;`string`, `string`&gt;
+`Record`<`string`, `string`>
 
 ## Returns
 

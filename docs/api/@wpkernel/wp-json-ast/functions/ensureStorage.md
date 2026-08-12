@@ -31,7 +31,7 @@ mode: "wp-post";
 ### meta?
 
 ```ts
-optional meta: Record&lt;string, ResourcePostMetaDescriptor&gt;;
+optional meta: Record<string, ResourcePostMetaDescriptor>;
 ```
 
 ### postType?
@@ -55,11 +55,11 @@ optional supports: ("title" | "editor" | "excerpt" | "custom-fields")[];
 ### taxonomies?
 
 ```ts
-optional taxonomies: Record&lt;string, {
+optional taxonomies: Record<string, {
   taxonomy: string;
   hierarchical?: boolean;
   register?: boolean;
-}&gt;;
+}>;
 ```
 
 ## Throws

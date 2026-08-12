@@ -7,5 +7,5 @@
 # Type Alias: IndexProgram
 
 ```ts
-type IndexProgram = ModuleProgramFile&lt;IndexFileMetadata&gt;;
+type IndexProgram = ModuleProgramFile<IndexFileMetadata>;
 ```

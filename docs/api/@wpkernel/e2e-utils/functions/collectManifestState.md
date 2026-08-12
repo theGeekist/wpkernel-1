@@ -7,7 +7,7 @@
 # Function: collectManifestState()
 
 ```ts
-function collectManifestState(workspace, definition): Promise&lt;FileManifest&gt;;
+function collectManifestState(workspace, definition): Promise<FileManifest>;
 ```
 
 Seed files into a workspace and collect a manifest snapshot.
@@ -24,4 +24,4 @@ Seed files into a workspace and collect a manifest snapshot.
 
 ## Returns
 
-`Promise`&lt;[`FileManifest`](../interfaces/FileManifest.md)&gt;
+`Promise`<[`FileManifest`](../interfaces/FileManifest.md)>

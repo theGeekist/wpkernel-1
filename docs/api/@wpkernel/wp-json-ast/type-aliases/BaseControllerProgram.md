@@ -7,5 +7,5 @@
 # Type Alias: BaseControllerProgram
 
 ```ts
-type BaseControllerProgram = ModuleProgramFile&lt;BaseControllerMetadata&gt;;
+type BaseControllerProgram = ModuleProgramFile<BaseControllerMetadata>;
 ```

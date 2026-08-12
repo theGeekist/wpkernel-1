@@ -7,7 +7,7 @@
 # Function: maybeThen()
 
 ```ts
-function maybeThen&lt;T, TResult&gt;(value, onFulfilled): MaybePromise&lt;TResult&gt;;
+function maybeThen<T, TResult>(value, onFulfilled): MaybePromise<TResult>;
 ```
 
 Maps a synchronous value or safely inspectable thenable while preserving the
@@ -34,19 +34,19 @@ the boundary described by [isPromiseLike](isPromiseLike.md).
 
 ### value
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
 
 Value or thenable to map.
 
 ### onFulfilled
 
-(`value`) =&gt; [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TResult`&gt;
+(`value`) => [`MaybePromise`](../type-aliases/MaybePromise.md)<`TResult`>
 
 Transformation applied to the fulfilled value.
 
 ## Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TResult`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TResult`>
 
 The callback result directly for synchronous input, or a native chained promise for thenable input.
 
@@ -55,9 +55,9 @@ The callback result directly for synchronous input, or a native chained promise 
 ```ts
 import { isPromiseLike, maybeThen } from '@wpkernel/pipeline';
 
-const immediate = maybeThen(2, (value) =&gt; value * 3);
+const immediate = maybeThen(2, (value) => value * 3);
 isPromiseLike(immediate); // false
 
-const deferred = maybeThen(Promise.resolve(2), (value) =&gt; value * 3);
+const deferred = maybeThen(Promise.resolve(2), (value) => value * 3);
 isPromiseLike(deferred); // true
 ```

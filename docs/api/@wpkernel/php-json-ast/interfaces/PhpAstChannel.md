@@ -11,7 +11,7 @@
 ### entries()
 
 ```ts
-entries: () =&gt; readonly PhpAstContextEntry[];
+entries: () => readonly PhpAstContextEntry[];
 ```
 
 #### Returns
@@ -23,7 +23,7 @@ readonly [`PhpAstContextEntry`](PhpAstContextEntry.md)[]
 ### get()
 
 ```ts
-get: (key) =&gt; PhpAstContextEntry | undefined;
+get: (key) => PhpAstContextEntry | undefined;
 ```
 
 #### Parameters
@@ -41,7 +41,7 @@ get: (key) =&gt; PhpAstContextEntry | undefined;
 ### open()
 
 ```ts
-open: (options) =&gt; PhpAstContextEntry;
+open: (options) => PhpAstContextEntry;
 ```
 
 #### Parameters
@@ -73,7 +73,7 @@ open: (options) =&gt; PhpAstContextEntry;
 ### reset()
 
 ```ts
-reset: () =&gt; void;
+reset: () => void;
 ```
 
 #### Returns

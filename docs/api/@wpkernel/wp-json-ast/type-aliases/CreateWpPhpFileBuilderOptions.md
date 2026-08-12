@@ -4,10 +4,10 @@
 
 [@wpkernel/wp-json-ast](../README.md) / CreateWpPhpFileBuilderOptions
 
-# ~~Type Alias: CreateWpPhpFileBuilderOptions&lt;TContext, TInput, TOutput&gt;~~
+# ~~Type Alias: CreateWpPhpFileBuilderOptions<TContext, TInput, TOutput>~~
 
 ```ts
-type CreateWpPhpFileBuilderOptions&lt;TContext, TInput, TOutput&gt; = CreateWpPhpProgramBuilderOptions&lt;TContext, TInput, TOutput&gt;;
+type CreateWpPhpFileBuilderOptions<TContext, TInput, TOutput> = CreateWpPhpProgramBuilderOptions<TContext, TInput, TOutput>;
 ```
 
 Options for creating a WordPress PHP file builder.

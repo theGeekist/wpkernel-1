@@ -11,7 +11,7 @@
 ### prettyPrint()
 
 ```ts
-prettyPrint: (payload) =&gt; Promise&lt;PhpPrettyPrintResult&gt;;
+prettyPrint: (payload) => Promise<PhpPrettyPrintResult>;
 ```
 
 #### Parameters
@@ -22,4 +22,4 @@ prettyPrint: (payload) =&gt; Promise&lt;PhpPrettyPrintResult&gt;;
 
 #### Returns
 
-`Promise`&lt;[`PhpPrettyPrintResult`](PhpPrettyPrintResult.md)&gt;
+`Promise`<[`PhpPrettyPrintResult`](PhpPrettyPrintResult.md)>

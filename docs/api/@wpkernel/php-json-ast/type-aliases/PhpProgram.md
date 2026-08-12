@@ -7,7 +7,7 @@
 # Type Alias: PhpProgram
 
 ```ts
-type PhpProgram = ReadonlyArray&lt;PhpStmt&gt;;
+type PhpProgram = ReadonlyArray<PhpStmt>;
 ```
 
 Represents a complete PHP program as an array of statements.

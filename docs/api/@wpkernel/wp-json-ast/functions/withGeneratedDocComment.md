@@ -7,7 +7,7 @@
 # Function: withGeneratedDocComment()
 
 ```ts
-function withGeneratedDocComment&lt;TStatement&gt;(statement, docblock): TStatement;
+function withGeneratedDocComment<TStatement>(statement, docblock): TStatement;
 ```
 
 ## Type Parameters

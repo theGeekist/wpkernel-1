@@ -4,10 +4,10 @@
 
 [@wpkernel/core](../README.md) / CacheKeys
 
-# Type Alias: CacheKeys&lt;TListParams&gt;
+# Type Alias: CacheKeys<TListParams>
 
 ```ts
-type CacheKeys&lt;TListParams&gt; = object;
+type CacheKeys<TListParams> = object;
 ```
 
 Cache key generators for all CRUD operations
@@ -16,8 +16,8 @@ Cache key generators for all CRUD operations
 
 ```ts
 {
-  list: (q) =&gt; ['thing', 'list', q?.search, q?.page],
-  get: (id) =&gt; ['thing', 'get', id]
+  list: (q) => ['thing', 'list', q?.search, q?.page],
+  get: (id) => ['thing', 'get', id]
 }
 ```
 
@@ -32,7 +32,7 @@ Cache key generators for all CRUD operations
 ### create?
 
 ```ts
-optional create: CacheKeyFn&lt;unknown&gt;;
+optional create: CacheKeyFn<unknown>;
 ```
 
 Cache key for create operations (typically not cached)
@@ -42,7 +42,7 @@ Cache key for create operations (typically not cached)
 ### get?
 
 ```ts
-optional get: CacheKeyFn&lt;string | number&gt;;
+optional get: CacheKeyFn<string | number>;
 ```
 
 Cache key for single-item fetch
@@ -52,7 +52,7 @@ Cache key for single-item fetch
 ### list?
 
 ```ts
-optional list: CacheKeyFn&lt;TListParams&gt;;
+optional list: CacheKeyFn<TListParams>;
 ```
 
 Cache key for list operations
@@ -62,7 +62,7 @@ Cache key for list operations
 ### remove?
 
 ```ts
-optional remove: CacheKeyFn&lt;string | number&gt;;
+optional remove: CacheKeyFn<string | number>;
 ```
 
 Cache key for delete operations
@@ -72,7 +72,7 @@ Cache key for delete operations
 ### update?
 
 ```ts
-optional update: CacheKeyFn&lt;string | number&gt;;
+optional update: CacheKeyFn<string | number>;
 ```
 
 Cache key for update operations

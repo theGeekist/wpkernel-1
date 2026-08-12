@@ -13,7 +13,7 @@ A test utility that captures reporter output in memory.
 ### clear()
 
 ```ts
-clear: () =&gt; void;
+clear: () => void;
 ```
 
 Clears all captured log entries.

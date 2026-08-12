@@ -13,7 +13,7 @@ Specification for before/after manifest comparisons.
 ### after
 
 ```ts
-after: Record&lt;string, ManifestMutationDefinition&gt;;
+after: Record<string, ManifestMutationDefinition>;
 ```
 
 ***
@@ -21,7 +21,7 @@ after: Record&lt;string, ManifestMutationDefinition&gt;;
 ### before
 
 ```ts
-before: Record&lt;string, ManifestFileDefinition&gt;;
+before: Record<string, ManifestFileDefinition>;
 ```
 
 ***

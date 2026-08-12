@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / FragmentFinalizationMetadata
 
-# Interface: FragmentFinalizationMetadata&lt;TFragmentKind&gt;
+# Interface: FragmentFinalizationMetadata<TFragmentKind>
 
 Execution metadata available when a standard pipeline finalises its draft.
 
@@ -26,7 +26,7 @@ were registered, executed, or excluded because dependencies were missing.
 ### fragments
 
 ```ts
-readonly fragments: HelperExecutionSnapshot&lt;TFragmentKind&gt;;
+readonly fragments: HelperExecutionSnapshot<TFragmentKind>;
 ```
 
 Snapshot of fragment helper resolution and execution for this run.

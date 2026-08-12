@@ -23,7 +23,7 @@ The resource descriptor for which artifacts are being created.
 ### emit()
 
 ```ts
-readonly emit: (options) =&gt; Promise&lt;TsBuilderEmitResult&gt;;
+readonly emit: (options) => Promise<TsBuilderEmitResult>;
 ```
 
 A function to emit a generated TypeScript file.
@@ -36,7 +36,7 @@ A function to emit a generated TypeScript file.
 
 #### Returns
 
-`Promise`&lt;`TsBuilderEmitResult`&gt;
+`Promise`<`TsBuilderEmitResult`>
 
 ***
 

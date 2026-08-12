@@ -37,7 +37,7 @@ The warning message.
 ### context?
 
 ```ts
-readonly optional context: Record&lt;string, unknown&gt;;
+readonly optional context: Record<string, unknown>;
 ```
 
 The context of the warning.

@@ -16,7 +16,7 @@ Builds a doc comment for a generated file.
 
 ### extraLines
 
-`Iterable`&lt;`string`&gt;
+`Iterable`<`string`>
 
 Extra lines to add to the doc comment.
 

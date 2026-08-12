@@ -7,7 +7,7 @@
 # Function: createReleasePackReadinessHelper()
 
 ```ts
-function createReleasePackReadinessHelper(options): ReadinessHelper&lt;ReleasePackState&gt;;
+function createReleasePackReadinessHelper(options): ReadinessHelper<ReleasePackState>;
 ```
 
 ## Parameters
@@ -18,4 +18,4 @@ function createReleasePackReadinessHelper(options): ReadinessHelper&lt;ReleasePa
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`ReleasePackState`](../interfaces/ReleasePackState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`ReleasePackState`](../interfaces/ReleasePackState.md)>

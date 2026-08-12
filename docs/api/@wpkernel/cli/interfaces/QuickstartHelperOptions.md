@@ -11,5 +11,5 @@
 ### dependencies?
 
 ```ts
-readonly optional dependencies: Partial&lt;QuickstartDependencies&gt;;
+readonly optional dependencies: Partial<QuickstartDependencies>;
 ```

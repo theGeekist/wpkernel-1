@@ -7,7 +7,7 @@
 # Function: createHelper()
 
 ```ts
-function createHelper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;(options): Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;;
+function createHelper<TContext, TInput, TOutput, TReporter, TKind>(options): Helper<TContext, TInput, TOutput, TReporter, TKind>;
 ```
 
 Creates a frozen [Helper](../interfaces/Helper.md) descriptor from declarative registration
@@ -70,13 +70,13 @@ visitation order and later unwound in reverse order. Use
 
 ### options
 
-[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
 
 Helper identity, ordering metadata and apply behaviour.
 
 ## Returns
 
-[`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+[`Helper`](../interfaces/Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
 
 A frozen descriptor with a frozen dependency list.
 
@@ -90,13 +90,13 @@ import {
 
 type Context = { reporter: PipelineReporter };
 
-const normalise = createHelper&lt;Context, string[], string[]&gt;({
+const normalise = createHelper<Context, string[], string[]>({
   key: 'normalise',
   kind: 'transform',
   dependsOn: ['parse'],
   priority: 20,
-  apply: ({ output }) =&gt; ({
-    output: output.map((value) =&gt; value.trim()),
+  apply: ({ output }) => ({
+    output: output.map((value) => value.trim()),
   }),
 });
 ```
@@ -109,10 +109,10 @@ import {
 
 type Context = { reporter: PipelineReporter };
 
-const bracket = createHelper&lt;Context, string[], string[]&gt;({
+const bracket = createHelper<Context, string[], string[]>({
   key: 'bracket',
   kind: 'transform',
-  apply: async ({ output }, next) =&gt; {
+  apply: async ({ output }, next) => {
     const downstream = await next?.(['before', ...output]);
     return { output: [...(downstream ?? output), 'after'] };
   },
@@ -128,18 +128,18 @@ import {
 
 type Context = {
   reporter: PipelineReporter;
-  allocated: Set&lt;string&gt;;
+  allocated: Set<string>;
 };
 
-const allocate = createHelper&lt;Context, void, string[]&gt;({
+const allocate = createHelper<Context, void, string[]>({
   key: 'allocate',
   kind: 'build',
-  apply: ({ context, output }) =&gt; {
+  apply: ({ context, output }) => {
     context.allocated.add('result');
     return {
       output: [...output, 'result'],
       rollback: createPipelineRollback(
-        () =&gt; context.allocated.delete('result'),
+        () => context.allocated.delete('result'),
         { key: 'allocate', label: 'Release result allocation' }
       ),
     };

@@ -7,7 +7,7 @@
 # Type Alias: BlockModuleFileEntry
 
 ```ts
-type BlockModuleFileEntry = BlockModuleFile&lt;
+type BlockModuleFileEntry = BlockModuleFile<
   | BlockManifestMetadata
-| BlockRegistrarMetadata&gt;;
+| BlockRegistrarMetadata>;
 ```

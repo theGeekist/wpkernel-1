@@ -4,7 +4,7 @@
 
 [@wpkernel/cli](../README.md) / AdapterContext
 
-# Interface: AdapterContext&lt;TConfigSurface, TIr&gt;
+# Interface: AdapterContext<TConfigSurface, TIr>
 
 Context shared with adapter factories while generating artifacts.
 

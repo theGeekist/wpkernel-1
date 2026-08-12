@@ -47,7 +47,7 @@ optional extras: readonly string[];
 ### input?
 
 ```ts
-optional input: string | Buffer&lt;ArrayBufferLike&gt;;
+optional input: string | Buffer<ArrayBufferLike>;
 ```
 
 #### Inherited from

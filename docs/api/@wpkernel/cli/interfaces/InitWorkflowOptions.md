@@ -51,7 +51,7 @@ readonly optional installDependencies: boolean;
 ### installers?
 
 ```ts
-readonly optional installers: Partial&lt;InitWorkflowInstallers&gt;;
+readonly optional installers: Partial<InitWorkflowInstallers>;
 ```
 
 ***

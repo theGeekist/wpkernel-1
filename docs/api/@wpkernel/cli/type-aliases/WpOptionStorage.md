@@ -7,9 +7,9 @@
 # Type Alias: WpOptionStorage
 
 ```ts
-type WpOptionStorage = Extract&lt;NonNullable&lt;IRResource["storage"]&gt;, {
+type WpOptionStorage = Extract<NonNullable<IRResource["storage"]>, {
   mode: "wp-option";
-}&gt;;
+}>;
 ```
 
 WordPress Options storage configuration type.

@@ -7,5 +7,5 @@
 # Type Alias: WorkspaceFileTree
 
 ```ts
-type WorkspaceFileTree = Record&lt;string, string&gt;;
+type WorkspaceFileTree = Record<string, string>;
 ```

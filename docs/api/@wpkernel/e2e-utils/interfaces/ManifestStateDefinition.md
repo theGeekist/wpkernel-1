@@ -13,7 +13,7 @@ Declarative configuration describing the desired manifest state.
 ### files
 
 ```ts
-files: Record&lt;string, ManifestFileDefinition&gt;;
+files: Record<string, ManifestFileDefinition>;
 ```
 
 ***

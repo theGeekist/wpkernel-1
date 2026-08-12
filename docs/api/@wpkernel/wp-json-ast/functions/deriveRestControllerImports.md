@@ -7,7 +7,7 @@
 # Function: deriveRestControllerImports()
 
 ```ts
-function deriveRestControllerImports(routes, options): ReadonlySet&lt;string&gt;;
+function deriveRestControllerImports(routes, options): ReadonlySet<string>;
 ```
 
 ## Parameters
@@ -22,4 +22,4 @@ readonly [`RestRouteConfig`](../interfaces/RestRouteConfig.md)[]
 
 ## Returns
 
-`ReadonlySet`&lt;`string`&gt;
+`ReadonlySet`<`string`>

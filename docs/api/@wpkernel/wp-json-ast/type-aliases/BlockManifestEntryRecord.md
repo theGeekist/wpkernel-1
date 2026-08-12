@@ -7,5 +7,5 @@
 # Type Alias: BlockManifestEntryRecord
 
 ```ts
-type BlockManifestEntryRecord = Record&lt;string, unknown&gt;;
+type BlockManifestEntryRecord = Record<string, unknown>;
 ```

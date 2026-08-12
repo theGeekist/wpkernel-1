@@ -7,5 +7,5 @@
 # Type Alias: BlockManifestFile
 
 ```ts
-type BlockManifestFile = BlockModuleFile&lt;BlockManifestMetadata&gt;;
+type BlockManifestFile = BlockModuleFile<BlockManifestMetadata>;
 ```

@@ -7,7 +7,7 @@
 # Function: usePrefetcher()
 
 ```ts
-function usePrefetcher&lt;TRecord, TQuery&gt;(resource): Prefetcher&lt;TQuery&gt;;
+function usePrefetcher<TRecord, TQuery>(resource): Prefetcher<TQuery>;
 ```
 
 Exposes stable cache prefetch helpers for a resource.
@@ -30,10 +30,10 @@ re-creating callback instances on every render.
 
 ### resource
 
-`ResourceObject`&lt;`TRecord`, `TQuery`&gt;
+`ResourceObject`<`TRecord`, `TQuery`>
 
 Kernel resource exposing optional prefetch helpers.
 
 ## Returns
 
-[`Prefetcher`](../interfaces/Prefetcher.md)&lt;`TQuery`&gt;
+[`Prefetcher`](../interfaces/Prefetcher.md)<`TQuery`>

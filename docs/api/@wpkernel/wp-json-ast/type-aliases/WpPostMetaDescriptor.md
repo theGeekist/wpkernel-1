@@ -7,5 +7,5 @@
 # Type Alias: WpPostMetaDescriptor
 
 ```ts
-type WpPostMetaDescriptor = NonNullable&lt;WpPostStorage["meta"]&gt;[string];
+type WpPostMetaDescriptor = NonNullable<WpPostStorage["meta"]>[string];
 ```

@@ -9,7 +9,7 @@
 ## Call Signature
 
 ```ts
-function defineResource&lt;T, TQuery, TRoutes&gt;(config): ResourceObject&lt;T, TQuery, TRoutes&gt;;
+function defineResource<T, TQuery, TRoutes>(config): ResourceObject<T, TQuery, TRoutes>;
 ```
 
 Define a resource with typed REST client
@@ -44,13 +44,13 @@ Query parameters type for list operations (e.g., { search?: string })
 
 #### config
 
-[`ResourceConfig`](../type-aliases/ResourceConfig.md)&lt;`T`, `TQuery`, `TRoutes`&gt;
+[`ResourceConfig`](../type-aliases/ResourceConfig.md)<`T`, `TQuery`, `TRoutes`>
 
 Resource configuration
 
 ### Returns
 
-[`ResourceObject`](../type-aliases/ResourceObject.md)&lt;`T`, `TQuery`, `TRoutes`&gt;
+[`ResourceObject`](../type-aliases/ResourceObject.md)<`T`, `TQuery`, `TRoutes`>
 
 Resource object with client methods and metadata
 
@@ -61,7 +61,7 @@ DeveloperError if configuration is invalid
 ## Call Signature
 
 ```ts
-function defineResource&lt;Config&gt;(config): ResourceObject&lt;InferResourceDefinition&lt;Config&gt;["entity"], InferResourceDefinition&lt;Config&gt;["query"], InferResourceDefinition&lt;Config&gt;["routes"]&gt;;
+function defineResource<Config>(config): ResourceObject<InferResourceDefinition<Config>["entity"], InferResourceDefinition<Config>["query"], InferResourceDefinition<Config>["routes"]>;
 ```
 
 Define a resource with typed REST client
@@ -78,19 +78,19 @@ Creates a resource object with:
 
 #### Config
 
-`Config` *extends* [`ResourceConfig`](../type-aliases/ResourceConfig.md)&lt;`unknown`, `unknown`, [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)&gt;
+`Config` *extends* [`ResourceConfig`](../type-aliases/ResourceConfig.md)<`unknown`, `unknown`, [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)>
 
 ### Parameters
 
 #### config
 
-`ConfigWithInferredCapabilities`&lt;`Config`&gt;
+`ConfigWithInferredCapabilities`<`Config`>
 
 Resource configuration
 
 ### Returns
 
-[`ResourceObject`](../type-aliases/ResourceObject.md)&lt;`InferResourceDefinition`&lt;`Config`&gt;\[`"entity"`\], `InferResourceDefinition`&lt;`Config`&gt;\[`"query"`\], `InferResourceDefinition`&lt;`Config`&gt;\[`"routes"`\]&gt;
+[`ResourceObject`](../type-aliases/ResourceObject.md)<`InferResourceDefinition`<`Config`>\[`"entity"`\], `InferResourceDefinition`<`Config`>\[`"query"`\], `InferResourceDefinition`<`Config`>\[`"routes"`\]>
 
 Resource object with client methods and metadata
 

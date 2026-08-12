@@ -4,7 +4,7 @@
 
 [@wpkernel/ui](../README.md) / Prefetcher
 
-# Interface: Prefetcher&lt;TQuery&gt;
+# Interface: Prefetcher<TQuery>
 
 Interface for the prefetcher, which exposes stable cache prefetch helpers for a resource.
 
@@ -29,7 +29,7 @@ Prefetches a single item from the resource.
 ### prefetchList
 
 ```ts
-prefetchList: PrefetchList&lt;TQuery&gt;;
+prefetchList: PrefetchList<TQuery>;
 ```
 
 Prefetches a list of items from the resource.

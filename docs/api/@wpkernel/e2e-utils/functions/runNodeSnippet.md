@@ -7,7 +7,7 @@
 # Function: runNodeSnippet()
 
 ```ts
-function runNodeSnippet(options): Promise&lt;CliTranscript&gt;;
+function runNodeSnippet(options): Promise<CliTranscript>;
 ```
 
 Execute a JavaScript snippet using the shared CLI runner harness.
@@ -20,4 +20,4 @@ Execute a JavaScript snippet using the shared CLI runner harness.
 
 ## Returns
 
-`Promise`&lt;[`CliTranscript`](../interfaces/CliTranscript.md)&gt;
+`Promise`<[`CliTranscript`](../interfaces/CliTranscript.md)>

@@ -7,7 +7,7 @@
 # Function: requireIr()
 
 ```ts
-function requireIr&lt;K&gt;(input, keys?): object & Pick&lt;IRv1, K&gt;;
+function requireIr<K>(input, keys?): object & Pick<IRv1, K>;
 ```
 
 Narrowing helper for builders that require the finalized IR.
@@ -39,4 +39,4 @@ readonly `K`[]
 
 ## Returns
 
-`object` & `Pick`&lt;[`IRv1`](../interfaces/IRv1.md), `K`&gt;
+`object` & `Pick`<[`IRv1`](../interfaces/IRv1.md), `K`>

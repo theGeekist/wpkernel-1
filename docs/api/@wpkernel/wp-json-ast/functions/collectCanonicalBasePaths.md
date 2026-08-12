@@ -7,7 +7,7 @@
 # Function: collectCanonicalBasePaths()
 
 ```ts
-function collectCanonicalBasePaths(routes, identityParam): Set&lt;string&gt;;
+function collectCanonicalBasePaths(routes, identityParam): Set<string>;
 ```
 
 ## Parameters
@@ -22,4 +22,4 @@ readonly [`RouteDefinition`](../interfaces/RouteDefinition.md)[]
 
 ## Returns
 
-`Set`&lt;`string`&gt;
+`Set`<`string`>

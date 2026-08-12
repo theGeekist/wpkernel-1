@@ -14,5 +14,5 @@ type StructuredPhpValue =
   | bigint
   | null
   | readonly unknown[]
-| Record&lt;string, unknown&gt;;
+| Record<string, unknown>;
 ```

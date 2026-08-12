@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / Pipeline
 
-# Interface: Pipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt;
+# Interface: Pipeline<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
 
 A configured standard fragment-and-builder pipeline.
 
@@ -74,11 +74,11 @@ orders, so overlapping runs cannot acquire one another's later additions.
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
+`TFragmentHelper` *extends* [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
+`TBuilderHelper` *extends* [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## Properties
 
@@ -103,7 +103,7 @@ Typed registration surface for builder helpers.
 #### use()
 
 ```ts
-use: (helper) =&gt; void;
+use: (helper) => void;
 ```
 
 Registers a builder helper by object identity.
@@ -135,7 +135,7 @@ Extension registration surface for artifact lifecycle hooks.
 #### use()
 
 ```ts
-use: (extension) =&gt; unknown;
+use: (extension) => unknown;
 ```
 
 Registers extension setup and an optional lifecycle hook.
@@ -148,7 +148,7 @@ registration is still awaited by the next [Pipeline.run](#run).
 
 ###### extension
 
-[`StandardPipelineExtension`](../type-aliases/StandardPipelineExtension.md)&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TBuildOptions`, `TArtifact`, `TFragmentInput`, `TFragmentOutput`, `TBuilderInput`, `TBuilderOutput`, `TDiagnostic`, `TFragmentKind`, `TBuilderKind`, `TFragmentHelper`, `TBuilderHelper`&gt;
+[`StandardPipelineExtension`](../type-aliases/StandardPipelineExtension.md)<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TBuildOptions`, `TArtifact`, `TFragmentInput`, `TFragmentOutput`, `TBuilderInput`, `TBuilderOutput`, `TDiagnostic`, `TFragmentKind`, `TBuilderKind`, `TFragmentHelper`, `TBuilderHelper`>
 
 ##### Returns
 
@@ -177,7 +177,7 @@ Typed registration surface for fragment helpers.
 #### use()
 
 ```ts
-use: (helper) =&gt; void;
+use: (helper) => void;
 ```
 
 Registers a fragment helper by object identity.
@@ -201,7 +201,7 @@ A validation error when `helper.kind` is not [Pipeline.fragmentKind](#fragmentki
 ### run()
 
 ```ts
-run: (options) =&gt; MaybePromise&lt;TRunResult&gt;;
+run: (options) => MaybePromise<TRunResult>;
 ```
 
 Executes one isolated fragment, extension and builder sequence.
@@ -218,14 +218,14 @@ this invocation and do not leak into overlapping or later runs.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult`>
 
 ***
 
 ### use()
 
 ```ts
-use: (helper) =&gt; void;
+use: (helper) => void;
 ```
 
 Registers either a configured fragment helper or builder helper while

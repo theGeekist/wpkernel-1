@@ -7,7 +7,7 @@
 # Function: buildGeneratedModuleProgram()
 
 ```ts
-function buildGeneratedModuleProgram&lt;TMetadata&gt;(program): PhpProgram;
+function buildGeneratedModuleProgram<TMetadata>(program): PhpProgram;
 ```
 
 ## Type Parameters
@@ -20,7 +20,7 @@ function buildGeneratedModuleProgram&lt;TMetadata&gt;(program): PhpProgram;
 
 ### program
 
-[`ModuleProgramFile`](../interfaces/ModuleProgramFile.md)&lt;`TMetadata`&gt;
+[`ModuleProgramFile`](../interfaces/ModuleProgramFile.md)<`TMetadata`>
 
 ## Returns
 

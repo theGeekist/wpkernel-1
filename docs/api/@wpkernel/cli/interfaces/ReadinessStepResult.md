@@ -4,7 +4,7 @@
 
 [@wpkernel/cli](../README.md) / ReadinessStepResult
 
-# Interface: ReadinessStepResult&lt;State&gt;
+# Interface: ReadinessStepResult<State>
 
 Shared shape for prepare and execute phase results.
 
@@ -27,9 +27,9 @@ readonly state: State;
 ### cleanup()?
 
 ```ts
-readonly optional cleanup: () =&gt; void | Promise&lt;void&gt;;
+readonly optional cleanup: () => void | Promise<void>;
 ```
 
 #### Returns
 
-`void` \| `Promise`&lt;`void`&gt;
+`void` \| `Promise`<`void`>

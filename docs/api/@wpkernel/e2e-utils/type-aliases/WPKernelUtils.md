@@ -17,7 +17,7 @@ Main wpk utilities object returned by factory
 ### dataview()
 
 ```ts
-dataview: (options) =&gt; DataViewHelper;
+dataview: (options) => DataViewHelper;
 ```
 
 Interact with a DataView rendered via ResourceDataView.
@@ -39,7 +39,7 @@ Selection options for the DataView wrapper.
 ### events()
 
 ```ts
-events: &lt;P&gt;(options?) =&gt; Promise&lt;EventRecorder&lt;P&gt;&gt;;
+events: <P>(options?) => Promise<EventRecorder<P>>;
 ```
 
 Create event recorder for capturing wpk events
@@ -60,7 +60,7 @@ Optional configuration for event filtering
 
 #### Returns
 
-`Promise`&lt;[`EventRecorder`](EventRecorder.md)&lt;`P`&gt;&gt;
+`Promise`<[`EventRecorder`](EventRecorder.md)<`P`>>
 
 Event recorder with capture and query methods
 
@@ -69,7 +69,7 @@ Event recorder with capture and query methods
 ### resource()
 
 ```ts
-resource: &lt;T&gt;(config) =&gt; ResourceUtils&lt;T&gt;;
+resource: <T>(config) => ResourceUtils<T>;
 ```
 
 Create resource utilities for a given resource config
@@ -90,7 +90,7 @@ Resource configuration from defineResource
 
 #### Returns
 
-[`ResourceUtils`](ResourceUtils.md)&lt;`T`&gt;
+[`ResourceUtils`](ResourceUtils.md)<`T`>
 
 Resource utilities with typed methods
 
@@ -99,7 +99,7 @@ Resource utilities with typed methods
 ### store()
 
 ```ts
-store: &lt;T&gt;(storeKey) =&gt; StoreUtils&lt;T&gt;;
+store: <T>(storeKey) => StoreUtils<T>;
 ```
 
 Create store utilities for a given store key
@@ -120,6 +120,6 @@ WordPress data store key (e.g., 'wpk/job')
 
 #### Returns
 
-[`StoreUtils`](StoreUtils.md)&lt;`T`&gt;
+[`StoreUtils`](StoreUtils.md)<`T`>
 
 Store utilities with typed methods

@@ -22,7 +22,7 @@ The AST builder.
 
 ### extraLines
 
-`Iterable`&lt;`string`&gt;
+`Iterable`<`string`>
 
 Extra lines to add to the docblock.
 

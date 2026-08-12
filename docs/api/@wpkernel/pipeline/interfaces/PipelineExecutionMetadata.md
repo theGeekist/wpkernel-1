@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineExecutionMetadata
 
-# Interface: PipelineExecutionMetadata&lt;TFragmentKind, TBuilderKind&gt;
+# Interface: PipelineExecutionMetadata<TFragmentKind, TBuilderKind>
 
 Complete helper execution metadata supplied to a custom run-result adapter.
 
@@ -14,7 +14,7 @@ standard helper sequence.
 
 ## Extends
 
-- [`FragmentFinalizationMetadata`](FragmentFinalizationMetadata.md)&lt;`TFragmentKind`&gt;
+- [`FragmentFinalizationMetadata`](FragmentFinalizationMetadata.md)<`TFragmentKind`>
 
 ## Type Parameters
 
@@ -31,7 +31,7 @@ standard helper sequence.
 ### builders
 
 ```ts
-readonly builders: HelperExecutionSnapshot&lt;TBuilderKind&gt;;
+readonly builders: HelperExecutionSnapshot<TBuilderKind>;
 ```
 
 Snapshot of builder helper resolution and execution for this run.
@@ -41,7 +41,7 @@ Snapshot of builder helper resolution and execution for this run.
 ### fragments
 
 ```ts
-readonly fragments: HelperExecutionSnapshot&lt;TFragmentKind&gt;;
+readonly fragments: HelperExecutionSnapshot<TFragmentKind>;
 ```
 
 Snapshot of fragment helper resolution and execution for this run.

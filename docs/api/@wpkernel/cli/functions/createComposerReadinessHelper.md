@@ -7,15 +7,15 @@
 # Function: createComposerReadinessHelper()
 
 ```ts
-function createComposerReadinessHelper(overrides): ReadinessHelper&lt;ComposerReadinessState&gt;;
+function createComposerReadinessHelper(overrides): ReadinessHelper<ComposerReadinessState>;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`&lt;[`ComposerHelperDependencies`](../interfaces/ComposerHelperDependencies.md)&gt; = `{}`
+`Partial`<[`ComposerHelperDependencies`](../interfaces/ComposerHelperDependencies.md)> = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`ComposerReadinessState`](../interfaces/ComposerReadinessState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`ComposerReadinessState`](../interfaces/ComposerReadinessState.md)>

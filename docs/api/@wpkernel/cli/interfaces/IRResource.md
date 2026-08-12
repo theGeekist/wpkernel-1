@@ -143,7 +143,7 @@ Optional: Generated block configuration (js-only or SSR).
 ### capabilities?
 
 ```ts
-optional capabilities: Partial&lt;Record&lt;string, string | ResourceCapabilityDescriptor&gt;&gt;;
+optional capabilities: Partial<Record<string, string | ResourceCapabilityDescriptor>>;
 ```
 
 Optional: Inline capability mappings for the resource.

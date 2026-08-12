@@ -11,7 +11,7 @@
 ### onWarning()?
 
 ```ts
-readonly optional onWarning: (warning) =&gt; void;
+readonly optional onWarning: (warning) => void;
 ```
 
 #### Parameters

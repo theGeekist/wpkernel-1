@@ -9,7 +9,7 @@
 ## Call Signature
 
 ```ts
-function isPromiseLike&lt;T&gt;(value): value is PromiseLike&lt;T&gt;;
+function isPromiseLike<T>(value): value is PromiseLike<T>;
 ```
 
 Tests whether a value exposes an inspectable data-property `then` method.
@@ -36,13 +36,13 @@ ambient execution.
 
 #### value
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
 
 Candidate synchronous value or thenable.
 
 ### Returns
 
-`value is PromiseLike&lt;T&gt;`
+`value is PromiseLike<T>`
 
 `true` only for a safely captured data-property `then` function.
 
@@ -64,7 +64,7 @@ isPromiseLike(accessorBacked); // false, getter was not evaluated
 ## Call Signature
 
 ```ts
-function isPromiseLike(value): value is PromiseLike&lt;unknown&gt;;
+function isPromiseLike(value): value is PromiseLike<unknown>;
 ```
 
 Tests whether a value exposes an inspectable data-property `then` method.
@@ -91,7 +91,7 @@ Candidate synchronous value or thenable.
 
 ### Returns
 
-`value is PromiseLike&lt;unknown&gt;`
+`value is PromiseLike<unknown>`
 
 `true` only for a safely captured data-property `then` function.
 

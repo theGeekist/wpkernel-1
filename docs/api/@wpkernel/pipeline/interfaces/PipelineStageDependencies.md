@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStageDependencies
 
-# Interface: PipelineStageDependencies&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult, TKind&gt;
+# Interface: PipelineStageDependencies<TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult, TKind>
 
 Stable, domain-neutral dependencies supplied to `createStages`.
 
@@ -61,7 +61,7 @@ Diagnostic union recorded by the runner.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](PipelineRunState.md)<`TUserState`, `TDiagnostic`>
 
 Terminal result returned by the pipeline.
 
@@ -76,7 +76,7 @@ Configured helper-kind union.
 ### commitStage
 
 ```ts
-readonly commitStage: PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly commitStage: PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 Creates an explicit extension-commit boundary.
@@ -92,7 +92,7 @@ only when a custom composition deliberately needs an earlier commit point.
 ### diagnostics
 
 ```ts
-readonly diagnostics: PipelineStageDiagnostics&lt;TDiagnostic, TKind&gt;;
+readonly diagnostics: PipelineStageDiagnostics<TDiagnostic, TKind>;
 ```
 
 Diagnostic recording helpers bound to the current run.
@@ -120,7 +120,7 @@ Lifecycle names recognised by this pipeline, in configured order.
 ### finalizeResult
 
 ```ts
-readonly finalizeResult: PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly finalizeResult: PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 Terminal stage that refreshes end-of-run diagnostics and creates the
@@ -137,7 +137,7 @@ the pipeline reporter when this stage settles the run.
 ### halt()
 
 ```ts
-readonly halt: (error) =&gt; PipelineHalt&lt;TRunResult&gt;;
+readonly halt: (error) => PipelineHalt<TRunResult>;
 ```
 
 Creates a failure halt. Returning it from a stage stops execution and
@@ -151,14 +151,14 @@ initiates reverse-order rollback before the error is rethrown.
 
 #### Returns
 
-[`PipelineHalt`](../type-aliases/PipelineHalt.md)&lt;`TRunResult`&gt;
+[`PipelineHalt`](../type-aliases/PipelineHalt.md)<`TRunResult`>
 
 ***
 
 ### isHalt()
 
 ```ts
-readonly isHalt: (value) =&gt; value is PipelineHalt&lt;TRunResult&gt;;
+readonly isHalt: (value) => value is PipelineHalt<TRunResult>;
 ```
 
 Runtime type guard for terminal [PipelineHalt](../type-aliases/PipelineHalt.md) values.
@@ -171,14 +171,14 @@ Runtime type guard for terminal [PipelineHalt](../type-aliases/PipelineHalt.md) 
 
 #### Returns
 
-`value is PipelineHalt&lt;TRunResult&gt;`
+`value is PipelineHalt<TRunResult>`
 
 ***
 
 ### makeHelperStage()
 
 ```ts
-readonly makeHelperStage: &lt;TInput, TOutput, TSelectedKind, THelper&gt;(kind, options?) =&gt; PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly makeHelperStage: <TInput, TOutput, TSelectedKind, THelper>(kind, options?) => PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 Creates a dependency-ordered stage for one configured helper kind.
@@ -199,7 +199,7 @@ Creates a dependency-ordered stage for one configured helper kind.
 
 ##### THelper
 
-`THelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt;
+`THelper` *extends* [`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`> = [`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`>
 
 #### Parameters
 
@@ -209,11 +209,11 @@ Creates a dependency-ordered stage for one configured helper kind.
 
 ##### options?
 
-[`PipelineHelperStageOptions`](PipelineHelperStageOptions.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`, `THelper`&gt;
+[`PipelineHelperStageOptions`](PipelineHelperStageOptions.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`, `THelper`>
 
 #### Returns
 
-[`PipelineStage`](../type-aliases/PipelineStage.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TRunResult`&gt;
+[`PipelineStage`](../type-aliases/PipelineStage.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TRunResult`>
 
 #### Remarks
 
@@ -231,7 +231,7 @@ while retaining runner-managed rollback and execution metadata.
 ### makeLifecycleStage()
 
 ```ts
-readonly makeLifecycleStage: (lifecycle) =&gt; PipelineStage&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TRunResult&gt;;
+readonly makeLifecycleStage: (lifecycle) => PipelineStage<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>, TRunResult>;
 ```
 
 Creates a stage for one configured extension lifecycle.
@@ -244,7 +244,7 @@ Creates a stage for one configured extension lifecycle.
 
 #### Returns
 
-[`PipelineStage`](../type-aliases/PipelineStage.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TRunResult`&gt;
+[`PipelineStage`](../type-aliases/PipelineStage.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TRunResult`>
 
 #### Remarks
 
@@ -259,7 +259,7 @@ propagated.
 ### pause()?
 
 ```ts
-readonly optional pause: (state, options?) =&gt; PipelinePaused&lt;PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;&gt;;
+readonly optional pause: (state, options?) => PipelinePaused<PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>>;
 ```
 
 Suspends a resumable run at the current stage.
@@ -268,7 +268,7 @@ Suspends a resumable run at the current stage.
 
 ##### state
 
-[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;
+[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>
 
 ##### options?
 
@@ -276,7 +276,7 @@ Suspends a resumable run at the current stage.
 
 #### Returns
 
-[`PipelinePaused`](PipelinePaused.md)&lt;[`PipelineStageState`](PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;&gt;
+[`PipelinePaused`](PipelinePaused.md)<[`PipelineStageState`](PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>>
 
 #### Remarks
 

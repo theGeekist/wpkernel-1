@@ -4,10 +4,10 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineHalt
 
-# Type Alias: PipelineHalt&lt;TRunResult&gt;
+# Type Alias: PipelineHalt<TRunResult>
 
 ```ts
-type PipelineHalt&lt;TRunResult&gt; =
+type PipelineHalt<TRunResult> =
   | {
   __halt: true;
   error: unknown;

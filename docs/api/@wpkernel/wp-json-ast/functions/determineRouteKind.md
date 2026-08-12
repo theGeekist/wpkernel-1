@@ -25,7 +25,7 @@ function determineRouteKind(
 
 ### canonicalBasePaths
 
-`ReadonlySet`&lt;`string`&gt;
+`ReadonlySet`<`string`>
 
 ## Returns
 

@@ -7,5 +7,5 @@
 # Type Alias: ContentModel
 
 ```ts
-type ContentModel = Parameters&lt;typeof buildPluginLoaderProgram&gt;[0]["contentModel"];
+type ContentModel = Parameters<typeof buildPluginLoaderProgram>[0]["contentModel"];
 ```

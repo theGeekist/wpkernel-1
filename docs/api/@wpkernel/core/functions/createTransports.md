@@ -7,7 +7,7 @@
 # Function: createTransports()
 
 ```ts
-function createTransports(channel, level): LogLayerTransport&lt;any&gt; | LogLayerTransport&lt;any&gt;[];
+function createTransports(channel, level): LogLayerTransport<any> | LogLayerTransport<any>[];
 ```
 
 Create transports for browser/WordPress environments.
@@ -29,6 +29,6 @@ Log level
 
 ## Returns
 
-`LogLayerTransport`&lt;`any`&gt; \| `LogLayerTransport`&lt;`any`&gt;[]
+`LogLayerTransport`<`any`> \| `LogLayerTransport`<`any`>[]
 
 Transport or array of transports

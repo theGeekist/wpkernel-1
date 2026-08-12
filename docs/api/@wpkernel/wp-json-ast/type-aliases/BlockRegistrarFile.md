@@ -7,5 +7,5 @@
 # Type Alias: BlockRegistrarFile
 
 ```ts
-type BlockRegistrarFile = BlockModuleFile&lt;BlockRegistrarMetadata&gt;;
+type BlockRegistrarFile = BlockModuleFile<BlockRegistrarMetadata>;
 ```

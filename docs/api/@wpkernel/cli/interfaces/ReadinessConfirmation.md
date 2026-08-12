@@ -4,7 +4,7 @@
 
 [@wpkernel/cli](../README.md) / ReadinessConfirmation
 
-# Interface: ReadinessConfirmation&lt;State&gt;
+# Interface: ReadinessConfirmation<State>
 
 Result emitted by the confirm phase.
 

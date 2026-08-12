@@ -7,7 +7,7 @@
 # Type Alias: RestControllerRouteStatementsBuilder
 
 ```ts
-type RestControllerRouteStatementsBuilder = (context) =&gt; readonly PhpStmt[] | null | undefined;
+type RestControllerRouteStatementsBuilder = (context) => readonly PhpStmt[] | null | undefined;
 ```
 
 ## Parameters

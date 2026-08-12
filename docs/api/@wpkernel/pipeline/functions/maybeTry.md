@@ -7,7 +7,7 @@
 # Function: maybeTry()
 
 ```ts
-function maybeTry&lt;T&gt;(run, onError): MaybePromise&lt;T&gt;;
+function maybeTry<T>(run, onError): MaybePromise<T>;
 ```
 
 Runs an operation and recovers from either a synchronous throw or a rejected
@@ -32,19 +32,19 @@ successful synchronous data, even when they expose an accessor named `then`.
 
 ### run
 
-() =&gt; [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
+() => [`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
 
 Operation to execute.
 
 ### onError
 
-(`error`) =&gt; [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
+(`error`) => [`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
 
 Recovery invoked with the original failure.
 
 ## Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
 
 The successful result or recovery result, preserving sync when possible.
 
@@ -54,7 +54,7 @@ The successful result or recovery result, preserving sync when possible.
 import { maybeTry } from '@wpkernel/pipeline';
 
 const parsed = maybeTry(
-  () =&gt; JSON.parse('{invalid}') as unknown,
-  () =&gt; ({ valid: false })
+  () => JSON.parse('{invalid}') as unknown,
+  () => ({ valid: false })
 );
 ```

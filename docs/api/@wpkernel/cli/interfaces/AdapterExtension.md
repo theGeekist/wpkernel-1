@@ -13,18 +13,18 @@ Adapter extension contract.
 ### apply()
 
 ```ts
-apply: (context) =&gt; void | Promise&lt;void&gt;;
+apply: (context) => void | Promise<void>;
 ```
 
 #### Parameters
 
 ##### context
 
-[`AdapterExtensionContext`](AdapterExtensionContext.md)&lt;`unknown`, `unknown`&gt;
+[`AdapterExtensionContext`](AdapterExtensionContext.md)<`unknown`, `unknown`>
 
 #### Returns
 
-`void` \| `Promise`&lt;`void`&gt;
+`void` \| `Promise`<`void`>
 
 ***
 

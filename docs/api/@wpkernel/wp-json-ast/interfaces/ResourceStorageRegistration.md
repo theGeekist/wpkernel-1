@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ResourceStorageRegistration
 
-# Interface: ResourceStorageRegistration&lt;TStorageKind&gt;
+# Interface: ResourceStorageRegistration<TStorageKind>
 
 ## Type Parameters
 
@@ -33,7 +33,7 @@ readonly label: string;
 ### register()
 
 ```ts
-readonly register: (registry) =&gt; void;
+readonly register: (registry) => void;
 ```
 
 #### Parameters

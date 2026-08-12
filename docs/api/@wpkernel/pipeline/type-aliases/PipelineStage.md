@@ -4,10 +4,10 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStage
 
-# Type Alias: PipelineStage&lt;TState, TRunResult&gt;
+# Type Alias: PipelineStage<TState, TRunResult>
 
 ```ts
-type PipelineStage&lt;TState, TRunResult&gt; = (state) =&gt; MaybePromise&lt;PipelineStageResult&lt;TState, TRunResult&gt;&gt;;
+type PipelineStage<TState, TRunResult> = (state) => MaybePromise<PipelineStageResult<TState, TRunResult>>;
 ```
 
 Synchronous-or-asynchronous unit in a custom stage composition.
@@ -34,7 +34,7 @@ Successful early-result type.
 
 ## Returns
 
-[`MaybePromise`](MaybePromise.md)&lt;[`PipelineStageResult`](PipelineStageResult.md)&lt;`TState`, `TRunResult`&gt;&gt;
+[`MaybePromise`](MaybePromise.md)<[`PipelineStageResult`](PipelineStageResult.md)<`TState`, `TRunResult`>>
 
 ## Remarks
 

@@ -51,7 +51,7 @@ durationMs: number;
 ### env
 
 ```ts
-env: Record&lt;string, string | undefined&gt;;
+env: Record<string, string | undefined>;
 ```
 
 ***

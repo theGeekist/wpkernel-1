@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineRegisteredHelper
 
-# Interface: PipelineRegisteredHelper&lt;THelper&gt;
+# Interface: PipelineRegisteredHelper<THelper>
 
 Registration metadata supplied to helper-stage argument factories.
 

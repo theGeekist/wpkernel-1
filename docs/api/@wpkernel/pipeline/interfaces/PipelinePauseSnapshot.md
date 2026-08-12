@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelinePauseSnapshot
 
-# Interface: PipelinePauseSnapshot&lt;TState&gt;
+# Interface: PipelinePauseSnapshot<TState>
 
 Snapshot captured when a pipeline run pauses.
 

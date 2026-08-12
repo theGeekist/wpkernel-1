@@ -14,7 +14,7 @@ function loadDefaultLayout(overrides?): TestLayout;
 
 ### overrides?
 
-`Record`&lt;`string`, `string`&gt;
+`Record`<`string`, `string`>
 
 ## Returns
 

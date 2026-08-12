@@ -4,13 +4,13 @@
 
 [@wpkernel/php-json-ast](../README.md) / PhpCodemodVisitorConfiguration
 
-# Interface: PhpCodemodVisitorConfiguration&lt;TOptions&gt;
+# Interface: PhpCodemodVisitorConfiguration<TOptions>
 
 ## Type Parameters
 
 ### TOptions
 
-`TOptions` *extends* `Record`&lt;`string`, `unknown`&gt; = `Record`&lt;`string`, `unknown`&gt;
+`TOptions` *extends* `Record`<`string`, `unknown`> = `Record`<`string`, `unknown`>
 
 ## Properties
 

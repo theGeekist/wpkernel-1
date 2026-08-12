@@ -7,7 +7,7 @@
 # Type Alias: ResourceCacheKeyDescriptor
 
 ```ts
-type ResourceCacheKeyDescriptor = Readonly&lt;{
+type ResourceCacheKeyDescriptor = Readonly<{
   segments: readonly unknown[];
-}&gt;;
+}>;
 ```

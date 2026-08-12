@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineStageDiagnostics
 
-# Interface: PipelineStageDiagnostics&lt;TDiagnostic, TKind&gt;
+# Interface: PipelineStageDiagnostics<TDiagnostic, TKind>
 
 Diagnostic capabilities available while composing custom stages.
 
@@ -32,7 +32,7 @@ Configured helper-kind union.
 ### flagUnusedHelper()
 
 ```ts
-readonly flagUnusedHelper: (helper, kind, message, dependsOn?) =&gt; void;
+readonly flagUnusedHelper: (helper, kind, message, dependsOn?) => void;
 ```
 
 Records a standard unused-helper diagnostic.
@@ -41,7 +41,7 @@ Records a standard unused-helper diagnostic.
 
 ##### helper
 
-[`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
+[`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
 
 ##### kind
 
@@ -64,7 +64,7 @@ readonly `string`[]
 ### record()
 
 ```ts
-readonly record: (diagnostic) =&gt; void;
+readonly record: (diagnostic) => void;
 ```
 
 Adds a fully constructed diagnostic to the current run.

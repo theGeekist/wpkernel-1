@@ -7,7 +7,7 @@
 # Type Alias: WPKernelUIProviderComponent
 
 ```ts
-type WPKernelUIProviderComponent = (props) =&gt; ReturnType&lt;typeof createElement&gt;;
+type WPKernelUIProviderComponent = (props) => ReturnType<typeof createElement>;
 ```
 
 Component type for WPKernel UI Provider.
@@ -26,4 +26,4 @@ Component type for WPKernel UI Provider.
 
 ## Returns
 
-`ReturnType`&lt;*typeof* `createElement`&gt;
+`ReturnType`<*typeof* `createElement`>

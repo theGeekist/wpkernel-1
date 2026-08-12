@@ -7,15 +7,15 @@
 # Function: createGitReadinessHelper()
 
 ```ts
-function createGitReadinessHelper(overrides): ReadinessHelper&lt;GitReadinessState&gt;;
+function createGitReadinessHelper(overrides): ReadinessHelper<GitReadinessState>;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`&lt;[`GitHelperDependencies`](../interfaces/GitHelperDependencies.md)&gt; = `{}`
+`Partial`<[`GitHelperDependencies`](../interfaces/GitHelperDependencies.md)> = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`GitReadinessState`](../interfaces/GitReadinessState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`GitReadinessState`](../interfaces/GitReadinessState.md)>

@@ -16,7 +16,7 @@
 ### errorCodeFactory()
 
 ```ts
-readonly errorCodeFactory: (suffix) =&gt; string;
+readonly errorCodeFactory: (suffix) => string;
 ```
 
 #### Parameters

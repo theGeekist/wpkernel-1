@@ -11,5 +11,5 @@
 ### dependencies?
 
 ```ts
-readonly optional dependencies: Partial&lt;BootstrapperResolutionDependencies&gt;;
+readonly optional dependencies: Partial<BootstrapperResolutionDependencies>;
 ```

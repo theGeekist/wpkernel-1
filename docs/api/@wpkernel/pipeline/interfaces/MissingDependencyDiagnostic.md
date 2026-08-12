@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / MissingDependencyDiagnostic
 
-# Interface: MissingDependencyDiagnostic&lt;TKind&gt;
+# Interface: MissingDependencyDiagnostic<TKind>
 
 Fatal diagnostic emitted when a declared dependency cannot be satisfied.
 

@@ -11,7 +11,7 @@
 ### all
 
 ```ts
-all: Record&lt;string, string&gt;;
+all: Record<string, string>;
 ```
 
 ***
@@ -19,7 +19,7 @@ all: Record&lt;string, string&gt;;
 ### resolve()
 
 ```ts
-resolve: (id) =&gt; string;
+resolve: (id) => string;
 ```
 
 #### Parameters

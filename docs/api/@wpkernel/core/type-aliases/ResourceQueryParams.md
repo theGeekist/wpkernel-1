@@ -7,7 +7,7 @@
 # Type Alias: ResourceQueryParams
 
 ```ts
-type ResourceQueryParams = Record&lt;string, ResourceQueryParamDescriptor&gt;;
+type ResourceQueryParams = Record<string, ResourceQueryParamDescriptor>;
 ```
 
 Declarative map of supported query parameters for the resource.

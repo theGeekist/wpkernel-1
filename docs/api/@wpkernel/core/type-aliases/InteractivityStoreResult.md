@@ -7,7 +7,7 @@
 # Type Alias: InteractivityStoreResult
 
 ```ts
-type InteractivityStoreResult = Record&lt;string, unknown&gt;;
+type InteractivityStoreResult = Record<string, unknown>;
 ```
 
 Result returned by the interactivity runtime after registering a store.

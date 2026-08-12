@@ -18,7 +18,7 @@ function registerReadinessHelperFactories(registry, factories): void;
 
 ### factories
 
-`Iterable`&lt;[`ReadinessHelperFactory`](../type-aliases/ReadinessHelperFactory.md)&gt;
+`Iterable`<[`ReadinessHelperFactory`](../type-aliases/ReadinessHelperFactory.md)>
 
 ## Returns
 

@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / HelperApplyResult
 
-# Interface: HelperApplyResult&lt;TOutput&gt;
+# Interface: HelperApplyResult<TOutput>
 
 Optional transformation and compensation produced by a helper.
 

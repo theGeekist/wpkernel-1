@@ -7,15 +7,15 @@
 # Function: createPhpCodemodIngestionReadinessHelper()
 
 ```ts
-function createPhpCodemodIngestionReadinessHelper(overrides): ReadinessHelper&lt;PhpCodemodIngestionState&gt;;
+function createPhpCodemodIngestionReadinessHelper(overrides): ReadinessHelper<PhpCodemodIngestionState>;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`&lt;[`PhpCodemodIngestionDependencies`](../interfaces/PhpCodemodIngestionDependencies.md)&gt; = `{}`
+`Partial`<[`PhpCodemodIngestionDependencies`](../interfaces/PhpCodemodIngestionDependencies.md)> = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`PhpCodemodIngestionState`](../interfaces/PhpCodemodIngestionState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`PhpCodemodIngestionState`](../interfaces/PhpCodemodIngestionState.md)>

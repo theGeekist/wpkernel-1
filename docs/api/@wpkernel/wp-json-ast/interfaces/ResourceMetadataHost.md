@@ -11,7 +11,7 @@
 ### getMetadata()
 
 ```ts
-getMetadata: () =&gt; WpPhpFileMetadata;
+getMetadata: () => WpPhpFileMetadata;
 ```
 
 #### Returns
@@ -23,7 +23,7 @@ getMetadata: () =&gt; WpPhpFileMetadata;
 ### setMetadata()
 
 ```ts
-setMetadata: (metadata) =&gt; void;
+setMetadata: (metadata) => void;
 ```
 
 #### Parameters

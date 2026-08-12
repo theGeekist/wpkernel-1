@@ -19,7 +19,7 @@ readonly cacheKeys: ResourceCacheKeysPlan;
 ### canonicalBasePaths
 
 ```ts
-readonly canonicalBasePaths: ReadonlySet&lt;string&gt;;
+readonly canonicalBasePaths: ReadonlySet<string>;
 ```
 
 ***

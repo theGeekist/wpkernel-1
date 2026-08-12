@@ -7,5 +7,5 @@
 # Type Alias: BlockManifestEntries
 
 ```ts
-type BlockManifestEntries = Readonly&lt;Record&lt;string, BlockManifestEntry&gt;&gt;;
+type BlockManifestEntries = Readonly<Record<string, BlockManifestEntry>>;
 ```

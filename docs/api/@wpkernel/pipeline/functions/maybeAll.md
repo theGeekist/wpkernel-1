@@ -7,7 +7,7 @@
 # Function: maybeAll()
 
 ```ts
-function maybeAll&lt;T&gt;(values): MaybePromise&lt;T[]&gt;;
+function maybeAll<T>(values): MaybePromise<T[]>;
 ```
 
 Resolves an ordered collection of values and safely inspectable thenables.
@@ -30,13 +30,13 @@ Accessor-backed or uninspectable `then` properties remain synchronous data.
 
 ### values
 
-readonly [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;[]
+readonly [`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>[]
 
 Ordered values to resolve.
 
 ## Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`[]&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`[]>
 
 A new array directly, or a native promise when any entry is asynchronous.
 

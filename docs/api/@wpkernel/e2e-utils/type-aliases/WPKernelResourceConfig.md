@@ -7,7 +7,7 @@
 # Type Alias: WPKernelResourceConfig
 
 ```ts
-type WPKernelResourceConfig = ResourceConfig&lt;unknown, unknown&gt;;
+type WPKernelResourceConfig = ResourceConfig<unknown, unknown>;
 ```
 
 Resource configuration shape shared with wpk-aware helpers.

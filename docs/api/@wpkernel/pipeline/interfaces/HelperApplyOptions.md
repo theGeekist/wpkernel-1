@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / HelperApplyOptions
 
-# Interface: HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;
+# Interface: HelperApplyOptions<TContext, TInput, TOutput, TReporter>
 
 Immutable invocation envelope passed to a helper.
 

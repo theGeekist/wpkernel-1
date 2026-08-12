@@ -13,7 +13,7 @@ Represents the manifest of generated files and resources.
 ### resources
 
 ```ts
-readonly resources: Record&lt;string, GenerationManifestResourceEntry&gt;;
+readonly resources: Record<string, GenerationManifestResourceEntry>;
 ```
 
 ***

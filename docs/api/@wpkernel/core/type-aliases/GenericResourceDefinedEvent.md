@@ -7,7 +7,7 @@
 # Type Alias: GenericResourceDefinedEvent
 
 ```ts
-type GenericResourceDefinedEvent = ResourceDefinedEvent&lt;unknown, unknown&gt;;
+type GenericResourceDefinedEvent = ResourceDefinedEvent<unknown, unknown>;
 ```
 
 A generic version of ResourceDefinedEvent, used for tracking all registered resources.

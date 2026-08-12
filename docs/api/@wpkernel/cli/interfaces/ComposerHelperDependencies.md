@@ -11,7 +11,7 @@
 ### pathExists()
 
 ```ts
-readonly pathExists: (candidate) =&gt; Promise&lt;boolean&gt;;
+readonly pathExists: (candidate) => Promise<boolean>;
 ```
 
 #### Parameters
@@ -22,4 +22,4 @@ readonly pathExists: (candidate) =&gt; Promise&lt;boolean&gt;;
 
 #### Returns
 
-`Promise`&lt;`boolean`&gt;
+`Promise`<`boolean`>

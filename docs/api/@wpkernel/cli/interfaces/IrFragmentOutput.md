@@ -11,14 +11,14 @@
 ### assign()
 
 ```ts
-assign: (partial) =&gt; void;
+assign: (partial) => void;
 ```
 
 #### Parameters
 
 ##### partial
 
-`Partial`&lt;[`MutableIr`](MutableIr.md)&gt;
+`Partial`<[`MutableIr`](MutableIr.md)>
 
 #### Returns
 

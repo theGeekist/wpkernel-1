@@ -11,7 +11,7 @@
 ### plan
 
 ```ts
-readonly plan: Pick&lt;RestControllerRoutePlan, "definition" | "methodName" | "docblockSummary"&gt;;
+readonly plan: Pick<RestControllerRoutePlan, "definition" | "methodName" | "docblockSummary">;
 ```
 
 ***

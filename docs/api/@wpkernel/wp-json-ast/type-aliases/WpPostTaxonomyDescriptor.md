@@ -7,5 +7,5 @@
 # Type Alias: WpPostTaxonomyDescriptor
 
 ```ts
-type WpPostTaxonomyDescriptor = NonNullable&lt;WpPostStorage["taxonomies"]&gt;[string];
+type WpPostTaxonomyDescriptor = NonNullable<WpPostStorage["taxonomies"]>[string];
 ```

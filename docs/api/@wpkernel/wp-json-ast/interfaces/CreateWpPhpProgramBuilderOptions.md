@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / CreateWpPhpProgramBuilderOptions
 
-# Interface: CreateWpPhpProgramBuilderOptions&lt;TContext, TInput, TOutput&gt;
+# Interface: CreateWpPhpProgramBuilderOptions<TContext, TInput, TOutput>
 
 Options for creating a WordPress PHP program builder.
 
@@ -19,7 +19,7 @@ const builder = createWpPhpProgramBuilder({
 		pluginName: 'my-plugin',
 		description: 'My plugin description.',
 	},
-	build: (builder) =&gt; {
+	build: (builder) => {
 		builder.appendProgramStatement(
 			buildReturn(
 				buildScalarString('Hello from my plugin!')
@@ -31,7 +31,7 @@ const builder = createWpPhpProgramBuilder({
 
 ## Extends
 
-- `Omit`&lt;`BaseCreatePhpProgramBuilderOptions`&lt;`TContext`, `TInput`, `TOutput`&gt;, `"metadata"` \| `"build"`&gt;
+- `Omit`<`BaseCreatePhpProgramBuilderOptions`<`TContext`, `TInput`, `TOutput`>, `"metadata"` \| `"build"`>
 
 ## Type Parameters
 
@@ -52,7 +52,7 @@ const builder = createWpPhpProgramBuilder({
 ### build()
 
 ```ts
-readonly build: (builder, entry) =&gt; void | Promise&lt;void&gt;;
+readonly build: (builder, entry) => void | Promise<void>;
 ```
 
 The build function that constructs the PHP AST.
@@ -73,7 +73,7 @@ The PHP AST context entry.
 
 #### Returns
 
-`void` \| `Promise`&lt;`void`&gt;
+`void` \| `Promise`<`void`>
 
 ***
 

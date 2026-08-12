@@ -7,7 +7,7 @@
 # Function: createWpPhpProgramBuilder()
 
 ```ts
-function createWpPhpProgramBuilder&lt;TContext, TInput, TOutput&gt;(options): BuilderHelper&lt;TContext, TInput, TOutput&gt;;
+function createWpPhpProgramBuilder<TContext, TInput, TOutput>(options): BuilderHelper<TContext, TInput, TOutput>;
 ```
 
 Creates a WordPress PHP program builder.
@@ -33,13 +33,13 @@ such as automatic generation of file headers and guards.
 
 ### options
 
-[`CreateWpPhpProgramBuilderOptions`](../interfaces/CreateWpPhpProgramBuilderOptions.md)&lt;`TContext`, `TInput`, `TOutput`&gt;
+[`CreateWpPhpProgramBuilderOptions`](../interfaces/CreateWpPhpProgramBuilderOptions.md)<`TContext`, `TInput`, `TOutput`>
 
 Options for creating the builder.
 
 ## Returns
 
-`BuilderHelper`&lt;`TContext`, `TInput`, `TOutput`&gt;
+`BuilderHelper`<`TContext`, `TInput`, `TOutput`>
 
 A builder helper.
 
@@ -54,7 +54,7 @@ const builder = createWpPhpProgramBuilder({
 		pluginName: 'my-plugin',
 		description: 'My plugin description.',
 	},
-	build: (builder) =&gt; {
+	build: (builder) => {
 		builder.appendProgramStatement(
 			buildReturn(
 				buildScalarString('Hello from my plugin!')

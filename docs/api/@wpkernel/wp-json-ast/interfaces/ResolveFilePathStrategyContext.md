@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ResolveFilePathStrategyContext
 
-# Interface: ResolveFilePathStrategyContext&lt;TFile&gt;
+# Interface: ResolveFilePathStrategyContext<TFile>
 
 ## Type Parameters
 

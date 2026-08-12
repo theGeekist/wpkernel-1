@@ -7,7 +7,7 @@
 # Type Alias: PipelineExtension
 
 ```ts
-type PipelineExtension = CorePipelineExtension&lt;Pipeline, PipelineContext, PipelineRunOptions, IRv1&gt;;
+type PipelineExtension = CorePipelineExtension<Pipeline, PipelineContext, PipelineRunOptions, IRv1>;
 ```
 
 Represents a pipeline extension.

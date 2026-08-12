@@ -15,7 +15,7 @@
 ### addUse()
 
 ```ts
-addUse: (statement) =&gt; void;
+addUse: (statement) => void;
 ```
 
 #### Parameters
@@ -37,7 +37,7 @@ addUse: (statement) =&gt; void;
 ### appendDocblock()
 
 ```ts
-appendDocblock: (line) =&gt; void;
+appendDocblock: (line) => void;
 ```
 
 #### Parameters
@@ -59,7 +59,7 @@ appendDocblock: (line) =&gt; void;
 ### appendProgramStatement()
 
 ```ts
-appendProgramStatement: (statement) =&gt; void;
+appendProgramStatement: (statement) => void;
 ```
 
 #### Parameters
@@ -81,7 +81,7 @@ appendProgramStatement: (statement) =&gt; void;
 ### appendStatement()
 
 ```ts
-appendStatement: (statement) =&gt; void;
+appendStatement: (statement) => void;
 ```
 
 #### Parameters
@@ -111,7 +111,7 @@ readonly context: PhpAstContext;
 ### getMetadata()
 
 ```ts
-getMetadata: () =&gt; PhpFileMetadata;
+getMetadata: () => PhpFileMetadata;
 ```
 
 #### Returns
@@ -127,7 +127,7 @@ getMetadata: () =&gt; PhpFileMetadata;
 ### getNamespace()
 
 ```ts
-getNamespace: () =&gt; string;
+getNamespace: () => string;
 ```
 
 #### Returns
@@ -143,7 +143,7 @@ getNamespace: () =&gt; string;
 ### getProgramAst()
 
 ```ts
-getProgramAst: () =&gt; PhpProgram;
+getProgramAst: () => PhpProgram;
 ```
 
 #### Returns
@@ -159,7 +159,7 @@ getProgramAst: () =&gt; PhpProgram;
 ### getStatements()
 
 ```ts
-getStatements: () =&gt; readonly string[];
+getStatements: () => readonly string[];
 ```
 
 #### Returns
@@ -175,7 +175,7 @@ readonly `string`[]
 ### setMetadata()
 
 ```ts
-setMetadata: (metadata) =&gt; void;
+setMetadata: (metadata) => void;
 ```
 
 #### Parameters
@@ -197,7 +197,7 @@ setMetadata: (metadata) =&gt; void;
 ### setNamespace()
 
 ```ts
-setNamespace: (namespace) =&gt; void;
+setNamespace: (namespace) => void;
 ```
 
 #### Parameters

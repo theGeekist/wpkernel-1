@@ -7,7 +7,7 @@
 # Type Alias: ModuleIndexAugmentor
 
 ```ts
-type ModuleIndexAugmentor = (entries) =&gt; readonly ModuleIndexEntry[];
+type ModuleIndexAugmentor = (entries) => readonly ModuleIndexEntry[];
 ```
 
 ## Parameters

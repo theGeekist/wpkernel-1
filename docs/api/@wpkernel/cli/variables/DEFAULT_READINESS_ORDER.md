@@ -7,5 +7,5 @@
 # Variable: DEFAULT\_READINESS\_ORDER
 
 ```ts
-const DEFAULT_READINESS_ORDER: ReadonlyArray&lt;ReadinessKey&gt;;
+const DEFAULT_READINESS_ORDER: ReadonlyArray<ReadinessKey>;
 ```

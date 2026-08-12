@@ -7,7 +7,7 @@
 # Type Alias: FragmentHelper
 
 ```ts
-type FragmentHelper = Helper&lt;PipelineContext, FragmentInput, FragmentOutput, PipelineContext["reporter"], "fragment"&gt;;
+type FragmentHelper = Helper<PipelineContext, FragmentInput, FragmentOutput, PipelineContext["reporter"], "fragment">;
 ```
 
 A helper specifically designed for fragment processing within the pipeline.

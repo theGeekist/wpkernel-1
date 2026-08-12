@@ -7,5 +7,5 @@
 # Type Alias: BlockManifestMap
 
 ```ts
-type BlockManifestMap = Record&lt;string, BlockManifestEntryRecord&gt;;
+type BlockManifestMap = Record<string, BlockManifestEntryRecord>;
 ```

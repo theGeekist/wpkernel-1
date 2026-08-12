@@ -11,7 +11,7 @@
 ### files
 
 ```ts
-files: Record&lt;string, FileHashEntry&gt;;
+files: Record<string, FileHashEntry>;
 ```
 
 ***

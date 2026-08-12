@@ -19,13 +19,13 @@ Triggers a prefetch when the user hovers over an element.
 
 ### ref
 
-`RefObject`&lt;`HTMLElement`&gt;
+`RefObject`<`HTMLElement`>
 
 A React ref to the element to monitor.
 
 ### fn
 
-() =&gt; `void`
+() => `void`
 
 The function to call to trigger the prefetch.
 

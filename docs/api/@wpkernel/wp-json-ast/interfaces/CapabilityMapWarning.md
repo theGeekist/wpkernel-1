@@ -27,5 +27,5 @@ readonly message: string;
 ### context?
 
 ```ts
-readonly optional context: Record&lt;string, unknown&gt;;
+readonly optional context: Record<string, unknown>;
 ```

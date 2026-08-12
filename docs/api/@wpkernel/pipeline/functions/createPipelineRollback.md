@@ -27,7 +27,7 @@ rollbacks are still attempted, while the original run error remains primary.
 
 ### run
 
-() =&gt; `unknown`
+() => `unknown`
 
 Cleanup to invoke if later pipeline work fails.
 
@@ -64,19 +64,19 @@ import {
 
 type Context = {
   reporter: PipelineReporter;
-  cache: Map&lt;string, string&gt;;
+  cache: Map<string, string>;
 };
 
-const cacheResult = createHelper&lt;Context, void, string&gt;({
+const cacheResult = createHelper<Context, void, string>({
   key: 'cache-result',
   kind: 'build',
-  apply: ({ context, output }) =&gt; {
+  apply: ({ context, output }) => {
     const previous = context.cache.get('result');
     context.cache.set('result', output);
 
     return {
       rollback: createPipelineRollback(
-        () =&gt; {
+        () => {
           if (previous === undefined) context.cache.delete('result');
           else context.cache.set('result', previous);
         },

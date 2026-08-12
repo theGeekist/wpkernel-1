@@ -15,7 +15,7 @@ type ActionDefinedEvent = object;
 ### action
 
 ```ts
-action: DefinedAction&lt;unknown, unknown&gt;;
+action: DefinedAction<unknown, unknown>;
 ```
 
 ***

@@ -4,7 +4,7 @@
 
 [@wpkernel/php-json-ast](../README.md) / Helper
 
-# Interface: Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
+# Interface: Helper<TContext, TInput, TOutput, TReporter, TKind>
 
 Executable helper descriptor accepted by pipeline registration.
 
@@ -20,7 +20,7 @@ through registration and execution.
 
 ## Extends
 
-- [`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
+- [`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
 
 ## Type Parameters
 
@@ -59,7 +59,7 @@ Literal helper kind represented by the descriptor.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
+readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
 ```
 
 Executes this helper when its dependency position is reached.

@@ -51,7 +51,7 @@ optional dataviews: WPKernelDataViewsRuntime;
 ### invalidate()?
 
 ```ts
-optional invalidate: (patterns, options?) =&gt; void;
+optional invalidate: (patterns, options?) => void;
 ```
 
 #### Parameters

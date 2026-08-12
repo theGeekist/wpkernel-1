@@ -17,7 +17,7 @@ Aggregated summary returned by the `FileWriter.summarise` helper.
 ### counts
 
 ```ts
-counts: Record&lt;FileWriteStatus, number&gt;;
+counts: Record<FileWriteStatus, number>;
 ```
 
 #### Inherited from

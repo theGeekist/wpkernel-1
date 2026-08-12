@@ -7,7 +7,7 @@
 # Type Alias: WpPostStorage
 
 ```ts
-type WpPostStorage = Extract&lt;NonNullable&lt;Resource["storage"]&gt;, {
+type WpPostStorage = Extract<NonNullable<Resource["storage"]>, {
   mode: "wp-post";
-}&gt;;
+}>;
 ```

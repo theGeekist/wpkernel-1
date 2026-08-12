@@ -12,9 +12,9 @@
 
 ```ts
 readonly optional taxonomies:
-  | Record&lt;string,
+  | Record<string,
   | WpPostTaxonomyConfigEntry
   | null
-  | undefined&gt;
+  | undefined>
   | null;
 ```

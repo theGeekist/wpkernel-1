@@ -66,7 +66,7 @@ Ignored by WPKernel at runtime.
 ### adapters?
 
 ```ts
-optional adapters: AdaptersConfig&lt;unknown, unknown&gt;;
+optional adapters: AdaptersConfig<unknown, unknown>;
 ```
 
 ***
@@ -74,7 +74,7 @@ optional adapters: AdaptersConfig&lt;unknown, unknown&gt;;
 ### directories?
 
 ```ts
-optional directories: Record&lt;string, string&gt;;
+optional directories: Record<string, string>;
 ```
 
 Optional mapping of applied artifact identifiers to workspace-relative

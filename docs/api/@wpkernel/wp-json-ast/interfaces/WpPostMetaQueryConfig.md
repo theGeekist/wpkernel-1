@@ -12,6 +12,6 @@
 
 ```ts
 readonly optional meta:
-  | Record&lt;string, WpPostMetaConfigEntry | null | undefined&gt;
+  | Record<string, WpPostMetaConfigEntry | null | undefined>
   | null;
 ```

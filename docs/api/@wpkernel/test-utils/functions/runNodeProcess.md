@@ -10,7 +10,7 @@
 function runNodeProcess(
    scriptPath,
    args,
-options): Promise&lt;RunProcessResult&gt;;
+options): Promise<RunProcessResult>;
 ```
 
 ## Parameters
@@ -29,4 +29,4 @@ readonly `string`[] = `[]`
 
 ## Returns
 
-`Promise`&lt;[`RunProcessResult`](../interfaces/RunProcessResult.md)&gt;
+`Promise`<[`RunProcessResult`](../interfaces/RunProcessResult.md)>

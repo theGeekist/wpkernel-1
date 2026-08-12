@@ -4,12 +4,12 @@
 
 [@wpkernel/pipeline](../README.md) / HelperApplyFn
 
-# Type Alias: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;
+# Type Alias: HelperApplyFn<TContext, TInput, TOutput, TReporter>
 
 ```ts
-type HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt; = (options, next?) =&gt; MaybePromise&lt;
-  | HelperApplyResult&lt;TOutput&gt;
-| void&gt;;
+type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (options, next?) => MaybePromise<
+  | HelperApplyResult<TOutput>
+| void>;
 ```
 
 Transformation invoked for one registered helper.
@@ -44,21 +44,21 @@ Reporter type.
 
 ### options
 
-[`HelperApplyOptions`](../interfaces/HelperApplyOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`&gt;
+[`HelperApplyOptions`](../interfaces/HelperApplyOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`>
 
 Invocation context, input and current output.
 
 ### next?
 
-[`HelperNext`](../interfaces/HelperNext.md)&lt;`TOutput`&gt;
+[`HelperNext`](../interfaces/HelperNext.md)<`TOutput`>
 
 Continuation for wrapping downstream helpers.
 
 ## Returns
 
-[`MaybePromise`](MaybePromise.md)&lt;
-  \| [`HelperApplyResult`](../interfaces/HelperApplyResult.md)&lt;`TOutput`&gt;
-  \| `void`&gt;
+[`MaybePromise`](MaybePromise.md)<
+  \| [`HelperApplyResult`](../interfaces/HelperApplyResult.md)<`TOutput`>
+  \| `void`>
 
 A synchronous or asynchronous optional helper result.
 

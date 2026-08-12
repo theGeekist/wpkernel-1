@@ -4,7 +4,7 @@
 
 [@wpkernel/pipeline](../README.md) / PipelineExtensionHookResult
 
-# Interface: PipelineExtensionHookResult&lt;TArtifact&gt;
+# Interface: PipelineExtensionHookResult<TArtifact>
 
 Result from a pipeline extension hook.
 
@@ -38,25 +38,25 @@ Replacement artifact passed to the next hook and written back to state.
 ### commit()?
 
 ```ts
-readonly optional commit: () =&gt; MaybePromise&lt;void&gt;;
+readonly optional commit: () => MaybePromise<void>;
 ```
 
 Finalises the hook's prepared side effect after successful execution.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`void`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`void`>
 
 ***
 
 ### rollback()?
 
 ```ts
-readonly optional rollback: () =&gt; MaybePromise&lt;void&gt;;
+readonly optional rollback: () => MaybePromise<void>;
 ```
 
 Compensates the hook's prepared side effect after failure.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`void`&gt;
+[`MaybePromise`](../type-aliases/MaybePromise.md)<`void`>

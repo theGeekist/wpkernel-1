@@ -47,12 +47,12 @@ readonly [`ReadinessKey`](../type-aliases/ReadinessKey.md)[]
 ### list()
 
 ```ts
-list(): readonly ReadinessHelper&lt;unknown&gt;[];
+list(): readonly ReadinessHelper<unknown>[];
 ```
 
 #### Returns
 
-readonly [`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;`unknown`&gt;[]
+readonly [`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`unknown`>[]
 
 ***
 
@@ -77,7 +77,7 @@ readonly [`ReadinessKey`](../type-aliases/ReadinessKey.md)[]
 ### register()
 
 ```ts
-register&lt;State&gt;(helper): void;
+register<State>(helper): void;
 ```
 
 #### Type Parameters
@@ -90,7 +90,7 @@ register&lt;State&gt;(helper): void;
 
 ##### helper
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;`State`&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`State`>
 
 #### Returns
 

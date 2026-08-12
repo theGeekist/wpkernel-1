@@ -4,10 +4,10 @@
 
 [@wpkernel/e2e-utils](../README.md) / ResourceConfig
 
-# Type Alias: ResourceConfig&lt;T, TQuery, TRoutes, _TTypes&gt;
+# Type Alias: ResourceConfig<T, TQuery, TRoutes, _TTypes>
 
 ```ts
-type ResourceConfig&lt;T, TQuery, TRoutes, _TTypes&gt; = object;
+type ResourceConfig<T, TQuery, TRoutes, _TTypes> = object;
 ```
 
 Declarative configuration for a resource.
@@ -70,7 +70,7 @@ Define only the operations your resource supports
 ### cacheKeys?
 
 ```ts
-optional cacheKeys: CacheKeys&lt;TQuery&gt;;
+optional cacheKeys: CacheKeys<TQuery>;
 ```
 
 Cache key generators
@@ -82,7 +82,7 @@ Optional. If omitted, default cache keys based on resource name will be used
 ### capabilities?
 
 ```ts
-optional capabilities: ResourceCapabilityMap&lt;TRoutes&gt;;
+optional capabilities: ResourceCapabilityMap<TRoutes>;
 ```
 
 Optional inline capability mappings.
@@ -162,7 +162,7 @@ reporter instead of creating a child reporter from the WPKernel instance.
 ### schema?
 
 ```ts
-optional schema: Promise&lt;unknown&gt; | unknown | string;
+optional schema: Promise<unknown> | unknown | string;
 ```
 
 JSON Schema for runtime validation
@@ -192,7 +192,7 @@ The runtime ignores this field; CLI tooling can emit registration scaffolding.
 ### store?
 
 ```ts
-optional store: ResourceStoreOptions&lt;T, TQuery&gt;;
+optional store: ResourceStoreOptions<T, TQuery>;
 ```
 
 Optional overrides for store configuration.

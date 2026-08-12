@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ProgramTargetPlanner
 
-# Interface: ProgramTargetPlanner&lt;TFile&gt;
+# Interface: ProgramTargetPlanner<TFile>
 
 ## Type Parameters
 
@@ -17,7 +17,7 @@
 ### queueFile
 
 ```ts
-readonly queueFile: ProgramTargetQueue&lt;TFile&gt;;
+readonly queueFile: ProgramTargetQueue<TFile>;
 ```
 
 ***
@@ -25,5 +25,5 @@ readonly queueFile: ProgramTargetQueue&lt;TFile&gt;;
 ### queueFiles
 
 ```ts
-readonly queueFiles: ProgramTargetQueueMany&lt;TFile&gt;;
+readonly queueFiles: ProgramTargetQueueMany<TFile>;
 ```

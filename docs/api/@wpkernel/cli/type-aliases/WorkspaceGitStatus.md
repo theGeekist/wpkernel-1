@@ -7,5 +7,5 @@
 # Type Alias: WorkspaceGitStatus
 
 ```ts
-type WorkspaceGitStatus = ReadonlyArray&lt;WorkspaceGitStatusEntry&gt;;
+type WorkspaceGitStatus = ReadonlyArray<WorkspaceGitStatusEntry>;
 ```

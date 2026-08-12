@@ -68,7 +68,7 @@ Metadata used for reporter instrumentation.
 ### query?
 
 ```ts
-optional query: Record&lt;string, unknown&gt;;
+optional query: Record<string, unknown>;
 ```
 
 Query parameters (automatically appended to path)

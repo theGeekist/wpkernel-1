@@ -7,7 +7,7 @@
 # Variable: resourceAccessors
 
 ```ts
-const resourceAccessors: ResourceAccessors&lt;"shared" | "wpPost" | "wpOption" | "transient" | "wpTaxonomy"&gt;;
+const resourceAccessors: ResourceAccessors<"shared" | "wpPost" | "wpOption" | "transient" | "wpTaxonomy">;
 ```
 
 WordPress Resource Accessor Registry

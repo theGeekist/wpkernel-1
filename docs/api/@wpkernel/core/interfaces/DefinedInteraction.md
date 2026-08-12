@@ -4,7 +4,7 @@
 
 [@wpkernel/core](../README.md) / DefinedInteraction
 
-# Interface: DefinedInteraction&lt;TStoreResult&gt;
+# Interface: DefinedInteraction<TStoreResult>
 
 Result returned by `defineInteraction`.
 
@@ -19,7 +19,7 @@ Result returned by `defineInteraction`.
 ### getServerState()
 
 ```ts
-readonly getServerState: () =&gt; object;
+readonly getServerState: () => object;
 ```
 
 #### Returns
@@ -47,7 +47,7 @@ readonly store: TStoreResult;
 ### syncServerState()
 
 ```ts
-readonly syncServerState: () =&gt; void;
+readonly syncServerState: () => void;
 ```
 
 #### Returns

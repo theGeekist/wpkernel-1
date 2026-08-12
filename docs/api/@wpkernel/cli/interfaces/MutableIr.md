@@ -67,7 +67,7 @@ diagnostics: IRDiagnostic[];
 ### extensions
 
 ```ts
-extensions: Record&lt;string, unknown&gt;;
+extensions: Record<string, unknown>;
 ```
 
 ***

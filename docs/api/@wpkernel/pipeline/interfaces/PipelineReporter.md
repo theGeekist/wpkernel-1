@@ -18,7 +18,7 @@ registration, execution, rollback or run settlement.
 ### warn()?
 
 ```ts
-optional warn: (message, context?) =&gt; void;
+optional warn: (message, context?) => void;
 ```
 
 Receives a human-readable warning and optional structured context.

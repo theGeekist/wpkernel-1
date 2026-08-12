@@ -7,10 +7,10 @@
 # Type Alias: ReadinessHelperFactory
 
 ```ts
-type ReadinessHelperFactory = (context) =&gt;
+type ReadinessHelperFactory = (context) =>
   | void
   | ReadinessHelper
-| ReadonlyArray&lt;ReadinessHelper&gt;;
+| ReadonlyArray<ReadinessHelper>;
 ```
 
 ## Parameters
@@ -23,4 +23,4 @@ type ReadinessHelperFactory = (context) =&gt;
 
   \| `void`
   \| [`ReadinessHelper`](../interfaces/ReadinessHelper.md)
-  \| `ReadonlyArray`&lt;[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&gt;
+  \| `ReadonlyArray`<[`ReadinessHelper`](../interfaces/ReadinessHelper.md)>

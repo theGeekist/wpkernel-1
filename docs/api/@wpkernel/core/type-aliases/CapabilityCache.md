@@ -17,7 +17,7 @@ Minimal cache contract used by the capability runtime and React hook.
 ### clear()
 
 ```ts
-clear: () =&gt; void;
+clear: () => void;
 ```
 
 #### Returns
@@ -29,7 +29,7 @@ clear: () =&gt; void;
 ### get()
 
 ```ts
-get: (key) =&gt; boolean | undefined;
+get: (key) => boolean | undefined;
 ```
 
 #### Parameters
@@ -47,7 +47,7 @@ get: (key) =&gt; boolean | undefined;
 ### getSnapshot()
 
 ```ts
-getSnapshot: () =&gt; number;
+getSnapshot: () => number;
 ```
 
 #### Returns
@@ -59,7 +59,7 @@ getSnapshot: () =&gt; number;
 ### invalidate()
 
 ```ts
-invalidate: (capabilityKey?) =&gt; void;
+invalidate: (capabilityKey?) => void;
 ```
 
 #### Parameters
@@ -77,7 +77,7 @@ invalidate: (capabilityKey?) =&gt; void;
 ### keys()
 
 ```ts
-keys: () =&gt; string[];
+keys: () => string[];
 ```
 
 #### Returns
@@ -89,7 +89,7 @@ keys: () =&gt; string[];
 ### set()
 
 ```ts
-set: (key, value, options?) =&gt; void;
+set: (key, value, options?) => void;
 ```
 
 #### Parameters
@@ -125,14 +125,14 @@ set: (key, value, options?) =&gt; void;
 ### subscribe()
 
 ```ts
-subscribe: (listener) =&gt; () =&gt; void;
+subscribe: (listener) => () => void;
 ```
 
 #### Parameters
 
 ##### listener
 
-() =&gt; `void`
+() => `void`
 
 #### Returns
 

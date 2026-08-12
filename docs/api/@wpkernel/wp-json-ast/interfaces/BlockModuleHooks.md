@@ -11,7 +11,7 @@
 ### manifestFile()?
 
 ```ts
-readonly optional manifestFile: (file) =&gt; void | BlockManifestFile;
+readonly optional manifestFile: (file) => void | BlockManifestFile;
 ```
 
 #### Parameters
@@ -29,7 +29,7 @@ readonly optional manifestFile: (file) =&gt; void | BlockManifestFile;
 ### registrarFile()?
 
 ```ts
-readonly optional registrarFile: (file) =&gt; void | BlockRegistrarFile;
+readonly optional registrarFile: (file) => void | BlockRegistrarFile;
 ```
 
 #### Parameters
@@ -47,7 +47,7 @@ readonly optional registrarFile: (file) =&gt; void | BlockRegistrarFile;
 ### renderStub()?
 
 ```ts
-readonly optional renderStub: (stub, descriptor) =&gt; void | BlockRenderStub;
+readonly optional renderStub: (stub, descriptor) => void | BlockRenderStub;
 ```
 
 #### Parameters

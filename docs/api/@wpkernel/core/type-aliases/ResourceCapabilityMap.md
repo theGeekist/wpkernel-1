@@ -4,12 +4,12 @@
 
 [@wpkernel/core](../README.md) / ResourceCapabilityMap
 
-# Type Alias: ResourceCapabilityMap&lt;TRoutes&gt;
+# Type Alias: ResourceCapabilityMap<TRoutes>
 
 ```ts
-type ResourceCapabilityMap&lt;TRoutes&gt; = Partial&lt;Record&lt;RouteCapabilityKeys&lt;TRoutes&gt;,
+type ResourceCapabilityMap<TRoutes> = Partial<Record<RouteCapabilityKeys<TRoutes>,
   | string
-| ResourceCapabilityDescriptor&gt;&gt;;
+| ResourceCapabilityDescriptor>>;
 ```
 
 Capability map for a resource.

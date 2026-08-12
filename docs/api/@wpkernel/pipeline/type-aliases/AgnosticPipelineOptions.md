@@ -4,10 +4,10 @@
 
 [@wpkernel/pipeline](../README.md) / AgnosticPipelineOptions
 
-# Type Alias: AgnosticPipelineOptions&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;
+# Type Alias: AgnosticPipelineOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>
 
 ```ts
-type AgnosticPipelineOptions&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt; = AgnosticPipelineBaseOptions&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt; & RunResultAdapter&lt;PipelineRunState&lt;TUserState, TDiagnostic&gt;, TRunResult, AgnosticRunResultFactory&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult&gt;&gt;;
+type AgnosticPipelineOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind> = AgnosticPipelineBaseOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind> & RunResultAdapter<PipelineRunState<TUserState, TDiagnostic>, TRunResult, AgnosticRunResultFactory<TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult>>;
 ```
 
 Options for creating an agnostic core pipeline.
@@ -49,7 +49,7 @@ Diagnostic union recorded by the runner.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TUserState`, `TDiagnostic`>
 
 Public successful run result.
 
@@ -69,15 +69,15 @@ configured helper kinds execute in array order and the result is
 ## Example
 
 ```ts
-const options: AgnosticPipelineOptions&lt;
+const options: AgnosticPipelineOptions<
   { source: string },
   { reporter: PipelineReporter },
   PipelineReporter,
   { text: string }
-&gt; = {
+> = {
   helperKinds: ['transform'],
-  createContext: () =&gt; ({ reporter: { warn: console.warn } }),
-  createState: ({ options }) =&gt; ({ text: options.source })
+  createContext: () => ({ reporter: { warn: console.warn } }),
+  createState: ({ options }) => ({ text: options.source })
 };
 ```
 

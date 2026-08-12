@@ -11,7 +11,7 @@
 ### addCache()
 
 ```ts
-addCache: (descriptor) =&gt; void;
+addCache: (descriptor) => void;
 ```
 
 #### Parameters
@@ -29,7 +29,7 @@ addCache: (descriptor) =&gt; void;
 ### addHelper()
 
 ```ts
-addHelper: (descriptor) =&gt; void;
+addHelper: (descriptor) => void;
 ```
 
 #### Parameters
@@ -47,7 +47,7 @@ addHelper: (descriptor) =&gt; void;
 ### addMutation()
 
 ```ts
-addMutation: (descriptor) =&gt; void;
+addMutation: (descriptor) => void;
 ```
 
 #### Parameters
@@ -65,7 +65,7 @@ addMutation: (descriptor) =&gt; void;
 ### addQuery()
 
 ```ts
-addQuery: (descriptor) =&gt; void;
+addQuery: (descriptor) => void;
 ```
 
 #### Parameters
@@ -83,7 +83,7 @@ addQuery: (descriptor) =&gt; void;
 ### addRequest()
 
 ```ts
-addRequest: (descriptor) =&gt; void;
+addRequest: (descriptor) => void;
 ```
 
 #### Parameters

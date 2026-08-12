@@ -7,7 +7,7 @@
 # Function: buildPhpChannelHelpers()
 
 ```ts
-function buildPhpChannelHelpers&lt;TContext, TInput, TOutput&gt;(options): PhpChannelHelpers&lt;TContext, TInput, TOutput&gt;;
+function buildPhpChannelHelpers<TContext, TInput, TOutput>(options): PhpChannelHelpers<TContext, TInput, TOutput>;
 ```
 
 ## Type Parameters
@@ -32,4 +32,4 @@ function buildPhpChannelHelpers&lt;TContext, TInput, TOutput&gt;(options): PhpCh
 
 ## Returns
 
-[`PhpChannelHelpers`](../interfaces/PhpChannelHelpers.md)&lt;`TContext`, `TInput`, `TOutput`&gt;
+[`PhpChannelHelpers`](../interfaces/PhpChannelHelpers.md)<`TContext`, `TInput`, `TOutput`>

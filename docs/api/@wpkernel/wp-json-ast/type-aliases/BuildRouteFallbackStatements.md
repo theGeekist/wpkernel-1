@@ -7,7 +7,7 @@
 # Type Alias: BuildRouteFallbackStatements
 
 ```ts
-type BuildRouteFallbackStatements = (definition) =&gt; readonly PhpStmt[];
+type BuildRouteFallbackStatements = (definition) => readonly PhpStmt[];
 ```
 
 ## Parameters

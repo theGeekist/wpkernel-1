@@ -66,7 +66,7 @@ Server error options
 
 ###### serverData?
 
-`Record`&lt;`string`, `unknown`&gt;
+`Record`<`string`, `unknown`>
 
 #### Returns
 
@@ -173,7 +173,7 @@ Additional data about the error
 ### serverData?
 
 ```ts
-readonly optional serverData: Record&lt;string, unknown&gt;;
+readonly optional serverData: Record<string, unknown>;
 ```
 
 Additional server data

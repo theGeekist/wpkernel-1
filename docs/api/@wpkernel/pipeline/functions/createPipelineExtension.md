@@ -7,7 +7,7 @@
 # Function: createPipelineExtension()
 
 ```ts
-function createPipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;(options): PipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;;
+function createPipelineExtension<TPipeline, TContext, TOptions, TArtifact>(options): PipelineExtension<TPipeline, TContext, TOptions, TArtifact>;
 ```
 
 Creates a [PipelineExtension](../interfaces/PipelineExtension.md) descriptor using either dynamic
@@ -57,13 +57,13 @@ original pipeline error stays primary.
 
 ### options
 
-[`CreatePipelineExtensionOptions`](../type-aliases/CreatePipelineExtensionOptions.md)&lt;`TPipeline`, `TContext`, `TOptions`, `TArtifact`&gt;
+[`CreatePipelineExtensionOptions`](../type-aliases/CreatePipelineExtensionOptions.md)<`TPipeline`, `TContext`, `TOptions`, `TArtifact`>
 
 Dynamic registration or static setup and hook configuration.
 
 ## Returns
 
-[`PipelineExtension`](../interfaces/PipelineExtension.md)&lt;`TPipeline`, `TContext`, `TOptions`, `TArtifact`&gt;
+[`PipelineExtension`](../interfaces/PipelineExtension.md)<`TPipeline`, `TContext`, `TOptions`, `TArtifact`>
 
 An extension descriptor ready for `pipeline.extensions.use`.
 
@@ -79,17 +79,17 @@ type HostPipeline = { helpers: { use(value: unknown): void } };
 type Context = { reporter: PipelineReporter };
 type RunOptions = { normalise: boolean };
 
-const normalise = createPipelineExtension&lt;
+const normalise = createPipelineExtension<
   HostPipeline,
   Context,
   RunOptions,
   string[]
-&gt;({
+>({
   key: 'example.normalise',
   register() {
-    return ({ artifact, options }) =&gt;
+    return ({ artifact, options }) =>
       options.normalise
-        ? { artifact: artifact.map((value) =&gt; value.trim()) }
+        ? { artifact: artifact.map((value) => value.trim()) }
         : undefined;
   },
 });
@@ -103,20 +103,20 @@ import {
 
 type HostPipeline = { helpers: { use(value: unknown): void } };
 type Context = { reporter: PipelineReporter };
-type RunOptions = Record&lt;string, never&gt;;
+type RunOptions = Record<string, never>;
 
-const annotate = createPipelineExtension&lt;
+const annotate = createPipelineExtension<
   HostPipeline,
   Context,
   RunOptions,
   string[]
-&gt;({
+>({
   key: 'example.annotate',
   setup(pipeline) {
     pipeline.helpers.use({ key: 'annotation-input' });
   },
   lifecycle: 'before-builders',
-  hook: ({ artifact }) =&gt; ({ artifact: [...artifact, 'annotated'] }),
+  hook: ({ artifact }) => ({ artifact: [...artifact, 'annotated'] }),
 });
 ```
 
@@ -127,19 +127,19 @@ import {
 } from '@wpkernel/pipeline';
 
 type Context = { reporter: PipelineReporter };
-const published = new Set&lt;string&gt;();
+const published = new Set<string>();
 
-const publish = createPipelineExtension&lt;
+const publish = createPipelineExtension<
   unknown,
   Context,
-  Record&lt;string, never&gt;,
+  Record<string, never>,
   string[]
-&gt;({
+>({
   key: 'example.publish',
-  hook: ({ artifact }) =&gt; ({
+  hook: ({ artifact }) => ({
     artifact,
-    commit: () =&gt; { published.add(artifact.join(',')); },
-    rollback: () =&gt; { published.delete(artifact.join(',')); },
+    commit: () => { published.add(artifact.join(',')); },
+    rollback: () => { published.delete(artifact.join(',')); },
   }),
 });
 ```

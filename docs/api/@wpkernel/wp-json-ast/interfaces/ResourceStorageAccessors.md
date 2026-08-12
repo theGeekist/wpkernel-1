@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ResourceStorageAccessors
 
-# Interface: ResourceStorageAccessors&lt;TStorageKind&gt;
+# Interface: ResourceStorageAccessors<TStorageKind>
 
 ## Extends
 
@@ -21,7 +21,7 @@
 ### caches
 
 ```ts
-readonly caches: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
+readonly caches: readonly ResourceAccessorDescriptor<unknown>[];
 ```
 
 #### Inherited from
@@ -35,7 +35,7 @@ ResourceAccessorBuckets.caches
 ### helpers
 
 ```ts
-readonly helpers: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
+readonly helpers: readonly ResourceAccessorDescriptor<unknown>[];
 ```
 
 #### Inherited from
@@ -65,7 +65,7 @@ readonly label: string;
 ### mutations
 
 ```ts
-readonly mutations: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
+readonly mutations: readonly ResourceAccessorDescriptor<unknown>[];
 ```
 
 #### Inherited from
@@ -79,7 +79,7 @@ ResourceAccessorBuckets.mutations
 ### queries
 
 ```ts
-readonly queries: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
+readonly queries: readonly ResourceAccessorDescriptor<unknown>[];
 ```
 
 #### Inherited from
@@ -93,7 +93,7 @@ ResourceAccessorBuckets.queries
 ### requests
 
 ```ts
-readonly requests: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
+readonly requests: readonly ResourceAccessorDescriptor<unknown>[];
 ```
 
 #### Inherited from

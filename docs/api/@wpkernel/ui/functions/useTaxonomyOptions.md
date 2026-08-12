@@ -41,9 +41,9 @@ options: TaxonomyOption[];
 ### refresh()
 
 ```ts
-refresh: () =&gt; Promise&lt;void&gt;;
+refresh: () => Promise<void>;
 ```
 
 #### Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>

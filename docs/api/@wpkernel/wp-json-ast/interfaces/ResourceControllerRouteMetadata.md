@@ -57,7 +57,7 @@ Optional cache segments for the route.
 ### tags?
 
 ```ts
-readonly optional tags: Readonly&lt;Record&lt;string, string&gt;&gt;;
+readonly optional tags: Readonly<Record<string, string>>;
 ```
 
 Optional tags for the route.

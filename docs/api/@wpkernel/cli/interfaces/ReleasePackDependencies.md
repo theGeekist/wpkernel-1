@@ -11,7 +11,7 @@
 ### access()
 
 ```ts
-readonly access: (path, mode?) =&gt; Promise&lt;void&gt;;
+readonly access: (path, mode?) => Promise<void>;
 ```
 
 Tests a user's permissions for the file or directory specified by `path`.
@@ -54,7 +54,7 @@ the error raised if the file is not accessible.
 
 #### Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>
 
 Fulfills with `undefined` upon success.
 
@@ -68,30 +68,30 @@ v10.0.0
 
 ```ts
 readonly exec: {
-  (file): PromiseWithChild&lt;{
-}&gt;;
-  (file, args): PromiseWithChild&lt;{
-}&gt;;
-  (file, options): PromiseWithChild&lt;{
-}&gt;;
-  (file, args, options): PromiseWithChild&lt;{
-}&gt;;
-  (file, options): PromiseWithChild&lt;{
-}&gt;;
-  (file, args, options): PromiseWithChild&lt;{
-}&gt;;
-  (file, options): PromiseWithChild&lt;{
-}&gt;;
-  (file, args, options): PromiseWithChild&lt;{
-}&gt;;
+  (file): PromiseWithChild<{
+}>;
+  (file, args): PromiseWithChild<{
+}>;
+  (file, options): PromiseWithChild<{
+}>;
+  (file, args, options): PromiseWithChild<{
+}>;
+  (file, options): PromiseWithChild<{
+}>;
+  (file, args, options): PromiseWithChild<{
+}>;
+  (file, options): PromiseWithChild<{
+}>;
+  (file, args, options): PromiseWithChild<{
+}>;
 };
 ```
 
 #### Call Signature
 
 ```ts
-(file): PromiseWithChild&lt;{
-}&gt;;
+(file): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -102,14 +102,14 @@ readonly exec: {
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
 ```ts
-(file, args): PromiseWithChild&lt;{
-}&gt;;
+(file, args): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -124,14 +124,14 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
 ```ts
-(file, options): PromiseWithChild&lt;{
-}&gt;;
+(file, options): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -146,8 +146,8 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
@@ -155,8 +155,8 @@ readonly `string`[] | `null` | `undefined`
 (
    file,
    args,
-   options): PromiseWithChild&lt;{
-}&gt;;
+   options): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -175,14 +175,14 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
 ```ts
-(file, options): PromiseWithChild&lt;{
-}&gt;;
+(file, options): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -197,8 +197,8 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
@@ -206,8 +206,8 @@ readonly `string`[] | `null` | `undefined`
 (
    file,
    args,
-   options): PromiseWithChild&lt;{
-}&gt;;
+   options): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -226,14 +226,14 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
 ```ts
-(file, options): PromiseWithChild&lt;{
-}&gt;;
+(file, options): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -248,8 +248,8 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>
 
 #### Call Signature
 
@@ -257,8 +257,8 @@ readonly `string`[] | `null` | `undefined`
 (
    file,
    args,
-   options): PromiseWithChild&lt;{
-}&gt;;
+   options): PromiseWithChild<{
+}>;
 ```
 
 ##### Parameters
@@ -277,5 +277,5 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`&lt;\{
-\}&gt;
+`PromiseWithChild`<\{
+\}>

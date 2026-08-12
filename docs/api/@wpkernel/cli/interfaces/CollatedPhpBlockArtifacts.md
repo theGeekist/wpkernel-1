@@ -16,7 +16,7 @@ from processed block definitions.
 ### manifestEntries
 
 ```ts
-readonly manifestEntries: Record&lt;string, BlockManifestEntry&gt;;
+readonly manifestEntries: Record<string, BlockManifestEntry>;
 ```
 
 ***

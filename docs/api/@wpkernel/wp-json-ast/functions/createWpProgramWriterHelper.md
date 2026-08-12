@@ -7,7 +7,7 @@
 # Function: createWpProgramWriterHelper()
 
 ```ts
-function createWpProgramWriterHelper&lt;TContext, TInput, TOutput&gt;(options): BuilderHelper&lt;TContext, TInput, TOutput&gt;;
+function createWpProgramWriterHelper<TContext, TInput, TOutput>(options): BuilderHelper<TContext, TInput, TOutput>;
 ```
 
 ## Type Parameters
@@ -32,4 +32,4 @@ function createWpProgramWriterHelper&lt;TContext, TInput, TOutput&gt;(options): 
 
 ## Returns
 
-`BuilderHelper`&lt;`TContext`, `TInput`, `TOutput`&gt;
+`BuilderHelper`<`TContext`, `TInput`, `TOutput`>

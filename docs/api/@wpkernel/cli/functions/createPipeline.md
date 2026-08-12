@@ -23,7 +23,7 @@ allowing for a modular and extensible code generation process.
 
 ### overrides
 
-`Partial`\&lt;`CliPipelineOptions`\&gt; = `{}`
+`Partial`\<`CliPipelineOptions`\> = `{}`
 
 ## Returns
 

@@ -38,5 +38,5 @@ const statement = buildRequestParamAssignmentStatement({
 	cast: 'int',
 });
 
-// $myParam = (int) $request-&gt;get_param('my_param');
+// $myParam = (int) $request->get_param('my_param');
 ```

@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ResourceAccessorDescriptor
 
-# Interface: ResourceAccessorDescriptor&lt;TValue&gt;
+# Interface: ResourceAccessorDescriptor<TValue>
 
 ## Type Parameters
 

@@ -7,11 +7,11 @@
 # Type Alias: TaxonomiesMap
 
 ```ts
-type TaxonomiesMap = Map&lt;string, {
-  labels: Record&lt;string, string&gt;;
-  objectTypes: Set&lt;string&gt;;
+type TaxonomiesMap = Map<string, {
+  labels: Record<string, string>;
+  objectTypes: Set<string>;
   showAdminColumn: boolean;
   showUi: boolean;
   hierarchical?: boolean;
-}&gt;;
+}>;
 ```

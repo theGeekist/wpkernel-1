@@ -4,11 +4,11 @@
 
 [@wpkernel/cli](../README.md) / PhpAdapterFactory
 
-# Type Alias: PhpAdapterFactory&lt;TConfigSurface, TIr&gt;
+# Type Alias: PhpAdapterFactory<TConfigSurface, TIr>
 
 ```ts
-type PhpAdapterFactory&lt;TConfigSurface, TIr&gt; = (context) =&gt;
-  | PhpAdapterConfig&lt;TConfigSurface, TIr&gt;
+type PhpAdapterFactory<TConfigSurface, TIr> = (context) =>
+  | PhpAdapterConfig<TConfigSurface, TIr>
   | void;
 ```
 
@@ -28,9 +28,9 @@ Factory for producing PHP adapter configuration.
 
 ### context
 
-[`AdapterContext`](../interfaces/AdapterContext.md)&lt;`TConfigSurface`, `TIr`&gt;
+[`AdapterContext`](../interfaces/AdapterContext.md)<`TConfigSurface`, `TIr`>
 
 ## Returns
 
-  \| [`PhpAdapterConfig`](../interfaces/PhpAdapterConfig.md)&lt;`TConfigSurface`, `TIr`&gt;
+  \| [`PhpAdapterConfig`](../interfaces/PhpAdapterConfig.md)<`TConfigSurface`, `TIr`>
   \| `void`

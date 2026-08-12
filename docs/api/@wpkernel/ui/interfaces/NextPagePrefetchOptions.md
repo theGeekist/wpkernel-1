@@ -4,7 +4,7 @@
 
 [@wpkernel/ui](../README.md) / NextPagePrefetchOptions
 
-# Interface: NextPagePrefetchOptions&lt;TQuery&gt;
+# Interface: NextPagePrefetchOptions<TQuery>
 
 Options for the useNextPagePrefetch hook.
 
@@ -19,7 +19,7 @@ Options for the useNextPagePrefetch hook.
 ### computeNext()?
 
 ```ts
-optional computeNext: (query) =&gt; TQuery;
+optional computeNext: (query) => TQuery;
 ```
 
 A function that computes the next query to prefetch.

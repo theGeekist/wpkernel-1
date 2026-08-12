@@ -7,7 +7,7 @@
 # Function: createBootstrapperResolutionReadinessHelper()
 
 ```ts
-function createBootstrapperResolutionReadinessHelper(options): ReadinessHelper&lt;BootstrapperResolutionState&gt;;
+function createBootstrapperResolutionReadinessHelper(options): ReadinessHelper<BootstrapperResolutionState>;
 ```
 
 ## Parameters
@@ -18,4 +18,4 @@ function createBootstrapperResolutionReadinessHelper(options): ReadinessHelper&l
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`BootstrapperResolutionState`](../interfaces/BootstrapperResolutionState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`BootstrapperResolutionState`](../interfaces/BootstrapperResolutionState.md)>

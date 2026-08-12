@@ -4,10 +4,10 @@
 
 [@wpkernel/pipeline](../README.md) / Halt
 
-# Type Alias: Halt&lt;TRunResult&gt;
+# Type Alias: Halt<TRunResult>
 
 ```ts
-type Halt&lt;TRunResult&gt; = PipelineHalt&lt;TRunResult&gt;;
+type Halt<TRunResult> = PipelineHalt<TRunResult>;
 ```
 
 Concise alias for a terminal stage result.

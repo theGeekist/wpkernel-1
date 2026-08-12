@@ -7,7 +7,7 @@
 # Type Alias: WPKernelUIAttach
 
 ```ts
-type WPKernelUIAttach = (wpk, options?) =&gt; WPKernelUIRuntime;
+type WPKernelUIAttach = (wpk, options?) => WPKernelUIRuntime;
 ```
 
 ## Parameters

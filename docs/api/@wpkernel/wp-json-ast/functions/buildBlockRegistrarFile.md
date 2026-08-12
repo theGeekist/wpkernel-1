@@ -10,7 +10,7 @@
 function buildBlockRegistrarFile(
    origin,
    namespace,
-fileName): BlockModuleFile&lt;BlockRegistrarMetadata&gt;;
+fileName): BlockModuleFile<BlockRegistrarMetadata>;
 ```
 
 ## Parameters
@@ -29,4 +29,4 @@ fileName): BlockModuleFile&lt;BlockRegistrarMetadata&gt;;
 
 ## Returns
 
-[`BlockModuleFile`](../interfaces/BlockModuleFile.md)&lt;[`BlockRegistrarMetadata`](../type-aliases/BlockRegistrarMetadata.md)&gt;
+[`BlockModuleFile`](../interfaces/BlockModuleFile.md)<[`BlockRegistrarMetadata`](../type-aliases/BlockRegistrarMetadata.md)>

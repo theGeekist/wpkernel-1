@@ -7,7 +7,7 @@
 # Type Alias: PipelineExtensionHookOptions
 
 ```ts
-type PipelineExtensionHookOptions = CorePipelineExtensionHookOptions&lt;PipelineContext, PipelineRunOptions, IRv1&gt;;
+type PipelineExtensionHookOptions = CorePipelineExtensionHookOptions<PipelineContext, PipelineRunOptions, IRv1>;
 ```
 
 Options passed to a pipeline extension hook.

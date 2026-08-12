@@ -19,7 +19,7 @@ readonly blockKey: string;
 ### manifest
 
 ```ts
-readonly manifest: Readonly&lt;BlockManifestEntryRecord&gt;;
+readonly manifest: Readonly<BlockManifestEntryRecord>;
 ```
 
 ***

@@ -4,7 +4,7 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ProgramTargetFile
 
-# Interface: ProgramTargetFile&lt;TMetadata&gt;
+# Interface: ProgramTargetFile<TMetadata>
 
 ## Type Parameters
 

@@ -7,7 +7,7 @@
 # Function: fetch()
 
 ```ts
-function fetch&lt;T&gt;(request): Promise&lt;TransportResponse&lt;T&gt;&gt;;
+function fetch<T>(request): Promise<TransportResponse<T>>;
 ```
 
 Fetch data from WordPress REST API
@@ -36,7 +36,7 @@ Request configuration
 
 ## Returns
 
-`Promise`&lt;[`TransportResponse`](../type-aliases/TransportResponse.md)&lt;`T`&gt;&gt;
+`Promise`<[`TransportResponse`](../type-aliases/TransportResponse.md)<`T`>>
 
 Promise resolving to response with data and metadata
 
@@ -49,7 +49,7 @@ WPKernelError on request failure
 ```typescript
 import { fetch } from '@wpkernel/core/http';
 
-const response = await fetch&lt;Thing&gt;({
+const response = await fetch<Thing>({
   path: '/my-plugin/v1/things/123',
   method: 'GET'
 });

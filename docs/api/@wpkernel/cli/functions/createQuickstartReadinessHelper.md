@@ -7,7 +7,7 @@
 # Function: createQuickstartReadinessHelper()
 
 ```ts
-function createQuickstartReadinessHelper(options): ReadinessHelper&lt;QuickstartState&gt;;
+function createQuickstartReadinessHelper(options): ReadinessHelper<QuickstartState>;
 ```
 
 ## Parameters
@@ -18,4 +18,4 @@ function createQuickstartReadinessHelper(options): ReadinessHelper&lt;Quickstart
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`QuickstartState`](../interfaces/QuickstartState.md)&gt;
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`QuickstartState`](../interfaces/QuickstartState.md)>

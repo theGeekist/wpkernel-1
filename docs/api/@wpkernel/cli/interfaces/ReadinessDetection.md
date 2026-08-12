@@ -4,7 +4,7 @@
 
 [@wpkernel/cli](../README.md) / ReadinessDetection
 
-# Interface: ReadinessDetection&lt;State&gt;
+# Interface: ReadinessDetection<State>
 
 Result produced by the detect phase for a readiness unit.
 

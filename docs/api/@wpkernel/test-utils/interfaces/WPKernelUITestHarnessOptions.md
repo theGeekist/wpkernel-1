@@ -33,7 +33,7 @@ The WPKernelUIProvider component to use.
 ### reporter?
 
 ```ts
-optional reporter: Partial&lt;Reporter&gt;;
+optional reporter: Partial<Reporter>;
 ```
 
 Partial overrides for the reporter.

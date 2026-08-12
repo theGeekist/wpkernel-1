@@ -4,10 +4,10 @@
 
 [@wpkernel/wp-json-ast](../README.md) / ProgramTargetPlannerOptions
 
-# Type Alias: ProgramTargetPlannerOptions&lt;TFile&gt;
+# Type Alias: ProgramTargetPlannerOptions<TFile>
 
 ```ts
-type ProgramTargetPlannerOptions&lt;TFile&gt; = object;
+type ProgramTargetPlannerOptions<TFile> = object;
 ```
 
 ## Type Parameters
@@ -53,5 +53,5 @@ readonly optional docblockPrefix: readonly string[];
 ### strategy?
 
 ```ts
-readonly optional strategy: ProgramTargetPlannerStrategy&lt;TFile&gt;;
+readonly optional strategy: ProgramTargetPlannerStrategy<TFile>;
 ```

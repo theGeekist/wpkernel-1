@@ -7,7 +7,7 @@
 # Function: writeWorkspaceFiles()
 
 ```ts
-function writeWorkspaceFiles(workspace, files): Promise&lt;void&gt;;
+function writeWorkspaceFiles(workspace, files): Promise<void>;
 ```
 
 Write a set of files into an isolated workspace tree.
@@ -28,4 +28,4 @@ Mapping of relative paths to file contents.
 
 ## Returns
 
-`Promise`&lt;`void`&gt;
+`Promise`<`void`>

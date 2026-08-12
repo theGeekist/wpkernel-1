@@ -7,7 +7,7 @@
 # Type Alias: ErrorFactory
 
 ```ts
-type ErrorFactory = (code, message) =&gt; Error;
+type ErrorFactory = (code, message) => Error;
 ```
 
 Creates the domain error thrown for pipeline validation and runtime failures.
@@ -57,12 +57,12 @@ class HostError extends Error {
   }
 }
 
-const createError: ErrorFactory = (code, message) =&gt;
+const createError: ErrorFactory = (code, message) =>
   new HostError(code, message);
 
 const pipeline = makePipeline({
   helperKinds: [],
-  createContext: () =&gt; ({ reporter: {} as PipelineReporter }),
+  createContext: () => ({ reporter: {} as PipelineReporter }),
   createError,
 });
 ```

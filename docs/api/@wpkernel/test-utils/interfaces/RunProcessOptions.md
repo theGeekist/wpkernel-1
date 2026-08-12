@@ -31,7 +31,7 @@ optional env: ProcessEnv;
 ### input?
 
 ```ts
-optional input: string | Buffer&lt;ArrayBufferLike&gt;;
+optional input: string | Buffer<ArrayBufferLike>;
 ```
 
 ***

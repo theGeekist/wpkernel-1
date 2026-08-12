@@ -7,7 +7,7 @@
 # Type Alias: BuilderHelper
 
 ```ts
-type BuilderHelper = PhpBuilderHelper&lt;PipelineContext, BuilderInput, BuilderOutput&gt;;
+type BuilderHelper = PhpBuilderHelper<PipelineContext, BuilderInput, BuilderOutput>;
 ```
 
 A helper specifically designed for builder processing within the pipeline.
