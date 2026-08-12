@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/test-utils](../README.md) / BuildCoreActionPipelineHarnessOptions
 
@@ -28,7 +28,7 @@ readonly optional namespace: string;
 
 The namespace for the reporter.
 
-***
+---
 
 ### pipelineFactory()?
 
@@ -42,7 +42,7 @@ A factory function to create the action pipeline.
 
 `ActionPipeline`<`TArgs`, `TResult`>
 
-***
+---
 
 ### runtime?
 

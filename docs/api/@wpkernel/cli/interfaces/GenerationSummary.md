@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / GenerationSummary
 
@@ -24,7 +24,7 @@ counts: Record<FileWriteStatus, number>;
 
 [`FileWriterSummary`](FileWriterSummary.md).[`counts`](FileWriterSummary.md#counts)
 
-***
+---
 
 ### dryRun
 
@@ -32,7 +32,7 @@ counts: Record<FileWriteStatus, number>;
 dryRun: boolean;
 ```
 
-***
+---
 
 ### entries
 

@@ -1,13 +1,15 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / defineInteraction
 
 # Function: defineInteraction()
 
 ```ts
-function defineInteraction<TEntity, TQuery, TStore, TActions>(options): DefinedInteraction<InteractivityStoreResult>;
+function defineInteraction<TEntity, TQuery, TStore, TActions>(
+	options
+): DefinedInteraction<InteractivityStoreResult>;
 ```
 
 Define an interactivity store that bridges a resource and optional actions to
@@ -23,11 +25,11 @@ import { testimonial } from '@/resources/testimonial';
 import { ApproveTestimonial } from '@/actions/ApproveTestimonial';
 
 const TestimonialReview = defineInteraction({
-  resource: testimonial,
-  feature: 'review',
-  actions: {
-    approve: ApproveTestimonial,
-  },
+	resource: testimonial,
+	feature: 'review',
+	actions: {
+		approve: ApproveTestimonial,
+	},
 });
 
 await TestimonialReview.store.actions.approve({ id: 101 });
@@ -45,11 +47,11 @@ await TestimonialReview.store.actions.approve({ id: 101 });
 
 ### TStore
 
-`TStore` *extends* `Record`<`string`, `unknown`> = `Record`<`string`, `unknown`>
+`TStore` _extends_ `Record`<`string`, `unknown`> = `Record`<`string`, `unknown`>
 
 ### TActions
 
-`TActions` *extends* [`InteractionActionsRecord`](../type-aliases/InteractionActionsRecord.md) = [`InteractionActionsRecord`](../type-aliases/InteractionActionsRecord.md)
+`TActions` _extends_ [`InteractionActionsRecord`](../type-aliases/InteractionActionsRecord.md) = [`InteractionActionsRecord`](../type-aliases/InteractionActionsRecord.md)
 
 ## Parameters
 

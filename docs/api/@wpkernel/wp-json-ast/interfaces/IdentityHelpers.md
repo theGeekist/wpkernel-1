@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../README.md) / IdentityHelpers
 
@@ -24,7 +24,7 @@ readonly buildIdentityGuardStatements: (options) => readonly PhpStmt[];
 
 readonly `PhpStmt`[]
 
-***
+---
 
 ### resolveIdentityConfig()
 

@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / CapabilityDefinitionConfig
 
@@ -16,7 +16,7 @@ Configuration object accepted by `defineCapability()`.
 
 ### K
 
-`K` *extends* `Record`<`string`, `unknown`>
+`K` _extends_ `Record`<`string`, `unknown`>
 
 ## Properties
 
@@ -26,7 +26,7 @@ Configuration object accepted by `defineCapability()`.
 map: CapabilityMap<K>;
 ```
 
-***
+---
 
 ### options?
 

@@ -1,6 +1,6 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../README.md) / EventRecorder
 
@@ -32,7 +32,7 @@ Clear all captured events
 
 `Promise`<`void`>
 
-***
+---
 
 ### find()
 
@@ -56,7 +56,7 @@ Event type to search for
 
 First matching event or undefined
 
-***
+---
 
 ### findAll()
 
@@ -80,7 +80,7 @@ Event type to search for
 
 Array of matching events
 
-***
+---
 
 ### list()
 
@@ -94,7 +94,7 @@ Get all captured events
 
 `Promise`<[`CapturedEvent`](CapturedEvent.md)<`P`>[]>
 
-***
+---
 
 ### stop()
 

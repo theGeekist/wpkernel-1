@@ -1,13 +1,13 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / HelperMode
 
 # Type Alias: HelperMode
 
 ```ts
-type HelperMode = "extend" | "override";
+type HelperMode = 'extend' | 'override';
 ```
 
 Registration policy for helpers that share a key.

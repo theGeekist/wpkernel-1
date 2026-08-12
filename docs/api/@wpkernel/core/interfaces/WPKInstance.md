@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / WPKInstance
 
@@ -28,7 +28,7 @@ attachUIBindings: (attach, options?) => WPKernelUIRuntime;
 
 [`WPKernelUIRuntime`](WPKernelUIRuntime.md)
 
-***
+---
 
 ### defineResource()
 
@@ -56,7 +56,7 @@ defineResource: <T, TQuery>(config) => ResourceObject<T, TQuery>;
 
 [`ResourceObject`](../type-aliases/ResourceObject.md)<`T`, `TQuery`>
 
-***
+---
 
 ### emit()
 
@@ -78,7 +78,7 @@ emit: (eventName, payload) => void;
 
 `void`
 
-***
+---
 
 ### events
 
@@ -86,7 +86,7 @@ emit: (eventName, payload) => void;
 events: WPKernelEventBus;
 ```
 
-***
+---
 
 ### getNamespace()
 
@@ -98,7 +98,7 @@ getNamespace: () => string;
 
 `string`
 
-***
+---
 
 ### getRegistry()
 
@@ -110,7 +110,7 @@ getRegistry: () => any;
 
 `any`
 
-***
+---
 
 ### getReporter()
 
@@ -122,7 +122,7 @@ getReporter: () => Reporter;
 
 [`Reporter`](../type-aliases/Reporter.md)
 
-***
+---
 
 ### getUIRuntime()
 
@@ -134,7 +134,7 @@ getUIRuntime: () => WPKernelUIRuntime | undefined;
 
 [`WPKernelUIRuntime`](WPKernelUIRuntime.md) \| `undefined`
 
-***
+---
 
 ### hasUIRuntime()
 
@@ -146,7 +146,7 @@ hasUIRuntime: () => boolean;
 
 `boolean`
 
-***
+---
 
 ### invalidate()
 
@@ -168,7 +168,7 @@ invalidate: (patterns, options?) => void;
 
 `void`
 
-***
+---
 
 ### teardown()
 
@@ -180,7 +180,7 @@ teardown: () => void;
 
 `void`
 
-***
+---
 
 ### ui
 

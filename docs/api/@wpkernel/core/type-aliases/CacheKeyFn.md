@@ -1,13 +1,15 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / CacheKeyFn
 
 # Type Alias: CacheKeyFn<TParams>
 
 ```ts
-type CacheKeyFn<TParams> = (params?) => (string | number | boolean | null | undefined)[];
+type CacheKeyFn<TParams> = (
+	params?
+) => (string | number | boolean | null | undefined)[];
 ```
 
 Cache key generator function

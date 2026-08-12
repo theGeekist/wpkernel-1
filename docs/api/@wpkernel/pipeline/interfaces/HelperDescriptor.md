@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / HelperDescriptor
 
@@ -23,7 +23,7 @@ priority runs first, then key order, then registration order.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Literal union of helper kinds accepted by the pipeline.
 
@@ -37,7 +37,7 @@ readonly dependsOn: readonly string[];
 
 Helper keys that must complete before this helper may execute.
 
-***
+---
 
 ### key
 
@@ -47,7 +47,7 @@ readonly key: string;
 
 Dependency and override identity within [kind](#kind).
 
-***
+---
 
 ### kind
 
@@ -57,7 +57,7 @@ readonly kind: TKind;
 
 Execution phase and registry containing this helper.
 
-***
+---
 
 ### mode
 
@@ -67,7 +67,7 @@ readonly mode: HelperMode;
 
 Duplicate-key registration policy.
 
-***
+---
 
 ### priority
 
@@ -77,7 +77,7 @@ readonly priority: number;
 
 Relative ordering hint; higher values run first when dependencies permit.
 
-***
+---
 
 ### origin?
 

@@ -1,19 +1,55 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / createPipeline
 
 # Function: createPipeline()
 
 ```ts
-function createPipeline<TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>(options): Pipeline<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>;
+function createPipeline<
+	TRunOptions,
+	TBuildOptions,
+	TContext,
+	TReporter,
+	TDraft,
+	TArtifact,
+	TDiagnostic,
+	TRunResult,
+	TFragmentInput,
+	TFragmentOutput,
+	TBuilderInput,
+	TBuilderOutput,
+	TFragmentKind,
+	TBuilderKind,
+	TFragmentHelper,
+	TBuilderHelper,
+>(
+	options
+): Pipeline<
+	TRunOptions,
+	TRunResult,
+	TContext,
+	TReporter,
+	TBuildOptions,
+	TArtifact,
+	TFragmentInput,
+	TFragmentOutput,
+	TBuilderInput,
+	TBuilderOutput,
+	TDiagnostic,
+	TFragmentKind,
+	TBuilderKind,
+	TFragmentHelper,
+	TBuilderHelper
+>;
 ```
 
 Creates an opinionated [Pipeline](../interfaces/Pipeline.md) with fragment and builder helper
 phases around a finalised public artifact.
 
 The complete phase sequence is:
+
 1. Ordered fragment helpers
 2. Fragment finalisation
 3. `after-fragments` extension hooks
@@ -54,11 +90,11 @@ asynchronous.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TDraft
 
@@ -70,7 +106,7 @@ asynchronous.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 ### TRunResult
 
@@ -94,19 +130,19 @@ asynchronous.
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* `string` = `"fragment"`
+`TFragmentKind` _extends_ `string` = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* `string` = `"builder"`
+`TBuilderKind` _extends_ `string` = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
+`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
+`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## Parameters
 
@@ -126,22 +162,22 @@ A configured standard pipeline instance.
 
 ```ts
 const pipeline = createStandardPipeline({
-  createBuildOptions: () => ({}),
-  createContext: () => ({ reporter: console }),
-  createFragmentState: () => [] as string[],
-  createFragmentArgs: ({ context, draft }) => ({
-    context,
-    input: undefined,
-    output: draft,
-    reporter: context.reporter,
-  }),
-  finalizeFragmentState: ({ draft }) => ({ entries: draft }),
-  createBuilderArgs: ({ context, artifact }) => ({
-    context,
-    input: undefined,
-    output: artifact,
-    reporter: context.reporter,
-  }),
+	createBuildOptions: () => ({}),
+	createContext: () => ({ reporter: console }),
+	createFragmentState: () => [] as string[],
+	createFragmentArgs: ({ context, draft }) => ({
+		context,
+		input: undefined,
+		output: draft,
+		reporter: context.reporter,
+	}),
+	finalizeFragmentState: ({ draft }) => ({ entries: draft }),
+	createBuilderArgs: ({ context, artifact }) => ({
+		context,
+		input: undefined,
+		output: artifact,
+		reporter: context.reporter,
+	}),
 });
 
 pipeline.ir.use(fragmentHelper);

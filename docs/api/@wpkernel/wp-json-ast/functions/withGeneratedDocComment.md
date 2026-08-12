@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../README.md) / withGeneratedDocComment
 
@@ -14,7 +14,7 @@ function withGeneratedDocComment<TStatement>(statement, docblock): TStatement;
 
 ### TStatement
 
-`TStatement` *extends* `PhpStmt`
+`TStatement` _extends_ `PhpStmt`
 
 ## Parameters
 

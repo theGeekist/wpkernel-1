@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / HelperApplyResult
 
@@ -32,7 +32,7 @@ readonly optional output: TOutput;
 
 Replacement passed to downstream helpers and later stages.
 
-***
+---
 
 ### rollback?
 

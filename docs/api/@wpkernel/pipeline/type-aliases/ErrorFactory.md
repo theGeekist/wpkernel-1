@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / ErrorFactory
 
@@ -46,23 +46,26 @@ An error instance for the pipeline to throw.
 
 ```ts
 import {
-  makePipeline,
-  type ErrorFactory,
-  type PipelineReporter,
+	makePipeline,
+	type ErrorFactory,
+	type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 class HostError extends Error {
-  constructor(readonly code: string, message: string) {
-    super(message);
-  }
+	constructor(
+		readonly code: string,
+		message: string
+	) {
+		super(message);
+	}
 }
 
 const createError: ErrorFactory = (code, message) =>
-  new HostError(code, message);
+	new HostError(code, message);
 
 const pipeline = makePipeline({
-  helperKinds: [],
-  createContext: () => ({ reporter: {} as PipelineReporter }),
-  createError,
+	helperKinds: [],
+	createContext: () => ({ reporter: {} as PipelineReporter }),
+	createError,
 });
 ```

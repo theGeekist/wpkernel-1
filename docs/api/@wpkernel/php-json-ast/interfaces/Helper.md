@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / Helper
 
@@ -15,8 +15,8 @@ through registration and execution.
 
 ## See
 
- - [HelperDescriptor](HelperDescriptor.md)
- - [HelperApplyFn](../type-aliases/HelperApplyFn.md)
+- [HelperDescriptor](HelperDescriptor.md)
+- [HelperApplyFn](../type-aliases/HelperApplyFn.md)
 
 ## Extends
 
@@ -44,13 +44,13 @@ Value transformed by the helper chain.
 
 ### TReporter
 
-`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
 
 Reporter type available during execution.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Literal helper kind represented by the descriptor.
 
@@ -64,7 +64,7 @@ readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
 
 Executes this helper when its dependency position is reached.
 
-***
+---
 
 ### dependsOn
 
@@ -78,7 +78,7 @@ Helper keys that must complete before this helper may execute.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`dependsOn`](HelperDescriptor.md#dependson)
 
-***
+---
 
 ### key
 
@@ -92,7 +92,7 @@ Dependency and override identity within [kind](HelperDescriptor.md#kind).
 
 [`HelperDescriptor`](HelperDescriptor.md).[`key`](HelperDescriptor.md#key)
 
-***
+---
 
 ### kind
 
@@ -106,7 +106,7 @@ Execution phase and registry containing this helper.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`kind`](HelperDescriptor.md#kind)
 
-***
+---
 
 ### mode
 
@@ -120,7 +120,7 @@ Duplicate-key registration policy.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`mode`](HelperDescriptor.md#mode)
 
-***
+---
 
 ### priority
 
@@ -134,7 +134,7 @@ Relative ordering hint; higher values run first when dependencies permit.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`priority`](HelperDescriptor.md#priority)
 
-***
+---
 
 ### origin?
 

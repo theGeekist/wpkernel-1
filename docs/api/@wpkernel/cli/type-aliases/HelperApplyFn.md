@@ -1,13 +1,16 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / HelperApplyFn
 
 # Type Alias: HelperApplyFn<TContext, TInput, TOutput, TReporter>
 
 ```ts
-type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (options, next?) => MaybePromise<HelperApplyResult<TOutput> | void>;
+type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (
+	options,
+	next?
+) => MaybePromise<HelperApplyResult<TOutput> | void>;
 ```
 
 Transformation invoked for one registered helper.
@@ -34,7 +37,7 @@ Helper output type.
 
 ### TReporter
 
-`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
 
 Reporter type.
 

@@ -1,13 +1,50 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / StandardPipelineExtension
 
 # Type Alias: StandardPipelineExtension<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
 
 ```ts
-type StandardPipelineExtension<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper> = PipelineExtension<Pipeline<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>, TContext, TRunOptions, TArtifact>;
+type StandardPipelineExtension<
+	TRunOptions,
+	TRunResult,
+	TContext,
+	TReporter,
+	TBuildOptions,
+	TArtifact,
+	TFragmentInput,
+	TFragmentOutput,
+	TBuilderInput,
+	TBuilderOutput,
+	TDiagnostic,
+	TFragmentKind,
+	TBuilderKind,
+	TFragmentHelper,
+	TBuilderHelper,
+> = PipelineExtension<
+	Pipeline<
+		TRunOptions,
+		TRunResult,
+		TContext,
+		TReporter,
+		TBuildOptions,
+		TArtifact,
+		TFragmentInput,
+		TFragmentOutput,
+		TBuilderInput,
+		TBuilderOutput,
+		TDiagnostic,
+		TFragmentKind,
+		TBuilderKind,
+		TFragmentHelper,
+		TBuilderHelper
+	>,
+	TContext,
+	TRunOptions,
+	TArtifact
+>;
 ```
 
 Extension descriptor specialised to a standard fragment-and-builder
@@ -37,11 +74,11 @@ snapshot. Extensions added after that boundary participate in later runs.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TBuildOptions
 
@@ -69,23 +106,23 @@ snapshot. Extensions added after that boundary participate in later runs.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* [`HelperKind`](HelperKind.md) = `"fragment"`
+`TFragmentKind` _extends_ [`HelperKind`](HelperKind.md) = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* [`HelperKind`](HelperKind.md) = `"builder"`
+`TBuilderKind` _extends_ [`HelperKind`](HelperKind.md) = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
+`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
+`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## See
 

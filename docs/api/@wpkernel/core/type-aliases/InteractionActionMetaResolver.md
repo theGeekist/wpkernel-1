@@ -1,13 +1,15 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / InteractionActionMetaResolver
 
 # Type Alias: InteractionActionMetaResolver<TArgs>
 
 ```ts
-type InteractionActionMetaResolver<TArgs> = (args) => Record<string, unknown> | undefined;
+type InteractionActionMetaResolver<TArgs> = (
+	args
+) => Record<string, unknown> | undefined;
 ```
 
 Optional metadata resolver attached to interaction action bindings.

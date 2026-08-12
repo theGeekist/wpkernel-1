@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / DefaultReadinessHelperOverrides
 
@@ -14,7 +14,7 @@
 readonly optional bootstrapperResolution: BootstrapperResolutionHelperOptions;
 ```
 
-***
+---
 
 ### composer?
 
@@ -22,7 +22,7 @@ readonly optional bootstrapperResolution: BootstrapperResolutionHelperOptions;
 readonly optional composer: Partial<ComposerHelperDependencies>;
 ```
 
-***
+---
 
 ### git?
 
@@ -30,7 +30,7 @@ readonly optional composer: Partial<ComposerHelperDependencies>;
 readonly optional git: Partial<GitHelperDependencies>;
 ```
 
-***
+---
 
 ### phpCodemodIngestion?
 
@@ -38,7 +38,7 @@ readonly optional git: Partial<GitHelperDependencies>;
 readonly optional phpCodemodIngestion: Partial<PhpCodemodIngestionDependencies>;
 ```
 
-***
+---
 
 ### phpPrinterPath?
 
@@ -46,7 +46,7 @@ readonly optional phpCodemodIngestion: Partial<PhpCodemodIngestionDependencies>;
 readonly optional phpPrinterPath: Partial<PhpPrinterPathDependencies>;
 ```
 
-***
+---
 
 ### phpRuntime?
 
@@ -54,7 +54,7 @@ readonly optional phpPrinterPath: Partial<PhpPrinterPathDependencies>;
 readonly optional phpRuntime: Partial<PhpRuntimeDependencies>;
 ```
 
-***
+---
 
 ### quickstart?
 
@@ -62,7 +62,7 @@ readonly optional phpRuntime: Partial<PhpRuntimeDependencies>;
 readonly optional quickstart: QuickstartHelperOptions;
 ```
 
-***
+---
 
 ### releasePack?
 
@@ -70,7 +70,7 @@ readonly optional quickstart: QuickstartHelperOptions;
 readonly optional releasePack: ReleasePackHelperOptions;
 ```
 
-***
+---
 
 ### tsxRuntime?
 
@@ -78,7 +78,7 @@ readonly optional releasePack: ReleasePackHelperOptions;
 readonly optional tsxRuntime: Partial<TsxRuntimeDependencies>;
 ```
 
-***
+---
 
 ### workspaceHygiene?
 

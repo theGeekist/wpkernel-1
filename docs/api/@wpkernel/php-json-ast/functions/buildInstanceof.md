@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / buildInstanceof
 
 # Function: buildInstanceof()
 
 ```ts
-function buildInstanceof(
-   expr,
-   className,
-   attributes?): PhpExprInstanceof;
+function buildInstanceof(expr, className, attributes?): PhpExprInstanceof;
 ```
 
 Builds a PHP `instanceof` expression node.

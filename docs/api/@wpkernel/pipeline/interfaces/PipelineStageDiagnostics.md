@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineStageDiagnostics
 
@@ -17,13 +17,13 @@ offered to `onDiagnostic`. Observer failures are contained.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 Diagnostic union accepted by the pipeline.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md)
 
 Configured helper-kind union.
 
@@ -59,7 +59,7 @@ readonly `string`[]
 
 `void`
 
-***
+---
 
 ### record()
 

@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/test-utils](../README.md) / WPKernelUITestHarnessOptions
 
@@ -18,7 +18,7 @@ optional namespace: string;
 
 The namespace for the runtime.
 
-***
+---
 
 ### provider?
 
@@ -28,7 +28,7 @@ optional provider: WPKernelUIProviderComponent;
 
 The WPKernelUIProvider component to use.
 
-***
+---
 
 ### reporter?
 

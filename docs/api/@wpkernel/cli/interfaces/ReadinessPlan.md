@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / ReadinessPlan
 
@@ -16,7 +16,7 @@ Planner returned from the readiness registry when orchestrating units.
 readonly keys: readonly ReadinessKey[];
 ```
 
-***
+---
 
 ### run()
 

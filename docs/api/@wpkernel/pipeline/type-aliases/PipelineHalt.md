@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineHalt
 
@@ -8,16 +8,16 @@
 
 ```ts
 type PipelineHalt<TRunResult> =
-  | {
-  __halt: true;
-  error: unknown;
-  result?: never;
-}
-  | {
-  __halt: true;
-  result: TRunResult;
-  error?: never;
-};
+	| {
+			__halt: true;
+			error: unknown;
+			result?: never;
+	  }
+	| {
+			__halt: true;
+			result: TRunResult;
+			error?: never;
+	  };
 ```
 
 Terminal result produced by a custom pipeline stage.

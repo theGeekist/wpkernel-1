@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceState
 
@@ -33,7 +33,7 @@ errors: Record<string, string>;
 
 Error messages by cache key.
 
-***
+---
 
 ### items
 
@@ -43,22 +43,25 @@ items: Record<string | number, T>;
 
 Map of items by ID.
 
-***
+---
 
 ### listMeta
 
 ```ts
-listMeta: Record<string, {
-  hasMore?: boolean;
-  nextCursor?: string;
-  status?: ResourceListStatus;
-  total?: number;
-}>;
+listMeta: Record<
+	string,
+	{
+		hasMore?: boolean;
+		nextCursor?: string;
+		status?: ResourceListStatus;
+		total?: number;
+	}
+>;
 ```
 
 List metadata (total count, pagination, etc).
 
-***
+---
 
 ### lists
 

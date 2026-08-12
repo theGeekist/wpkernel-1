@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceObject
 
@@ -540,7 +540,7 @@ Promise resolving when prefetch completes
 ```ts
 // Prefetch on app mount
 useEffect(() => {
-  thing.prefetchList({ status: 'active' });
+	thing.prefetchList({ status: 'active' });
 }, []);
 ```
 
@@ -737,7 +737,7 @@ Query parameters type for list operations
 
 ### TRoutes
 
-`TRoutes` *extends* [`ResourceRoutes`](ResourceRoutes.md) = [`ResourceRoutes`](ResourceRoutes.md)
+`TRoutes` _extends_ [`ResourceRoutes`](ResourceRoutes.md) = [`ResourceRoutes`](ResourceRoutes.md)
 
 ## Example
 

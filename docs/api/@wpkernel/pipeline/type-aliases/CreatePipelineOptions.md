@@ -1,13 +1,60 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / CreatePipelineOptions
 
 # Type Alias: CreatePipelineOptions<TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
 
 ```ts
-type CreatePipelineOptions<TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper> = CreatePipelineBaseOptions<TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper> & RunResultAdapter<PipelineRunState<TArtifact, TDiagnostic>, TRunResult, StandardRunResultFactory<TRunOptions, TBuildOptions, TContext, TArtifact, TDiagnostic, TRunResult, TFragmentKind, TBuilderKind>>;
+type CreatePipelineOptions<
+	TRunOptions,
+	TBuildOptions,
+	TContext,
+	TReporter,
+	TDraft,
+	TArtifact,
+	TDiagnostic,
+	TRunResult,
+	TFragmentInput,
+	TFragmentOutput,
+	TBuilderInput,
+	TBuilderOutput,
+	TFragmentKind,
+	TBuilderKind,
+	TFragmentHelper,
+	TBuilderHelper,
+> = CreatePipelineBaseOptions<
+	TRunOptions,
+	TBuildOptions,
+	TContext,
+	TReporter,
+	TDraft,
+	TArtifact,
+	TDiagnostic,
+	TFragmentInput,
+	TFragmentOutput,
+	TBuilderInput,
+	TBuilderOutput,
+	TFragmentKind,
+	TBuilderKind,
+	TFragmentHelper,
+	TBuilderHelper
+> &
+	RunResultAdapter<
+		PipelineRunState<TArtifact, TDiagnostic>,
+		TRunResult,
+		StandardRunResultFactory<
+			TRunOptions,
+			TBuildOptions,
+			TContext,
+			TArtifact,
+			TDiagnostic,
+			TRunResult,
+			TFragmentKind,
+			TBuilderKind
+		>
+	>;
 ```
 
 Options for creating a standard pipeline.
@@ -35,11 +82,11 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TDraft
 
@@ -51,7 +98,7 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
 
 ### TRunResult
 
@@ -75,45 +122,45 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* [`HelperKind`](HelperKind.md) = `"fragment"`
+`TFragmentKind` _extends_ [`HelperKind`](HelperKind.md) = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* [`HelperKind`](HelperKind.md) = `"builder"`
+`TBuilderKind` _extends_ [`HelperKind`](HelperKind.md) = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
+`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
+`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## Example
 
 ```ts
 const pipeline = createPipeline({
-  createBuildOptions: () => ({}),
-  createContext: () => ({ reporter: console }),
-  createFragmentState: () => [] as string[],
-  createFragmentArgs: ({ context, draft }) => ({
-    context,
-    input: undefined,
-    output: draft,
-    reporter: context.reporter,
-  }),
-  adoptFragmentOutput: ({ output }) => output,
-  finalizeFragmentState: ({ draft }) => ({ entries: draft }),
-  createBuilderArgs: ({ context, artifact }) => ({
-    context,
-    input: undefined,
-    output: artifact,
-    reporter: context.reporter,
-  }),
+	createBuildOptions: () => ({}),
+	createContext: () => ({ reporter: console }),
+	createFragmentState: () => [] as string[],
+	createFragmentArgs: ({ context, draft }) => ({
+		context,
+		input: undefined,
+		output: draft,
+		reporter: context.reporter,
+	}),
+	adoptFragmentOutput: ({ output }) => output,
+	finalizeFragmentState: ({ draft }) => ({ entries: draft }),
+	createBuilderArgs: ({ context, artifact }) => ({
+		context,
+		input: undefined,
+		output: artifact,
+		reporter: context.reporter,
+	}),
 });
 ```
 
 ## See
 
- - [Pipeline](../interfaces/Pipeline.md)
- - [StandardPipelineExtension](StandardPipelineExtension.md)
+- [Pipeline](../interfaces/Pipeline.md)
+- [StandardPipelineExtension](StandardPipelineExtension.md)

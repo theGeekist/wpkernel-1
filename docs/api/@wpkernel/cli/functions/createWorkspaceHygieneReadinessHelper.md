@@ -1,13 +1,15 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / createWorkspaceHygieneReadinessHelper
 
 # Function: createWorkspaceHygieneReadinessHelper()
 
 ```ts
-function createWorkspaceHygieneReadinessHelper(overrides): ReadinessHelper<WorkspaceHygieneState>;
+function createWorkspaceHygieneReadinessHelper(
+	overrides
+): ReadinessHelper<WorkspaceHygieneState>;
 ```
 
 ## Parameters

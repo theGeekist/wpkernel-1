@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / Workspace
 
@@ -18,7 +18,7 @@ cwd: () => string;
 
 `string`
 
-***
+---
 
 ### exists()
 
@@ -36,7 +36,7 @@ exists: (target) => Promise<boolean>;
 
 `Promise`<`boolean`>
 
-***
+---
 
 ### resolve()
 
@@ -54,7 +54,7 @@ resolve: (...parts) => string;
 
 `string`
 
-***
+---
 
 ### root
 
@@ -62,7 +62,7 @@ resolve: (...parts) => string;
 readonly root: string;
 ```
 
-***
+---
 
 ### write()
 

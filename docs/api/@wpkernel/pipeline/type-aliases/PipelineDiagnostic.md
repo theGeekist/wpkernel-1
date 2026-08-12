@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineDiagnostic
 
@@ -8,9 +8,9 @@
 
 ```ts
 type PipelineDiagnostic<TKind> =
-  | ConflictDiagnostic<TKind>
-  | MissingDependencyDiagnostic<TKind>
-| UnusedHelperDiagnostic<TKind>;
+	| ConflictDiagnostic<TKind>
+	| MissingDependencyDiagnostic<TKind>
+	| UnusedHelperDiagnostic<TKind>;
 ```
 
 Built-in discriminated union of registration and execution diagnostics.
@@ -19,6 +19,6 @@ Built-in discriminated union of registration and execution diagnostics.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](HelperKind.md) = [`HelperKind`](HelperKind.md)
+`TKind` _extends_ [`HelperKind`](HelperKind.md) = [`HelperKind`](HelperKind.md)
 
 Helper-kind union represented by the diagnostics.

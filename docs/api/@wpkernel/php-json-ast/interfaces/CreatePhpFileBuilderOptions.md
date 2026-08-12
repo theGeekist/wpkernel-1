@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / CreatePhpFileBuilderOptions
 
@@ -14,15 +14,15 @@
 
 ### TContext
 
-`TContext` *extends* [`PipelineContext`](PipelineContext.md) = [`PipelineContext`](PipelineContext.md)
+`TContext` _extends_ [`PipelineContext`](PipelineContext.md) = [`PipelineContext`](PipelineContext.md)
 
 ### TInput
 
-`TInput` *extends* [`BuilderInput`](BuilderInput.md) = [`BuilderInput`](BuilderInput.md)
+`TInput` _extends_ [`BuilderInput`](BuilderInput.md) = [`BuilderInput`](BuilderInput.md)
 
 ### TOutput
 
-`TOutput` *extends* [`BuilderOutput`](BuilderOutput.md) = [`BuilderOutput`](BuilderOutput.md)
+`TOutput` _extends_ [`BuilderOutput`](BuilderOutput.md) = [`BuilderOutput`](BuilderOutput.md)
 
 ## Properties
 
@@ -46,7 +46,7 @@ readonly build: (builder, entry) => void | Promise<void>;
 
 `void` \| `Promise`<`void`>
 
-***
+---
 
 ### filePath
 
@@ -57,10 +57,10 @@ readonly filePath: string;
 #### Inherited from
 
 ```ts
-Omit.filePath
+Omit.filePath;
 ```
 
-***
+---
 
 ### key
 
@@ -71,10 +71,10 @@ readonly key: string;
 #### Inherited from
 
 ```ts
-Omit.key
+Omit.key;
 ```
 
-***
+---
 
 ### metadata
 
@@ -85,10 +85,10 @@ readonly metadata: PhpFileMetadata;
 #### Inherited from
 
 ```ts
-Omit.metadata
+Omit.metadata;
 ```
 
-***
+---
 
 ### namespace
 
@@ -99,10 +99,10 @@ readonly namespace: string;
 #### Inherited from
 
 ```ts
-Omit.namespace
+Omit.namespace;
 ```
 
-***
+---
 
 ### dependsOn?
 
@@ -120,7 +120,7 @@ Prerequisite helper keys.
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`dependsOn`](CreateHelperOptions.md#dependson)
 
-***
+---
 
 ### mode?
 
@@ -138,7 +138,7 @@ Duplicate-key policy.
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`mode`](CreateHelperOptions.md#mode)
 
-***
+---
 
 ### origin?
 
@@ -152,7 +152,7 @@ Optional provenance label used in diagnostics.
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`origin`](CreateHelperOptions.md#origin)
 
-***
+---
 
 ### priority?
 

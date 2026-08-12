@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/ui](../README.md) / Prefetcher
 
@@ -24,7 +24,7 @@ prefetchGet: PrefetchGet;
 
 Prefetches a single item from the resource.
 
-***
+---
 
 ### prefetchList
 

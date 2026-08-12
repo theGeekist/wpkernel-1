@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / WPKernelEventBus
 
@@ -41,7 +41,7 @@ outside of production.
 
 ##### K
 
-`K` *extends* keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
+`K` _extends_ keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
 
 #### Parameters
 
@@ -57,7 +57,7 @@ outside of production.
 
 `void`
 
-***
+---
 
 ### off()
 
@@ -72,7 +72,7 @@ listener that was never registered is a no-op.
 
 ##### K
 
-`K` *extends* keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
+`K` _extends_ keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
 
 #### Parameters
 
@@ -88,7 +88,7 @@ listener that was never registered is a no-op.
 
 `void`
 
-***
+---
 
 ### on()
 
@@ -103,7 +103,7 @@ function is called.
 
 ##### K
 
-`K` *extends* keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
+`K` _extends_ keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
 
 #### Parameters
 
@@ -125,7 +125,7 @@ function is called.
 
 `void`
 
-***
+---
 
 ### once()
 
@@ -140,7 +140,7 @@ the event and then tears itself down.
 
 ##### K
 
-`K` *extends* keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
+`K` _extends_ keyof [`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)
 
 #### Parameters
 

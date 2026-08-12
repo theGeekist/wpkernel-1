@@ -1,18 +1,22 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../README.md) / test
 
 # Variable: test
 
 ```ts
-const test: TestType<PlaywrightTestArgs & PlaywrightTestOptions & object & object, PlaywrightWorkerArgs & PlaywrightWorkerOptions & object>;
+const test: TestType<
+	PlaywrightTestArgs & PlaywrightTestOptions & object & object,
+	PlaywrightWorkerArgs & PlaywrightWorkerOptions & object
+>;
 ```
 
 Extended test fixture with wpk utilities
 
 Provides all WordPress E2E fixtures plus:
+
 - `kernel`: Kernel utilities factory for resources, stores, and events
 
 ## Example

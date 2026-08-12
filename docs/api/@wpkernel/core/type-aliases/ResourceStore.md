@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceStore
 
@@ -36,7 +36,7 @@ actions: ResourceActions<T>;
 
 State actions.
 
-***
+---
 
 ### initialState
 
@@ -46,7 +46,7 @@ initialState: ResourceState<T>;
 
 Initial state.
 
-***
+---
 
 ### reducer()
 
@@ -70,7 +70,7 @@ Reducer function for state updates.
 
 [`ResourceState`](ResourceState.md)<`T`>
 
-***
+---
 
 ### resolvers
 
@@ -80,7 +80,7 @@ resolvers: ResourceResolvers<T, TQuery>;
 
 Resolvers for async data fetching.
 
-***
+---
 
 ### selectors
 
@@ -90,7 +90,7 @@ selectors: ResourceSelectors<T, TQuery>;
 
 State selectors.
 
-***
+---
 
 ### storeKey
 
@@ -100,7 +100,7 @@ storeKey: string;
 
 Store key for registration with @wordpress/data.
 
-***
+---
 
 ### controls?
 

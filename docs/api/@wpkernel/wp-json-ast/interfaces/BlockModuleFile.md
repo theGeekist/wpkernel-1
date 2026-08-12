@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../README.md) / BlockModuleFile
 
@@ -10,9 +10,9 @@
 
 ### TMetadata
 
-`TMetadata` *extends*
-  \| [`BlockManifestMetadata`](../type-aliases/BlockManifestMetadata.md)
-  \| [`BlockRegistrarMetadata`](../type-aliases/BlockRegistrarMetadata.md)
+`TMetadata` _extends_
+\| [`BlockManifestMetadata`](../type-aliases/BlockManifestMetadata.md)
+\| [`BlockRegistrarMetadata`](../type-aliases/BlockRegistrarMetadata.md)
 
 ## Properties
 
@@ -22,7 +22,7 @@
 readonly docblock: readonly string[];
 ```
 
-***
+---
 
 ### fileName
 
@@ -30,7 +30,7 @@ readonly docblock: readonly string[];
 readonly fileName: string;
 ```
 
-***
+---
 
 ### metadata
 
@@ -38,7 +38,7 @@ readonly fileName: string;
 readonly metadata: TMetadata;
 ```
 
-***
+---
 
 ### namespace
 
@@ -46,7 +46,7 @@ readonly metadata: TMetadata;
 readonly namespace: string | null;
 ```
 
-***
+---
 
 ### program
 

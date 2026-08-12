@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / buildClass
 
 # Function: buildClass()
 
 ```ts
-function buildClass(
-   name,
-   options,
-   attributes?): PhpStmtClass;
+function buildClass(name, options, attributes?): PhpStmtClass;
 ```
 
 Builds a PHP class declaration statement node.

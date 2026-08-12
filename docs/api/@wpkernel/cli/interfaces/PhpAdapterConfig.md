@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / PhpAdapterConfig
 
@@ -26,7 +26,7 @@ Configuration returned by the PHP adapter factory.
 optional autoload: string;
 ```
 
-***
+---
 
 ### codemods?
 
@@ -34,7 +34,7 @@ optional autoload: string;
 optional codemods: PhpCodemodAdapterConfig;
 ```
 
-***
+---
 
 ### customise()?
 
@@ -56,7 +56,7 @@ optional customise: (builder, context) => void;
 
 `void`
 
-***
+---
 
 ### driver?
 
@@ -64,7 +64,7 @@ optional customise: (builder, context) => void;
 optional driver: PhpDriverConfigurationOptions;
 ```
 
-***
+---
 
 ### namespace?
 

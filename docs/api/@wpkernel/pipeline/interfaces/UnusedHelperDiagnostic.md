@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / UnusedHelperDiagnostic
 
@@ -17,7 +17,7 @@ through [PipelineStageDiagnostics.flagUnusedHelper](PipelineStageDiagnostics.md#
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Helper-kind union associated with the diagnostic.
 
@@ -31,7 +31,7 @@ readonly key: string;
 
 Registered helper key.
 
-***
+---
 
 ### message
 
@@ -41,7 +41,7 @@ readonly message: string;
 
 Human-readable explanation of why it was considered unused.
 
-***
+---
 
 ### type
 
@@ -51,7 +51,7 @@ readonly type: "unused-helper";
 
 Discriminant for exhaustive diagnostic handling.
 
-***
+---
 
 ### dependsOn?
 
@@ -61,7 +61,7 @@ readonly optional dependsOn: readonly string[];
 
 Dependencies relevant to the non-execution diagnosis.
 
-***
+---
 
 ### helper?
 
@@ -71,7 +71,7 @@ readonly optional helper: string;
 
 Origin or key identifying the helper.
 
-***
+---
 
 ### kind?
 

@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / CacheKeys
 
@@ -37,7 +37,7 @@ optional create: CacheKeyFn<unknown>;
 
 Cache key for create operations (typically not cached)
 
-***
+---
 
 ### get?
 
@@ -47,7 +47,7 @@ optional get: CacheKeyFn<string | number>;
 
 Cache key for single-item fetch
 
-***
+---
 
 ### list?
 
@@ -57,7 +57,7 @@ optional list: CacheKeyFn<TListParams>;
 
 Cache key for list operations
 
-***
+---
 
 ### remove?
 
@@ -67,7 +67,7 @@ optional remove: CacheKeyFn<string | number>;
 
 Cache key for delete operations
 
-***
+---
 
 ### update?
 

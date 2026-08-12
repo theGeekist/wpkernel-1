@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineExtensionHookRegistration
 
@@ -44,7 +44,7 @@ readonly hook: PipelineExtensionHook<TContext, TOptions, TArtifact>;
 
 Hook invoked when the selected lifecycle stage executes.
 
-***
+---
 
 ### lifecycle?
 

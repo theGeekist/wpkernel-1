@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceStoreOptions
 
@@ -16,17 +16,17 @@ Complete resource definition configuration
 
 ```ts
 const thing = defineResource<Thing, { q?: string }>({
-  name: 'thing',
-  routes: {
-    list: { path: '/my-plugin/v1/things', method: 'GET' },
-    get: { path: '/my-plugin/v1/things/:id', method: 'GET' }
-  },
-  cacheKeys: {
-    list: (q) => ['thing', 'list', q?.q],
-    get: (id) => ['thing', 'get', id]
-  },
-  schema: import('./thing.schema.json')
-})
+	name: 'thing',
+	routes: {
+		list: { path: '/my-plugin/v1/things', method: 'GET' },
+		get: { path: '/my-plugin/v1/things/:id', method: 'GET' },
+	},
+	cacheKeys: {
+		list: (q) => ['thing', 'list', q?.q],
+		get: (id) => ['thing', 'get', id],
+	},
+	schema: import('./thing.schema.json'),
+});
 ```
 
 ## Type Parameters
@@ -64,7 +64,7 @@ Defaults to (item) => item.id
 
 `string` \| `number`
 
-***
+---
 
 ### getQueryKey()?
 
@@ -85,7 +85,7 @@ Defaults to JSON.stringify
 
 `string`
 
-***
+---
 
 ### initialState?
 

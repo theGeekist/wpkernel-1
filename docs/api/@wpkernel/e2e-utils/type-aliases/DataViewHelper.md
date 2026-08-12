@@ -1,6 +1,6 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../README.md) / DataViewHelper
 
@@ -26,7 +26,7 @@ Clear the search control.
 
 `Promise`<`void`>
 
-***
+---
 
 ### getRow()
 
@@ -46,7 +46,7 @@ Retrieve a locator for a row containing the provided text.
 
 `Locator`
 
-***
+---
 
 ### getSelectedCount()
 
@@ -60,7 +60,7 @@ Read the bulk selection counter rendered in the footer.
 
 `Promise`<`number`>
 
-***
+---
 
 ### getTotalCount()
 
@@ -74,7 +74,7 @@ Read the total item count exposed by the wrapper metadata.
 
 `Promise`<`number`>
 
-***
+---
 
 ### root()
 
@@ -88,7 +88,7 @@ Root locator for the DataView wrapper.
 
 `Locator`
 
-***
+---
 
 ### runBulkAction()
 
@@ -108,7 +108,7 @@ Trigger a bulk action button by its visible label.
 
 `Promise`<`void`>
 
-***
+---
 
 ### search()
 
@@ -128,7 +128,7 @@ Fill the toolbar search control.
 
 `Promise`<`void`>
 
-***
+---
 
 ### selectRow()
 
@@ -148,7 +148,7 @@ Toggle selection for a row that matches the provided text.
 
 `Promise`<`void`>
 
-***
+---
 
 ### waitForLoaded()
 

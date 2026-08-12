@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / ReadinessRegistry
 
@@ -30,7 +30,7 @@ describe(): readonly ReadinessHelperDescriptor[];
 
 readonly [`ReadinessHelperDescriptor`](../interfaces/ReadinessHelperDescriptor.md)[]
 
-***
+---
 
 ### keys()
 
@@ -42,7 +42,7 @@ keys(): readonly ReadinessKey[];
 
 readonly [`ReadinessKey`](../type-aliases/ReadinessKey.md)[]
 
-***
+---
 
 ### list()
 
@@ -54,7 +54,7 @@ list(): readonly ReadinessHelper<unknown>[];
 
 readonly [`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`unknown`>[]
 
-***
+---
 
 ### plan()
 
@@ -72,7 +72,7 @@ readonly [`ReadinessKey`](../type-aliases/ReadinessKey.md)[]
 
 [`ReadinessPlan`](../interfaces/ReadinessPlan.md)
 
-***
+---
 
 ### register()
 

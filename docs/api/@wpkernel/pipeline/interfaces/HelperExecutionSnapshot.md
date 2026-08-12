@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / HelperExecutionSnapshot
 
@@ -17,7 +17,7 @@ about conditional stage composition without receiving executable helpers.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Helper kind represented by this summary.
 
@@ -31,7 +31,7 @@ readonly executed: readonly string[];
 
 Registration identities that completed execution.
 
-***
+---
 
 ### kind
 
@@ -41,7 +41,7 @@ readonly kind: TKind;
 
 Helper kind described by this snapshot.
 
-***
+---
 
 ### missing
 
@@ -51,7 +51,7 @@ readonly missing: readonly string[];
 
 Registered identities that did not execute.
 
-***
+---
 
 ### registered
 

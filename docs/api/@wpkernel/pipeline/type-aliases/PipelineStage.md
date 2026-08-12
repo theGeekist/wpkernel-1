@@ -1,13 +1,15 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineStage
 
 # Type Alias: PipelineStage<TState, TRunResult>
 
 ```ts
-type PipelineStage<TState, TRunResult> = (state) => MaybePromise<PipelineStageResult<TState, TRunResult>>;
+type PipelineStage<TState, TRunResult> = (
+	state
+) => MaybePromise<PipelineStageResult<TState, TRunResult>>;
 ```
 
 Synchronous-or-asynchronous unit in a custom stage composition.

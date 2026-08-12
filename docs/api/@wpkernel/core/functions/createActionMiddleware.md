@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / createActionMiddleware
 
@@ -14,6 +14,7 @@ Create a Redux-compatible middleware that intercepts and executes WPKernel actio
 
 This middleware enables actions to be dispatched through Redux/`@wordpress/data` stores.
 When an action envelope is dispatched, the middleware:
+
 1. Intercepts the envelope before it reaches reducers
 2. Extracts the action function and arguments
 3. Executes the action (triggering lifecycle events, cache invalidation, etc.)
@@ -50,11 +51,11 @@ import { register } from '@wordpress/data';
 
 const actionMiddleware = createActionMiddleware();
 register({
-  reducer: rootReducer,
-  actions: {},
-  selectors: {},
-  controls: {},
-  __experimentalUseMiddleware: () => [actionMiddleware]
+	reducer: rootReducer,
+	actions: {},
+	selectors: {},
+	controls: {},
+	__experimentalUseMiddleware: () => [actionMiddleware],
 });
 
 // Dispatching actions

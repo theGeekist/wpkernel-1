@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / createStore
 
@@ -47,7 +47,7 @@ import { createStore } from '@wpkernel/core/resource';
 import { thing } from './resources/thing';
 
 const thingStore = createStore({
-  resource: thing,
-  getId: (item) => item.id,
+	resource: thing,
+	getId: (item) => item.id,
 });
 ```

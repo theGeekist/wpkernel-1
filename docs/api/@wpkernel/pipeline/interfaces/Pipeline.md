@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / Pipeline
 
@@ -30,11 +30,11 @@ orders, so overlapping runs cannot acquire one another's later additions.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 ### TBuildOptions
 
@@ -62,23 +62,23 @@ orders, so overlapping runs cannot acquire one another's later additions.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = `"fragment"`
+`TFragmentKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = `"builder"`
+`TBuilderKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
+`TFragmentHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
+`TBuilderHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
 
 ## Properties
 
@@ -90,7 +90,7 @@ readonly builderKind: TBuilderKind;
 
 Builder helper kind configured for this pipeline.
 
-***
+---
 
 ### builders
 
@@ -122,7 +122,7 @@ Registers a builder helper by object identity.
 
 A validation error when `helper.kind` is not [Pipeline.builderKind](#builderkind).
 
-***
+---
 
 ### extensions
 
@@ -154,7 +154,7 @@ registration is still awaited by the next [Pipeline.run](#run).
 
 `unknown`
 
-***
+---
 
 ### fragmentKind
 
@@ -164,7 +164,7 @@ readonly fragmentKind: TFragmentKind;
 
 Fragment helper kind configured for this pipeline.
 
-***
+---
 
 ### ir
 
@@ -196,7 +196,7 @@ Registers a fragment helper by object identity.
 
 A validation error when `helper.kind` is not [Pipeline.fragmentKind](#fragmentkind).
 
-***
+---
 
 ### run()
 
@@ -220,7 +220,7 @@ this invocation and do not leak into overlapping or later runs.
 
 [`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult`>
 
-***
+---
 
 ### use()
 

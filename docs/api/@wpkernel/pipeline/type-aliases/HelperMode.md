@@ -1,13 +1,13 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / HelperMode
 
 # Type Alias: HelperMode
 
 ```ts
-type HelperMode = "extend" | "override";
+type HelperMode = 'extend' | 'override';
 ```
 
 Registration policy for helpers that share a key.

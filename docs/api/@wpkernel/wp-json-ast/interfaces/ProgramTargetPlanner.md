@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../README.md) / ProgramTargetPlanner
 
@@ -10,7 +10,7 @@
 
 ### TFile
 
-`TFile` *extends* [`ProgramTargetFile`](ProgramTargetFile.md) = [`ProgramTargetFile`](ProgramTargetFile.md)
+`TFile` _extends_ [`ProgramTargetFile`](ProgramTargetFile.md) = [`ProgramTargetFile`](ProgramTargetFile.md)
 
 ## Properties
 
@@ -20,7 +20,7 @@
 readonly queueFile: ProgramTargetQueue<TFile>;
 ```
 
-***
+---
 
 ### queueFiles
 

@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / PhpAstBuilderAdapter
 
@@ -32,7 +32,7 @@ addUse: (statement) => void;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`addUse`](PhpAstBuilder.md#adduse)
 
-***
+---
 
 ### appendDocblock()
 
@@ -54,7 +54,7 @@ appendDocblock: (line) => void;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`appendDocblock`](PhpAstBuilder.md#appenddocblock)
 
-***
+---
 
 ### appendProgramStatement()
 
@@ -76,7 +76,7 @@ appendProgramStatement: (statement) => void;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`appendProgramStatement`](PhpAstBuilder.md#appendprogramstatement)
 
-***
+---
 
 ### appendStatement()
 
@@ -98,7 +98,7 @@ appendStatement: (statement) => void;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`appendStatement`](PhpAstBuilder.md#appendstatement)
 
-***
+---
 
 ### context
 
@@ -106,7 +106,7 @@ appendStatement: (statement) => void;
 readonly context: PhpAstContext;
 ```
 
-***
+---
 
 ### getMetadata()
 
@@ -122,7 +122,7 @@ getMetadata: () => PhpFileMetadata;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`getMetadata`](PhpAstBuilder.md#getmetadata)
 
-***
+---
 
 ### getNamespace()
 
@@ -138,7 +138,7 @@ getNamespace: () => string;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`getNamespace`](PhpAstBuilder.md#getnamespace)
 
-***
+---
 
 ### getProgramAst()
 
@@ -154,7 +154,7 @@ getProgramAst: () => PhpProgram;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`getProgramAst`](PhpAstBuilder.md#getprogramast)
 
-***
+---
 
 ### getStatements()
 
@@ -170,7 +170,7 @@ readonly `string`[]
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`getStatements`](PhpAstBuilder.md#getstatements)
 
-***
+---
 
 ### setMetadata()
 
@@ -192,7 +192,7 @@ setMetadata: (metadata) => void;
 
 [`PhpAstBuilder`](PhpAstBuilder.md).[`setMetadata`](PhpAstBuilder.md#setmetadata)
 
-***
+---
 
 ### setNamespace()
 

@@ -1,13 +1,15 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/test-utils](../README.md) / buildCoreActionPipelineHarness
 
 # Function: buildCoreActionPipelineHarness()
 
 ```ts
-function buildCoreActionPipelineHarness<TArgs, TResult>(options): CoreActionPipelineHarness<TArgs, TResult>;
+function buildCoreActionPipelineHarness<TArgs, TResult>(
+	options
+): CoreActionPipelineHarness<TArgs, TResult>;
 ```
 
 Builds a harness for testing core action pipelines.

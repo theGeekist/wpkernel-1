@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / BuildInitCommandOptions
 
@@ -28,7 +28,7 @@ Optional: Custom readiness registry builder.
 
 [`ReadinessRegistry`](../classes/ReadinessRegistry.md)
 
-***
+---
 
 ### buildReporter()?
 
@@ -48,7 +48,7 @@ Optional: Custom reporter builder function.
 
 `Reporter`
 
-***
+---
 
 ### buildWorkspace()?
 
@@ -68,7 +68,7 @@ Optional: Custom workspace builder function.
 
 [`Workspace`](Workspace.md)
 
-***
+---
 
 ### checkGitRepository()?
 
@@ -92,7 +92,7 @@ Optional: Custom git repository checker function.
 
 `Promise`<`boolean`>
 
-***
+---
 
 ### runWorkflow()?
 

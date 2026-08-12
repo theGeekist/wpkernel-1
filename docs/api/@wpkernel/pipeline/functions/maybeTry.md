@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / maybeTry
 
@@ -54,7 +54,7 @@ The successful result or recovery result, preserving sync when possible.
 import { maybeTry } from '@wpkernel/pipeline';
 
 const parsed = maybeTry(
-  () => JSON.parse('{invalid}') as unknown,
-  () => ({ valid: false })
+	() => JSON.parse('{invalid}') as unknown,
+	() => ({ valid: false })
 );
 ```

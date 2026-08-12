@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / ReadinessStepResult
 
@@ -22,7 +22,7 @@ Shared shape for prepare and execute phase results.
 readonly state: State;
 ```
 
-***
+---
 
 ### cleanup()?
 

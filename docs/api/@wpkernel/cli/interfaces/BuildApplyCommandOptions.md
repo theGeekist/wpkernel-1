@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / BuildApplyCommandOptions
 
@@ -77,7 +77,7 @@ readonly optional appendApplyLog: (workspace, entry) => Promise<void>;
 
 `Promise`<`void`>
 
-***
+---
 
 #### buildBuilderOutput()?
 
@@ -89,7 +89,7 @@ readonly optional buildBuilderOutput: () => BuilderOutput;
 
 `BuilderOutput`
 
-***
+---
 
 #### buildReadinessRegistry()?
 
@@ -107,7 +107,7 @@ readonly optional buildReadinessRegistry: (options?) => ReadinessRegistry;
 
 [`ReadinessRegistry`](../classes/ReadinessRegistry.md)
 
-***
+---
 
 #### buildWorkspace()?
 
@@ -125,7 +125,7 @@ readonly optional buildWorkspace: (root) => Workspace;
 
 [`Workspace`](Workspace.md)
 
-***
+---
 
 #### createBackups()?
 
@@ -143,7 +143,7 @@ readonly optional createBackups: (options) => Promise<void>;
 
 `Promise`<`void`>
 
-***
+---
 
 #### ensureGitRepository()?
 
@@ -161,7 +161,7 @@ readonly optional ensureGitRepository: (workspace) => Promise<void>;
 
 `Promise`<`void`>
 
-***
+---
 
 #### loadWPKernelConfig()?
 
@@ -173,7 +173,7 @@ readonly optional loadWPKernelConfig: () => Promise<LoadedWPKernelConfig>;
 
 `Promise`<[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)>
 
-***
+---
 
 #### promptConfirm()?
 
@@ -205,7 +205,7 @@ readonly optional promptConfirm: (options) => Promise<boolean>;
 
 `Promise`<`boolean`>
 
-***
+---
 
 #### readManifest()?
 
@@ -223,7 +223,7 @@ readonly optional readManifest: (workspace) => Promise<PatchManifest | null>;
 
 `Promise`<[`PatchManifest`](PatchManifest.md) \| `null`>
 
-***
+---
 
 #### resolveWorkspaceRoot()?
 

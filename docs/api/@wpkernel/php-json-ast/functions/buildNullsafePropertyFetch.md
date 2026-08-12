@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / buildNullsafePropertyFetch
 
@@ -8,9 +8,10 @@
 
 ```ts
 function buildNullsafePropertyFetch(
-   variable,
-   name,
-   attributes?): PhpExprNullsafePropertyFetch;
+	variable,
+	name,
+	attributes?
+): PhpExprNullsafePropertyFetch;
 ```
 
 Builds a PHP nullsafe property fetch expression node.

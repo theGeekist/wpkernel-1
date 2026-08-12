@@ -1,13 +1,16 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/ui](../README.md) / useAction
 
 # Function: useAction()
 
 ```ts
-function useAction<TInput, TResult>(action, options): UseActionResult<TInput, TResult>;
+function useAction<TInput, TResult>(
+	action,
+	options
+): UseActionResult<TInput, TResult>;
 ```
 
 React hook for invoking a wpk action.

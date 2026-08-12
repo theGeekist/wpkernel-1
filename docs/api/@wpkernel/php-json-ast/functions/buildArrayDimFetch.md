@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / buildArrayDimFetch
 
 # Function: buildArrayDimFetch()
 
 ```ts
-function buildArrayDimFetch(
-   variable,
-   dim,
-   attributes?): PhpExprArrayDimFetch;
+function buildArrayDimFetch(variable, dim, attributes?): PhpExprArrayDimFetch;
 ```
 
 Builds a PHP array dimension fetch expression node.

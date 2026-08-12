@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / TransportResponse
 
@@ -28,7 +28,7 @@ data: T;
 
 Response data
 
-***
+---
 
 ### headers
 
@@ -38,7 +38,7 @@ headers: Record<string, string>;
 
 Response headers
 
-***
+---
 
 ### requestId
 
@@ -48,7 +48,7 @@ requestId: string;
 
 Request ID used for this request (for correlation)
 
-***
+---
 
 ### status
 

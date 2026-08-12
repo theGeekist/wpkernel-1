@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / HydrateServerStateInput
 
@@ -26,7 +26,7 @@ Input shape forwarded to custom hydration callbacks.
 readonly resource: ResourceObject<TEntity, TQuery>;
 ```
 
-***
+---
 
 ### serverState
 
@@ -40,7 +40,7 @@ readonly serverState: object;
 [key: string]: unknown
 ```
 
-***
+---
 
 ### syncCache
 
@@ -48,7 +48,7 @@ readonly serverState: object;
 readonly syncCache: ResourceCacheSync<TEntity>;
 ```
 
-***
+---
 
 ### registry?
 

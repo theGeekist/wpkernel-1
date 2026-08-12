@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/ui](../README.md) / useCapability
 
@@ -22,7 +22,7 @@ developer error so plugin authors remember to bootstrap via `defineCapability()`
 
 ### K
 
-`K` *extends* `Record`<`string`, `unknown`>
+`K` _extends_ `Record`<`string`, `unknown`>
 
 ## Returns
 

@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../README.md) / BlockModuleHooks
 
@@ -24,7 +24,7 @@ readonly optional manifestFile: (file) => void | BlockManifestFile;
 
 `void` \| [`BlockManifestFile`](../type-aliases/BlockManifestFile.md)
 
-***
+---
 
 ### registrarFile()?
 
@@ -42,7 +42,7 @@ readonly optional registrarFile: (file) => void | BlockRegistrarFile;
 
 `void` \| [`BlockRegistrarFile`](../type-aliases/BlockRegistrarFile.md)
 
-***
+---
 
 ### renderStub()?
 

@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / isPromiseLike
 
@@ -52,9 +52,9 @@ Candidate synchronous value or thenable.
 import { isPromiseLike } from '@wpkernel/pipeline';
 
 const accessorBacked = Object.defineProperty({}, 'then', {
-  get() {
-    throw new Error('must not execute');
-  },
+	get() {
+		throw new Error('must not execute');
+	},
 });
 
 isPromiseLike(Promise.resolve('ready')); // true
@@ -101,9 +101,9 @@ Candidate synchronous value or thenable.
 import { isPromiseLike } from '@wpkernel/pipeline';
 
 const accessorBacked = Object.defineProperty({}, 'then', {
-  get() {
-    throw new Error('must not execute');
-  },
+	get() {
+		throw new Error('must not execute');
+	},
 });
 
 isPromiseLike(Promise.resolve('ready')); // true

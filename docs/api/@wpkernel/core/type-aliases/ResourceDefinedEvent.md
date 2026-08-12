@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceDefinedEvent
 
@@ -28,7 +28,7 @@ type ResourceDefinedEvent<T, TQuery> = object;
 namespace: string;
 ```
 
-***
+---
 
 ### resource
 

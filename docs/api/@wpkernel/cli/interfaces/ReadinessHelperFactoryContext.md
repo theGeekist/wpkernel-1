@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / ReadinessHelperFactoryContext
 
@@ -32,7 +32,7 @@ Creates an immutable readiness helper definition.
 
 [`ReadinessHelper`](ReadinessHelper.md)<`State`>
 
-***
+---
 
 ### register()
 
@@ -50,7 +50,7 @@ readonly register: (helper) => void;
 
 `void`
 
-***
+---
 
 ### registry
 

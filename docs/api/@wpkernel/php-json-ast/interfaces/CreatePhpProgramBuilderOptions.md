@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / CreatePhpProgramBuilderOptions
 
@@ -14,15 +14,15 @@
 
 ### TContext
 
-`TContext` *extends* [`PipelineContext`](PipelineContext.md) = [`PipelineContext`](PipelineContext.md)
+`TContext` _extends_ [`PipelineContext`](PipelineContext.md) = [`PipelineContext`](PipelineContext.md)
 
 ### TInput
 
-`TInput` *extends* [`BuilderInput`](BuilderInput.md) = [`BuilderInput`](BuilderInput.md)
+`TInput` _extends_ [`BuilderInput`](BuilderInput.md) = [`BuilderInput`](BuilderInput.md)
 
 ### TOutput
 
-`TOutput` *extends* [`BuilderOutput`](BuilderOutput.md) = [`BuilderOutput`](BuilderOutput.md)
+`TOutput` _extends_ [`BuilderOutput`](BuilderOutput.md) = [`BuilderOutput`](BuilderOutput.md)
 
 ## Properties
 
@@ -46,7 +46,7 @@ readonly build: (builder, entry) => void | Promise<void>;
 
 `void` \| `Promise`<`void`>
 
-***
+---
 
 ### filePath
 
@@ -54,7 +54,7 @@ readonly build: (builder, entry) => void | Promise<void>;
 readonly filePath: string;
 ```
 
-***
+---
 
 ### key
 
@@ -62,7 +62,7 @@ readonly filePath: string;
 readonly key: string;
 ```
 
-***
+---
 
 ### metadata
 
@@ -70,7 +70,7 @@ readonly key: string;
 readonly metadata: PhpFileMetadata;
 ```
 
-***
+---
 
 ### namespace
 
@@ -78,7 +78,7 @@ readonly metadata: PhpFileMetadata;
 readonly namespace: string;
 ```
 
-***
+---
 
 ### dependsOn?
 
@@ -96,7 +96,7 @@ Prerequisite helper keys.
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`dependsOn`](CreateHelperOptions.md#dependson)
 
-***
+---
 
 ### mode?
 
@@ -114,7 +114,7 @@ Duplicate-key policy.
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`mode`](CreateHelperOptions.md#mode)
 
-***
+---
 
 ### origin?
 
@@ -128,7 +128,7 @@ Optional provenance label used in diagnostics.
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`origin`](CreateHelperOptions.md#origin)
 
-***
+---
 
 ### priority?
 

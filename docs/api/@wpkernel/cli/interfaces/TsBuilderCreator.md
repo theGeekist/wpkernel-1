@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / TsBuilderCreator
 
@@ -31,7 +31,7 @@ The function that creates the TypeScript artifact.
 
 `Promise`<`void`>
 
-***
+---
 
 ### key
 

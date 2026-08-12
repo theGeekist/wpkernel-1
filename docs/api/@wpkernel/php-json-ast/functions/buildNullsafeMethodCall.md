@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / buildNullsafeMethodCall
 
@@ -8,10 +8,11 @@
 
 ```ts
 function buildNullsafeMethodCall(
-   variable,
-   name,
-   args,
-   attributes?): PhpExprNullsafeMethodCall;
+	variable,
+	name,
+	args,
+	attributes?
+): PhpExprNullsafeMethodCall;
 ```
 
 Builds a PHP nullsafe method call expression node.

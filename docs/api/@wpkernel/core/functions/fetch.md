@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / fetch
 
@@ -13,10 +13,11 @@ function fetch<T>(request): Promise<TransportResponse<T>>;
 Fetch data from WordPress REST API
 
 Wraps @wordpress/api-fetch with:
+
 - Automatic request ID generation
 - Event emission for observability
 - Error normalization
-- _fields parameter support
+- \_fields parameter support
 
 ## Type Parameters
 
@@ -50,8 +51,8 @@ WPKernelError on request failure
 import { fetch } from '@wpkernel/core/http';
 
 const response = await fetch<Thing>({
-  path: '/my-plugin/v1/things/123',
-  method: 'GET'
+	path: '/my-plugin/v1/things/123',
+	method: 'GET',
 });
 
 console.log(response.data); // Thing object

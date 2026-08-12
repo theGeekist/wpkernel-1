@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../README.md) / NumericIdentityGuardOptions
 
@@ -32,7 +32,7 @@ readonly errorCodeFactory: (suffix) => string;
 
 [`BaseIdentityGuardOptions`](BaseIdentityGuardOptions.md).[`errorCodeFactory`](BaseIdentityGuardOptions.md#errorcodefactory)
 
-***
+---
 
 ### identity
 
@@ -40,7 +40,7 @@ readonly errorCodeFactory: (suffix) => string;
 readonly identity: ResolvedNumberIdentity;
 ```
 
-***
+---
 
 ### pascalName
 

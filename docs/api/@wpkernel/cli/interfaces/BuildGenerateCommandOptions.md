@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / BuildGenerateCommandOptions
 
@@ -60,7 +60,7 @@ The pipeline instance to register builders with.
 
 `void`
 
-***
+---
 
 #### registerFragments()?
 
@@ -97,7 +97,7 @@ readonly optional buildAdapterExtensionsExtension: () => PipelineExtension;
 
 [`PipelineExtension`](../type-aliases/PipelineExtension.md)
 
-***
+---
 
 #### buildReadinessRegistry()?
 
@@ -115,7 +115,7 @@ readonly optional buildReadinessRegistry: (options?) => ReadinessRegistry;
 
 [`ReadinessRegistry`](../classes/ReadinessRegistry.md)
 
-***
+---
 
 #### buildWorkspace()?
 
@@ -133,7 +133,7 @@ readonly optional buildWorkspace: (root) => Workspace;
 
 [`Workspace`](Workspace.md)
 
-***
+---
 
 #### createPipeline()?
 
@@ -151,7 +151,7 @@ readonly optional createPipeline: (overrides) => Pipeline;
 
 [`Pipeline`](../type-aliases/Pipeline.md)
 
-***
+---
 
 #### loadWPKernelConfig()?
 
@@ -183,7 +183,7 @@ The validated wpk config and associated metadata.
 
 WPKernelError when discovery, parsing or validation fails.
 
-***
+---
 
 #### renderSummary()?
 
@@ -227,7 +227,7 @@ readonly optional renderSummary: (summary, dryRun, verbose, paths?) => string;
 
 `string`
 
-***
+---
 
 #### validateGeneratedImports()?
 

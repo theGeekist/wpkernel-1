@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/ui](../README.md) / UseActionOptions
 
@@ -48,7 +48,7 @@ The input to the action.
 
 A list of cache key patterns to invalidate, or false to skip invalidation.
 
-***
+---
 
 ### concurrency?
 
@@ -63,7 +63,7 @@ The concurrency strategy to use.
 - `queue`: Queues all calls and runs them sequentially.
 - `drop`: Drops all new calls while one is running.
 
-***
+---
 
 ### dedupeKey()?
 

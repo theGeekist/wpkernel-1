@@ -1,13 +1,15 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / createPipelineExtension
 
 # Function: createPipelineExtension()
 
 ```ts
-function createPipelineExtension<TPipeline, TContext, TOptions, TArtifact>(options): PipelineExtension<TPipeline, TContext, TOptions, TArtifact>;
+function createPipelineExtension<TPipeline, TContext, TOptions, TArtifact>(
+	options
+): PipelineExtension<TPipeline, TContext, TOptions, TArtifact>;
 ```
 
 Creates a [PipelineExtension](../interfaces/PipelineExtension.md) descriptor using either dynamic
@@ -71,8 +73,8 @@ An extension descriptor ready for `pipeline.extensions.use`.
 
 ```ts
 import {
-  createPipelineExtension,
-  type PipelineReporter,
+	createPipelineExtension,
+	type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type HostPipeline = { helpers: { use(value: unknown): void } };
@@ -80,25 +82,25 @@ type Context = { reporter: PipelineReporter };
 type RunOptions = { normalise: boolean };
 
 const normalise = createPipelineExtension<
-  HostPipeline,
-  Context,
-  RunOptions,
-  string[]
+	HostPipeline,
+	Context,
+	RunOptions,
+	string[]
 >({
-  key: 'example.normalise',
-  register() {
-    return ({ artifact, options }) =>
-      options.normalise
-        ? { artifact: artifact.map((value) => value.trim()) }
-        : undefined;
-  },
+	key: 'example.normalise',
+	register() {
+		return ({ artifact, options }) =>
+			options.normalise
+				? { artifact: artifact.map((value) => value.trim()) }
+				: undefined;
+	},
 });
 ```
 
 ```ts
 import {
-  createPipelineExtension,
-  type PipelineReporter,
+	createPipelineExtension,
+	type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type HostPipeline = { helpers: { use(value: unknown): void } };
@@ -106,40 +108,44 @@ type Context = { reporter: PipelineReporter };
 type RunOptions = Record<string, never>;
 
 const annotate = createPipelineExtension<
-  HostPipeline,
-  Context,
-  RunOptions,
-  string[]
+	HostPipeline,
+	Context,
+	RunOptions,
+	string[]
 >({
-  key: 'example.annotate',
-  setup(pipeline) {
-    pipeline.helpers.use({ key: 'annotation-input' });
-  },
-  lifecycle: 'before-builders',
-  hook: ({ artifact }) => ({ artifact: [...artifact, 'annotated'] }),
+	key: 'example.annotate',
+	setup(pipeline) {
+		pipeline.helpers.use({ key: 'annotation-input' });
+	},
+	lifecycle: 'before-builders',
+	hook: ({ artifact }) => ({ artifact: [...artifact, 'annotated'] }),
 });
 ```
 
 ```ts
 import {
-  createPipelineExtension,
-  type PipelineReporter,
+	createPipelineExtension,
+	type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type Context = { reporter: PipelineReporter };
 const published = new Set<string>();
 
 const publish = createPipelineExtension<
-  unknown,
-  Context,
-  Record<string, never>,
-  string[]
+	unknown,
+	Context,
+	Record<string, never>,
+	string[]
 >({
-  key: 'example.publish',
-  hook: ({ artifact }) => ({
-    artifact,
-    commit: () => { published.add(artifact.join(',')); },
-    rollback: () => { published.delete(artifact.join(',')); },
-  }),
+	key: 'example.publish',
+	hook: ({ artifact }) => ({
+		artifact,
+		commit: () => {
+			published.add(artifact.join(','));
+		},
+		rollback: () => {
+			published.delete(artifact.join(','));
+		},
+	}),
 });
 ```

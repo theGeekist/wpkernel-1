@@ -1,13 +1,15 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/test-utils](../README.md) / buildCoreResourcePipelineHarness
 
 # Function: buildCoreResourcePipelineHarness()
 
 ```ts
-function buildCoreResourcePipelineHarness<T, TQuery>(options): CoreResourcePipelineHarness<T, TQuery>;
+function buildCoreResourcePipelineHarness<T, TQuery>(
+	options
+): CoreResourcePipelineHarness<T, TQuery>;
 ```
 
 Builds a harness for testing core resource pipelines.

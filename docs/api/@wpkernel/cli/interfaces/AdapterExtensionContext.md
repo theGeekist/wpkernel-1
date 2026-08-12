@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / AdapterExtensionContext
 
@@ -34,7 +34,7 @@ config: TConfigSurface;
 
 [`AdapterContext`](AdapterContext.md).[`config`](AdapterContext.md#config)
 
-***
+---
 
 ### formatPhp()
 
@@ -56,7 +56,7 @@ formatPhp: (filePath, contents) => Promise<string>;
 
 `Promise`<`string`>
 
-***
+---
 
 ### formatTs()
 
@@ -78,7 +78,7 @@ formatTs: (filePath, contents) => Promise<string>;
 
 `Promise`<`string`>
 
-***
+---
 
 ### namespace
 
@@ -90,7 +90,7 @@ namespace: string;
 
 [`AdapterContext`](AdapterContext.md).[`namespace`](AdapterContext.md#namespace)
 
-***
+---
 
 ### outputDir
 
@@ -98,7 +98,7 @@ namespace: string;
 outputDir: string;
 ```
 
-***
+---
 
 ### queueFile()
 
@@ -120,7 +120,7 @@ queueFile: (filePath, contents) => Promise<void>;
 
 `Promise`<`void`>
 
-***
+---
 
 ### reporter
 
@@ -132,7 +132,7 @@ reporter: Reporter;
 
 [`AdapterContext`](AdapterContext.md).[`reporter`](AdapterContext.md#reporter)
 
-***
+---
 
 ### tempDir
 
@@ -140,7 +140,7 @@ reporter: Reporter;
 tempDir: string;
 ```
 
-***
+---
 
 ### updateIr()
 
@@ -158,7 +158,7 @@ updateIr: (ir) => void;
 
 `void`
 
-***
+---
 
 ### configDirectory?
 
@@ -166,7 +166,7 @@ updateIr: (ir) => void;
 optional configDirectory: string;
 ```
 
-***
+---
 
 ### ir?
 

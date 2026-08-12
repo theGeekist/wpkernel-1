@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ActionConfig
 
@@ -32,7 +32,7 @@ handler: ActionFn<TArgs, TResult>;
 
 Implementation invoked when the action is executed.
 
-***
+---
 
 ### name
 
@@ -42,7 +42,7 @@ name: string;
 
 Unique action identifier.
 
-***
+---
 
 ### options?
 

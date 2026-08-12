@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / InteractionActionInput
 
@@ -8,8 +8,8 @@
 
 ```ts
 type InteractionActionInput<TArgs, TResult> =
-  | InteractionActionBinding<TArgs, TResult>
-| DefinedAction<TArgs, TResult>;
+	| InteractionActionBinding<TArgs, TResult>
+	| DefinedAction<TArgs, TResult>;
 ```
 
 User-facing value accepted when configuring interaction actions.

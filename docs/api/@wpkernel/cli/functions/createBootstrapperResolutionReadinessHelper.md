@@ -1,13 +1,15 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / createBootstrapperResolutionReadinessHelper
 
 # Function: createBootstrapperResolutionReadinessHelper()
 
 ```ts
-function createBootstrapperResolutionReadinessHelper(options): ReadinessHelper<BootstrapperResolutionState>;
+function createBootstrapperResolutionReadinessHelper(
+	options
+): ReadinessHelper<BootstrapperResolutionState>;
 ```
 
 ## Parameters

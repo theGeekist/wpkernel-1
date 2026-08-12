@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineStageResult
 
@@ -8,9 +8,9 @@
 
 ```ts
 type PipelineStageResult<TState, TRunResult> =
-  | TState
-  | PipelinePaused<TState>
-| PipelineHalt<TRunResult>;
+	| TState
+	| PipelinePaused<TState>
+	| PipelineHalt<TRunResult>;
 ```
 
 Complete result union accepted from a custom stage.

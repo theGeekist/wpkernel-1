@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / Reporter
 
@@ -28,7 +28,7 @@ child: (namespace) => Reporter;
 
 `Reporter`
 
-***
+---
 
 ### debug()
 
@@ -50,7 +50,7 @@ debug: (message, context?) => void;
 
 `void`
 
-***
+---
 
 ### error()
 
@@ -72,7 +72,7 @@ error: (message, context?) => void;
 
 `void`
 
-***
+---
 
 ### info()
 
@@ -94,7 +94,7 @@ info: (message, context?) => void;
 
 `void`
 
-***
+---
 
 ### warn()
 

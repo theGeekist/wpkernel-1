@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / CreatePipelineExtensionOptions
 
@@ -8,8 +8,18 @@
 
 ```ts
 type CreatePipelineExtensionOptions<TPipeline, TContext, TOptions, TArtifact> =
-  | CreatePipelineExtensionWithRegister<TPipeline, TContext, TOptions, TArtifact>
-| CreatePipelineExtensionWithSetup<TPipeline, TContext, TOptions, TArtifact>;
+	| CreatePipelineExtensionWithRegister<
+			TPipeline,
+			TContext,
+			TOptions,
+			TArtifact
+	  >
+	| CreatePipelineExtensionWithSetup<
+			TPipeline,
+			TContext,
+			TOptions,
+			TArtifact
+	  >;
 ```
 
 Configuration accepted by [createPipelineExtension](../functions/createPipelineExtension.md).

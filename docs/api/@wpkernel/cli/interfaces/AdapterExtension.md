@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / AdapterExtension
 
@@ -26,7 +26,7 @@ apply: (context) => void | Promise<void>;
 
 `void` \| `Promise`<`void`>
 
-***
+---
 
 ### name
 

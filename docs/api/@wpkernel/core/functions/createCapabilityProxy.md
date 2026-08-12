@@ -1,13 +1,15 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / createCapabilityProxy
 
 # Function: createCapabilityProxy()
 
 ```ts
-function createCapabilityProxy(options): Pick<CapabilityHelpers<Record<string, unknown>>, "assert" | "can">;
+function createCapabilityProxy(
+	options
+): Pick<CapabilityHelpers<Record<string, unknown>>, 'assert' | 'can'>;
 ```
 
 Create an action-scoped capability proxy for `ctx.capability`.
@@ -35,11 +37,11 @@ Capability helpers restricted to `assert` and `can`
 
 ```ts
 const proxy = createCapabilityProxy({
-  actionName: 'Post.Publish',
-  requestId: 'req-123',
-  namespace: 'acme',
-  scope: 'crossTab',
-  bridged: false,
+	actionName: 'Post.Publish',
+	requestId: 'req-123',
+	namespace: 'acme',
+	scope: 'crossTab',
+	bridged: false,
 });
 
 await proxy.assert('posts.publish');

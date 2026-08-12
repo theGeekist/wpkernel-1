@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / DefineInteractionOptions
 
@@ -20,11 +20,11 @@ Options accepted by `defineInteraction`.
 
 ### TStore
 
-`TStore` *extends* `Record`<`string`, `unknown`>
+`TStore` _extends_ `Record`<`string`, `unknown`>
 
 ### TActions
 
-`TActions` *extends* [`InteractionActionsRecord`](../type-aliases/InteractionActionsRecord.md)
+`TActions` _extends_ [`InteractionActionsRecord`](../type-aliases/InteractionActionsRecord.md)
 
 ## Properties
 
@@ -34,7 +34,7 @@ Options accepted by `defineInteraction`.
 readonly feature: string;
 ```
 
-***
+---
 
 ### resource
 
@@ -42,7 +42,7 @@ readonly feature: string;
 readonly resource: ResourceObject<TEntity, TQuery>;
 ```
 
-***
+---
 
 ### actions?
 
@@ -50,7 +50,7 @@ readonly resource: ResourceObject<TEntity, TQuery>;
 readonly optional actions: TActions;
 ```
 
-***
+---
 
 ### autoHydrate?
 
@@ -58,7 +58,7 @@ readonly optional actions: TActions;
 readonly optional autoHydrate: boolean;
 ```
 
-***
+---
 
 ### hydrateServerState()?
 
@@ -76,7 +76,7 @@ readonly optional hydrateServerState: (input) => void;
 
 `void`
 
-***
+---
 
 ### namespace?
 
@@ -84,7 +84,7 @@ readonly optional hydrateServerState: (input) => void;
 readonly optional namespace: string;
 ```
 
-***
+---
 
 ### registry?
 
@@ -92,7 +92,7 @@ readonly optional namespace: string;
 readonly optional registry: any;
 ```
 
-***
+---
 
 ### store?
 

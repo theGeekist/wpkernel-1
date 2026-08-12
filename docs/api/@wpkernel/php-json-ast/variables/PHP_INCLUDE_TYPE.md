@@ -1,10 +1,10 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
-[@wpkernel/php-json-ast](../README.md) / PHP\_INCLUDE\_TYPE
+[@wpkernel/php-json-ast](../README.md) / PHP_INCLUDE_TYPE
 
-# Variable: PHP\_INCLUDE\_TYPE
+# Variable: PHP_INCLUDE_TYPE
 
 ```ts
 const PHP_INCLUDE_TYPE: object;
@@ -18,7 +18,7 @@ const PHP_INCLUDE_TYPE: object;
 readonly INCLUDE: 1 = 1;
 ```
 
-### INCLUDE\_ONCE
+### INCLUDE_ONCE
 
 ```ts
 readonly INCLUDE_ONCE: 2 = 2;
@@ -30,7 +30,7 @@ readonly INCLUDE_ONCE: 2 = 2;
 readonly REQUIRE: 3 = 3;
 ```
 
-### REQUIRE\_ONCE
+### REQUIRE_ONCE
 
 ```ts
 readonly REQUIRE_ONCE: 4 = 4;

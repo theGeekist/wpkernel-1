@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelinePaused
 
@@ -30,7 +30,7 @@ readonly __paused: true;
 
 Runtime discriminant.
 
-***
+---
 
 ### snapshot
 

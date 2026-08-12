@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / DefinedAction
 
@@ -13,6 +13,7 @@ type DefinedAction<TArgs, TResult> = Promise<TResult>;
 Callable action returned by `defineAction()`.
 
 After wrapping with `defineAction()`, actions become callable functions that:
+
 - Accept only the arguments (context is injected automatically)
 - Return a Promise with the action result
 - Emit lifecycle events automatically
@@ -22,10 +23,10 @@ After wrapping with `defineAction()`, actions become callable functions that:
 
 ```typescript
 const CreatePost = defineAction({
-  name: 'CreatePost',
-  handler: async (ctx, input) => {
-    // implementation
-  }
+	name: 'CreatePost',
+	handler: async (ctx, input) => {
+		// implementation
+	},
 });
 
 // Usage
@@ -57,6 +58,7 @@ type DefinedAction(args): Promise<TResult>;
 Callable action returned by `defineAction()`.
 
 After wrapping with `defineAction()`, actions become callable functions that:
+
 - Accept only the arguments (context is injected automatically)
 - Return a Promise with the action result
 - Emit lifecycle events automatically
@@ -76,10 +78,10 @@ After wrapping with `defineAction()`, actions become callable functions that:
 
 ```typescript
 const CreatePost = defineAction({
-  name: 'CreatePost',
-  handler: async (ctx, input) => {
-    // implementation
-  }
+	name: 'CreatePost',
+	handler: async (ctx, input) => {
+		// implementation
+	},
 });
 
 // Usage
@@ -98,7 +100,7 @@ console.log(CreatePost.options.scope); // "crossTab"
 readonly actionName: string;
 ```
 
-***
+---
 
 ### options
 

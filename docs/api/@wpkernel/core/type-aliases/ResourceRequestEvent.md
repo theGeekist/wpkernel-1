@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceRequestEvent
 
@@ -22,7 +22,7 @@ method: HttpMethod;
 
 HTTP method
 
-***
+---
 
 ### path
 
@@ -32,7 +32,7 @@ path: string;
 
 Request path
 
-***
+---
 
 ### requestId
 
@@ -42,7 +42,7 @@ requestId: string;
 
 Request ID for correlation
 
-***
+---
 
 ### timestamp
 
@@ -52,7 +52,7 @@ timestamp: number;
 
 Timestamp when request started
 
-***
+---
 
 ### query?
 

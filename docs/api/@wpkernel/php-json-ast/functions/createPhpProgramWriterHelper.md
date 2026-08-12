@@ -1,28 +1,30 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / createPhpProgramWriterHelper
 
 # Function: createPhpProgramWriterHelper()
 
 ```ts
-function createPhpProgramWriterHelper<TContext, TInput, TOutput>(options): BuilderHelper<TContext, TInput, TOutput>;
+function createPhpProgramWriterHelper<TContext, TInput, TOutput>(
+	options
+): BuilderHelper<TContext, TInput, TOutput>;
 ```
 
 ## Type Parameters
 
 ### TContext
 
-`TContext` *extends* [`PipelineContext`](../interfaces/PipelineContext.md) = [`PipelineContext`](../interfaces/PipelineContext.md)
+`TContext` _extends_ [`PipelineContext`](../interfaces/PipelineContext.md) = [`PipelineContext`](../interfaces/PipelineContext.md)
 
 ### TInput
 
-`TInput` *extends* [`BuilderInput`](../interfaces/BuilderInput.md) = [`BuilderInput`](../interfaces/BuilderInput.md)
+`TInput` _extends_ [`BuilderInput`](../interfaces/BuilderInput.md) = [`BuilderInput`](../interfaces/BuilderInput.md)
 
 ### TOutput
 
-`TOutput` *extends* [`BuilderOutput`](../interfaces/BuilderOutput.md) = [`BuilderOutput`](../interfaces/BuilderOutput.md)
+`TOutput` _extends_ [`BuilderOutput`](../interfaces/BuilderOutput.md) = [`BuilderOutput`](../interfaces/BuilderOutput.md)
 
 ## Parameters
 

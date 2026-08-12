@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / createPipelineRollback
 
@@ -57,32 +57,32 @@ A rollback descriptor containing the supplied function and metadata.
 
 ```ts
 import {
-  createHelper,
-  createPipelineRollback,
-  type PipelineReporter,
+	createHelper,
+	createPipelineRollback,
+	type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type Context = {
-  reporter: PipelineReporter;
-  cache: Map<string, string>;
+	reporter: PipelineReporter;
+	cache: Map<string, string>;
 };
 
 const cacheResult = createHelper<Context, void, string>({
-  key: 'cache-result',
-  kind: 'build',
-  apply: ({ context, output }) => {
-    const previous = context.cache.get('result');
-    context.cache.set('result', output);
+	key: 'cache-result',
+	kind: 'build',
+	apply: ({ context, output }) => {
+		const previous = context.cache.get('result');
+		context.cache.set('result', output);
 
-    return {
-      rollback: createPipelineRollback(
-        () => {
-          if (previous === undefined) context.cache.delete('result');
-          else context.cache.set('result', previous);
-        },
-        { key: 'cache-result', label: 'Restore cached result' }
-      ),
-    };
-  },
+		return {
+			rollback: createPipelineRollback(
+				() => {
+					if (previous === undefined) context.cache.delete('result');
+					else context.cache.set('result', previous);
+				},
+				{ key: 'cache-result', label: 'Restore cached result' }
+			),
+		};
+	},
 });
 ```

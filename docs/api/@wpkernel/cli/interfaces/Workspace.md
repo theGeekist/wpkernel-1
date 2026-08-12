@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / Workspace
 
@@ -30,7 +30,7 @@ begin: (label?) => void;
 
 `void`
 
-***
+---
 
 ### commit()
 
@@ -48,7 +48,7 @@ commit: (label?) => Promise<FileManifest>;
 
 `Promise`<[`FileManifest`](FileManifest.md)>
 
-***
+---
 
 ### cwd()
 
@@ -60,15 +60,16 @@ cwd: () => string;
 
 `string`
 
-***
+---
 
 ### dryRun()
 
 ```ts
-dryRun: <T>(fn) => Promise<{
-  manifest: FileManifest;
-  result: T;
-}>;
+dryRun: <T>(fn) =>
+	Promise<{
+		manifest: FileManifest;
+		result: T;
+	}>;
 ```
 
 #### Type Parameters
@@ -86,11 +87,11 @@ dryRun: <T>(fn) => Promise<{
 #### Returns
 
 `Promise`<\{
-  `manifest`: [`FileManifest`](FileManifest.md);
-  `result`: `T`;
+`manifest`: [`FileManifest`](FileManifest.md);
+`result`: `T`;
 \}>
 
-***
+---
 
 ### exists()
 
@@ -111,10 +112,10 @@ exists: (target) => Promise<boolean>;
 #### Inherited from
 
 ```ts
-WorkspaceLike.exists
+WorkspaceLike.exists;
 ```
 
-***
+---
 
 ### glob()
 
@@ -132,7 +133,7 @@ glob: (pattern) => Promise<string[]>;
 
 `Promise`<`string`[]>
 
-***
+---
 
 ### read()
 
@@ -150,7 +151,7 @@ read: (file) => Promise<Buffer<ArrayBufferLike> | null>;
 
 `Promise`<`Buffer`<`ArrayBufferLike`> \| `null`>
 
-***
+---
 
 ### readText()
 
@@ -168,7 +169,7 @@ readText: (file) => Promise<string | null>;
 
 `Promise`<`string` \| `null`>
 
-***
+---
 
 ### resolve()
 
@@ -189,10 +190,10 @@ resolve: (...segments) => string;
 #### Overrides
 
 ```ts
-WorkspaceLike.resolve
+WorkspaceLike.resolve;
 ```
 
-***
+---
 
 ### rm()
 
@@ -214,7 +215,7 @@ rm: (target, options?) => Promise<void>;
 
 `Promise`<`void`>
 
-***
+---
 
 ### rollback()
 
@@ -232,7 +233,7 @@ rollback: (label?) => Promise<FileManifest>;
 
 `Promise`<[`FileManifest`](FileManifest.md)>
 
-***
+---
 
 ### root
 
@@ -243,15 +244,16 @@ root: string;
 #### Overrides
 
 ```ts
-WorkspaceLike.root
+WorkspaceLike.root;
 ```
 
-***
+---
 
 ### threeWayMerge()
 
 ```ts
-threeWayMerge: (file, base, current, incoming, options?) => Promise<"conflict" | "clean">;
+threeWayMerge: (file, base, current, incoming, options?) =>
+	Promise<'conflict' | 'clean'>;
 ```
 
 #### Parameters
@@ -280,7 +282,7 @@ threeWayMerge: (file, base, current, incoming, options?) => Promise<"conflict" |
 
 `Promise`<`"conflict"` \| `"clean"`>
 
-***
+---
 
 ### tmpDir()
 
@@ -298,7 +300,7 @@ tmpDir: (prefix?) => Promise<string>;
 
 `Promise`<`string`>
 
-***
+---
 
 ### write()
 
@@ -324,7 +326,7 @@ write: (file, data, options?) => Promise<void>;
 
 `Promise`<`void`>
 
-***
+---
 
 ### writeJson()
 

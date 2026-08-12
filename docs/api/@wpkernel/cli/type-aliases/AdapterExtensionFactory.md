@@ -1,16 +1,15 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / AdapterExtensionFactory
 
 # Type Alias: AdapterExtensionFactory<TConfigSurface, TIr>
 
 ```ts
-type AdapterExtensionFactory<TConfigSurface, TIr> = (context) =>
-  | AdapterExtension
-  | AdapterExtension[]
-  | void;
+type AdapterExtensionFactory<TConfigSurface, TIr> = (
+	context
+) => AdapterExtension | AdapterExtension[] | void;
 ```
 
 Factory responsible for returning adapter extensions.
@@ -33,6 +32,6 @@ Factory responsible for returning adapter extensions.
 
 ## Returns
 
-  \| [`AdapterExtension`](../interfaces/AdapterExtension.md)
-  \| [`AdapterExtension`](../interfaces/AdapterExtension.md)[]
-  \| `void`
+\| [`AdapterExtension`](../interfaces/AdapterExtension.md)
+\| [`AdapterExtension`](../interfaces/AdapterExtension.md)[]
+\| `void`

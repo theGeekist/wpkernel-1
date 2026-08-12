@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / TsxRuntimeDependencies
 
@@ -224,7 +224,7 @@ readonly `string`[] | `null` | `undefined`
 `PromiseWithChild`<\{
 \}>
 
-***
+---
 
 ### resolve()
 

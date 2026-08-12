@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../README.md) / PhpCodemodVisitorConfiguration
 
@@ -10,7 +10,7 @@
 
 ### TOptions
 
-`TOptions` *extends* `Record`<`string`, `unknown`> = `Record`<`string`, `unknown`>
+`TOptions` _extends_ `Record`<`string`, `unknown`> = `Record`<`string`, `unknown`>
 
 ## Properties
 
@@ -20,7 +20,7 @@
 readonly key: string;
 ```
 
-***
+---
 
 ### options?
 

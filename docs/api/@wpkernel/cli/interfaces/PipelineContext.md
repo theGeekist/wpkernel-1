@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/cli](../README.md) / PipelineContext
 
@@ -22,7 +22,7 @@ readonly generationState: GenerationManifest;
 
 The state of the code generation process.
 
-***
+---
 
 ### phase
 
@@ -33,10 +33,10 @@ readonly phase: PipelinePhase;
 #### Inherited from
 
 ```ts
-Omit.phase
+Omit.phase;
 ```
 
-***
+---
 
 ### reporter
 
@@ -47,10 +47,10 @@ readonly reporter: Reporter;
 #### Inherited from
 
 ```ts
-Omit.reporter
+Omit.reporter;
 ```
 
-***
+---
 
 ### workspace
 

@@ -1,13 +1,16 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/ui](../README.md) / attachResourceHooks
 
 # Function: attachResourceHooks()
 
 ```ts
-function attachResourceHooks<T, TQuery>(resource, _runtime?): ResourceObject<T, TQuery>;
+function attachResourceHooks<T, TQuery>(
+	resource,
+	_runtime?
+): ResourceObject<T, TQuery>;
 ```
 
 Attach `useGet` and `useList` React helpers to a resource definition.

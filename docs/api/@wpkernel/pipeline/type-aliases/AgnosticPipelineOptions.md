@@ -1,13 +1,41 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / AgnosticPipelineOptions
 
 # Type Alias: AgnosticPipelineOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind>
 
 ```ts
-type AgnosticPipelineOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind> = AgnosticPipelineBaseOptions<TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind> & RunResultAdapter<PipelineRunState<TUserState, TDiagnostic>, TRunResult, AgnosticRunResultFactory<TRunOptions, TUserState, TContext, TReporter, TDiagnostic, TRunResult>>;
+type AgnosticPipelineOptions<
+	TRunOptions,
+	TContext,
+	TReporter,
+	TUserState,
+	TDiagnostic,
+	TRunResult,
+	TKind,
+> = AgnosticPipelineBaseOptions<
+	TRunOptions,
+	TContext,
+	TReporter,
+	TUserState,
+	TDiagnostic,
+	TRunResult,
+	TKind
+> &
+	RunResultAdapter<
+		PipelineRunState<TUserState, TDiagnostic>,
+		TRunResult,
+		AgnosticRunResultFactory<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic,
+			TRunResult
+		>
+	>;
 ```
 
 Options for creating an agnostic core pipeline.
@@ -25,13 +53,13 @@ Input supplied to the returned pipeline's `run` method.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 Per-run context containing the reporter.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 Reporter exposed by the context.
 
@@ -43,7 +71,7 @@ User-owned artifact threaded through stages.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
 
 Diagnostic union recorded by the runner.
 
@@ -55,7 +83,7 @@ Public successful run result.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](HelperKind.md) = [`HelperKind`](HelperKind.md)
+`TKind` _extends_ [`HelperKind`](HelperKind.md) = [`HelperKind`](HelperKind.md)
 
 Helper-kind union accepted by the pipeline.
 
@@ -70,14 +98,14 @@ configured helper kinds execute in array order and the result is
 
 ```ts
 const options: AgnosticPipelineOptions<
-  { source: string },
-  { reporter: PipelineReporter },
-  PipelineReporter,
-  { text: string }
+	{ source: string },
+	{ reporter: PipelineReporter },
+	PipelineReporter,
+	{ text: string }
 > = {
-  helperKinds: ['transform'],
-  createContext: () => ({ reporter: { warn: console.warn } }),
-  createState: ({ options }) => ({ text: options.source })
+	helperKinds: ['transform'],
+	createContext: () => ({ reporter: { warn: console.warn } }),
+	createState: ({ options }) => ({ text: options.source }),
 };
 ```
 

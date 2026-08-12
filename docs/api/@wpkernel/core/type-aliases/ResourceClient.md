@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / ResourceClient
 
@@ -61,7 +61,7 @@ TransportError on network failure
 
 ServerError on REST API error (including validation errors)
 
-***
+---
 
 ### fetch()?
 
@@ -93,7 +93,7 @@ TransportError on network failure
 
 ServerError on REST API error (including 404)
 
-***
+---
 
 ### fetchList()?
 
@@ -125,7 +125,7 @@ TransportError on network failure
 
 ServerError on REST API error
 
-***
+---
 
 ### remove()?
 
@@ -157,7 +157,7 @@ TransportError on network failure
 
 ServerError on REST API error (including 404)
 
-***
+---
 
 ### ui?
 
@@ -167,7 +167,7 @@ optional ui: ResourceUIConfig;
 
 Optional UI metadata carried over from ResourceConfig.ui.
 
-***
+---
 
 ### update()?
 

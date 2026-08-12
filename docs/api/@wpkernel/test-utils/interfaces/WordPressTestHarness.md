@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/test-utils](../README.md) / WordPressTestHarness
 
@@ -19,7 +19,7 @@ data: WordPressData;
 Convenience access to the shared data package to avoid calling
 `ensureWpData()` repeatedly in suites.
 
-***
+---
 
 ### reset()
 
@@ -33,7 +33,7 @@ Reset namespace state and clear all jest mocks.
 
 `void`
 
-***
+---
 
 ### teardown()
 
@@ -47,7 +47,7 @@ Restore the previous global and perform a reset.
 
 `void`
 
-***
+---
 
 ### wp
 

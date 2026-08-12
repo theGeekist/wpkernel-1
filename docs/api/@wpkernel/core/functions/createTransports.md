@@ -1,13 +1,16 @@
 [**@wpkernel/core v0.12.6-beta.3**](../README.md)
 
-***
+---
 
 [@wpkernel/core](../README.md) / createTransports
 
 # Function: createTransports()
 
 ```ts
-function createTransports(channel, level): LogLayerTransport<any> | LogLayerTransport<any>[];
+function createTransports(
+	channel,
+	level
+): LogLayerTransport<any> | LogLayerTransport<any>[];
 ```
 
 Create transports for browser/WordPress environments.

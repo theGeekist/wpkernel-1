@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.3.0**](../README.md)
 
-***
+---
 
 [@wpkernel/pipeline](../README.md) / PipelineRollbackErrorMetadata
 
@@ -16,8 +16,8 @@ produce an empty object.
 
 ## See
 
- - [PipelineRollback](PipelineRollback.md)
- - [createPipelineRollback](../functions/createPipelineRollback.md)
+- [PipelineRollback](PipelineRollback.md)
+- [createPipelineRollback](../functions/createPipelineRollback.md)
 
 ## Properties
 
@@ -29,7 +29,7 @@ readonly optional cause: unknown;
 
 Original causal value from an `Error` with a readable `cause`.
 
-***
+---
 
 ### message?
 
@@ -39,7 +39,7 @@ readonly optional message: string;
 
 Error or string failure message when it can be read safely.
 
-***
+---
 
 ### name?
 
@@ -49,7 +49,7 @@ readonly optional name: string;
 
 Error constructor name when it can be read safely.
 
-***
+---
 
 ### stack?
 
