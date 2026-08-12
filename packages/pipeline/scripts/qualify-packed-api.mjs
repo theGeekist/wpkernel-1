@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import {
+	existsSync,
 	mkdtempSync,
 	mkdirSync,
 	readFileSync,
@@ -8,7 +9,7 @@ import {
 	writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,6 +20,9 @@ const sourceManifest = JSON.parse(
 const qualificationRoot = mkdtempSync(
 	join(tmpdir(), 'wpkernel-pipeline-qualification-')
 );
+const suppliedTarball = process.argv[2]
+	? resolve(process.cwd(), process.argv[2])
+	: undefined;
 
 const source = String.raw`
 import {
@@ -250,16 +254,28 @@ if (standardResult.artifact.value !== 'draft:typed') {
 `;
 
 try {
-	execFileSync('pnpm', ['pack', '--pack-destination', qualificationRoot], {
-		cwd: packageRoot,
-		stdio: 'pipe',
-	});
+	let tarballPath = suppliedTarball;
+	if (tarballPath) {
+		if (!existsSync(tarballPath)) {
+			throw new Error(`Supplied tarball does not exist: ${tarballPath}`);
+		}
+	} else {
+		execFileSync(
+			'pnpm',
+			['pack', '--pack-destination', qualificationRoot],
+			{
+				cwd: packageRoot,
+				stdio: 'pipe',
+			}
+		);
 
-	const tarball = readdirSync(qualificationRoot).find((entry) =>
-		entry.endsWith('.tgz')
-	);
-	if (!tarball) {
-		throw new Error('pnpm pack did not produce a tarball.');
+		const tarball = readdirSync(qualificationRoot).find((entry) =>
+			entry.endsWith('.tgz')
+		);
+		if (!tarball) {
+			throw new Error('pnpm pack did not produce a tarball.');
+		}
+		tarballPath = join(qualificationRoot, tarball);
 	}
 
 	const fixtureRoot = join(qualificationRoot, 'consumer');
@@ -272,13 +288,7 @@ try {
 	mkdirSync(installedPackage, { recursive: true });
 	execFileSync(
 		'tar',
-		[
-			'-xzf',
-			join(qualificationRoot, tarball),
-			'-C',
-			installedPackage,
-			'--strip-components=1',
-		],
+		['-xzf', tarballPath, '-C', installedPackage, '--strip-components=1'],
 		{ stdio: 'pipe' }
 	);
 
@@ -361,7 +371,7 @@ try {
 		stdio: 'pipe',
 	});
 
-	console.log(`Packed API qualification passed: ${tarball}`);
+	console.log(`Packed API qualification passed: ${basename(tarballPath)}`);
 } finally {
 	rmSync(qualificationRoot, { recursive: true, force: true });
 }

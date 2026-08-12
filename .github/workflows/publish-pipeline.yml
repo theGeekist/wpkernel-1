@@ -1,0 +1,79 @@
+name: Publish Pipeline
+
+on:
+    push:
+        tags:
+            - 'pipeline-v*'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: publish-pipeline-${{ github.ref }}
+    cancel-in-progress: false
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v6
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: '10.19.0'
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: '24'
+                  registry-url: 'https://registry.npmjs.org'
+                  package-manager-cache: false
+
+            - name: Pin npm with trusted publishing support
+              run: npm install --global npm@11.10.0
+
+            - name: Verify release identity
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  version="$(node -p "require('./packages/pipeline/package.json').version")"
+                  test "${GITHUB_REF_NAME}" = "pipeline-v${version}"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Lint
+              run: pnpm --filter @wpkernel/pipeline lint
+
+            - name: Typecheck source
+              run: pnpm --filter @wpkernel/pipeline typecheck
+
+            - name: Typecheck tests
+              run: pnpm --filter @wpkernel/pipeline typecheck:tests
+
+            - name: Test with coverage
+              run: pnpm --filter @wpkernel/pipeline test:coverage
+
+            - name: Build
+              run: pnpm --filter @wpkernel/pipeline build
+
+            - name: Pack and qualify the release archive
+              id: archive
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  version="$(node -p "require('./packages/pipeline/package.json').version")"
+                  archive="${RUNNER_TEMP}/wpkernel-pipeline-${version}.tgz"
+                  pnpm --filter @wpkernel/pipeline pack --pack-destination "${RUNNER_TEMP}"
+                  test -f "${archive}"
+                  node packages/pipeline/scripts/qualify-packed-api.mjs "${archive}"
+                  sha512sum "${archive}"
+                  printf 'path=%s\n' "${archive}" >> "${GITHUB_OUTPUT}"
+
+            - name: Publish the qualified archive
+              run: npm publish "${{ steps.archive.outputs.path }}" --access public --tag latest
