@@ -54,7 +54,7 @@ jobs:
               run: pnpm --filter @wpkernel/pipeline typecheck
 
             - name: Build
-              run: pnpm --filter @wpkernel/pipeline build
+              run: pnpm --filter @wpkernel/core... build
 
             - name: Typecheck tests
               run: pnpm --filter @wpkernel/pipeline typecheck:tests
