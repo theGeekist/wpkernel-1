@@ -8,11 +8,16 @@ import type {
 } from './types.js';
 
 interface CreatePipelineExtensionBaseOptions {
+	/**
+	 * Stable identity within one pipeline instance. Explicit keys must be unique;
+	 * omitting the key asks the receiving pipeline to generate a private one.
+	 */
 	readonly key?: string;
 }
 
 /**
- * Options for creating a pipeline extension using the dynamic register pattern.
+ * Dynamic extension form whose registration result decides whether and where a
+ * hook is installed.
  *
  * @category Pipeline
  * @public
@@ -23,6 +28,10 @@ export interface CreatePipelineExtensionWithRegister<
 	TOptions,
 	TArtifact,
 > extends CreatePipelineExtensionBaseOptions {
+	/**
+	 * Performs setup and returns no hook, a hook for the pipeline's default
+	 * lifecycle, or an explicit lifecycle registration.
+	 */
 	readonly register: (
 		pipeline: TPipeline
 	) => MaybePromise<
@@ -38,13 +47,31 @@ interface CreatePipelineExtensionWithSetup<
 	TOptions,
 	TArtifact,
 > extends CreatePipelineExtensionBaseOptions {
+	/** Runs once at registration, before the static hook is resolved. */
 	readonly setup?: (pipeline: TPipeline) => MaybePromise<void>;
+	/** Hook or explicit lifecycle registration exposed after setup settles. */
 	readonly hook?:
 		| PipelineExtensionHook<TContext, TOptions, TArtifact>
 		| PipelineExtensionHookRegistration<TContext, TOptions, TArtifact>;
+	/** Lifecycle used for a bare hook or as fallback for a hook registration. */
 	readonly lifecycle?: PipelineExtensionLifecycle;
 }
 
+/**
+ * Configuration accepted by {@link createPipelineExtension}.
+ *
+ * The dynamic form exposes `register`, which returns zero or one hook after any
+ * setup completes. The static form runs `setup` first and then exposes `hook`.
+ * If a static hook registration object and the outer options both specify a
+ * lifecycle, the registration object's lifecycle wins. With neither value, the
+ * receiving pipeline chooses its default lifecycle.
+ *
+ * Both forms preserve synchronous registration when their setup is
+ * synchronous. Once setup returns a safely inspectable thenable, hook
+ * resolution is asynchronous through {@link maybeThen}.
+ *
+ * @public
+ */
 export type CreatePipelineExtensionOptions<
 	TPipeline,
 	TContext,
@@ -65,153 +92,114 @@ export type CreatePipelineExtensionOptions<
 	  >;
 
 /**
- * Creates a pipeline extension with optional setup and hook registration helpers.
+ * Creates a {@link PipelineExtension} descriptor using either dynamic
+ * registration or static setup plus hook configuration.
  *
- * Extensions enable pluggable behavior at key pipeline lifecycle points: pre-run validation,
- * post-fragment AST inspection, post-builder artifact transformation, and pre-commit verification.
- * They support both synchronous and asynchronous workflows with automatic commit/rollback.
+ * Construction itself has no side effects. Calling `pipeline.extensions.use`
+ * invokes the descriptor's `register` function. Explicit keys must be unique in
+ * that pipeline. Omitted keys receive a private generated key. Registration is
+ * admitted in `use` call order, even when asynchronous setup settles out of
+ * order. A registration failure remains attached to the pipeline and rejects
+ * subsequent new runs.
  *
- * ## Use Cases
+ * Static `setup` settles before its hook is returned. Synchronous setup keeps
+ * registration synchronous; asynchronous setup returns a native chained
+ * promise through {@link maybeThen}. The returned descriptor is a shallow
+ * object and is not frozen, so consumers should treat it as declarative
+ * registration metadata rather than mutate it after `use`.
  *
- * - **Validation**: Pre-run checks for environment requirements, configuration consistency
- * - **Artifact transformation**: Post-build minification, formatting, type checking
- * - **Integration**: Third-party tool orchestration (ESLint, Prettier, bundlers)
- * - **Conditional execution**: Feature flags, environment-specific logic
- * - **Audit trails**: Logging, telemetry, compliance tracking
+ * Hooks for one lifecycle execute sequentially in registration order, each
+ * receiving the artifact produced by the previous hook. A hook result may
+ * replace the artifact and declare `commit` and `rollback` callbacks. Commits
+ * run in hook order at an explicit commit stage or the pipeline's implicit
+ * final commit. If a hook, commit or later stage fails, admitted rollbacks run
+ * sequentially in reverse execution chronology. Rollback failures and rollback
+ * observer failures are contained so remaining cleanup proceeds and the
+ * original pipeline error stays primary.
  *
- * ## Patterns
+ * @param    options - Dynamic registration or static setup and hook configuration.
+ * @returns An extension descriptor ready for `pipeline.extensions.use`.
  *
- * ### Register Pattern (Dynamic Hook Resolution)
- * Use when hook logic depends on pipeline state discovered during registration:
+ * @example Conditional dynamic registration
  * ```ts
- * createPipelineExtension({
- *   key: 'acme.conditional-minify',
- *   register(pipeline) {
- *     const shouldMinify = pipeline.context.env === 'production';
- *     if (!shouldMinify) return; // No hook registered
+ * import {
+ *   createPipelineExtension,
+ *   type PipelineReporter,
+ * } from '@wpkernel/pipeline';
  *
- *     return ({ artifact }) => ({
- *       artifact: minify(artifact),
- *     });
+ * type HostPipeline = { helpers: { use(value: unknown): void } };
+ * type Context = { reporter: PipelineReporter };
+ * type RunOptions = { normalise: boolean };
+ *
+ * const normalise = createPipelineExtension<
+ *   HostPipeline,
+ *   Context,
+ *   RunOptions,
+ *   string[]
+ * >({
+ *   key: 'example.normalise',
+ *   register() {
+ *     return ({ artifact, options }) =>
+ *       options.normalise
+ *         ? { artifact: artifact.map((value) => value.trim()) }
+ *         : undefined;
  *   },
  * });
  * ```
  *
- * ### Setup + Hook Pattern (Static Configuration)
- * Use for upfront helper registration with decoupled hook logic:
+ * @example Static setup with an explicit lifecycle
  * ```ts
- * createPipelineExtension({
- *   key: 'acme.audit-logger',
+ * import {
+ *   createPipelineExtension,
+ *   type PipelineReporter,
+ * } from '@wpkernel/pipeline';
+ *
+ * type HostPipeline = { helpers: { use(value: unknown): void } };
+ * type Context = { reporter: PipelineReporter };
+ * type RunOptions = Record<string, never>;
+ *
+ * const annotate = createPipelineExtension<
+ *   HostPipeline,
+ *   Context,
+ *   RunOptions,
+ *   string[]
+ * >({
+ *   key: 'example.annotate',
  *   setup(pipeline) {
- *     // Register audit builder that collects metadata
- *     pipeline.builders.use(createAuditBuilder());
+ *     pipeline.helpers.use({ key: 'annotation-input' });
  *   },
- *   hook({ artifact }) {
- *     // Transform artifact with audit annotations
- *     return {
- *       artifact: {
- *         ...artifact,
- *         meta: { ...artifact.meta, audited: true, timestamp: Date.now() },
- *       },
- *     };
- *   },
+ *   lifecycle: 'before-builders',
+ *   hook: ({ artifact }) => ({ artifact: [...artifact, 'annotated'] }),
  * });
  * ```
  *
- * ### Async Setup with Rollback
+ * @example Commit and compensating rollback
  * ```ts
- * createPipelineExtension({
- *   key: 'acme.remote-validator',
- *   async register(pipeline) {
- *     // Async setup (e.g., fetch remote schema)
- *     const schema = await fetchValidationSchema();
+ * import {
+ *   createPipelineExtension,
+ *   type PipelineReporter,
+ * } from '@wpkernel/pipeline';
  *
- *     return ({ artifact }) => {
- *       const valid = validateAgainstSchema(artifact, schema);
- *       if (!valid) {
- *         throw new Error('Artifact validation failed');
- *       }
- *       return { artifact };
- *     };
- *   },
+ * type Context = { reporter: PipelineReporter };
+ * const published = new Set<string>();
+ *
+ * const publish = createPipelineExtension<
+ *   unknown,
+ *   Context,
+ *   Record<string, never>,
+ *   string[]
+ * >({
+ *   key: 'example.publish',
+ *   hook: ({ artifact }) => ({
+ *     artifact,
+ *     commit: () => { published.add(artifact.join(',')); },
+ *     rollback: () => { published.delete(artifact.join(',')); },
+ *   }),
  * });
  * ```
  *
- * ## Commit/Rollback Protocol
- *
- * Extensions can return a `commit` function to perform side effects (file writes, API calls)
- * and a `rollback` function to undo those effects on pipeline failure:
- * ```ts
- * createPipelineExtension({
- *   key: 'acme.file-writer',
- *   hook({ artifact }) {
- *     return {
- *       artifact,
- *       commit: async () => {
- *         await fs.writeFile('/tmp/output.json', JSON.stringify(artifact));
- *       },
- *       rollback: async () => {
- *         await fs.unlink('/tmp/output.json');
- *       },
- *     };
- *   },
- * });
- * ```
- *
- * @param    options - Extension configuration with either `register` (dynamic) or `setup`/`hook` (static)
  * @category Pipeline
- * @example
- * Basic audit extension that annotates artifacts:
- * ```ts
- * const auditExtension = createPipelineExtension({
- *   key: 'acme.audit',
- *   setup(pipeline) {
- *     pipeline.builders.use(createAuditBuilder());
- *   },
- *   hook({ artifact }) {
- *     return {
- *       artifact: {
- *         ...artifact,
- *         meta: { ...artifact.meta, audited: true },
- *       },
- *     };
- *   },
- * });
- * ```
- * @example
- * Conditional minification based on pipeline context:
- * ```ts
- * const minifyExtension = createPipelineExtension({
- *   key: 'acme.minify',
- *   register(pipeline) {
- *     if (pipeline.context.env !== 'production') {
- *       return; // Skip minification in dev
- *     }
- *     return ({ artifact }) => ({
- *       artifact: minify(artifact),
- *     });
- *   },
- * });
- * ```
- * @example
- * File writer with atomic commit/rollback:
- * ```ts
- * const fileWriterExtension = createPipelineExtension({
- *   key: 'acme.file-writer',
- *   hook({ artifact }) {
- *     const tempPath = `/tmp/${Date.now()}.json`;
- *     return {
- *       artifact,
- *       commit: async () => {
- *         await fs.writeFile(tempPath, JSON.stringify(artifact));
- *       },
- *       rollback: async () => {
- *         await fs.unlink(tempPath).catch(() => {});
- *       },
- *     };
- *   },
- * });
- * ```
+ * @public
  */
 export function createPipelineExtension<
 	TPipeline,

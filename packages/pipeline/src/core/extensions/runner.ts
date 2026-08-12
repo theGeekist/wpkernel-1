@@ -39,18 +39,18 @@ export interface RollbackErrorArgs {
 	readonly extensionKeys: readonly string[];
 }
 
-/**
- * Converts an error into a serializable metadata object.
- *
- * Extracts `name`, `message`, `stack`, and `cause` from Error instances.
- * Falls back to a plain message string for non-Error values.
- *
- * @param error - The error to convert
- * @returns Serializable error metadata
- *
- * @internal
- */
-// createRollbackErrorMetadata moved to ./rollback.js to avoid circular exports and duplication
+const snapshotHookResult = <TArtifact>(
+	result: PipelineExtensionHookResult<TArtifact>
+): PipelineExtensionHookResult<TArtifact> => {
+	const artifact = result.artifact;
+	const commit = result.commit;
+	const rollback = result.rollback;
+	return Object.freeze({
+		...(artifact === undefined ? {} : { artifact }),
+		...(commit === undefined ? {} : { commit }),
+		...(rollback === undefined ? {} : { rollback }),
+	});
+};
 
 /**
  * Runs extension hooks sequentially and accumulates their results.
@@ -102,10 +102,12 @@ export function runExtensionHooks<TContext, TOptions, TArtifact>(
 						artifact = resolved.artifact;
 					}
 
-					results.push({
-						hook: entry,
-						result: resolved,
-					});
+					results.push(
+						Object.freeze({
+							hook: entry,
+							result: snapshotHookResult(resolved),
+						})
+					);
 
 					return undefined;
 				}
@@ -172,7 +174,6 @@ export function rollbackExtensionResults<TContext, TOptions, TArtifact>(
 	});
 
 	return runRollbackStack(rollbackEntries, {
-		source: 'extension',
 		onError: ({ error }) => {
 			onRollbackError({
 				error,

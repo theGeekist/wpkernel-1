@@ -1,18 +1,25 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / HelperExecutionSnapshot
 
-# Interface: HelperExecutionSnapshot<TKind>
+# Interface: HelperExecutionSnapshot&lt;TKind&gt;
 
-Snapshot of helper execution status.
+Summary of registration and execution for one helper kind.
+
+## Remarks
+
+Standard pipeline finalisation exposes this metadata so consumers can reason
+about conditional stage composition without receiving executable helpers.
 
 ## Type Parameters
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+
+Helper kind represented by this summary.
 
 ## Properties
 
@@ -22,7 +29,9 @@ Snapshot of helper execution status.
 readonly executed: readonly string[];
 ```
 
----
+Registration identities that completed execution.
+
+***
 
 ### kind
 
@@ -30,7 +39,9 @@ readonly executed: readonly string[];
 readonly kind: TKind;
 ```
 
----
+Helper kind described by this snapshot.
+
+***
 
 ### missing
 
@@ -38,10 +49,14 @@ readonly kind: TKind;
 readonly missing: readonly string[];
 ```
 
----
+Registered identities that did not execute.
+
+***
 
 ### registered
 
 ```ts
 readonly registered: readonly string[];
 ```
+
+Registration identities captured when the run began.

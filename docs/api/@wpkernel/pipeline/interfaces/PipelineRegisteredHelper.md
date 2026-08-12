@@ -1,18 +1,20 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineRegisteredHelper
 
-# Interface: PipelineRegisteredHelper<THelper>
+# Interface: PipelineRegisteredHelper&lt;THelper&gt;
 
-Public registration metadata supplied to helper-stage argument factories.
+Registration metadata supplied to helper-stage argument factories.
 
 ## Type Parameters
 
 ### THelper
 
 `THelper`
+
+Concrete helper type stored in the selected registry.
 
 ## Properties
 
@@ -22,7 +24,9 @@ Public registration metadata supplied to helper-stage argument factories.
 readonly helper: THelper;
 ```
 
----
+Original registered helper object.
+
+***
 
 ### id
 
@@ -30,10 +34,14 @@ readonly helper: THelper;
 readonly id: string;
 ```
 
----
+Stable identity combining kind, key and registration index.
+
+***
 
 ### index
 
 ```ts
 readonly index: number;
 ```
+
+Monotonic registration index within the kind.

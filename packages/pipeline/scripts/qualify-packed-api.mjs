@@ -30,6 +30,10 @@ import {
 	createPipeline,
 	isPromiseLike,
 	makePipeline,
+	makeResumablePipeline,
+	maybeThen,
+	maybeTry,
+	type AgnosticPipeline,
 	type Helper,
 	type MaybePromise,
 	type MissingDependencyDiagnostic,
@@ -40,6 +44,17 @@ import {
 	type PipelineStageState,
 	type StandardPipelineExtension,
 } from '@wpkernel/pipeline';
+
+const mappedUtility = maybeThen(2, (value) => value * 3);
+const recoveredUtility = maybeTry(
+	() => {
+		throw new Error('expected');
+	},
+	() => 7
+);
+if (mappedUtility !== 6 || recoveredUtility !== 7) {
+	throw new Error('Root async utility exports did not preserve sync semantics.');
+}
 
 type Kind = 'compiler';
 type Options = { readonly source: string };
@@ -137,6 +152,29 @@ const pipeline = makePipeline<
 		void typedState;
 		return { artifact, diagnostics, steps: state.steps };
 	},
+});
+
+const typedAgnosticPipeline: AgnosticPipeline<
+	Options,
+	Result,
+	Context,
+	Reporter,
+	Kind
+> = pipeline;
+void typedAgnosticPipeline;
+
+const assertPipelineSurface = () => {
+	// @ts-expect-error configured helper kinds constrain registration
+	pipeline.use({ ...({} as CompilerHelper), kind: 'invalid-kind' });
+	// @ts-expect-error providedKeys is construction input, not runtime state
+	void pipeline.providedKeys;
+};
+void assertPipelineSurface;
+
+export const resumable = makeResumablePipeline({
+	helperKinds: ['compiler'] as const,
+	createContext: () => ({ reporter: {} }),
+	createState: () => ({ nodes: [], revision: 0 }),
 });
 
 pipeline.use(
@@ -241,6 +279,14 @@ const exportedStandardExtension: ExportedStandardExtension = {
 	}),
 };
 standardPipeline.extensions.use(exportedStandardExtension);
+const assertStandardPipelineSurface = () => {
+	standardPipeline.use({
+		...({} as Parameters<StandardPipeline['ir']['use']>[0]),
+		// @ts-expect-error generic registration accepts only standard helper kinds
+		kind: 'invalid-kind',
+	});
+};
+void assertStandardPipelineSurface;
 
 const standardResult = standardPipeline.run({ source: 'standard' });
 if (isPromiseLike(standardResult)) {
@@ -359,6 +405,7 @@ try {
 	);
 	if (
 		declaration.includes('core/runner') ||
+		declaration.includes('dist/core/') ||
 		declaration.includes('AgnosticStageDeps')
 	) {
 		throw new Error(

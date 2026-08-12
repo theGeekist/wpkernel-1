@@ -1,16 +1,26 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/cli](../README.md) / Helper
 
-# Interface: Helper<TContext, TInput, TOutput, TReporter, TKind>
+# Interface: Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
 
-A complete pipeline helper with descriptor and apply function.
+Executable helper descriptor accepted by pipeline registration.
+
+## Remarks
+
+Helpers created by `createHelper` are frozen and retain their object identity
+through registration and execution.
+
+## See
+
+ - [HelperDescriptor](HelperDescriptor.md)
+ - [HelperApplyFn](../type-aliases/HelperApplyFn.md)
 
 ## Extends
 
-- [`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
+- [`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
 
 ## Type Parameters
 
@@ -18,31 +28,43 @@ A complete pipeline helper with descriptor and apply function.
 
 `TContext`
 
+Per-run context type.
+
 ### TInput
 
 `TInput`
+
+Phase-specific input type.
 
 ### TOutput
 
 `TOutput`
 
+Value transformed by the helper chain.
+
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+
+Reporter type available during execution.
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+
+Literal helper kind represented by the descriptor.
 
 ## Properties
 
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
+readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 ```
 
----
+Executes this helper when its dependency position is reached.
+
+***
 
 ### dependsOn
 
@@ -50,11 +72,13 @@ readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
 readonly dependsOn: readonly string[];
 ```
 
+Helper keys that must complete before this helper may execute.
+
 #### Inherited from
 
-[`HelperDescriptor`](HelperDescriptor.md).[`dependsOn`](HelperDescriptor.md#dependson)
+[`PipelineStep`](PipelineStep.md).[`dependsOn`](PipelineStep.md#dependson)
 
----
+***
 
 ### key
 
@@ -62,11 +86,13 @@ readonly dependsOn: readonly string[];
 readonly key: string;
 ```
 
+Dependency and override identity within [kind](HelperDescriptor.md#kind).
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`key`](HelperDescriptor.md#key)
 
----
+***
 
 ### kind
 
@@ -74,11 +100,13 @@ readonly key: string;
 readonly kind: TKind;
 ```
 
+Execution phase and registry containing this helper.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`kind`](HelperDescriptor.md#kind)
 
----
+***
 
 ### mode
 
@@ -86,11 +114,13 @@ readonly kind: TKind;
 readonly mode: HelperMode;
 ```
 
+Duplicate-key registration policy.
+
 #### Inherited from
 
-[`HelperDescriptor`](HelperDescriptor.md).[`mode`](HelperDescriptor.md#mode)
+[`PipelineStep`](PipelineStep.md).[`mode`](PipelineStep.md#mode)
 
----
+***
 
 ### priority
 
@@ -98,33 +128,13 @@ readonly mode: HelperMode;
 readonly priority: number;
 ```
 
-#### Inherited from
-
-[`HelperDescriptor`](HelperDescriptor.md).[`priority`](HelperDescriptor.md#priority)
-
----
-
-### optional?
-
-```ts
-readonly optional optional: boolean;
-```
-
-Whether this helper is optional and may not execute.
-Optional helpers won't cause validation errors if they don't run.
-Useful for conditional/feature-flag helpers.
-
-#### Default Value
-
-```ts
-false;
-```
+Relative ordering hint; higher values run first when dependencies permit.
 
 #### Inherited from
 
-[`HelperDescriptor`](HelperDescriptor.md).[`optional`](HelperDescriptor.md#optional)
+[`PipelineStep`](PipelineStep.md).[`priority`](PipelineStep.md#priority)
 
----
+***
 
 ### origin?
 
@@ -132,6 +142,8 @@ false;
 readonly optional origin: string;
 ```
 
+Optional package or subsystem label used in diagnostics.
+
 #### Inherited from
 
-[`HelperDescriptor`](HelperDescriptor.md).[`origin`](HelperDescriptor.md#origin)
+[`PipelineStep`](PipelineStep.md).[`origin`](PipelineStep.md#origin)

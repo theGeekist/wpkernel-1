@@ -1,18 +1,16 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineStage
 
-# Type Alias: PipelineStage<TState, TRunResult>
+# Type Alias: PipelineStage&lt;TState, TRunResult&gt;
 
 ```ts
-type PipelineStage<TState, TRunResult> = (
-	state
-) => MaybePromise<PipelineStageResult<TState, TRunResult>>;
+type PipelineStage&lt;TState, TRunResult&gt; = (state) =&gt; MaybePromise&lt;PipelineStageResult&lt;TState, TRunResult&gt;&gt;;
 ```
 
-A synchronous-or-asynchronous custom pipeline stage.
+Synchronous-or-asynchronous unit in a custom stage composition.
 
 ## Type Parameters
 
@@ -20,9 +18,13 @@ A synchronous-or-asynchronous custom pipeline stage.
 
 `TState`
 
+Stage-state facade.
+
 ### TRunResult
 
 `TRunResult`
+
+Successful early-result type.
 
 ## Parameters
 
@@ -32,4 +34,10 @@ A synchronous-or-asynchronous custom pipeline stage.
 
 ## Returns
 
-[`MaybePromise`](MaybePromise.md)<[`PipelineStageResult`](PipelineStageResult.md)<`TState`, `TRunResult`>>
+[`MaybePromise`](MaybePromise.md)&lt;[`PipelineStageResult`](PipelineStageResult.md)&lt;`TState`, `TRunResult`&gt;&gt;
+
+## Remarks
+
+Stages run sequentially in array order. A returned state is adopted before
+the next stage. A pause or halt short-circuits the remaining composition.
+Thrown and rejected errors initiate rollback.

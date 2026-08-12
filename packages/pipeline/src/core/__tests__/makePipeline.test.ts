@@ -17,7 +17,7 @@ describe('makePipeline', () => {
 
 	// Minimal options for makePipeline
 	const baseOptions = {
-		helperKinds: ['testHelper'],
+		helperKinds: ['testHelper'] as const,
 		createContext: () => mockContext,
 		createState: () => ({}),
 	};
@@ -234,12 +234,67 @@ describe('makePipeline', () => {
 		expect(() => pipeline.run({})).toThrow(registrationError);
 	});
 
+	it('preserves extension use order across asynchronous registration', async () => {
+		const first = deferred();
+		const second = deferred();
+		const order: string[] = [];
+		const pipeline = makePipeline({
+			...baseOptions,
+			createStages: (deps: any) => [
+				deps.makeLifecycleStage('after-fragments'),
+				deps.finalizeResult,
+			],
+		});
+
+		const firstRegistration = pipeline.extensions.use({
+			key: 'first',
+			register: async () => {
+				await first.promise;
+				return () => {
+					order.push('first');
+				};
+			},
+		});
+		const secondRegistration = pipeline.extensions.use({
+			key: 'second',
+			register: async () => {
+				await second.promise;
+				return () => {
+					order.push('second');
+				};
+			},
+		});
+
+		second.resolve();
+		await secondRegistration;
+		first.resolve();
+		await Promise.all([firstRegistration, pipeline.run({})]);
+
+		expect(order).toEqual(['first', 'second']);
+	});
+
+	it('rejects duplicate explicit extension keys', () => {
+		const pipeline = makePipeline(baseOptions);
+		pipeline.extensions.use({
+			key: 'duplicate',
+			register: () => undefined,
+		});
+
+		expect(() =>
+			pipeline.extensions.use({
+				key: 'duplicate',
+				register: () => undefined,
+			})
+		).toThrow('Extension key "duplicate" is already registered.');
+	});
+
 	it('rejects helpers outside the configured helper kinds', () => {
 		const pipeline = makePipeline(baseOptions);
 
 		expect(() =>
 			pipeline.use({
 				key: 'unknown',
+				// @ts-expect-error helper kind must belong to the configured union
 				kind: 'unknown',
 				mode: 'extend',
 				priority: 0,

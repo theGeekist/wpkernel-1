@@ -1,7 +1,7 @@
 import { makePipeline } from '../makePipeline';
 import { createPipelineExtension } from '../createExtension';
 
-describe('Ignored Lifecycle Reproduction', () => {
+describe('ignored extension lifecycles', () => {
 	it('adopts setup thenables without reading their then property', async () => {
 		let thenReads = 0;
 		const setupResult = new Proxy(
@@ -40,6 +40,7 @@ describe('Ignored Lifecycle Reproduction', () => {
 					warn: warnSpy,
 				},
 			}),
+			createState: () => ({}),
 		});
 
 		const hookSpy = jest.fn();
@@ -71,6 +72,32 @@ describe('Ignored Lifecycle Reproduction', () => {
 		);
 	});
 
+	it('does not let ignored-lifecycle reporter failures change the run result', () => {
+		const reporterFailure = new Error('reporter failed');
+		const pipeline = makePipeline({
+			helperKinds: [],
+			createStages: (deps: any) => [deps.finalizeResult],
+			createContext: () => ({
+				reporter: {
+					warn: () => {
+						throw reporterFailure;
+					},
+				},
+			}),
+			createState: () => ({}),
+		});
+
+		pipeline.extensions.use(
+			createPipelineExtension({
+				key: 'ignored-ext',
+				lifecycle: 'custom-lifecycle',
+				hook: jest.fn(),
+			})
+		);
+
+		expect(pipeline.run({})).toBeDefined();
+	});
+
 	it('handles async extension registration', async () => {
 		const warnSpy = jest.fn();
 		const pipeline = makePipeline({
@@ -81,6 +108,7 @@ describe('Ignored Lifecycle Reproduction', () => {
 					warn: warnSpy,
 				},
 			}),
+			createState: () => ({}),
 		});
 
 		const hookSpy = jest.fn();

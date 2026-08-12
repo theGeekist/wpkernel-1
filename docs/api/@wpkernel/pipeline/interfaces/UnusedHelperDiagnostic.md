@@ -1,18 +1,25 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / UnusedHelperDiagnostic
 
-# Interface: UnusedHelperDiagnostic<TKind>
+# Interface: UnusedHelperDiagnostic&lt;TKind&gt;
 
-Diagnostic for unused helpers.
+Diagnostic describing a registered helper that did not execute.
+
+## Remarks
+
+Custom stage compositions decide whether and when to report unused helpers
+through [PipelineStageDiagnostics.flagUnusedHelper](PipelineStageDiagnostics.md#flagunusedhelper).
 
 ## Type Parameters
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+
+Helper-kind union associated with the diagnostic.
 
 ## Properties
 
@@ -22,7 +29,9 @@ Diagnostic for unused helpers.
 readonly key: string;
 ```
 
----
+Registered helper key.
+
+***
 
 ### message
 
@@ -30,7 +39,9 @@ readonly key: string;
 readonly message: string;
 ```
 
----
+Human-readable explanation of why it was considered unused.
+
+***
 
 ### type
 
@@ -38,7 +49,9 @@ readonly message: string;
 readonly type: "unused-helper";
 ```
 
----
+Discriminant for exhaustive diagnostic handling.
+
+***
 
 ### dependsOn?
 
@@ -46,7 +59,9 @@ readonly type: "unused-helper";
 readonly optional dependsOn: readonly string[];
 ```
 
----
+Dependencies relevant to the non-execution diagnosis.
+
+***
 
 ### helper?
 
@@ -54,10 +69,14 @@ readonly optional dependsOn: readonly string[];
 readonly optional helper: string;
 ```
 
----
+Origin or key identifying the helper.
+
+***
 
 ### kind?
 
 ```ts
 readonly optional kind: TKind;
 ```
+
+Helper kind containing the registration.

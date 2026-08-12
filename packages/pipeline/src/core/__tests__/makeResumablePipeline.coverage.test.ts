@@ -5,15 +5,15 @@ import type {
 	Helper,
 	PipelineReporter,
 	PipelineDiagnostic,
+	PipelineStageState,
 	ResumablePipeline,
 } from '../types';
-import type { AgnosticState } from '../runner/types';
 
 type PauseRunOptions = Record<string, never>;
 type PauseUserState = { count: number };
 type PauseContext = { reporter: PipelineReporter };
 type PauseDiagnostic = PipelineDiagnostic;
-type PausePipelineState = AgnosticState<
+type PausePipelineState = PipelineStageState<
 	PauseRunOptions,
 	PauseUserState,
 	PauseContext,
@@ -67,15 +67,20 @@ describe('makeResumablePipeline coverage', () => {
 			createState: () => ({}),
 		});
 
-		const helperBase: Helper<unknown, unknown, unknown, PipelineReporter> =
-			{
-				key: 'dup',
-				kind: 'thing',
-				mode: 'override',
-				priority: 1,
-				dependsOn: [],
-				apply: () => undefined,
-			};
+		const helperBase: Helper<
+			unknown,
+			unknown,
+			unknown,
+			PipelineReporter,
+			'thing'
+		> = {
+			key: 'dup',
+			kind: 'thing',
+			mode: 'override',
+			priority: 1,
+			dependsOn: [],
+			apply: () => undefined,
+		};
 
 		pipeline.use(helperBase);
 
@@ -225,15 +230,20 @@ describe('makeResumablePipeline coverage', () => {
 			onDiagnostic,
 		});
 
-		const helperBase: Helper<unknown, unknown, unknown, PipelineReporter> =
-			{
-				key: 'dup',
-				kind: 'conflict',
-				mode: 'override',
-				priority: 1,
-				dependsOn: [],
-				apply: () => undefined,
-			};
+		const helperBase: Helper<
+			unknown,
+			unknown,
+			unknown,
+			PipelineReporter,
+			'conflict'
+		> = {
+			key: 'dup',
+			kind: 'conflict',
+			mode: 'override',
+			priority: 1,
+			dependsOn: [],
+			apply: () => undefined,
+		};
 
 		pipeline.use(helperBase);
 		try {
@@ -245,19 +255,6 @@ describe('makeResumablePipeline coverage', () => {
 		await pipeline.run({});
 
 		expect(onDiagnostic).toHaveBeenCalled();
-	});
-
-	it('defaults createState when none is provided', async () => {
-		const pipeline = makeResumablePipeline({
-			helperKinds: [],
-			createContext: () => ({ reporter: {} }),
-		});
-
-		const result = (await pipeline.run({})) as PipelineRunState<
-			Record<string, unknown>
-		>;
-
-		expect(result.artifact).toEqual({});
 	});
 
 	it('reports extension rollback failures', async () => {

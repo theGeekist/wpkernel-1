@@ -1,18 +1,25 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineHelperRollback
 
-# Interface: PipelineHelperRollback<THelper>
+# Interface: PipelineHelperRollback&lt;THelper&gt;
 
-A rollback captured while executing a helper stage.
+Helper and rollback pair captured after successful execution.
+
+## Remarks
+
+The pair retains helper identity so rollback-error observers receive the
+exact helper whose compensation failed.
 
 ## Type Parameters
 
 ### THelper
 
 `THelper`
+
+Concrete helper type retained by identity.
 
 ## Properties
 
@@ -22,10 +29,14 @@ A rollback captured while executing a helper stage.
 readonly helper: THelper;
 ```
 
----
+Original helper that produced the rollback.
+
+***
 
 ### rollback
 
 ```ts
 readonly rollback: PipelineRollback;
 ```
+
+Compensation registered by the helper result.

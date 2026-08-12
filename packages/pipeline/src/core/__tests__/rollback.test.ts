@@ -76,7 +76,7 @@ describe('rollback', () => {
 				createPipelineRollback(() => order.push(3)),
 			];
 
-			await runRollbackStack(rollbacks, { source: 'helper' });
+			await runRollbackStack(rollbacks, {});
 
 			expect(order).toEqual([3, 2, 1]);
 		});
@@ -89,7 +89,7 @@ describe('rollback', () => {
 					createPipelineRollback(() => order.push(1)),
 					createPipelineRollback(() => order.push(2)),
 				],
-				{ source: 'helper' }
+				{}
 			);
 
 			expect(result).toBeUndefined();
@@ -104,7 +104,7 @@ describe('rollback', () => {
 				createPipelineRollback(async () => order.push(3)),
 			];
 
-			await runRollbackStack(rollbacks, { source: 'helper' });
+			await runRollbackStack(rollbacks, {});
 
 			expect(order).toEqual([3, 2, 1]);
 		});
@@ -128,7 +128,6 @@ describe('rollback', () => {
 			const rollbacks = [rollback1, rollback2, rollback3];
 
 			await runRollbackStack(rollbacks, {
-				source: 'helper',
 				onError,
 			});
 
@@ -154,7 +153,6 @@ describe('rollback', () => {
 			const rollbacks = [rollback1, rollback2, rollback3];
 
 			await runRollbackStack(rollbacks, {
-				source: 'helper',
 				onError: jest.fn(),
 			});
 
@@ -173,7 +171,6 @@ describe('rollback', () => {
 			];
 
 			const outcome = runRollbackStack(rollbacks, {
-				source: 'helper',
 				onError: () => {
 					throw new Error('observer failed');
 				},
@@ -195,7 +192,6 @@ describe('rollback', () => {
 			const rollbacks = [rollback1, rollback2, rollback3];
 			const onError = jest.fn();
 			await runRollbackStack(rollbacks, {
-				source: 'helper',
 				onError,
 			});
 
@@ -214,25 +210,10 @@ describe('rollback', () => {
 		it('handles empty rollback stack', async () => {
 			const onError = jest.fn();
 			await runRollbackStack([], {
-				source: 'helper',
 				onError,
 			});
 
 			expect(onError).not.toHaveBeenCalled();
-		});
-
-		it('distinguishes between sources in callback', async () => {
-			const onError = jest.fn();
-			const rollback = createPipelineRollback(() => {
-				throw new Error('test');
-			});
-
-			await runRollbackStack([rollback], {
-				source: 'extension',
-				onError,
-			});
-
-			expect(onError).toHaveBeenCalled();
 		});
 	});
 });

@@ -1,35 +1,35 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../README.md) / CreatePhpFileBuilderOptions
 
-# Interface: CreatePhpFileBuilderOptions<TContext, TInput, TOutput>
+# Interface: CreatePhpFileBuilderOptions&lt;TContext, TInput, TOutput&gt;
 
 ## Extends
 
-- `Omit`<[`CreatePhpProgramBuilderOptions`](CreatePhpProgramBuilderOptions.md)<`TContext`, `TInput`, `TOutput`>, `"build"`>
+- `Omit`&lt;[`CreatePhpProgramBuilderOptions`](CreatePhpProgramBuilderOptions.md)&lt;`TContext`, `TInput`, `TOutput`&gt;, `"build"`&gt;
 
 ## Type Parameters
 
 ### TContext
 
-`TContext` _extends_ [`PipelineContext`](PipelineContext.md) = [`PipelineContext`](PipelineContext.md)
+`TContext` *extends* [`PipelineContext`](PipelineContext.md) = [`PipelineContext`](PipelineContext.md)
 
 ### TInput
 
-`TInput` _extends_ [`BuilderInput`](BuilderInput.md) = [`BuilderInput`](BuilderInput.md)
+`TInput` *extends* [`BuilderInput`](BuilderInput.md) = [`BuilderInput`](BuilderInput.md)
 
 ### TOutput
 
-`TOutput` _extends_ [`BuilderOutput`](BuilderOutput.md) = [`BuilderOutput`](BuilderOutput.md)
+`TOutput` *extends* [`BuilderOutput`](BuilderOutput.md) = [`BuilderOutput`](BuilderOutput.md)
 
 ## Properties
 
 ### build()
 
 ```ts
-readonly build: (builder, entry) => void | Promise<void>;
+readonly build: (builder, entry) =&gt; void | Promise&lt;void&gt;;
 ```
 
 #### Parameters
@@ -44,9 +44,9 @@ readonly build: (builder, entry) => void | Promise<void>;
 
 #### Returns
 
-`void` \| `Promise`<`void`>
+`void` \| `Promise`&lt;`void`&gt;
 
----
+***
 
 ### filePath
 
@@ -57,10 +57,10 @@ readonly filePath: string;
 #### Inherited from
 
 ```ts
-Omit.filePath;
+Omit.filePath
 ```
 
----
+***
 
 ### key
 
@@ -71,10 +71,10 @@ readonly key: string;
 #### Inherited from
 
 ```ts
-Omit.key;
+Omit.key
 ```
 
----
+***
 
 ### metadata
 
@@ -85,10 +85,10 @@ readonly metadata: PhpFileMetadata;
 #### Inherited from
 
 ```ts
-Omit.metadata;
+Omit.metadata
 ```
 
----
+***
 
 ### namespace
 
@@ -99,10 +99,10 @@ readonly namespace: string;
 #### Inherited from
 
 ```ts
-Omit.namespace;
+Omit.namespace
 ```
 
----
+***
 
 ### dependsOn?
 
@@ -110,11 +110,17 @@ Omit.namespace;
 readonly optional dependsOn: readonly string[];
 ```
 
+Prerequisite helper keys.
+
+#### Default Value
+
+`[]`
+
 #### Inherited from
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`dependsOn`](CreateHelperOptions.md#dependson)
 
----
+***
 
 ### mode?
 
@@ -122,11 +128,17 @@ readonly optional dependsOn: readonly string[];
 readonly optional mode: HelperMode;
 ```
 
+Duplicate-key policy.
+
+#### Default Value
+
+`'extend'`
+
 #### Inherited from
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`mode`](CreateHelperOptions.md#mode)
 
----
+***
 
 ### origin?
 
@@ -134,17 +146,25 @@ readonly optional mode: HelperMode;
 readonly optional origin: string;
 ```
 
+Optional provenance label used in diagnostics.
+
 #### Inherited from
 
 [`CreateHelperOptions`](CreateHelperOptions.md).[`origin`](CreateHelperOptions.md#origin)
 
----
+***
 
 ### priority?
 
 ```ts
 readonly optional priority: number;
 ```
+
+Relative ordering hint.
+
+#### Default Value
+
+`0`
 
 #### Inherited from
 

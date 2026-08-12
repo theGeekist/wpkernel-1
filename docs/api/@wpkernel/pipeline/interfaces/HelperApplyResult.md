@@ -1,21 +1,26 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / HelperApplyResult
 
-# Interface: HelperApplyResult<TOutput>
+# Interface: HelperApplyResult&lt;TOutput&gt;
 
-Result returned from a helper's apply function.
+Optional transformation and compensation produced by a helper.
 
-Helpers can declare rollback operations to be executed if the pipeline
-encounters a failure after the helper completes.
+## Remarks
+
+Omitting `output` preserves the current output. A rollback is registered only
+after the helper completes successfully. Registered rollbacks participate in
+the pipeline's global reverse-completion transaction chronology.
 
 ## Type Parameters
 
 ### TOutput
 
 `TOutput`
+
+Replacement output type for the helper phase.
 
 ## Properties
 
@@ -25,10 +30,14 @@ encounters a failure after the helper completes.
 readonly optional output: TOutput;
 ```
 
----
+Replacement passed to downstream helpers and later stages.
+
+***
 
 ### rollback?
 
 ```ts
 readonly optional rollback: PipelineRollback;
 ```
+
+Compensation to execute if later work causes the run to fail.

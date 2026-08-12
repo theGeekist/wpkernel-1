@@ -1,21 +1,14 @@
-**@wpkernel/pipeline v1.2.1**
+**@wpkernel/pipeline v1.3.0**
 
----
+***
 
-# @wpkernel/pipeline v1.2.1
+# @wpkernel/pipeline v1.3.0
 
 ## Interfaces
 
-### Pipeline
-
-- [OfficialExtensionBlueprint](interfaces/OfficialExtensionBlueprint.md)
-
-### Other
-
-- [AgnosticPipelineOptions](interfaces/AgnosticPipelineOptions.md)
+- [AgnosticPipeline](interfaces/AgnosticPipeline.md)
 - [ConflictDiagnostic](interfaces/ConflictDiagnostic.md)
 - [CreateHelperOptions](interfaces/CreateHelperOptions.md)
-- [CreatePipelineOptions](interfaces/CreatePipelineOptions.md)
 - [FragmentFinalizationMetadata](interfaces/FragmentFinalizationMetadata.md)
 - [Helper](interfaces/Helper.md)
 - [HelperApplyOptions](interfaces/HelperApplyOptions.md)
@@ -30,8 +23,6 @@
 - [PipelineExtensionHookOptions](interfaces/PipelineExtensionHookOptions.md)
 - [PipelineExtensionHookRegistration](interfaces/PipelineExtensionHookRegistration.md)
 - [PipelineExtensionHookResult](interfaces/PipelineExtensionHookResult.md)
-- [PipelineExtensionRollbackErrorMetadata](interfaces/PipelineExtensionRollbackErrorMetadata.md)
-- [PipelineHalt](interfaces/PipelineHalt.md)
 - [PipelineHelperRollback](interfaces/PipelineHelperRollback.md)
 - [PipelineHelperStageOptions](interfaces/PipelineHelperStageOptions.md)
 - [PipelinePaused](interfaces/PipelinePaused.md)
@@ -47,13 +38,20 @@
 - [PipelineStageState](interfaces/PipelineStageState.md)
 - [PipelineStep](interfaces/PipelineStep.md)
 - [ResumablePipeline](interfaces/ResumablePipeline.md)
-- [RunRollbackStackOptions](interfaces/RunRollbackStackOptions.md)
 - [UnusedHelperDiagnostic](interfaces/UnusedHelperDiagnostic.md)
 
 ## Type Aliases
 
-- [CreatePipelineExtensionOptions](type-aliases/CreatePipelineExtensionOptions.md)
+### Pipeline
+
 - [ErrorFactory](type-aliases/ErrorFactory.md)
+
+### Other
+
+- [AgnosticPipelineOptions](type-aliases/AgnosticPipelineOptions.md)
+- [CreatePipelineExtensionOptions](type-aliases/CreatePipelineExtensionOptions.md)
+- [CreatePipelineOptions](type-aliases/CreatePipelineOptions.md)
+- [Halt](type-aliases/Halt.md)
 - [HelperApplyFn](type-aliases/HelperApplyFn.md)
 - [HelperKind](type-aliases/HelperKind.md)
 - [HelperMode](type-aliases/HelperMode.md)
@@ -62,15 +60,12 @@
 - [PipelineExtensionHook](type-aliases/PipelineExtensionHook.md)
 - [PipelineExtensionLifecycle](type-aliases/PipelineExtensionLifecycle.md)
 - [PipelineExtensionRegisterOutput](type-aliases/PipelineExtensionRegisterOutput.md)
+- [PipelineExtensionRollbackErrorMetadata](type-aliases/PipelineExtensionRollbackErrorMetadata.md)
+- [PipelineHalt](type-aliases/PipelineHalt.md)
 - [PipelinePauseKind](type-aliases/PipelinePauseKind.md)
 - [PipelineStage](type-aliases/PipelineStage.md)
 - [PipelineStageResult](type-aliases/PipelineStageResult.md)
-
-## Variables
-
-### Pipeline
-
-- [OFFICIAL_EXTENSION_BLUEPRINTS](variables/OFFICIAL_EXTENSION_BLUEPRINTS.md)
+- [StandardPipelineExtension](type-aliases/StandardPipelineExtension.md)
 
 ## Functions
 
@@ -78,18 +73,14 @@
 
 - [createHelper](functions/createHelper.md)
 - [createPipelineExtension](functions/createPipelineExtension.md)
+- [createPipelineRollback](functions/createPipelineRollback.md)
 
 ### Other
 
-- [createDefaultError](functions/createDefaultError.md)
-- [createErrorFactory](functions/createErrorFactory.md)
 - [createPipeline](functions/createPipeline.md)
-- [createPipelineRollback](functions/createPipelineRollback.md)
+- [isPromiseLike](functions/isPromiseLike.md)
 - [makePipeline](functions/makePipeline.md)
 - [makeResumablePipeline](functions/makeResumablePipeline.md)
-
-## References
-
-### Halt
-
-Renames and re-exports [PipelineHalt](interfaces/PipelineHalt.md)
+- [maybeAll](functions/maybeAll.md)
+- [maybeThen](functions/maybeThen.md)
+- [maybeTry](functions/maybeTry.md)

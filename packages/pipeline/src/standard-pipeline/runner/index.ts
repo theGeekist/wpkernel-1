@@ -1,5 +1,4 @@
 import { makePipeline } from '../../core/makePipeline';
-import { isPaused } from '../../core/runner/stage-factories';
 import type {
 	PipelineDiagnostic,
 	PipelineReporter,
@@ -8,8 +7,6 @@ import type {
 	Helper,
 	HelperExecutionSnapshot,
 	AgnosticPipelineOptions,
-	HelperDescriptor,
-	PipelineRegisteredHelper,
 	PipelineStage as PublicPipelineStage,
 	PipelineStageState,
 } from '../../core/types';
@@ -20,18 +17,68 @@ import type {
 } from '../types';
 
 /**
- * Creates a standard pipeline with "fragment" and "builder" stages.
+ * Creates an opinionated {@link Pipeline} with fragment and builder helper
+ * phases around a finalised public artifact.
  *
- * This adapter wraps the agnostic core pipeline, enforcing the opinionated
- * standard pipeline lifecycle:
- * 1. Fragments (Parallel/Ordered)
+ * The complete phase sequence is:
+ * 1. Ordered fragment helpers
  * 2. Fragment finalisation
- * 3. After Fragments
- * 4. Before Builders
- * 5. Builders (Parallel/Ordered)
- * 6. After Builders
- * 7. Finalize
- * @param options
+ * 3. `after-fragments` extension hooks
+ * 4. `before-builders` extension hooks
+ * 5. Ordered builder helpers
+ * 6. `after-builders` extension hooks
+ * 7. `finalize` extension hooks
+ * 8. Extension commit and result materialisation
+ *
+ * Fragment helpers receive a draft-facing output prepared by
+ * `createFragmentArgs`. Builder helpers receive the finalised artifact prepared
+ * by `createBuilderArgs`. Mutable outputs need no adapter. Immutable replacement
+ * outputs become phase state only through `adoptFragmentOutput` or
+ * `adoptBuilderOutput` in {@link CreatePipelineOptions}.
+ *
+ * Extension hooks always receive the finalised artifact, never the draft or
+ * internal bookkeeping state. Artifact replacements flow into later hooks and
+ * builders. Registration may be synchronous or asynchronous. Each run waits
+ * for registration quiescence and then captures immutable helper and extension
+ * orders, so later registration affects later runs only.
+ *
+ * Diagnostics are invocation-owned. `onDiagnostic` streams them without giving
+ * observer failures control over settlement. Rollback observer failures are
+ * likewise contained while remaining cleanup continues. A custom result type
+ * requires `createRunResult`; otherwise the result is {@link PipelineRunState}.
+ * The factory preserves synchronous settlement until participating work becomes
+ * asynchronous.
+ *
+ * @example Register fragment and builder helpers on their dedicated surfaces
+ * ```ts
+ * const pipeline = createStandardPipeline({
+ *   createBuildOptions: () => ({}),
+ *   createContext: () => ({ reporter: console }),
+ *   createFragmentState: () => [] as string[],
+ *   createFragmentArgs: ({ context, draft }) => ({
+ *     context,
+ *     input: undefined,
+ *     output: draft,
+ *     reporter: context.reporter,
+ *   }),
+ *   finalizeFragmentState: ({ draft }) => ({ entries: draft }),
+ *   createBuilderArgs: ({ context, artifact }) => ({
+ *     context,
+ *     input: undefined,
+ *     output: artifact,
+ *     reporter: context.reporter,
+ *   }),
+ * });
+ *
+ * pipeline.ir.use(fragmentHelper);
+ * pipeline.builders.use(builderHelper);
+ * const result = await pipeline.run({});
+ * ```
+ *
+ * @param options - Standard pipeline factories, adapters and observers.
+ * @returns A configured standard pipeline instance.
+ * @see {@link Pipeline.extensions}
+ * @public
  */
 export function createStandardPipeline<
 	TRunOptions,
@@ -110,18 +157,13 @@ export function createStandardPipeline<
 	TFragmentHelper,
 	TBuilderHelper
 > {
-	const pendingArtifact = Symbol('pipeline.pending-artifact');
 	type StandardState = {
 		buildOptions: TBuildOptions;
 		draft: TDraft;
-		artifact: TArtifact | typeof pendingArtifact;
+		artifact?: TArtifact;
 	};
-	const readArtifact = (state: StandardState): TArtifact => {
-		if (state.artifact === pendingArtifact) {
-			throw new Error('Pipeline artifact is not available yet.');
-		}
-		return state.artifact;
-	};
+	const readArtifact = (state: StandardState): TArtifact =>
+		state.artifact as TArtifact;
 	type StageState = PipelineStageState<
 		TRunOptions,
 		StandardState,
@@ -142,12 +184,9 @@ export function createStandardPipeline<
 		state: StageState,
 		kind: TSelectedKind
 	): HelperExecutionSnapshot<TSelectedKind> =>
-		(state.helperExecution?.get(kind) ?? {
-			kind,
-			executed: [],
-			missing: [],
-			registered: [],
-		}) as HelperExecutionSnapshot<TSelectedKind>;
+		state.helperExecution!.get(
+			kind
+		)! as HelperExecutionSnapshot<TSelectedKind>;
 
 	const fragmentKind = (options.fragmentKind ?? 'fragment') as TFragmentKind;
 	const builderKind = (options.builderKind ?? 'builder') as TBuilderKind;
@@ -186,7 +225,6 @@ export function createStandardPipeline<
 			return {
 				buildOptions,
 				draft,
-				artifact: pendingArtifact,
 			};
 		},
 		onDiagnostic: options.onDiagnostic,
@@ -202,37 +240,8 @@ export function createStandardPipeline<
 		} as Partial<Record<TFragmentKind | TBuilderKind, readonly string[]>>,
 
 		createStages: (deps) => {
-			const {
-				makeHelperStage,
-				makeLifecycleStage,
-				finalizeResult,
-				diagnostics,
-			} = deps;
-
-			const onVisited =
-				<
-					TSelectedKind extends TFragmentKind | TBuilderKind,
-					THelper extends HelperDescriptor<TSelectedKind>,
-				>(
-					kind: TSelectedKind
-				) =>
-				(
-					state: StageState,
-					visited: ReadonlySet<string>,
-					registered: readonly PipelineRegisteredHelper<THelper>[]
-				) => {
-					for (const entry of registered) {
-						if (!visited.has(entry.id)) {
-							diagnostics.flagUnusedHelper(
-								entry.helper,
-								kind,
-								'was registered but never executed',
-								entry.helper.dependsOn
-							);
-						}
-					}
-					return state;
-				};
+			const { makeHelperStage, makeLifecycleStage, finalizeResult } =
+				deps;
 
 			const fragmentStage = makeHelperStage<
 				TFragmentInput,
@@ -262,17 +271,12 @@ export function createStandardPipeline<
 								},
 							}
 						: state,
-				onVisited: onVisited(fragmentKind),
 			});
 
 			const finalizeFragmentStage: PublicPipelineStage<
 				StageState,
 				TRunResult
 			> = (state) => {
-				if (deps.isHalt(state) || isPaused(state)) {
-					return state;
-				}
-
 				const fragments = readHelperExecution(state, fragmentKind);
 				const metadata: FragmentFinalizationMetadata<TFragmentKind> = {
 					fragments,
@@ -329,7 +333,6 @@ export function createStandardPipeline<
 									},
 								}
 							: state,
-					onVisited: onVisited(builderKind),
 				}),
 				makeLifecycleStage('after-builders'),
 				makeLifecycleStage('finalize'),
@@ -377,7 +380,7 @@ export function createStandardPipeline<
 	const registerHelper = (
 		helper: TFragmentHelper | TBuilderHelper,
 		kind: TFragmentKind | TBuilderKind,
-		surface: 'ir.use()' | 'builders.use()'
+		surface: 'ir.use()' | 'builders.use()' | 'use()'
 	) => {
 		if (helper.kind !== kind) {
 			const message = `Attempted to register helper of kind "${helper.kind}" via ${surface} (expected "${kind}")`;
@@ -388,16 +391,15 @@ export function createStandardPipeline<
 			error.name = 'ValidationError';
 			throw error;
 		}
-		pipeline.use({
-			...helper,
-			kind,
-		} as unknown as Helper<
-			TContext,
-			unknown,
-			unknown,
-			TReporter,
-			HelperKind
-		>);
+		pipeline.use(
+			helper as unknown as Helper<
+				TContext,
+				TFragmentInput,
+				TFragmentOutput,
+				TReporter,
+				TFragmentKind | TBuilderKind
+			>
+		);
 	};
 
 	const wrapper: Pipeline<
@@ -434,7 +436,7 @@ export function createStandardPipeline<
 					register: () => extension.register(wrapper),
 				} as unknown as Parameters<typeof pipeline.extensions.use>[0]),
 		},
-		use: (helper) => pipeline.use(helper),
+		use: (helper) => registerHelper(helper, helper.kind, 'use()'),
 		run: (opts) => pipeline.run(opts),
 	};
 

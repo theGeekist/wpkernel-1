@@ -45,11 +45,13 @@ describe('registration', () => {
 				key: 'h1',
 				kind: 'fragment',
 				mode: 'override',
+				apply: () => undefined,
 			} as unknown as TestHelper;
 			const existing = {
 				key: 'h1',
 				kind: 'fragment',
 				mode: 'override',
+				apply: () => undefined,
 			} as unknown as TestHelper;
 			const entries: RegisteredHelper<TestHelper>[] = [
 				{
@@ -79,9 +81,43 @@ describe('registration', () => {
 				'Multiple overrides registered for helper "h1".'
 			);
 		});
+
+		it('rejects helpers without an apply function', () => {
+			const entries: RegisteredHelper<TestHelper>[] = [];
+			const createError = (_code: string, message: string) =>
+				new Error(message);
+
+			expect(() =>
+				registerHelper(
+					{
+						key: 'invalid',
+						kind: 'fragment',
+						mode: 'extend',
+						priority: 0,
+						dependsOn: [],
+						apply: undefined,
+					} as unknown as TestHelper,
+					'fragment',
+					entries,
+					'Fragment',
+					() => undefined,
+					createError
+				)
+			).toThrow('Helper "invalid" must provide an apply function.');
+			expect(entries).toEqual([]);
+		});
 	});
 
 	describe('handleExtensionRegisterResult', () => {
+		it('assigns a stable anonymous hook key', () => {
+			const hook = jest.fn();
+			const hooks: ExtensionHookEntry<unknown, unknown, unknown>[] = [];
+
+			handleExtensionRegisterResult(undefined, hook, hooks);
+
+			expect(hooks[0]?.key).toBe('pipeline.extension#1');
+		});
+
 		it('registers function result as a hook', () => {
 			const hook = jest.fn();
 			const hooks: ExtensionHookEntry<unknown, unknown, unknown>[] = [];

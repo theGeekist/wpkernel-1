@@ -1,7 +1,7 @@
 import { makePipeline } from '../makePipeline';
 import type { PipelineReporter } from '../types';
 
-describe('Multi-Lifecycle Extension Bug', () => {
+describe('multi-lifecycle extension settlement', () => {
 	const mockReporter: PipelineReporter = { warn: jest.fn() };
 	const mockContext = { reporter: mockReporter };
 	const baseOptions = {
@@ -56,7 +56,7 @@ describe('Multi-Lifecycle Extension Bug', () => {
 		await pipeline.run({});
 
 		// Both should be called
-		expect(commitSpy1).toHaveBeenCalled(); // This is expected to fail currently
+		expect(commitSpy1).toHaveBeenCalled();
 		expect(commitSpy2).toHaveBeenCalled();
 	});
 

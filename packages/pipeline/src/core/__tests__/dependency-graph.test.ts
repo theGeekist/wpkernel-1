@@ -145,6 +145,28 @@ describe('dependency-graph', () => {
 			);
 		});
 
+		it('reports circular helpers without requiring an observer', () => {
+			const entry = {
+				helper: {
+					key: 'self',
+					kind: 'fragment',
+					dependsOn: ['self'],
+					priority: 0,
+					apply: () => undefined,
+				} as unknown as TestHelper,
+				id: 'fragment:self#0',
+				index: 0,
+			} satisfies RegisteredHelper<TestHelper>;
+
+			expect(() =>
+				createDependencyGraph(
+					[entry],
+					undefined,
+					(_code, message) => new Error(message)
+				)
+			).toThrow('Detected unresolved pipeline helpers: self.');
+		});
+
 		it('deduplicates repeated dependency keys', () => {
 			const dependency = {
 				key: 'dependency',

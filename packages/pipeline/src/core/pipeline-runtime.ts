@@ -1,4 +1,4 @@
-import { isPromiseLike, maybeThen, maybeTry } from './async-utils';
+import { adoptMaybePromise, maybeThen, maybeTry } from './async-utils';
 import { type RegisteredHelper } from './dependency-graph';
 import { createDefaultError } from './error-factory';
 import type { ExtensionHookEntry } from './extensions';
@@ -51,25 +51,46 @@ export function createPipelineRuntime<
 	runtimeOptions: PipelineRuntimeOptions = {}
 ) {
 	const createError = options.createError ?? createDefaultError;
-	const helperRegistries = new Map<string, RegisteredHelper<unknown>[]>();
-	const ensureRegistry = (kind: string) => {
-		let registry = helperRegistries.get(kind);
-		if (registry === undefined) {
-			registry = [];
-			helperRegistries.set(kind, registry);
-		}
-		return registry;
-	};
-
-	for (const kind of options.helperKinds) {
-		ensureRegistry(kind);
-	}
+	const helperRegistries = new Map<string, RegisteredHelper<unknown>[]>(
+		options.helperKinds.map((kind) => [kind, []])
+	);
 
 	const extensionHooks: ExtensionHookEntry<
 		TContext,
 		TRunOptions,
 		TUserState
 	>[] = [];
+	type ExtensionRegistrationSlot = {
+		hooks: ExtensionHookEntry<TContext, TRunOptions, TUserState>[];
+	};
+	const extensionRegistrationSlots: ExtensionRegistrationSlot[] = [];
+	const extensionKeys = new Set<string>();
+	let anonymousExtensionSequence = 0;
+	const reserveExtensionKey = (requestedKey?: string): string => {
+		let key = requestedKey;
+		if (key === undefined) {
+			do {
+				anonymousExtensionSequence += 1;
+				key = `pipeline.extension#${anonymousExtensionSequence}`;
+			} while (extensionKeys.has(key));
+		}
+
+		if (extensionKeys.has(key)) {
+			throw createError(
+				'ValidationError',
+				`Extension key "${key}" is already registered.`
+			);
+		}
+		extensionKeys.add(key);
+		return key;
+	};
+	const refreshExtensionHooks = () => {
+		extensionHooks.splice(
+			0,
+			extensionHooks.length,
+			...extensionRegistrationSlots.flatMap((slot) => slot.hooks)
+		);
+	};
 	const pendingExtensionRegistrations = new Set<Promise<void>>();
 	let extensionRegistrationFailure: { readonly error: unknown } | undefined;
 	const failRegistration = (error: unknown) => {
@@ -192,10 +213,7 @@ export function createPipelineRuntime<
 	> = {
 		options: {
 			createContext: options.createContext,
-			createState: (args) =>
-				options.createState
-					? options.createState(args)
-					: ({} as TUserState),
+			createState: options.createState,
 			createError,
 			supportsPause: runtimeOptions.supportsPause,
 			onExtensionRollbackError: (rollbackOptions) => {
@@ -206,7 +224,6 @@ export function createPipelineRuntime<
 					{
 						...rollbackOptions,
 						extensions: rollbackOptions.extensionKeys,
-						hookKeys: rollbackOptions.hookSequence,
 						errorName: metadata?.name,
 						errorMessage: metadata?.message,
 						errorStack: metadata?.stack,
@@ -285,14 +302,12 @@ export function createPipelineRuntime<
 	const trackExtensionRegistration = <T>(
 		registration: MaybePromise<T>
 	): MaybePromise<T> => {
-		if (!isPromiseLike(registration)) {
-			return registration;
+		const adopted = adoptMaybePromise(registration);
+		if (adopted.promise === null) {
+			return adopted.value;
 		}
 
-		const pending = maybeThen(
-			registration,
-			() => undefined
-		) as Promise<void>;
+		const pending = adopted.promise.then(() => undefined);
 		pendingExtensionRegistrations.add(pending);
 		void pending.then(
 			() => pendingExtensionRegistrations.delete(pending),
@@ -301,7 +316,7 @@ export function createPipelineRuntime<
 				failRegistration(error);
 			}
 		);
-		return registration;
+		return adopted.promise;
 	};
 
 	const waitForExtensionRegistrations = (): MaybePromise<void> => {
@@ -337,14 +352,19 @@ export function createPipelineRuntime<
 			>
 		) {
 			try {
+				const extensionKey = reserveExtensionKey(extension.key);
+				const slot: ExtensionRegistrationSlot = { hooks: [] };
+				extensionRegistrationSlots.push(slot);
 				const registration = extension.register(pipeline);
-				const handled = maybeThen(registration, (registered) =>
-					handleExtensionRegisterResult(
-						extension.key,
+				const handled = maybeThen(registration, (registered) => {
+					const result = handleExtensionRegisterResult(
+						extensionKey,
 						adaptExtensionRegistration(registered),
-						extensionHooks
-					)
-				);
+						slot.hooks
+					);
+					refreshExtensionHooks();
+					return result;
+				});
 				return trackExtensionRegistration(handled);
 			} catch (error) {
 				failRegistration(error);

@@ -1,6 +1,6 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelinePauseKind
 
@@ -10,4 +10,9 @@
 type PipelinePauseKind = string;
 ```
 
-Pause kind identifier for resumable pipeline runs.
+Application-defined classification for a pause boundary.
+
+## Remarks
+
+The runtime does not interpret pause kinds. Consumers may use them to route
+process-local resumptions or discriminate payloads.

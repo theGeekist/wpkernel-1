@@ -1,36 +1,47 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineStageDiagnostics
 
-# Interface: PipelineStageDiagnostics<TDiagnostic, TKind>
+# Interface: PipelineStageDiagnostics&lt;TDiagnostic, TKind&gt;
 
-Diagnostic capabilities available to custom stages.
+Diagnostic capabilities available while composing custom stages.
+
+## Remarks
+
+Recorded diagnostics are appended to the current run and synchronously
+offered to `onDiagnostic`. Observer failures are contained.
 
 ## Type Parameters
 
 ### TDiagnostic
 
-`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+
+Diagnostic union accepted by the pipeline.
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md)
+
+Configured helper-kind union.
 
 ## Properties
 
 ### flagUnusedHelper()
 
 ```ts
-readonly flagUnusedHelper: (helper, kind, message, dependsOn?) => void;
+readonly flagUnusedHelper: (helper, kind, message, dependsOn?) =&gt; void;
 ```
+
+Records a standard unused-helper diagnostic.
 
 #### Parameters
 
 ##### helper
 
-[`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
+[`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
 
 ##### kind
 
@@ -48,13 +59,15 @@ readonly `string`[]
 
 `void`
 
----
+***
 
 ### record()
 
 ```ts
-readonly record: (diagnostic) => void;
+readonly record: (diagnostic) =&gt; void;
 ```
+
+Adds a fully constructed diagnostic to the current run.
 
 #### Parameters
 

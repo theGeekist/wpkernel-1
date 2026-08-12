@@ -141,11 +141,8 @@ function linkDependencies<THelper>(
 	const dependant = graph.nodes.get(dependantId)!;
 	for (const dependency of dependencies) {
 		const dependants = graph.nodes.get(dependency.id)!.dependants;
-		const previousSize = dependants.size;
 		dependants.add(dependantId);
-		if (dependants.size !== previousSize) {
-			dependant.indegree += 1;
-		}
+		dependant.indegree += 1;
 	}
 }
 
@@ -216,16 +213,13 @@ function sortByDependencies<THelper extends HelperDescriptor>(
 	const visited = new Set<string>();
 
 	while (ready.length > 0) {
-		const current = ready.shift();
-		if (!current) {
-			break;
-		}
+		const current = ready.shift()!;
 
 		ordered.push(current);
 		visited.add(current.id);
 
 		for (const neighbourId of graph.nodes.get(current.id)!.dependants) {
-			const nextValue = (indegree.get(neighbourId) ?? 0) - 1;
+			const nextValue = indegree.get(neighbourId)! - 1;
 			indegree.set(neighbourId, nextValue);
 			if (nextValue !== 0) {
 				continue;

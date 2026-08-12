@@ -1,6 +1,6 @@
 import { makePipeline } from '../makePipeline';
 
-describe('Registration Diagnostics Reproduction', () => {
+describe('registration diagnostics', () => {
 	it('preserves registration-time diagnostics after run() is called', async () => {
 		const onDiagnostic = jest.fn();
 		const pipeline = makePipeline({
@@ -14,6 +14,7 @@ describe('Registration Diagnostics Reproduction', () => {
 					warn: jest.fn(),
 				},
 			}),
+			createState: () => ({}),
 
 			onDiagnostic: (args) => onDiagnostic(args),
 		});
@@ -40,7 +41,6 @@ describe('Registration Diagnostics Reproduction', () => {
 		// Now run the pipeline
 		const result = await pipeline.run({});
 
-		// The bug is fixed, so we expect the registration diagnostic to be present.
 		expect(result.diagnostics.length).toBeGreaterThan(0);
 		expect(result.diagnostics).toEqual(
 			expect.arrayContaining([

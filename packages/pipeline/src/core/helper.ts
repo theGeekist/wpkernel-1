@@ -7,147 +7,113 @@ import type {
 } from './types';
 
 /**
- * Creates a pipeline helper-the fundamental building block of WPKernel's code generation system.
+ * Creates a frozen {@link Helper} descriptor from declarative registration
+ * metadata and an apply function.
  *
- * ## Overview
+ * The descriptor and a defensive copy of `dependsOn` are frozen. Mutating the
+ * source options or dependency array after construction therefore cannot alter
+ * registration identity or execution order. Objects captured by `apply` are
+ * not cloned or frozen.
  *
- * Helpers are composable, dependency-aware transformation units that power the entire framework:
- * - **CLI package**: Generates PHP resources, actions, blocks, and bindings via helper chains
- * - **PHP Driver**: Transforms PHP AST nodes through fragment helpers
- * - **Core**: Orchestrates resource definitions and action middleware
+ * Dependencies always run first. Among helpers ready to run, ordering uses
+ * descending priority, key and registration order. A dependency key waits for
+ * every registered helper with that key. `extend` registrations may coexist.
+ * Registering an `override`
+ * removes earlier helpers with the same key; a second override is rejected.
+ * These modes affect registration, not how `apply` composes output.
  *
- * Each helper is a pure, immutable descriptor that declares:
- * - **What it does**: Fragment transformations or artifact building
- * - **When it runs**: Priority ordering and dependency relationships
- * - **How it integrates**: Mode (extend/replace/before/after) and rollback behavior
+ * An apply function may mutate its supplied output and return `void`, or return
+ * a result object containing an explicit replacement. The presence
+ * of the `output` property is authoritative, including `{ output: undefined }`.
+ * With no explicit call to {@link HelperNext}, the runner continues
+ * automatically after `apply` settles and preserves the synchronous path when
+ * every helper is synchronous.
  *
- * ## Key Concepts
+ * Calling `next(output?)` turns the helper into an around-continuation. It runs
+ * the downstream chain once, caches that result for repeated calls and lets the
+ * current helper post-process the final downstream output. A later call cannot
+ * replace the input chosen by the first call. If a helper launches asynchronous
+ * downstream work and then fails, the runner observes downstream settlement
+ * before propagating the helper's original failure. This lets downstream
+ * rollback registration finish without replacing the primary error.
  *
- * ### Helper Kinds
- * - `fragment`: Modifies AST nodes in-place (e.g., add PHP opening tag, inject imports)
- * - `builder`: Produces final artifacts from fragments (e.g., write files, format code)
+ * A rollback returned after successful helper settlement is admitted in helper
+ * visitation order and later unwound in reverse order. Use
+ * `createPipelineRollback` to attach diagnostic identity to cleanup.
  *
- * ### Execution Modes
- * - `extend` (default): Add to existing transformations; multiple helpers with same key can coexist
- * - `override`: Only one override helper per key is allowed; prevents duplicate override registrations
+ * @param    options - Helper identity, ordering metadata and apply behaviour.
+ * @returns A frozen descriptor with a frozen dependency list.
  *
- * Note: Mode primarily affects registration validation. For execution ordering, use `priority` and `dependsOn`.
+ * @example Immutable replacement with a dependency
+ * ```ts
+ * import {
+ *   createHelper,
+ *   type PipelineReporter,
+ * } from '@wpkernel/pipeline';
  *
- * ### Dependency Resolution
- * The pipeline automatically:
- * - Topologically sorts helpers based on `dependsOn` declarations
- * - Validates dependency chains and reports missing/circular dependencies
- * - Ensures helpers run in correct order regardless of registration sequence
+ * type Context = { reporter: PipelineReporter };
  *
- * ### Apply results & rollback
- * Helpers may mutate the provided `fragment` or `output` in place, or return a replacement output for immutable composition.
- * Calling `next(output?)` is an advanced escape hatch for wrapping the remainder of the chain; it returns the final downstream output.
- * A helper can return a result object containing:
- * - `output` — an updated output value to feed into subsequent helpers, or the final post-`next()` replacement
- * - `rollback` — a rollback operation created via `createPipelineRollback`, which will be executed if the pipeline fails after this helper completes
+ * const normalise = createHelper<Context, string[], string[]>({
+ *   key: 'normalise',
+ *   kind: 'transform',
+ *   dependsOn: ['parse'],
+ *   priority: 20,
+ *   apply: ({ output }) => ({
+ *     output: output.map((value) => value.trim()),
+ *   }),
+ * });
+ * ```
  *
- * Returning a result object is opt-in; existing helpers that return `void` remain valid and continue to behave as before.
+ * @example Wrapping downstream execution
+ * ```ts
+ * import {
+ *   createHelper,
+ *   type PipelineReporter,
+ * } from '@wpkernel/pipeline';
  *
- * ## Architecture
+ * type Context = { reporter: PipelineReporter };
  *
- * Helpers form directed acyclic graphs (DAGs) where each node represents a transformation
- * and edges represent dependencies. The pipeline executes helpers in topological order,
- * ensuring all dependencies complete before dependent helpers run.
- *
- * This design enables:
- * - **Composability**: Combine helpers from different packages without conflicts
- * - **Extensibility**: Third-party helpers integrate seamlessly via dependency declarations
- * - **Reliability**: Helper-level rollback (via `createPipelineRollback`) ensures atomic behaviour across helper chains
- * - **Observability**: Built-in diagnostics and reporter integration for debugging
- *
- * @param    options
- * @category Pipeline
- *
- * @example Basic fragment helper
- * ```typescript
- * import { createHelper } from '@wpkernel/pipeline';
- *
- * // Add PHP opening tag to generated files
- * const addPHPTag = createHelper({
- *   key: 'add-php-opening-tag',
- *   kind: 'fragment',
- *   mode: 'extend',
- *   priority: 100, // Run early in pipeline
- *   origin: 'wp-kernel-core',
- *   apply: ({ fragment }) => {
- *     fragment.children.unshift({
- *       kind: 'text',
- *       text: '<?php\n',
- *     });
+ * const bracket = createHelper<Context, string[], string[]>({
+ *   key: 'bracket',
+ *   kind: 'transform',
+ *   apply: async ({ output }, next) => {
+ *     const downstream = await next?.(['before', ...output]);
+ *     return { output: [...(downstream ?? output), 'after'] };
  *   },
  * });
  * ```
  *
- * @example Helper with dependencies
- * ```typescript
- * // This helper depends on namespace detection running first
- * const addNamespaceDeclaration = createHelper({
- *   key: 'add-namespace',
- *   kind: 'fragment',
- *   dependsOn: ['detect-namespace'], // Won't run until this completes
- *   apply: ({ fragment, context }) => {
- *     const ns = context.detectedNamespace;
- *     fragment.children.push({
- *       kind: 'namespace',
- *       name: ns,
- *     });
- *   },
- * });
- * ```
+ * @example Cleanup owned by a helper
+ * ```ts
+ * import {
+ *   createHelper,
+ *   createPipelineRollback,
+ *   type PipelineReporter,
+ * } from '@wpkernel/pipeline';
  *
- * @example Builder helper with rollback result
- * ```typescript
- * import { createHelper, createPipelineRollback } from '@wpkernel/pipeline';
+ * type Context = {
+ *   reporter: PipelineReporter;
+ *   allocated: Set<string>;
+ * };
  *
- * const writeFileHelper = createHelper({
- *   key: 'write-file',
- *   kind: 'builder',
- *   apply: ({ output, context }) => {
- *     const path = context.outputPath;
- *     const before = [...output]; // Capture current in-memory state
- *
- *     output.push(context.fileContent);
- *
+ * const allocate = createHelper<Context, void, string[]>({
+ *   key: 'allocate',
+ *   kind: 'build',
+ *   apply: ({ context, output }) => {
+ *     context.allocated.add('result');
  *     return {
+ *       output: [...output, 'result'],
  *       rollback: createPipelineRollback(
- *         () => {
- *           output.length = 0;
- *           output.push(...before);
- *         },
- *         {
- *           key: 'write-file',
- *           label: 'Restore file output state',
- *         }
+ *         () => context.allocated.delete('result'),
+ *         { key: 'allocate', label: 'Release result allocation' }
  *       ),
  *     };
  *   },
  * });
  * ```
  *
- * @example Async helper with transformed output and error handling
- * ```typescript
- * const formatCodeHelper = createHelper({
- *   key: 'format-code',
- *   kind: 'builder',
- *   dependsOn: ['write-file'],
- *   apply: async ({ output, context }) => {
- *     try {
- *       const formatted = await prettier.format(output.join(''), {
- *         parser: 'php',
- *       });
- *       return { output: formatted.split('') }; // Optionally return a new output value
- *     } catch (error) {
- *       context.reporter.warn?.('Formatting failed', { error });
- *       throw error;
- *     }
- *   },
- * });
- * ```
+ * @category Pipeline
+ * @public
  */
 export function createHelper<
 	TContext,

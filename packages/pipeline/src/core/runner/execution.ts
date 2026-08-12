@@ -1,5 +1,3 @@
-// Types are strictly defined and validated by build, but ESLint flags generic resolution as any.
-// runProgram removed
 import type {
 	AgnosticRunContext,
 	AgnosticRunnerDependencies,
@@ -21,6 +19,7 @@ import { isHalt, isPaused } from './stage-factories';
 import { prepareResumeContext } from './context';
 import { rollbackStateToHalt as rollbackRunStateToHalt } from './rollback';
 import { commitPendingExtensions } from './commit';
+import { isRollbackApplied } from './state';
 
 const applyStageIndex = <TState extends { stageIndex?: number }>(
 	state: TState,
@@ -81,7 +80,7 @@ const classifyHalt = <TRunResult>(
 		return {
 			[terminalHaltKind]: 'error',
 			error: halt.error,
-			rollbackApplied: halt.__rollbackApplied === true,
+			rollbackApplied: isRollbackApplied(halt),
 		};
 	}
 
@@ -204,7 +203,7 @@ const rollbackUnhandledHalt = <
 const resolveTerminalStageResult = <TState extends object, TRunResult>(
 	state: TState,
 	result: unknown,
-	onStageHalt?: (
+	onStageHalt: (
 		state: TState,
 		halt: TerminalHalt<TRunResult>
 	) => MaybePromise<TerminalHalt<TRunResult>>
@@ -213,7 +212,7 @@ const resolveTerminalStageResult = <TState extends object, TRunResult>(
 	| undefined => {
 	if (isHalt<TRunResult>(result)) {
 		const terminal = classifyHalt(result);
-		return onStageHalt ? onStageHalt(state, terminal) : terminal;
+		return onStageHalt(state, terminal);
 	}
 
 	if (!isPaused<TState>(result)) {
@@ -268,11 +267,11 @@ const runStagesIteratively = <
 	stages: PipelineStage<TState, Halt<TRunResult>>[],
 	initialState: TState,
 	startIndex: number,
-	onStageError?: (
+	onStageError: (
 		state: TState,
 		error: unknown
 	) => MaybePromise<TerminalHalt<TRunResult>>,
-	onStageHalt?: (
+	onStageHalt: (
 		state: TState,
 		halt: TerminalHalt<TRunResult>
 	) => MaybePromise<TerminalHalt<TRunResult>>
@@ -286,10 +285,7 @@ const runStagesIteratively = <
 		let currentState = state;
 
 		for (let index = stageIndex; index < stages.length; index += 1) {
-			const stage = stages[index];
-			if (!stage) {
-				return currentState;
-			}
+			const stage = stages[index]!;
 			const stageState = applyStageIndex(currentState, index);
 			const continueFromResult = (
 				resolved:
@@ -310,12 +306,16 @@ const runStagesIteratively = <
 
 				return adoptStageState(stageState, resolved as TState);
 			};
-			const handleStageError = (error: unknown) => {
-				if (onStageError) {
-					return onStageError(stageState, error);
-				}
-				throw error;
-			};
+			const handleStageError = (error: unknown) =>
+				onStageError(stageState, error);
+			const continueSafely = (
+				resolved:
+					| PipelineStepResult<TState, TRunResult>
+					| TerminalHalt<TRunResult>
+			) =>
+				maybeTry<
+					TState | PipelinePaused<TState> | TerminalHalt<TRunResult>
+				>(() => continueFromResult(resolved), handleStageError);
 			const next = adoptMaybePromise(
 				maybeTry<
 					| PipelineStepResult<TState, TRunResult>
@@ -325,7 +325,7 @@ const runStagesIteratively = <
 
 			if (next.promise !== null) {
 				return next.promise.then((resolved) => {
-					const continued = continueFromResult(resolved);
+					const continued = continueSafely(resolved);
 					return maybeThen(continued, (nextState) =>
 						isTerminalHalt<TRunResult>(nextState) ||
 						isPaused<TState>(nextState)
@@ -335,7 +335,7 @@ const runStagesIteratively = <
 				});
 			}
 
-			const continued = adoptMaybePromise(continueFromResult(next.value));
+			const continued = adoptMaybePromise(continueSafely(next.value));
 			if (continued.promise !== null) {
 				return continued.promise.then((resolved) =>
 					isTerminalHalt<TRunResult>(resolved) ||

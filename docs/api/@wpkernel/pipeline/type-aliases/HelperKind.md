@@ -1,6 +1,6 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / HelperKind
 
@@ -10,4 +10,10 @@
 type HelperKind = string;
 ```
 
-Helper kind identifier.
+Identifier for a helper execution phase, such as `fragment` or `builder`.
+
+## Remarks
+
+A pipeline accepts only the kinds declared in
+`AgnosticPipelineOptions.helperKinds`. Dependencies are resolved within
+one kind, never across kind registries.

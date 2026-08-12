@@ -5,6 +5,8 @@ versioned and released independently from the WPKernel monorepo.
 
 ## Unreleased
 
+## 1.4.0 — 2026-08-12
+
 ### Changed
 
 - Replaced separate helper and extension rollback stacks with one transaction
@@ -12,6 +14,49 @@ versioned and released independently from the WPKernel monorepo.
   helper stages and extension lifecycles, including failures after pause,
   resume, and commit checkpoints. For execution `A → E → B`, rollback is now
   `B → E → A`; previously all helpers unwound before extensions.
+- Pause snapshots are now single-use capabilities bound to their creating
+  pipeline instance. Their public state is a projection; authoritative runner
+  state and transaction records remain private.
+- Helper kinds configured at construction now constrain `pipeline.use()` in
+  TypeScript. Standard generic registration accepts only fragment and builder
+  helpers, and preserves the original helper object and prototype methods.
+- Custom run-result types now require an explicit `createRunResult` adapter.
+- Public error halts must carry an error and successful halts must carry a
+  result; bare halts are no longer a typed success path.
+
+### Fixed
+
+- Captured helper and extension commit/rollback callbacks as immutable
+  occurrence records, preventing later consumer mutation from deleting or
+  replacing admitted compensation.
+- Bound rollback diagnostics to the exact helper occurrence when multiple
+  helpers reuse one rollback descriptor.
+- Protected the transaction journal with a private symbol so custom stage
+  fields named `rollbackJournal` cannot overwrite cleanup state.
+- Allowed paused runs to resume independently of registrations started later;
+  later failures still invalidate new runs without stranding existing work.
+- Rejected foreign, forged, repeated and concurrent snapshot resumes.
+- Preserved extension registration order across asynchronous setup and rejected
+  duplicate extension keys.
+- Routed failures raised while adopting a fulfilled stage result through the
+  normal rollback boundary.
+- Kept diagnostic and reporter observers from changing pipeline settlement.
+- Removed declaration-only `pipeline.providedKeys`, inert helper `optional`
+  metadata, the deprecated `hookSequence` rollback alias, the callable-helper
+  compatibility branch, and the unused rollback `source` option.
+- Exported the `AgnosticPipeline` return type from the package root.
+- Expanded TSDoc across every root public declaration and member with lifecycle,
+  ownership, failure and synchronous-settlement semantics, examples, and
+  cross-links, then regenerated the package API reference from source.
+
+### Breaking
+
+- Agnostic pipelines must provide `createState`; the runtime no longer
+  fabricates `{}` as an arbitrary state.
+- Removed inert helper `optional` metadata and the declaration-only
+  `pipeline.providedKeys` instance property.
+- Error halts require an error argument, extension keys must be unique, and
+  resumable snapshots are same-instance and single-use.
 
 ## 1.3.0 — 2026-08-12
 

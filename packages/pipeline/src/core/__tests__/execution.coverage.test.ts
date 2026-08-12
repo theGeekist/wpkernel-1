@@ -8,6 +8,7 @@ import type {
 } from '../runner/types';
 import type { PipelineDiagnostic, PipelineReporter } from '../types';
 import { createAgnosticDiagnosticManager } from '../runner/diagnostics';
+import { rollbackJournalState } from '../runner/state';
 
 describe('execution coverage', () => {
 	type TestOptions = { id: string };
@@ -103,7 +104,7 @@ describe('execution coverage', () => {
 			diagnostics: [],
 			diagnosticManager: createAgnosticDiagnosticManager(),
 			executedLifecycles: new Set(),
-			rollbackJournal: [],
+			[rollbackJournalState]: [],
 			extensionStack: [],
 			committedExtensionStates: new Set(),
 			...overrides,
@@ -179,7 +180,9 @@ describe('execution coverage', () => {
 
 	it('preserves the established undefined result for a bare halt', () => {
 		const dependencies = baseDependencies({
-			stages: () => [() => ({ __halt: true })],
+			stages: () => [
+				() => ({ __halt: true }) as unknown as Halt<TestRunResult>,
+			],
 		});
 		const state = baseState(0);
 
@@ -192,11 +195,12 @@ describe('execution coverage', () => {
 		const error = new Error('halt failed');
 		const dependencies = baseDependencies({
 			stages: () => [
-				() => ({
-					__halt: true,
-					error,
-					result: { artifact: { count: 9 } },
-				}),
+				() =>
+					({
+						__halt: true,
+						error,
+						result: { artifact: { count: 9 } },
+					}) as unknown as Halt<TestRunResult>,
 			],
 		});
 		const state = baseState(0);
@@ -206,5 +210,202 @@ describe('execution coverage', () => {
 				executeRunWithPause(dependencies, baseRunContext(state))
 			)
 		).rejects.toBe(error);
+	});
+
+	it('rolls back when a fulfilled stage result cannot be adopted', async () => {
+		const error = new Error('state adoption failed');
+		const rollback = jest.fn();
+		const dependencies = baseDependencies({
+			stages: () => [
+				(state) => {
+					const result = { ...state };
+					Object.defineProperty(result, 'userState', {
+						enumerable: true,
+						get: () => {
+							throw error;
+						},
+					});
+					return result;
+				},
+			],
+		});
+		const state = baseState(0, {
+			[rollbackJournalState]: [
+				{
+					source: 'helper',
+					entries: [
+						{
+							helper: { key: 'acquired' },
+							rollback: { run: rollback },
+						},
+					],
+				},
+			],
+		});
+
+		await expect(
+			Promise.resolve().then(() =>
+				executeRunWithPause(dependencies, baseRunContext(state))
+			)
+		).rejects.toBe(error);
+		expect(rollback).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not trust public halt objects to attest that rollback ran', async () => {
+		const error = new Error('halt failed');
+		const rollback = jest.fn();
+		const dependencies = baseDependencies({
+			stages: () => [
+				() => ({
+					__halt: true,
+					error,
+					__rollbackApplied: true,
+				}),
+			],
+		});
+		const state = baseState(0, {
+			[rollbackJournalState]: [
+				{
+					source: 'helper',
+					entries: [
+						{
+							helper: { key: 'acquired' },
+							rollback: { run: rollback },
+						},
+					],
+				},
+			],
+		});
+
+		await expect(
+			Promise.resolve().then(() =>
+				executeRunWithPause(dependencies, baseRunContext(state))
+			)
+		).rejects.toBe(error);
+		expect(rollback).toHaveBeenCalledTimes(1);
+	});
+
+	it('settles asynchronous rollback before rejecting a synchronous error halt', async () => {
+		const error = new Error('halt failed');
+		let releaseRollback: (() => void) | undefined;
+		const rollbackGate = new Promise<void>((resolve) => {
+			releaseRollback = resolve;
+		});
+		const rollback = jest.fn(() => rollbackGate);
+		const dependencies = baseDependencies({
+			stages: () => [() => ({ __halt: true, error })],
+		});
+		const state = baseState(0, {
+			[rollbackJournalState]: [
+				{
+					source: 'helper',
+					entries: [
+						{
+							helper: { key: 'acquired' },
+							rollback: { run: rollback },
+						},
+					],
+				},
+			],
+		});
+		const settled = jest.fn();
+		const outcome = Promise.resolve(
+			executeRunWithPause(dependencies, baseRunContext(state))
+		).catch((failure) => {
+			settled();
+			throw failure;
+		});
+
+		await Promise.resolve();
+		expect(rollback).toHaveBeenCalledTimes(1);
+		expect(settled).not.toHaveBeenCalled();
+
+		releaseRollback?.();
+		await expect(outcome).rejects.toBe(error);
+		expect(settled).toHaveBeenCalledTimes(1);
+	});
+
+	it('continues when adopting a synchronous stage result reveals a thenable state', async () => {
+		let thenAccessorReads = 0;
+		const secondStage = jest.fn((state) => ({
+			...state,
+			userState: { count: state.userState.count + 1 },
+		}));
+		const dependencies = baseDependencies({
+			stages: () => [
+				(state) => {
+					const result = { ...state };
+					Object.defineProperty(result, 'then', {
+						enumerable: true,
+						get: () => {
+							thenAccessorReads += 1;
+							return (resolve: (value: typeof state) => void) =>
+								resolve({
+									...state,
+									userState: { count: 4 },
+								});
+						},
+					});
+					return result;
+				},
+				secondStage,
+			],
+		});
+
+		await expect(
+			executeRunWithPause(dependencies, baseRunContext(baseState(0)))
+		).resolves.toEqual({ artifact: { count: 5 } });
+		expect(thenAccessorReads).toBe(1);
+		expect(secondStage).toHaveBeenCalledTimes(1);
+	});
+
+	it('returns a pause revealed while adopting a synchronous stage result', async () => {
+		const secondStage = jest.fn((state) => state);
+		const dependencies = baseDependencies({
+			stages: () => [
+				(state) => {
+					const result = { ...state };
+					Object.defineProperty(result, 'then', {
+						enumerable: true,
+						get:
+							() =>
+							(
+								resolve: (value: {
+									readonly __paused: true;
+									readonly snapshot: {
+										readonly stageIndex: number;
+										readonly state: typeof state;
+										readonly createdAt: number;
+									};
+								}) => void
+							) =>
+								resolve({
+									__paused: true,
+									snapshot: {
+										stageIndex: 0,
+										state: {
+											...state,
+											userState: { count: 7 },
+										},
+										createdAt: Date.now(),
+									},
+								}),
+					});
+					return result;
+				},
+				secondStage,
+			],
+		});
+
+		const result = await executeRunWithPause(
+			dependencies,
+			baseRunContext(baseState(0))
+		);
+
+		expect(result).toMatchObject({
+			__paused: true,
+			snapshot: { state: { userState: { count: 7 } } },
+		});
+		expect(secondStage).not.toHaveBeenCalled();
 	});
 });

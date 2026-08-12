@@ -319,6 +319,21 @@ describe('createPipelineExtension', () => {
 		});
 	});
 
+	it('supports setup-only extensions', async () => {
+		const setup = jest.fn();
+		const extension = createPipelineExtension<
+			TestPipeline,
+			TestContext,
+			TestRunOptions,
+			TestArtifact
+		>({ setup });
+
+		await expect(
+			Promise.resolve(extension.register({} as TestPipeline))
+		).resolves.toBeUndefined();
+		expect(setup).toHaveBeenCalledTimes(1);
+	});
+
 	it('prioritises hook-provided lifecycle metadata', async () => {
 		const extension = createPipelineExtension<
 			TestPipeline,
@@ -337,6 +352,27 @@ describe('createPipelineExtension', () => {
 
 		expect(registration).toEqual({
 			lifecycle: 'after-builders',
+			hook: expect.any(Function),
+		});
+	});
+
+	it('uses the extension lifecycle when hook metadata omits one', async () => {
+		const extension = createPipelineExtension<
+			TestPipeline,
+			TestContext,
+			TestRunOptions,
+			TestArtifact
+		>({
+			lifecycle: 'finalize',
+			hook: {
+				hook: ({ artifact }) => ({ artifact }),
+			},
+		});
+
+		const registration = await extension.register({} as TestPipeline);
+
+		expect(registration).toEqual({
+			lifecycle: 'finalize',
 			hook: expect.any(Function),
 		});
 	});

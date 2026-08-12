@@ -15,6 +15,7 @@ import type {
 	PipelineStep,
 	HelperDescriptor,
 } from '../types';
+import { rollbackJournalState } from './state';
 
 /**
  * Prepares the pipeline execution context.
@@ -72,7 +73,7 @@ export const prepareContext = <
 						issue.dependant.helper,
 						kind,
 						'has missing dependencies',
-						issue.dependant.helper.dependsOn ?? []
+						issue.dependant.helper.dependsOn
 					);
 				},
 				onUnresolvedHelpers: ({ unresolved }) => {
@@ -81,7 +82,7 @@ export const prepareContext = <
 							entry.helper,
 							kind,
 							'has unresolved dependencies (possible cycle)',
-							entry.helper.dependsOn ?? []
+							entry.helper.dependsOn
 						);
 					}
 				},
@@ -128,14 +129,13 @@ export const prepareContext = <
 		helperOrders,
 		extensionHooks: [...dependencies.extensionHooks],
 		executedLifecycles: new Set(),
-		rollbackJournal: [],
+		[rollbackJournalState]: [],
 
 		extensionStack: [],
 		onExtensionRollbackError: dependencies.options.onExtensionRollbackError
 			? (event) =>
 					dependencies.options.onExtensionRollbackError?.({
 						...event,
-						hookSequence: event.extensionKeys,
 						context,
 					})
 			: undefined,

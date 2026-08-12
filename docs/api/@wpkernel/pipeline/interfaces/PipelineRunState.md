@@ -1,12 +1,18 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineRunState
 
-# Interface: PipelineRunState<TArtifact, TDiagnostic>
+# Interface: PipelineRunState&lt;TArtifact, TDiagnostic&gt;
 
-State returned from a pipeline run.
+Default successful result returned by a pipeline.
+
+## Remarks
+
+`artifact` is the final user state. Diagnostics and steps are immutable views
+of this run only. A custom result shape may be supplied through the required
+`createRunResult` adapter in [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md).
 
 ## Type Parameters
 
@@ -14,9 +20,13 @@ State returned from a pipeline run.
 
 `TArtifact`
 
+Final artifact or user-state type.
+
 ### TDiagnostic
 
-`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+
+Diagnostic union collected by the run.
 
 ## Properties
 
@@ -26,7 +36,9 @@ State returned from a pipeline run.
 readonly artifact: TArtifact;
 ```
 
----
+Final artifact after all stages, hooks and output adoption.
+
+***
 
 ### diagnostics
 
@@ -34,10 +46,14 @@ readonly artifact: TArtifact;
 readonly diagnostics: readonly TDiagnostic[];
 ```
 
----
+Diagnostics recorded during registration or this run.
+
+***
 
 ### steps
 
 ```ts
-readonly steps: readonly PipelineStep<string>[];
+readonly steps: readonly PipelineStep&lt;string&gt;[];
 ```
+
+Helpers that actually executed, in execution order.

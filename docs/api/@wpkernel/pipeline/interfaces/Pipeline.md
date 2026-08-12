@@ -1,12 +1,22 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / Pipeline
 
-# Interface: Pipeline<TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
+# Interface: Pipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TBuildOptions, TArtifact, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TDiagnostic, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt;
 
-A pipeline instance with helper registration and execution methods.
+A configured standard fragment-and-builder pipeline.
+
+The dedicated [Pipeline.ir](#ir) and [Pipeline.builders](#builders) surfaces
+validate helper kinds at registration. [Pipeline.use](#use) accepts either
+configured kind while preserving the original helper object's identity.
+Calls to [Pipeline.run](#run) preserve synchronous settlement until a helper,
+extension, commit, rollback or stage actually becomes asynchronous.
+
+Registrations are pipeline configuration. Each run waits for pending
+extension registration to quiesce and captures immutable helper and hook
+orders, so overlapping runs cannot acquire one another's later additions.
 
 ## Type Parameters
 
@@ -20,11 +30,11 @@ A pipeline instance with helper registration and execution methods.
 
 ### TContext
 
-`TContext` _extends_ `object`
+`TContext` *extends* `object`
 
 ### TReporter
 
-`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 ### TBuildOptions
 
@@ -52,23 +62,23 @@ A pipeline instance with helper registration and execution methods.
 
 ### TDiagnostic
 
-`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 ### TFragmentKind
 
-`TFragmentKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = `"fragment"`
+`TFragmentKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = `"builder"`
+`TBuilderKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
+`TFragmentHelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
 
 ### TBuilderHelper
 
-`TBuilderHelper` _extends_ [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
+`TBuilderHelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
 
 ## Properties
 
@@ -78,7 +88,9 @@ A pipeline instance with helper registration and execution methods.
 readonly builderKind: TBuilderKind;
 ```
 
----
+Builder helper kind configured for this pipeline.
+
+***
 
 ### builders
 
@@ -86,11 +98,15 @@ readonly builderKind: TBuilderKind;
 readonly builders: object;
 ```
 
+Typed registration surface for builder helpers.
+
 #### use()
 
 ```ts
-use: (helper) => void;
+use: (helper) =&gt; void;
 ```
+
+Registers a builder helper by object identity.
 
 ##### Parameters
 
@@ -102,7 +118,11 @@ use: (helper) => void;
 
 `void`
 
----
+##### Throws
+
+A validation error when `helper.kind` is not [Pipeline.builderKind](#builderkind).
+
+***
 
 ### extensions
 
@@ -110,23 +130,31 @@ use: (helper) => void;
 readonly extensions: object;
 ```
 
+Extension registration surface for artifact lifecycle hooks.
+
 #### use()
 
 ```ts
-use: (extension) => unknown;
+use: (extension) =&gt; unknown;
 ```
+
+Registers extension setup and an optional lifecycle hook.
+
+Returns synchronously for synchronous registration and a promise-like
+value only when registration is asynchronous. Unawaited asynchronous
+registration is still awaited by the next [Pipeline.run](#run).
 
 ##### Parameters
 
 ###### extension
 
-`StandardPipelineExtension`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TBuildOptions`, `TArtifact`, `TFragmentInput`, `TFragmentOutput`, `TBuilderInput`, `TBuilderOutput`, `TDiagnostic`, `TFragmentKind`, `TBuilderKind`, `TFragmentHelper`, `TBuilderHelper`>
+[`StandardPipelineExtension`](../type-aliases/StandardPipelineExtension.md)&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TBuildOptions`, `TArtifact`, `TFragmentInput`, `TFragmentOutput`, `TBuilderInput`, `TBuilderOutput`, `TDiagnostic`, `TFragmentKind`, `TBuilderKind`, `TFragmentHelper`, `TBuilderHelper`&gt;
 
 ##### Returns
 
 `unknown`
 
----
+***
 
 ### fragmentKind
 
@@ -134,7 +162,9 @@ use: (extension) => unknown;
 readonly fragmentKind: TFragmentKind;
 ```
 
----
+Fragment helper kind configured for this pipeline.
+
+***
 
 ### ir
 
@@ -142,11 +172,15 @@ readonly fragmentKind: TFragmentKind;
 readonly ir: object;
 ```
 
+Typed registration surface for fragment helpers.
+
 #### use()
 
 ```ts
-use: (helper) => void;
+use: (helper) =&gt; void;
 ```
+
+Registers a fragment helper by object identity.
 
 ##### Parameters
 
@@ -158,13 +192,23 @@ use: (helper) => void;
 
 `void`
 
----
+##### Throws
+
+A validation error when `helper.kind` is not [Pipeline.fragmentKind](#fragmentkind).
+
+***
 
 ### run()
 
 ```ts
-run: (options) => MaybePromise<TRunResult>;
+run: (options) =&gt; MaybePromise&lt;TRunResult&gt;;
 ```
+
+Executes one isolated fragment, extension and builder sequence.
+
+Returns `TRunResult` synchronously when all participating work is
+synchronous; otherwise returns a promise-like value. Diagnostics belong to
+this invocation and do not leak into overlapping or later runs.
 
 #### Parameters
 
@@ -174,21 +218,25 @@ run: (options) => MaybePromise<TRunResult>;
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult`&gt;
 
----
+***
 
 ### use()
 
 ```ts
-use: (helper) => void;
+use: (helper) =&gt; void;
 ```
+
+Registers either a configured fragment helper or builder helper while
+preserving the original helper object's identity. Prefer [Pipeline.ir](#ir)
+or [Pipeline.builders](#builders) when the helper family is known statically.
 
 #### Parameters
 
 ##### helper
 
-`TFragmentHelper` | `TBuilderHelper` | [`Helper`](Helper.md)<`TContext`, `unknown`, `unknown`, `TReporter`, `string`>
+`TFragmentHelper` | `TBuilderHelper`
 
 #### Returns
 

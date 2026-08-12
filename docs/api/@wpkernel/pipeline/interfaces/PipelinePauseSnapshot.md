@@ -1,23 +1,33 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelinePauseSnapshot
 
-# Interface: PipelinePauseSnapshot<TState>
+# Interface: PipelinePauseSnapshot&lt;TState&gt;
 
 Snapshot captured when a pipeline run pauses.
 
-This is a process-local suspension value. Its state can contain live maps,
-sets, functions, extension coordinators, rollback callbacks, and other
-non-serializable runtime objects. Consumers must not persist or transport it
-as a durable checkpoint.
+A snapshot is a process-local, single-use capability owned by the resumable
+pipeline instance that created it. Pass the exact snapshot object back to
+that instance's `resume()` method. A copied, forged, foreign, previously
+resumed, or concurrently resumed snapshot is rejected.
+
+`state` is a public projection for inspection. The runner retains the
+authoritative continuation and transaction state privately. Neither the
+snapshot nor its state is a serializable or durable workflow checkpoint.
+
+## See
+
+[ResumablePipeline.resume](ResumablePipeline.md#resume)
 
 ## Type Parameters
 
 ### TState
 
 `TState`
+
+Public state projection available for inspection.
 
 ## Properties
 
@@ -27,7 +37,9 @@ as a durable checkpoint.
 readonly createdAt: number;
 ```
 
----
+Epoch timestamp in milliseconds when the pause was created.
+
+***
 
 ### stageIndex
 
@@ -35,7 +47,9 @@ readonly createdAt: number;
 readonly stageIndex: number;
 ```
 
----
+Index of the stage that requested the pause and will be re-entered.
+
+***
 
 ### state
 
@@ -43,7 +57,9 @@ readonly stageIndex: number;
 readonly state: TState;
 ```
 
----
+Read-only public projection of the suspended stage state.
+
+***
 
 ### pauseKind?
 
@@ -51,7 +67,9 @@ readonly state: TState;
 readonly optional pauseKind: string;
 ```
 
----
+Application-defined pause classification.
+
+***
 
 ### payload?
 
@@ -59,10 +77,14 @@ readonly optional pauseKind: string;
 readonly optional payload: unknown;
 ```
 
----
+Consumer-owned pause payload.
+
+***
 
 ### token?
 
 ```ts
 readonly optional token: unknown;
 ```
+
+Consumer-owned correlation value copied from pause options.

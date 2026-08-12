@@ -172,7 +172,6 @@ describe('pipeline primitives', () => {
 	interface RecordedRollback {
 		readonly error: unknown;
 		readonly extensionKeys: readonly string[];
-		readonly hookSequence: readonly string[];
 		readonly errorMetadata: RecordedRollbackMetadata;
 	}
 
@@ -635,7 +634,6 @@ describe('pipeline primitives', () => {
 			errorName: rollbackError.name,
 			errorMessage: rollbackError.message,
 			extensions: ['extension.rollback', 'extension.failure'],
-			hookKeys: ['extension.rollback', 'extension.failure'],
 		});
 
 		const contextObject = context as Record<string, unknown>;
@@ -681,10 +679,6 @@ describe('pipeline primitives', () => {
 		const entry = handled[0]!;
 		expect(entry.error).toBe(rollbackError);
 		expect(entry.extensionKeys).toEqual([
-			'extension.rollback',
-			'extension.failure',
-		]);
-		expect(entry.hookSequence).toEqual([
 			'extension.rollback',
 			'extension.failure',
 		]);

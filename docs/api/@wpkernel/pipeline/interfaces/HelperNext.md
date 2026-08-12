@@ -1,16 +1,22 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / HelperNext
 
-# Interface: HelperNext()<TOutput>
+# Interface: HelperNext()&lt;TOutput&gt;
 
 Explicit continuation for wrapping the remainder of a helper chain.
 
-Calling the continuation executes downstream helpers with either the supplied
-output or the current helper output. The returned value is the final output
-produced by those helpers.
+Calling the continuation executes the remainder of a helper chain.
+
+## Remarks
+
+With no argument, downstream helpers receive the current output. Supplying an
+argument replaces it. Repeated calls share the same downstream execution and
+settlement. If a helper launches asynchronous downstream work without
+awaiting it, the pipeline still waits for that work before settling the
+helper or beginning rollback.
 
 ## Type Parameters
 
@@ -18,33 +24,27 @@ produced by those helpers.
 
 `TOutput`
 
+Value threaded through the helper chain.
+
 ## Call Signature
 
 ```ts
-HelperNext(): MaybePromise<TOutput>;
+HelperNext(): MaybePromise&lt;TOutput&gt;;
 ```
 
-Explicit continuation for wrapping the remainder of a helper chain.
-
-Calling the continuation executes downstream helpers with either the supplied
-output or the current helper output. The returned value is the final output
-produced by those helpers.
+Continues with the current output.
 
 ### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TOutput`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TOutput`&gt;
 
 ## Call Signature
 
 ```ts
-HelperNext(output): MaybePromise<TOutput>;
+HelperNext(output): MaybePromise&lt;TOutput&gt;;
 ```
 
-Explicit continuation for wrapping the remainder of a helper chain.
-
-Calling the continuation executes downstream helpers with either the supplied
-output or the current helper output. The returned value is the final output
-produced by those helpers.
+Continues with an explicit replacement output.
 
 ### Parameters
 
@@ -52,6 +52,8 @@ produced by those helpers.
 
 `TOutput`
 
+Value supplied to the next helper in the chain.
+
 ### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TOutput`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TOutput`&gt;

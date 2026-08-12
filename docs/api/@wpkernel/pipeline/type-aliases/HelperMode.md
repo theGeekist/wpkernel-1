@@ -1,18 +1,19 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / HelperMode
 
 # Type Alias: HelperMode
 
 ```ts
-type HelperMode = 'extend' | 'override' | 'merge';
+type HelperMode = "extend" | "override";
 ```
 
-Helper execution mode - determines how it integrates with existing helpers.
+Registration policy for helpers that share a key.
 
 ## Remarks
 
-Currently only `extend` and `override` modes have implementation/validation logic.
-The `merge` mode is reserved for future use.
+`extend` keeps all registrations. `override` removes earlier registrations
+for the same key. Registering a second override for that key is a fatal
+configuration conflict.

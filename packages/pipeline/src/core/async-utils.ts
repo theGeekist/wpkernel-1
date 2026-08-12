@@ -77,12 +77,38 @@ export function adoptMaybePromise<T>(
 }
 
 /**
- * Type guard to check if a value is promise-like (has a `.then` method).
+ * Tests whether a value exposes an inspectable data-property `then` method.
  *
- * @param value - The value to check
- * @returns `true` if the value has a `.then` method, `false` otherwise
+ * This is the same hardened boundary used by {@link maybeThen},
+ * {@link maybeTry} and {@link maybeAll}. It walks own and prototype property
+ * descriptors without evaluating a `then` accessor or reading `value.then`.
+ * Proxy descriptor and prototype traps may run as part of inspection; if they
+ * throw, the exception is contained and the value is treated as synchronous
+ * data. An accessor-backed `then` is also treated as data rather than invoked.
  *
- * @internal
+ * This intentionally differs from ordinary JavaScript promise assimilation,
+ * which reads `value.then` and may execute user code. The guard is suitable at
+ * native or hostile-object boundaries where inspecting an accessor would grant
+ * ambient execution.
+ *
+ * @param value - Candidate synchronous value or thenable.
+ * @returns `true` only for a safely captured data-property `then` function.
+ *
+ * @example
+ * ```ts
+ * import { isPromiseLike } from '@wpkernel/pipeline';
+ *
+ * const accessorBacked = Object.defineProperty({}, 'then', {
+ *   get() {
+ *     throw new Error('must not execute');
+ *   },
+ * });
+ *
+ * isPromiseLike(Promise.resolve('ready')); // true
+ * isPromiseLike(accessorBacked); // false, getter was not evaluated
+ * ```
+ *
+ * @public
  */
 export function isPromiseLike<T>(
 	value: MaybePromise<T>
@@ -93,16 +119,32 @@ export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
 }
 
 /**
- * Conditionally chains a `.then()` call if the value is promise-like.
+ * Maps a synchronous value or safely inspectable thenable while preserving the
+ * synchronous path.
  *
- * If the value is a plain value, calls `onFulfilled` synchronously.
- * If the value is a promise, chains `.then()` asynchronously.
+ * For synchronous input, `onFulfilled` runs before this function returns and
+ * its value is returned directly. Throws from that callback remain synchronous.
+ * For a safely inspectable thenable, the captured method is adopted exactly
+ * once into a native promise; callback throws then become promise rejections.
+ * Accessor-backed or trap-hostile `then` properties remain ordinary data under
+ * the boundary described by {@link isPromiseLike}.
  *
- * @param value       - A value that may or may not be a promise
- * @param onFulfilled - The transformation to apply once the value is available
- * @returns Either the synchronous result or a promise of the result
+ * @param value       - Value or thenable to map.
+ * @param onFulfilled - Transformation applied to the fulfilled value.
+ * @returns The callback result directly for synchronous input, or a native chained promise for thenable input.
  *
- * @internal
+ * @example
+ * ```ts
+ * import { isPromiseLike, maybeThen } from '@wpkernel/pipeline';
+ *
+ * const immediate = maybeThen(2, (value) => value * 3);
+ * isPromiseLike(immediate); // false
+ *
+ * const deferred = maybeThen(Promise.resolve(2), (value) => value * 3);
+ * isPromiseLike(deferred); // true
+ * ```
+ *
+ * @public
  */
 export function maybeThen<T, TResult>(
 	value: MaybePromise<T>,
@@ -121,16 +163,33 @@ export function maybeThen<T, TResult>(
 }
 
 /**
- * Try-catch wrapper that handles both synchronous and asynchronous errors.
+ * Runs an operation and recovers from either a synchronous throw or a rejected
+ * safely inspectable thenable.
  *
- * If `run()` throws synchronously or returns a rejected promise,
- * calls `onError` with the error.
+ * A successful synchronous result is returned directly. A synchronous throw
+ * calls `onError` immediately, so a synchronous recovery also remains
+ * synchronous. Once `run` returns a thenable, the outcome is a native promise
+ * and recovery runs through its rejection channel. The recovery function may
+ * itself return a value or thenable.
  *
- * @param run     - The function to execute
- * @param onError - The error handler
- * @returns Either the successful result or the recovery value from `onError`
+ * Values excluded by the hardened boundary in {@link isPromiseLike} are
+ * successful synchronous data, even when they expose an accessor named `then`.
  *
- * @internal
+ * @param run     - Operation to execute.
+ * @param onError - Recovery invoked with the original failure.
+ * @returns The successful result or recovery result, preserving sync when possible.
+ *
+ * @example
+ * ```ts
+ * import { maybeTry } from '@wpkernel/pipeline';
+ *
+ * const parsed = maybeTry(
+ *   () => JSON.parse('{invalid}') as unknown,
+ *   () => ({ valid: false })
+ * );
+ * ```
+ *
+ * @public
  */
 export function maybeTry<T>(
 	run: () => MaybePromise<T>,
@@ -199,14 +258,30 @@ export function processSequentially<T>(
 }
 
 /**
- * Resolves maybe-promise values together while preserving the synchronous path
- * when every value is already available.
+ * Resolves an ordered collection of values and safely inspectable thenables.
  *
- * Each thenable is adopted with the exact data-property method captured during
- * descriptor inspection.
+ * If every entry is synchronous, this returns a new array immediately. If any
+ * entry is asynchronous, all captured thenables are adopted and the function
+ * returns a native `Promise` with `Promise.all` ordering and rejection
+ * semantics. Input order is preserved in both paths.
  *
- * @param values - Values to resolve
- * @returns The values directly, or a promise when any value is asynchronous
+ * Each value crosses the same descriptor boundary as {@link isPromiseLike}.
+ * Accessor-backed or uninspectable `then` properties remain synchronous data.
+ *
+ * @param values - Ordered values to resolve.
+ * @returns A new array directly, or a native promise when any entry is asynchronous.
+ *
+ * @example
+ * ```ts
+ * import { isPromiseLike, maybeAll } from '@wpkernel/pipeline';
+ *
+ * const immediate = maybeAll([1, 2, 3]);
+ * isPromiseLike(immediate); // false
+ *
+ * const deferred = maybeAll([1, Promise.resolve(2), 3]);
+ * isPromiseLike(deferred); // true
+ * ```
+ *
  * @public
  */
 export function maybeAll<T>(

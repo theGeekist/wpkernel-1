@@ -131,7 +131,9 @@ bookkeeping when it adopts a replacement.
 
 ### 2. Register Helpers
 
-Helpers are the atomic units of work. They can be anything - functions, objects, or complex services.
+Helpers are immutable descriptor objects with an `apply` method. The method may
+delegate to any function or service, but the descriptor shape itself is the
+registration contract.
 
 ```ts
 // "Extract" helper
@@ -226,6 +228,10 @@ pipeline instance remains invalid and every later run reports the first
 registration failure, whether registration failed synchronously or
 asynchronously.
 
+Extension keys are unique within a pipeline. Asynchronous setup does not change
+registration order: hooks execute in `extensions.use()` order, not promise
+resolution order.
+
 ### Rollbacks
 
 The pipeline supports robust rollback for both helper application and extension lifecycle commit phases:
@@ -243,14 +249,16 @@ Diagnostics are per-run. Calling `pipeline.run()` starts a fresh invocation-owne
 
 ### Process-local Suspension
 
-`makeResumablePipeline()` retains the existing `pause`/`resume` terminology
-for compatibility, but its snapshot is an in-memory suspension value - not a
-durable checkpoint. It contains live runner state such as maps, sets,
-diagnostic managers, extension coordinators, and rollback callbacks.
+`makeResumablePipeline()` returns an in-memory suspension capability, not a
+durable checkpoint. Its visible state is a public projection; the authoritative
+runner state, rollback journal and commit bookkeeping remain private.
 
-Resume it only with the same pipeline implementation in the same process.
-Serialization, storage, transport, version binding, plan identity, and durable
-checkpoint migration belong to the consuming application.
+A snapshot belongs to the pipeline instance that created it and can be resumed
+exactly once. A resumed run that pauses again returns a new capability. Later
+extension registrations apply to new runs and cannot block or poison an
+already-paused transaction. Serialization, storage, transport, version binding,
+plan identity and durable checkpoint migration belong to the consuming
+application.
 
 ## Documentation
 

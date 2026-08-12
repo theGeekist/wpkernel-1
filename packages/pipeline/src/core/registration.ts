@@ -51,6 +51,12 @@ export function registerHelper<
 			`Attempted to register helper "${helper.key}" as ${kindName} but received kind "${helper.kind}".`
 		);
 	}
+	if (typeof helper.apply !== 'function') {
+		throw createError(
+			'ValidationError',
+			`Helper "${helper.key}" must provide an apply function.`
+		);
+	}
 
 	if (helper.mode === 'override') {
 		const existingOverride = entries.find(

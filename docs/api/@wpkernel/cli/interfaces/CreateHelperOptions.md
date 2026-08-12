@@ -1,12 +1,17 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/cli](../README.md) / CreateHelperOptions
 
-# Interface: CreateHelperOptions<TContext, TInput, TOutput, TReporter, TKind>
+# Interface: CreateHelperOptions&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
 
-Options for creating a new helper.
+Input accepted by `createHelper`.
+
+## Remarks
+
+Omitted metadata is normalised to `mode: 'extend'`, `priority: 0`, and an
+empty dependency list. The dependency list is copied and frozen.
 
 ## Type Parameters
 
@@ -14,31 +19,43 @@ Options for creating a new helper.
 
 `TContext`
 
+Per-run context type.
+
 ### TInput
 
 `TInput`
+
+Phase-specific input type.
 
 ### TOutput
 
 `TOutput`
 
+Value transformed by the helper chain.
+
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+
+Reporter type available during execution.
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+
+Literal helper kind represented by the descriptor.
 
 ## Properties
 
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
+readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 ```
 
----
+Helper implementation.
+
+***
 
 ### key
 
@@ -46,7 +63,9 @@ readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
 readonly key: string;
 ```
 
----
+Dependency and override identity within the helper kind.
+
+***
 
 ### kind
 
@@ -54,7 +73,9 @@ readonly key: string;
 readonly kind: TKind;
 ```
 
----
+Pipeline phase in which the helper executes.
+
+***
 
 ### dependsOn?
 
@@ -62,7 +83,13 @@ readonly kind: TKind;
 readonly optional dependsOn: readonly string[];
 ```
 
----
+Prerequisite helper keys.
+
+#### Default Value
+
+`[]`
+
+***
 
 ### mode?
 
@@ -70,7 +97,13 @@ readonly optional dependsOn: readonly string[];
 readonly optional mode: HelperMode;
 ```
 
----
+Duplicate-key policy.
+
+#### Default Value
+
+`'extend'`
+
+***
 
 ### origin?
 
@@ -78,10 +111,18 @@ readonly optional mode: HelperMode;
 readonly optional origin: string;
 ```
 
----
+Optional provenance label used in diagnostics.
+
+***
 
 ### priority?
 
 ```ts
 readonly optional priority: number;
 ```
+
+Relative ordering hint.
+
+#### Default Value
+
+`0`

@@ -6,15 +6,15 @@ import type {
 	PipelinePaused,
 	PipelineReporter,
 	PipelineRunState,
+	PipelineStageState,
 	ResumablePipeline,
 } from '../types';
-import type { AgnosticState } from '../runner/types';
 
 type PauseRunOptions = Record<string, never>;
 type PauseUserState = { count: number };
 type PauseContext = { reporter: PipelineReporter };
 type PauseDiagnostic = PipelineDiagnostic;
-type PausePipelineState = AgnosticState<
+type PausePipelineState = PipelineStageState<
 	PauseRunOptions,
 	PauseUserState,
 	PauseContext,
@@ -119,6 +119,173 @@ describe('makeResumablePipeline', () => {
 		expect(result.artifact.count).toBe(1);
 		expect(initialHook).toHaveBeenCalledTimes(1);
 		expect(laterHook).not.toHaveBeenCalled();
+	});
+
+	it('resumes without waiting for a post-pause registration', async () => {
+		let rejectRegistration: ((error: Error) => void) | undefined;
+		const registrationError = new Error('late registration failed');
+		const pipeline = makeResumablePipeline({
+			helperKinds: [],
+			createContext: () => mockContext,
+			createState: () => ({ count: 0 }),
+			createStages: (deps: any) => [
+				(state: any) =>
+					state.resumeInput
+						? {
+								...state,
+								userState: { count: 1 },
+							}
+						: deps.pause(state),
+				deps.finalizeResult,
+			],
+		});
+		const paused = pipeline.run({}) as PipelinePaused<any>;
+		const registration = pipeline.extensions.use({
+			key: 'late',
+			register: () =>
+				new Promise((_, reject) => {
+					rejectRegistration = reject;
+				}),
+		});
+
+		const resumed = pipeline.resume(
+			paused.snapshot,
+			true
+		) as PipelineRunState<{
+			count: number;
+		}>;
+
+		expect(resumed.artifact).toEqual({ count: 1 });
+		rejectRegistration?.(registrationError);
+		await expect(registration).rejects.toBe(registrationError);
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toBe(registrationError);
+	});
+
+	it('unwinds a paused run after a later registration has failed', async () => {
+		const rollback = jest.fn();
+		const registrationError = new Error('late registration failed');
+		const resumeError = new Error('resume failed');
+		const pipeline = makeResumablePipeline({
+			helperKinds: ['work'],
+			createContext: () => mockContext,
+			createState: () => ({}),
+			createStages: (deps: any) => [
+				deps.makeHelperStage('work'),
+				(state: any) =>
+					state.resumeInput
+						? deps.halt(resumeError)
+						: deps.pause(state),
+			],
+		});
+		pipeline.use(
+			createHelper({
+				key: 'work',
+				kind: 'work',
+				apply: () => ({
+					rollback: createPipelineRollback(rollback),
+				}),
+			})
+		);
+		const paused = (await pipeline.run({})) as PipelinePaused<any>;
+		const registration = pipeline.extensions.use({
+			key: 'late',
+			register: async () => {
+				throw registrationError;
+			},
+		});
+		await expect(registration).rejects.toBe(registrationError);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.resume(paused.snapshot, true))
+		).rejects.toBe(resumeError);
+		expect(rollback).toHaveBeenCalledTimes(1);
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toBe(registrationError);
+	});
+
+	it('rejects snapshots created by another pipeline instance', () => {
+		const createPipeline = () =>
+			makeResumablePipeline({
+				helperKinds: [],
+				createContext: () => mockContext,
+				createState: () => ({}),
+				createStages: (deps: any) => [
+					(state: any) =>
+						state.resumeInput ? state : deps.pause(state),
+					deps.finalizeResult,
+				],
+			});
+		const owner = createPipeline();
+		const foreign = createPipeline();
+		const paused = owner.run({}) as PipelinePaused<any>;
+
+		expect(() => foreign.resume(paused.snapshot, true)).toThrow(
+			'Pipeline pause snapshot does not belong to this pipeline.'
+		);
+	});
+
+	it('claims a snapshot before an asynchronous resume begins', async () => {
+		let releaseResume: (() => void) | undefined;
+		const resumeGate = new Promise<void>((resolve) => {
+			releaseResume = resolve;
+		});
+		const pipeline = makeResumablePipeline({
+			helperKinds: [],
+			createContext: () => mockContext,
+			createState: () => ({}),
+			createStages: (deps: any) => [
+				(state: any) =>
+					state.resumeInput
+						? resumeGate.then(() => state)
+						: deps.pause(state),
+				deps.finalizeResult,
+			],
+		});
+		const paused = pipeline.run({}) as PipelinePaused<any>;
+
+		const firstResume = pipeline.resume(paused.snapshot, true);
+		expect(() => pipeline.resume(paused.snapshot, true)).toThrow(
+			'Pipeline pause snapshot has already been resumed.'
+		);
+
+		releaseResume?.();
+		await firstResume;
+	});
+
+	it('owns each newly returned pause while keeping earlier snapshots consumed', () => {
+		const pipeline = makeResumablePipeline({
+			helperKinds: [],
+			createContext: () => mockContext,
+			createState: () => ({ count: 0 }),
+			createStages: (deps: any) => [
+				(state: any) => {
+					if (!state.resumeInput) {
+						return deps.pause(state);
+					}
+					if (state.resumeInput === 'pause-again') {
+						return deps.pause(state);
+					}
+					return state;
+				},
+				deps.finalizeResult,
+			],
+		});
+		const first = pipeline.run({}) as PipelinePaused<any>;
+		const second = pipeline.resume(
+			first.snapshot,
+			'pause-again'
+		) as PipelinePaused<any>;
+
+		expect(second.snapshot).not.toBe(first.snapshot);
+		expect(() => pipeline.resume(first.snapshot, 'done')).toThrow(
+			'Pipeline pause snapshot has already been resumed.'
+		);
+		expect(pipeline.resume(second.snapshot, 'done')).toMatchObject({
+			artifact: { count: 0 },
+		});
 	});
 
 	it('retains live object identity across process-local suspension', async () => {

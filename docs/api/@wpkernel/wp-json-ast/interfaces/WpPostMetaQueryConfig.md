@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../README.md) / WpPostMetaQueryConfig
 
@@ -12,6 +12,6 @@
 
 ```ts
 readonly optional meta:
-  | Record<string, WpPostMetaConfigEntry | null | undefined>
+  | Record&lt;string, WpPostMetaConfigEntry | null | undefined&gt;
   | null;
 ```

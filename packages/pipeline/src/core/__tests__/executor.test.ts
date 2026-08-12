@@ -53,6 +53,23 @@ const helperEntry = (
 	},
 });
 
+const outputHelperEntry = <TOutput>(
+	key: string,
+	index: number,
+	apply: Helper<TestContext, TestInput, TOutput, TestReporter>['apply']
+): RegisteredHelper<Helper<TestContext, TestInput, TOutput, TestReporter>> => ({
+	id: String(index),
+	index,
+	helper: {
+		key,
+		kind: 'fragment',
+		mode: 'extend',
+		priority: 0,
+		dependsOn: [],
+		apply,
+	},
+});
+
 const executeTestHelpers = (helpers: RegisteredHelper<TestHelper>[]) =>
 	executeHelpers<
 		TestContext,
@@ -436,6 +453,22 @@ describe('executor', () => {
 		expect(seen).toEqual([['first']]);
 	});
 
+	it('executes duplicate registration identities only once', () => {
+		const invocation = jest.fn();
+		const first = helperEntry('first', 0, invocation);
+		const duplicate = {
+			...helperEntry('duplicate', 1, invocation),
+			id: first.id,
+		};
+
+		const result = executeTestHelpers([first, duplicate]);
+
+		expect(result).toMatchObject({
+			visited: new Set([first.id]),
+		});
+		expect(invocation).toHaveBeenCalledTimes(1);
+	});
+
 	it('supports explicit downstream input and post-next replacement', async () => {
 		type Output = string[];
 		type OutputHelper = Helper<
@@ -565,6 +598,169 @@ describe('executor', () => {
 
 		expect(result).toMatchObject({ output: 3 });
 		expect(downstream).toHaveBeenCalledTimes(1);
+	});
+
+	it('shares an in-flight continuation across repeated next calls', async () => {
+		type Output = string;
+		type OutputHelper = Helper<
+			TestContext,
+			TestInput,
+			Output,
+			TestReporter
+		>;
+		let release: (() => void) | undefined;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		let first: MaybePromise<Output> | undefined;
+		let second: MaybePromise<Output> | undefined;
+		const helpers: RegisteredHelper<OutputHelper>[] = [
+			{
+				id: 'wrapper',
+				index: 0,
+				helper: {
+					key: 'wrapper',
+					kind: 'fragment',
+					mode: 'extend',
+					priority: 0,
+					dependsOn: [],
+					apply: (_args, next) => {
+						first = next?.('first');
+						second = next?.('ignored');
+					},
+				},
+			},
+			{
+				id: 'downstream',
+				index: 1,
+				helper: {
+					key: 'downstream',
+					kind: 'fragment',
+					mode: 'extend',
+					priority: 0,
+					dependsOn: [],
+					apply: async ({ output }) => {
+						await gate;
+						return { output: `${output}:done` };
+					},
+				},
+			},
+		];
+
+		const outcome = executeHelpers<
+			TestContext,
+			TestInput,
+			Output,
+			TestReporter,
+			HelperKind,
+			OutputHelper,
+			HelperApplyOptions<TestContext, TestInput, Output, TestReporter>
+		>(
+			helpers,
+			() => ({
+				context: {},
+				input: undefined,
+				output: 'initial',
+				reporter: {},
+			}),
+			(helper, args, next) => helper.apply(args, next),
+			() => undefined
+		);
+
+		expect(second).toBe(first);
+		release?.();
+		await expect(outcome).resolves.toMatchObject({
+			output: 'first:done',
+		});
+	});
+
+	it('waits for in-flight downstream work before applying a wrapper output', async () => {
+		type Output = string;
+		let downstreamSettled = false;
+		type OutputHelper = Helper<
+			TestContext,
+			TestInput,
+			Output,
+			TestReporter
+		>;
+		const helpers: RegisteredHelper<OutputHelper>[] = [
+			outputHelperEntry<Output>('wrapper', 0, (_args, next) => {
+				void next?.();
+				return { output: 'wrapper' };
+			}),
+			outputHelperEntry<Output>('downstream', 1, async () => {
+				await Promise.resolve();
+				downstreamSettled = true;
+			}),
+		];
+
+		const result = await executeHelpers<
+			TestContext,
+			TestInput,
+			Output,
+			TestReporter,
+			HelperKind,
+			OutputHelper,
+			HelperApplyOptions<TestContext, TestInput, Output, TestReporter>
+		>(
+			helpers,
+			() => ({
+				context: {},
+				input: undefined,
+				output: 'initial',
+				reporter: {},
+			}),
+			(helper, args, next) => helper.apply(args, next),
+			() => undefined
+		);
+
+		expect(downstreamSettled).toBe(true);
+		expect(result.output).toBe('wrapper');
+	});
+
+	it('rethrows a rejected continuation when its wrapper has no replacement', async () => {
+		const failure = new Error('downstream failed');
+		const helpers = [
+			helperEntry('wrapper', 0, (_args, next) => {
+				try {
+					next?.();
+				} catch {
+					// The wrapper observes the failure but does not replace it.
+				}
+			}),
+			helperEntry('downstream', 1, () => {
+				throw failure;
+			}),
+		];
+
+		await expect(
+			Promise.resolve().then(() => executeTestHelpers(helpers))
+		).rejects.toBe(failure);
+	});
+
+	it('rethrows the same settled continuation failure on repeated next calls', () => {
+		const failure = new Error('downstream failed');
+		const observed: unknown[] = [];
+		const helpers = [
+			helperEntry('wrapper', 0, (_args, next) => {
+				for (let attempt = 0; attempt < 2; attempt += 1) {
+					try {
+						next?.();
+					} catch (error) {
+						observed.push(error);
+					}
+				}
+				return { output: undefined };
+			}),
+			helperEntry('downstream', 1, () => {
+				throw failure;
+			}),
+		];
+
+		expect(executeTestHelpers(helpers)).toMatchObject({
+			hasOutput: true,
+		});
+		expect(observed).toEqual([failure, failure]);
 	});
 
 	it('allows an around helper to recover with an explicit output', async () => {

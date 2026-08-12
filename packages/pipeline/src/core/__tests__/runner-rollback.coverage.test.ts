@@ -1,5 +1,6 @@
 import { rollbackStateToHalt } from '../runner/rollback';
 import type { PipelineRollback } from '../rollback';
+import { isRollbackApplied, rollbackJournalState } from '../runner/state';
 
 describe('runner rollback coverage', () => {
 	it('rolls back one journal in reverse execution chronology', async () => {
@@ -16,7 +17,7 @@ describe('runner rollback coverage', () => {
 		};
 		const state = {
 			context: {},
-			rollbackJournal: [
+			[rollbackJournalState]: [
 				{
 					source: 'helper' as const,
 					entries: [
@@ -69,10 +70,9 @@ describe('runner rollback coverage', () => {
 		expect(handlerCalls).toEqual([expect.any(Error)]);
 		expect(halt).toMatchObject({
 			__halt: true,
-			__hasError: true,
-			__rollbackApplied: true,
 			error,
 		});
+		expect(isRollbackApplied(halt)).toBe(true);
 	});
 
 	it('attributes reused rollback descriptors to each helper occurrence', async () => {
@@ -84,7 +84,7 @@ describe('runner rollback coverage', () => {
 		const helperKeys: string[] = [];
 		const state = {
 			context: {},
-			rollbackJournal: [
+			[rollbackJournalState]: [
 				{
 					source: 'helper' as const,
 					entries: [

@@ -188,5 +188,34 @@ describe('public custom-stage types', () => {
 		expectType<MaybePromise<CompilerResult>>(
 			pipeline.run({ source: 'post:1' })
 		);
+
+		const assertRegistrationTypes = () => {
+			// @ts-expect-error registration is restricted to configured helper kinds
+			pipeline.use({ ...compilerHelper, kind: 'builder' });
+		};
+		void assertRegistrationTypes;
+		// @ts-expect-error providedKeys is construction input, not runtime state
+		void pipeline.providedKeys;
+	});
+
+	it('requires an explicit adapter for a custom run result', () => {
+		makePipeline<
+			CompilerOptions,
+			CompilerContext,
+			CompilerReporter,
+			CompilerState,
+			CompilerDiagnostic,
+			string,
+			CompilerKind
+		>(
+			// @ts-expect-error a custom result requires an explicit result adapter
+			{
+				helperKinds: ['compiler'],
+				createContext: () => ({
+					reporter: { trace: jest.fn() },
+				}),
+				createState: () => ({ graph: [], revision: 0 }),
+			}
+		);
 	});
 });

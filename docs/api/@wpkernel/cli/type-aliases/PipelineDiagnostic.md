@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/cli](../README.md) / PipelineDiagnostic
 
@@ -8,9 +8,9 @@
 
 ```ts
 type PipelineDiagnostic =
-	| ConflictDiagnostic
-	| MissingDependencyDiagnostic
-	| UnusedHelperDiagnostic;
+  | ConflictDiagnostic
+  | MissingDependencyDiagnostic
+  | UnusedHelperDiagnostic;
 ```
 
 Union of all diagnostics emitted by the pipeline.

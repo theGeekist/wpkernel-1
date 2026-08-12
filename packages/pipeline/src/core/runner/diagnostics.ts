@@ -109,10 +109,14 @@ export function createAgnosticDiagnosticManager<
 				return;
 			}
 
-			options.onDiagnostic({
-				reporter: currentReporter,
-				diagnostic,
-			});
+			try {
+				options.onDiagnostic({
+					reporter: currentReporter,
+					diagnostic,
+				});
+			} catch {
+				// Diagnostic observers cannot alter pipeline settlement.
+			}
 			logged.add(diagnostic);
 		};
 

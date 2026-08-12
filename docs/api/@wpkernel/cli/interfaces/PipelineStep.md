@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/cli](../README.md) / PipelineStep
 
@@ -20,11 +20,13 @@ Represents a single step executed within the pipeline.
 readonly dependsOn: readonly string[];
 ```
 
+Helper keys that must complete before this helper may execute.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`dependsOn`](HelperDescriptor.md#dependson)
 
----
+***
 
 ### id
 
@@ -34,7 +36,7 @@ readonly id: string;
 
 A unique identifier for the step.
 
----
+***
 
 ### index
 
@@ -44,7 +46,7 @@ readonly index: number;
 
 The execution order of the step.
 
----
+***
 
 ### key
 
@@ -52,11 +54,13 @@ The execution order of the step.
 readonly key: string;
 ```
 
+Dependency and override identity within [kind](HelperDescriptor.md#kind).
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`key`](HelperDescriptor.md#key)
 
----
+***
 
 ### kind
 
@@ -64,11 +68,13 @@ readonly key: string;
 readonly kind: string;
 ```
 
+Execution phase and registry containing this helper.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`kind`](HelperDescriptor.md#kind)
 
----
+***
 
 ### mode
 
@@ -76,11 +82,13 @@ readonly kind: string;
 readonly mode: HelperMode;
 ```
 
+Duplicate-key registration policy.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`mode`](HelperDescriptor.md#mode)
 
----
+***
 
 ### priority
 
@@ -88,39 +96,21 @@ readonly mode: HelperMode;
 readonly priority: number;
 ```
 
+Relative ordering hint; higher values run first when dependencies permit.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`priority`](HelperDescriptor.md#priority)
 
----
-
-### optional?
-
-```ts
-readonly optional optional: boolean;
-```
-
-Whether this helper is optional and may not execute.
-Optional helpers won't cause validation errors if they don't run.
-Useful for conditional/feature-flag helpers.
-
-#### Default Value
-
-```ts
-false;
-```
-
-#### Inherited from
-
-[`HelperDescriptor`](HelperDescriptor.md).[`optional`](HelperDescriptor.md#optional)
-
----
+***
 
 ### origin?
 
 ```ts
 readonly optional origin: string;
 ```
+
+Optional package or subsystem label used in diagnostics.
 
 #### Inherited from
 

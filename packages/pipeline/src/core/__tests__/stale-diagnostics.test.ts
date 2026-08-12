@@ -1,6 +1,6 @@
 import { makePipeline } from '../makePipeline';
 
-describe('Stale Diagnostics Reproduction', () => {
+describe('run diagnostic isolation', () => {
 	it('clears run diagnostics between runs (no stale accumulation)', async () => {
 		const onDiagnostic = jest.fn();
 		const pipeline = makePipeline({

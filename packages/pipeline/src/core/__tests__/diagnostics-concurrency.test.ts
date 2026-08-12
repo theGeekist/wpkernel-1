@@ -1,6 +1,7 @@
 import { makePipeline } from '../makePipeline';
 import { makeResumablePipeline } from '../makeResumablePipeline';
 import { createHelper } from '../helper';
+import { createAgnosticDiagnosticManager } from '../runner/diagnostics';
 import type {
 	PipelineDiagnostic,
 	PipelinePaused,
@@ -21,6 +22,38 @@ const createDiagnostic = (id: string): PipelineDiagnostic => ({
 });
 
 describe('run-local diagnostics', () => {
+	it('exposes diagnostics recorded before a run reporter exists', () => {
+		const manager = createAgnosticDiagnosticManager();
+		const diagnostic = createDiagnostic('configuration');
+
+		manager.record(diagnostic);
+
+		expect(manager.getDiagnostics()).toEqual([diagnostic]);
+	});
+
+	it('contains diagnostic observer failures', async () => {
+		const diagnostic = createDiagnostic('observed');
+		const pipeline = makePipeline({
+			helperKinds: [],
+			createContext: () => ({ reporter: {} }),
+			createState: () => ({}),
+			createStages: (deps: any) => [
+				(state: unknown) => {
+					deps.diagnostics.record(diagnostic);
+					return state;
+				},
+				deps.finalizeResult,
+			],
+			onDiagnostic: () => {
+				throw new Error('observer failed');
+			},
+		});
+
+		await expect(Promise.resolve(pipeline.run({}))).resolves.toMatchObject({
+			diagnostics: [diagnostic],
+		});
+	});
+
 	it('isolates overlapping success and failure runs and their reporters', async () => {
 		const releases = new Map<string, () => void>();
 		const observed: Array<{ reporter: string; diagnostic: string }> = [];

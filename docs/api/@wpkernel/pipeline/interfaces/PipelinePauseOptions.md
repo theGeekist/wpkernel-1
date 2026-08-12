@@ -1,12 +1,21 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelinePauseOptions
 
 # Interface: PipelinePauseOptions
 
-Options for pausing a pipeline run.
+Metadata attached to a resumable pause.
+
+## Remarks
+
+All values are process-local metadata. They are not serialised, cloned or
+validated by the pipeline.
+
+## See
+
+[PipelinePauseSnapshot](PipelinePauseSnapshot.md)
 
 ## Properties
 
@@ -16,7 +25,9 @@ Options for pausing a pipeline run.
 readonly optional pauseKind: string;
 ```
 
----
+Application-defined pause classification.
+
+***
 
 ### payload?
 
@@ -24,10 +35,14 @@ readonly optional pauseKind: string;
 readonly optional payload: unknown;
 ```
 
----
+Application-defined data needed to decide how to resume.
+
+***
 
 ### token?
 
 ```ts
 readonly optional token: unknown;
 ```
+
+Consumer-owned correlation value.

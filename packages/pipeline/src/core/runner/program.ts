@@ -39,6 +39,7 @@ import {
 import { commitPendingExtensions } from './commit';
 import { runExtensionHooks } from '../extensions';
 import { createRollbackErrorMetadata } from '../rollback';
+import { rollbackJournalState } from './state';
 
 const readStageIndex = (state: { stageIndex?: number }): number =>
 	state.stageIndex ?? 0;
@@ -120,14 +121,11 @@ export const createAgnosticStages = <
 	>;
 	const diagnosticManager = runContext.state.diagnosticManager;
 
-	const halt = (...errors: [error?: unknown]): Halt<TRunResult> =>
-		errors.length === 0
-			? { __halt: true }
-			: {
-					__halt: true,
-					__hasError: true,
-					error: errors[0],
-				};
+	const halt = (error: unknown): Halt<TRunResult> => ({
+		__halt: true,
+		__hasError: true,
+		error,
+	});
 
 	// Generic makeArgs factory
 	const defaultMakeArgs =
@@ -143,7 +141,7 @@ export const createAgnosticStages = <
 		pushStep: runContext.pushStep,
 		toRollbackContext: (state: RunnerState) => ({
 			context: state.context,
-			rollbackJournal: state.rollbackJournal,
+			[rollbackJournalState]: state[rollbackJournalState],
 			onExtensionRollbackError: state.onExtensionRollbackError,
 		}),
 		halt,
@@ -191,10 +189,13 @@ export const createAgnosticStages = <
 				rollbacks: unknown[],
 				output: unknown
 			): RunnerState => {
-				return (
+				const visitedState =
 					spec?.onVisited?.(state, visited, rollbacks, output) ??
-					state
-				);
+					state;
+				return {
+					...visitedState,
+					[rollbackJournalState]: state[rollbackJournalState],
+				};
 			},
 			writeRollbacks: (
 				state: RunnerState,
@@ -202,8 +203,8 @@ export const createAgnosticStages = <
 				initialState: RunnerState
 			) => ({
 				...state,
-				rollbackJournal: appendHelperRollbackSegment(
-					initialState.rollbackJournal,
+				[rollbackJournalState]: appendHelperRollbackSegment(
+					initialState[rollbackJournalState],
 					rollbacks as RollbackEntry<{ readonly key: string }>[]
 				),
 			}),
@@ -216,16 +217,6 @@ export const createAgnosticStages = <
 				args: unknown;
 				next: HelperNext<unknown>;
 			}): MaybePromise<HelperApplyResult<unknown> | void> => {
-				// Handle both Helper objects (with apply method) and direct functions
-				if (typeof helper === 'function') {
-					return (
-						helper as (
-							options: unknown,
-							next: HelperNext<unknown>
-						) => MaybePromise<HelperApplyResult<unknown> | void>
-					)(args, next);
-				}
-
 				if (
 					typeof helper === 'object' &&
 					helper !== null &&
@@ -243,7 +234,7 @@ export const createAgnosticStages = <
 
 				// Should be unreachable if registry validates helpers
 				throw new Error(
-					`Invalid helper: expected function or object with .apply method. Got: ${typeof helper}`
+					`Invalid helper: expected object with .apply method. Got: ${typeof helper}`
 				);
 			},
 			writeOutput:
@@ -311,10 +302,11 @@ export const createAgnosticStages = <
 						return {
 							...state,
 							executedLifecycles,
-							rollbackJournal: appendExtensionRollbackSegment(
-								state.rollbackJournal,
-								newExtensionState
-							),
+							[rollbackJournalState]:
+								appendExtensionRollbackSegment(
+									state[rollbackJournalState],
+									newExtensionState
+								),
 							extensionStack: [
 								...state.extensionStack,
 								newExtensionState,
@@ -367,13 +359,16 @@ export const createAgnosticStages = <
 				}
 
 				if (ignoredLifecycles.size > 0) {
-					// We warn via reporter
 					const ignoredList = Array.from(ignoredLifecycles)
 						.map((l) => `"${l}"`)
 						.join(', ');
-					nextState.reporter.warn?.(
-						`The following extension hooks will be ignored because their lifecycles were not executed: ${ignoredList}`
-					);
+					try {
+						nextState.reporter.warn?.(
+							`The following extension hooks will be ignored because their lifecycles were not executed: ${ignoredList}`
+						);
+					} catch {
+						// Reporters observe execution but cannot change its result.
+					}
 				}
 			}
 

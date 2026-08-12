@@ -9,6 +9,7 @@ import type {
 	PipelineReporter,
 } from '../types';
 import { createAgnosticDiagnosticManager } from '../runner/diagnostics';
+import { rollbackJournalState } from '../runner/state';
 
 describe('prepareResumeContext', () => {
 	it('restores reporter and hook options from snapshot state', () => {
@@ -36,7 +37,7 @@ describe('prepareResumeContext', () => {
 			diagnostics: [],
 			diagnosticManager,
 			executedLifecycles: new Set(),
-			rollbackJournal: [],
+			[rollbackJournalState]: [],
 			extensionStack: [],
 			committedExtensionStates: new Set(),
 		};

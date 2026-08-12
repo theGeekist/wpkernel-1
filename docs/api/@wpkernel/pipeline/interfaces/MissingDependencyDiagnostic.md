@@ -1,18 +1,25 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / MissingDependencyDiagnostic
 
-# Interface: MissingDependencyDiagnostic<TKind>
+# Interface: MissingDependencyDiagnostic&lt;TKind&gt;
 
-Diagnostic for missing helper dependencies.
+Fatal diagnostic emitted when a declared dependency cannot be satisfied.
+
+## Remarks
+
+Keys listed in `AgnosticPipelineOptions.providedKeys` satisfy external
+dependencies and therefore do not produce this diagnostic.
 
 ## Type Parameters
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+
+Helper-kind union associated with the diagnostic.
 
 ## Properties
 
@@ -22,7 +29,9 @@ Diagnostic for missing helper dependencies.
 readonly dependency: string;
 ```
 
----
+Missing prerequisite key.
+
+***
 
 ### key
 
@@ -30,7 +39,9 @@ readonly dependency: string;
 readonly key: string;
 ```
 
----
+Key of the helper declaring the dependency.
+
+***
 
 ### message
 
@@ -38,7 +49,9 @@ readonly key: string;
 readonly message: string;
 ```
 
----
+Human-readable description.
+
+***
 
 ### type
 
@@ -46,7 +59,9 @@ readonly message: string;
 readonly type: "missing-dependency";
 ```
 
----
+Discriminant for exhaustive diagnostic handling.
+
+***
 
 ### helper?
 
@@ -54,10 +69,14 @@ readonly type: "missing-dependency";
 readonly optional helper: string;
 ```
 
----
+Origin or key identifying the affected helper.
+
+***
 
 ### kind?
 
 ```ts
 readonly optional kind: TKind;
 ```
+
+Helper kind whose graph was invalid.

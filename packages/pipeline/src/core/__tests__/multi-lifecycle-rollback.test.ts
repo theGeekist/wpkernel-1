@@ -2,7 +2,7 @@ import { makePipeline } from '../makePipeline';
 import { createPipelineRollback } from '../rollback';
 import type { PipelineReporter } from '../types';
 
-describe('Multi-Lifecycle Rollback Bug', () => {
+describe('multi-lifecycle rollback', () => {
 	const mockReporter: PipelineReporter = { warn: jest.fn() };
 	const mockContext = { reporter: mockReporter };
 	const baseOptions = {

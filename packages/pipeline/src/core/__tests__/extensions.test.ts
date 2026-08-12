@@ -96,6 +96,50 @@ describe('extensions', () => {
 			});
 		});
 
+		it('snapshots commit and rollback callbacks when hook work is admitted', async () => {
+			const originalCommit = jest.fn();
+			const originalRollback = jest.fn();
+			const replacementCommit = jest.fn();
+			const replacementRollback = jest.fn();
+			const hookResult = {
+				artifact: { artifact: 'admitted' },
+				commit: originalCommit,
+				rollback: originalRollback,
+			};
+			const hooks: ExtensionHookEntry<
+				TestContext,
+				TestOptions,
+				TestArtifact
+			>[] = [
+				{
+					key: 'snapshot-hook',
+					lifecycle: 'after-fragments',
+					hook: () => hookResult,
+				},
+			];
+
+			const execution = await runExtensionHooks(
+				hooks,
+				'after-fragments',
+				{ artifact: { artifact: 'initial' } } as any,
+				() => undefined
+			);
+			hookResult.commit = replacementCommit;
+			hookResult.rollback = replacementRollback;
+
+			await commitExtensionResults(execution.results);
+			await rollbackExtensionResults(
+				execution.results,
+				hooks,
+				() => undefined
+			);
+
+			expect(originalCommit).toHaveBeenCalledTimes(1);
+			expect(originalRollback).toHaveBeenCalledTimes(1);
+			expect(replacementCommit).not.toHaveBeenCalled();
+			expect(replacementRollback).not.toHaveBeenCalled();
+		});
+
 		it('handles async hooks returning values', async () => {
 			const hook = jest
 				.fn()
@@ -228,6 +272,23 @@ describe('extensions', () => {
 	});
 
 	describe('rollbackExtensionResults', () => {
+		it('ignores hook results without rollback work', () => {
+			const hook = {
+				key: 'no-rollback',
+				lifecycle: 'after-fragments',
+				hook: jest.fn(),
+			};
+			const results: ExtensionHookExecution<
+				TestContext,
+				TestOptions,
+				TestArtifact
+			>[] = [{ hook, result: {} }];
+
+			expect(
+				rollbackExtensionResults(results, [hook], () => undefined)
+			).toBeUndefined();
+		});
+
 		it('adopts rollback thenables without reading their then property', async () => {
 			const rollbackResult = hostileThenable(undefined);
 			const results: ExtensionHookExecution<

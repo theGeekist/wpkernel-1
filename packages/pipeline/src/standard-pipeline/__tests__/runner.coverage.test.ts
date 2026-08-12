@@ -156,6 +156,136 @@ describe('standard pipeline runner coverage', () => {
 		);
 	});
 
+	it('preserves the artifact when extension hooks return no replacement', async () => {
+		const commit = jest.fn();
+		const voidHook = jest.fn();
+		const pipeline = createPipeline({
+			createBuildOptions: () => ({}),
+			createContext: () => ({ reporter: baseReporter }),
+			createFragmentState: () => ({ value: 'draft' }),
+			createFragmentArgs: ({ draft, context }) => ({
+				context,
+				input: draft,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+			finalizeFragmentState: () => ({ value: 'final' }),
+			createBuilderArgs: ({ artifact, context }) => ({
+				context,
+				input: artifact,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+		});
+
+		pipeline.extensions.use({
+			key: 'void',
+			register: () => voidHook,
+		});
+		pipeline.extensions.use({
+			key: 'commit-only',
+			register: () => () => ({ commit }),
+		});
+
+		const result = (await pipeline.run({})) as PipelineRunState<{
+			value: string;
+		}>;
+
+		expect(result.artifact).toEqual({ value: 'final' });
+		expect(voidHook).toHaveBeenCalledTimes(1);
+		expect(commit).toHaveBeenCalledTimes(1);
+	});
+
+	it('reports failing helper rollback with the original helper', async () => {
+		const onHelperRollbackError = jest.fn();
+		const fragment = {
+			key: 'fragment.rollback',
+			kind: 'fragment' as const,
+			mode: 'extend' as const,
+			priority: 0,
+			dependsOn: [] as const,
+			apply: () => ({
+				rollback: {
+					run: () => {
+						throw new Error('rollback failed');
+					},
+				},
+			}),
+		};
+		const pipeline = createPipeline({
+			createBuildOptions: () => ({}),
+			createContext: () => ({ reporter: baseReporter }),
+			createFragmentState: () => ({}),
+			createFragmentArgs: ({ draft, context }) => ({
+				context,
+				input: draft,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+			finalizeFragmentState: ({ draft }) => draft,
+			createBuilderArgs: ({ artifact, context }) => ({
+				context,
+				input: artifact,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+			onHelperRollbackError,
+		});
+
+		pipeline.ir.use(fragment);
+		pipeline.builders.use({
+			key: 'builder.failure',
+			kind: 'builder',
+			mode: 'extend',
+			priority: 0,
+			dependsOn: [],
+			apply: () => {
+				throw new Error('builder failed');
+			},
+		});
+
+		expect(() => pipeline.run({})).toThrow('builder failed');
+		expect(onHelperRollbackError).toHaveBeenCalledWith(
+			expect.objectContaining({ helper: fragment })
+		);
+	});
+
+	it('does not finalise a draft after fragment execution halts', () => {
+		const finalizeFragmentState = jest.fn(() => ({}));
+		const pipeline = createPipeline({
+			createBuildOptions: () => ({}),
+			createContext: () => ({ reporter: baseReporter }),
+			createFragmentState: () => ({}),
+			createFragmentArgs: ({ draft, context }) => ({
+				context,
+				input: draft,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+			finalizeFragmentState,
+			createBuilderArgs: ({ artifact, context }) => ({
+				context,
+				input: artifact,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+		});
+
+		pipeline.ir.use({
+			key: 'fragment.failure',
+			kind: 'fragment',
+			mode: 'extend',
+			priority: 0,
+			dependsOn: [],
+			apply: () => {
+				throw new Error('fragment failed');
+			},
+		});
+
+		expect(() => pipeline.run({})).toThrow('fragment failed');
+		expect(finalizeFragmentState).not.toHaveBeenCalled();
+	});
+
 	it('throws for helper kind mismatches with and without custom errors', () => {
 		const pipelineWithError = createPipeline({
 			createBuildOptions: () => ({}),

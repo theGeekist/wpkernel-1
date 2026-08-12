@@ -34,8 +34,9 @@ Custom `createStages` callbacks are contextually typed. `createState`,
 diagnostic, and helper input/output types without consumer casts.
 
 Each lifecycle run creates its own extension state; commits run **once per
-lifecycle** in registration order, while rollbacks run in **reverse order
-(LIFO)** when anything fails. Extension authors should assume:
+lifecycle** in registration order. One transaction journal records completed
+helper stages and extension lifecycles, then rollback traverses those records in
+strict reverse execution chronology. Extension authors should assume:
 
 - your `commit` can be called alongside commits from other lifecycles
 - Each lifecycle may transform the artifact; later lifecycles see the updated artifact

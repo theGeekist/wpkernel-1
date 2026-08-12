@@ -1,12 +1,12 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../README.md) / HelperApplyOptions
 
-# Interface: HelperApplyOptions<TContext, TInput, TOutput, TReporter>
+# Interface: HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;
 
-Options passed to a helper's apply function.
+Immutable invocation envelope passed to a helper.
 
 ## Type Parameters
 
@@ -14,17 +14,25 @@ Options passed to a helper's apply function.
 
 `TContext`
 
+Per-run context created by the pipeline.
+
 ### TInput
 
 `TInput`
+
+Stage-specific input supplied by the argument factory.
 
 ### TOutput
 
 `TOutput`
 
+Current transformation value.
+
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+
+Reporter available both directly and through context.
 
 ## Properties
 
@@ -34,7 +42,9 @@ Options passed to a helper's apply function.
 readonly context: TContext;
 ```
 
----
+Per-run services and capabilities.
+
+***
 
 ### input
 
@@ -42,7 +52,9 @@ readonly context: TContext;
 readonly input: TInput;
 ```
 
----
+Read-only input selected for this helper phase.
+
+***
 
 ### output
 
@@ -50,10 +62,14 @@ readonly input: TInput;
 readonly output: TOutput;
 ```
 
----
+Current output, including replacements produced upstream.
+
+***
 
 ### reporter
 
 ```ts
 readonly reporter: TReporter;
 ```
+
+Reporter associated with the current run.

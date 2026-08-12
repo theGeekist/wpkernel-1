@@ -1,122 +1,39 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / createPipelineExtension
 
 # Function: createPipelineExtension()
 
 ```ts
-function createPipelineExtension<TPipeline, TContext, TOptions, TArtifact>(
-	options
-): PipelineExtension<TPipeline, TContext, TOptions, TArtifact>;
+function createPipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;(options): PipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;;
 ```
 
-Creates a pipeline extension with optional setup and hook registration helpers.
+Creates a [PipelineExtension](../interfaces/PipelineExtension.md) descriptor using either dynamic
+registration or static setup plus hook configuration.
 
-Extensions enable pluggable behavior at key pipeline lifecycle points: pre-run validation,
-post-fragment AST inspection, post-builder artifact transformation, and pre-commit verification.
-They support both synchronous and asynchronous workflows with automatic commit/rollback.
+Construction itself has no side effects. Calling `pipeline.extensions.use`
+invokes the descriptor's `register` function. Explicit keys must be unique in
+that pipeline. Omitted keys receive a private generated key. Registration is
+admitted in `use` call order, even when asynchronous setup settles out of
+order. A registration failure remains attached to the pipeline and rejects
+subsequent new runs.
 
-## Use Cases
+Static `setup` settles before its hook is returned. Synchronous setup keeps
+registration synchronous; asynchronous setup returns a native chained
+promise through [maybeThen](maybeThen.md). The returned descriptor is a shallow
+object and is not frozen, so consumers should treat it as declarative
+registration metadata rather than mutate it after `use`.
 
-- **Validation**: Pre-run checks for environment requirements, configuration consistency
-- **Artifact transformation**: Post-build minification, formatting, type checking
-- **Integration**: Third-party tool orchestration (ESLint, Prettier, bundlers)
-- **Conditional execution**: Feature flags, environment-specific logic
-- **Audit trails**: Logging, telemetry, compliance tracking
-
-## Patterns
-
-### Register Pattern (Dynamic Hook Resolution)
-
-Use when hook logic depends on pipeline state discovered during registration:
-
-```ts
-createPipelineExtension({
-	key: 'acme.conditional-minify',
-	register(pipeline) {
-		const shouldMinify = pipeline.context.env === 'production';
-		if (!shouldMinify) return; // No hook registered
-
-		return ({ artifact }) => ({
-			artifact: minify(artifact),
-		});
-	},
-});
-```
-
-### Setup + Hook Pattern (Static Configuration)
-
-Use for upfront helper registration with decoupled hook logic:
-
-```ts
-createPipelineExtension({
-	key: 'acme.audit-logger',
-	setup(pipeline) {
-		// Register audit builder that collects metadata
-		pipeline.builders.use(createAuditBuilder());
-	},
-	hook({ artifact }) {
-		// Transform artifact with audit annotations
-		return {
-			artifact: {
-				...artifact,
-				meta: {
-					...artifact.meta,
-					audited: true,
-					timestamp: Date.now(),
-				},
-			},
-		};
-	},
-});
-```
-
-### Async Setup with Rollback
-
-```ts
-createPipelineExtension({
-	key: 'acme.remote-validator',
-	async register(pipeline) {
-		// Async setup (e.g., fetch remote schema)
-		const schema = await fetchValidationSchema();
-
-		return ({ artifact }) => {
-			const valid = validateAgainstSchema(artifact, schema);
-			if (!valid) {
-				throw new Error('Artifact validation failed');
-			}
-			return { artifact };
-		};
-	},
-});
-```
-
-## Commit/Rollback Protocol
-
-Extensions can return a `commit` function to perform side effects (file writes, API calls)
-and a `rollback` function to undo those effects on pipeline failure:
-
-```ts
-createPipelineExtension({
-	key: 'acme.file-writer',
-	hook({ artifact }) {
-		return {
-			artifact,
-			commit: async () => {
-				await fs.writeFile(
-					'/tmp/output.json',
-					JSON.stringify(artifact)
-				);
-			},
-			rollback: async () => {
-				await fs.unlink('/tmp/output.json');
-			},
-		};
-	},
-});
-```
+Hooks for one lifecycle execute sequentially in registration order, each
+receiving the artifact produced by the previous hook. A hook result may
+replace the artifact and declare `commit` and `rollback` callbacks. Commits
+run in hook order at an explicit commit stage or the pipeline's implicit
+final commit. If a hook, commit or later stage fails, admitted rollbacks run
+sequentially in reverse execution chronology. Rollback failures and rollback
+observer failures are contained so remaining cleanup proceeds and the
+original pipeline error stays primary.
 
 ## Type Parameters
 
@@ -140,67 +57,89 @@ createPipelineExtension({
 
 ### options
 
-[`CreatePipelineExtensionOptions`](../type-aliases/CreatePipelineExtensionOptions.md)<`TPipeline`, `TContext`, `TOptions`, `TArtifact`>
+[`CreatePipelineExtensionOptions`](../type-aliases/CreatePipelineExtensionOptions.md)&lt;`TPipeline`, `TContext`, `TOptions`, `TArtifact`&gt;
 
-Extension configuration with either `register` (dynamic) or `setup`/`hook` (static)
+Dynamic registration or static setup and hook configuration.
 
 ## Returns
 
-[`PipelineExtension`](../interfaces/PipelineExtension.md)<`TPipeline`, `TContext`, `TOptions`, `TArtifact`>
+[`PipelineExtension`](../interfaces/PipelineExtension.md)&lt;`TPipeline`, `TContext`, `TOptions`, `TArtifact`&gt;
+
+An extension descriptor ready for `pipeline.extensions.use`.
 
 ## Examples
 
-Basic audit extension that annotates artifacts:
-
 ```ts
-const auditExtension = createPipelineExtension({
-	key: 'acme.audit',
-	setup(pipeline) {
-		pipeline.builders.use(createAuditBuilder());
-	},
-	hook({ artifact }) {
-		return {
-			artifact: {
-				...artifact,
-				meta: { ...artifact.meta, audited: true },
-			},
-		};
-	},
+import {
+  createPipelineExtension,
+  type PipelineReporter,
+} from '@wpkernel/pipeline';
+
+type HostPipeline = { helpers: { use(value: unknown): void } };
+type Context = { reporter: PipelineReporter };
+type RunOptions = { normalise: boolean };
+
+const normalise = createPipelineExtension&lt;
+  HostPipeline,
+  Context,
+  RunOptions,
+  string[]
+&gt;({
+  key: 'example.normalise',
+  register() {
+    return ({ artifact, options }) =&gt;
+      options.normalise
+        ? { artifact: artifact.map((value) =&gt; value.trim()) }
+        : undefined;
+  },
 });
 ```
 
-Conditional minification based on pipeline context:
-
 ```ts
-const minifyExtension = createPipelineExtension({
-	key: 'acme.minify',
-	register(pipeline) {
-		if (pipeline.context.env !== 'production') {
-			return; // Skip minification in dev
-		}
-		return ({ artifact }) => ({
-			artifact: minify(artifact),
-		});
-	},
+import {
+  createPipelineExtension,
+  type PipelineReporter,
+} from '@wpkernel/pipeline';
+
+type HostPipeline = { helpers: { use(value: unknown): void } };
+type Context = { reporter: PipelineReporter };
+type RunOptions = Record&lt;string, never&gt;;
+
+const annotate = createPipelineExtension&lt;
+  HostPipeline,
+  Context,
+  RunOptions,
+  string[]
+&gt;({
+  key: 'example.annotate',
+  setup(pipeline) {
+    pipeline.helpers.use({ key: 'annotation-input' });
+  },
+  lifecycle: 'before-builders',
+  hook: ({ artifact }) =&gt; ({ artifact: [...artifact, 'annotated'] }),
 });
 ```
 
-File writer with atomic commit/rollback:
-
 ```ts
-const fileWriterExtension = createPipelineExtension({
-	key: 'acme.file-writer',
-	hook({ artifact }) {
-		const tempPath = `/tmp/${Date.now()}.json`;
-		return {
-			artifact,
-			commit: async () => {
-				await fs.writeFile(tempPath, JSON.stringify(artifact));
-			},
-			rollback: async () => {
-				await fs.unlink(tempPath).catch(() => {});
-			},
-		};
-	},
+import {
+  createPipelineExtension,
+  type PipelineReporter,
+} from '@wpkernel/pipeline';
+
+type Context = { reporter: PipelineReporter };
+const published = new Set&lt;string&gt;();
+
+const publish = createPipelineExtension&lt;
+  unknown,
+  Context,
+  Record&lt;string, never&gt;,
+  string[]
+&gt;({
+  key: 'example.publish',
+  hook: ({ artifact }) =&gt; ({
+    artifact,
+    commit: () =&gt; { published.add(artifact.join(',')); },
+    rollback: () =&gt; { published.delete(artifact.join(',')); },
+  }),
 });
 ```

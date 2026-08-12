@@ -1,22 +1,29 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineStep
 
-# Interface: PipelineStep<TKind>
+# Interface: PipelineStep&lt;TKind&gt;
 
-A pipeline step representing an executed helper.
+Immutable public record of one executed helper.
+
+## Remarks
+
+Steps contain flattened descriptor metadata, not the helper object or its
+executable function.
 
 ## Extends
 
-- [`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
+- [`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
 
 ## Type Parameters
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+
+Helper-kind union represented by the step.
 
 ## Properties
 
@@ -26,11 +33,13 @@ A pipeline step representing an executed helper.
 readonly dependsOn: readonly string[];
 ```
 
+Helper keys that must complete before this helper may execute.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`dependsOn`](HelperDescriptor.md#dependson)
 
----
+***
 
 ### id
 
@@ -38,7 +47,9 @@ readonly dependsOn: readonly string[];
 readonly id: string;
 ```
 
----
+Run-stable registration identity.
+
+***
 
 ### index
 
@@ -46,7 +57,9 @@ readonly id: string;
 readonly index: number;
 ```
 
----
+Monotonic registration index within the helper kind.
+
+***
 
 ### key
 
@@ -54,11 +67,13 @@ readonly index: number;
 readonly key: string;
 ```
 
+Dependency and override identity within [kind](HelperDescriptor.md#kind).
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`key`](HelperDescriptor.md#key)
 
----
+***
 
 ### kind
 
@@ -66,11 +81,13 @@ readonly key: string;
 readonly kind: TKind;
 ```
 
+Execution phase and registry containing this helper.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`kind`](HelperDescriptor.md#kind)
 
----
+***
 
 ### mode
 
@@ -78,11 +95,13 @@ readonly kind: TKind;
 readonly mode: HelperMode;
 ```
 
+Duplicate-key registration policy.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`mode`](HelperDescriptor.md#mode)
 
----
+***
 
 ### priority
 
@@ -90,39 +109,21 @@ readonly mode: HelperMode;
 readonly priority: number;
 ```
 
+Relative ordering hint; higher values run first when dependencies permit.
+
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`priority`](HelperDescriptor.md#priority)
 
----
-
-### optional?
-
-```ts
-readonly optional optional: boolean;
-```
-
-Whether this helper is optional and may not execute.
-Optional helpers won't cause validation errors if they don't run.
-Useful for conditional/feature-flag helpers.
-
-#### Default Value
-
-```ts
-false;
-```
-
-#### Inherited from
-
-[`HelperDescriptor`](HelperDescriptor.md).[`optional`](HelperDescriptor.md#optional)
-
----
+***
 
 ### origin?
 
 ```ts
 readonly optional origin: string;
 ```
+
+Optional package or subsystem label used in diagnostics.
 
 #### Inherited from
 

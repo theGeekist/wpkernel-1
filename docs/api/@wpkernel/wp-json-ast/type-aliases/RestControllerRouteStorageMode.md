@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../README.md) / RestControllerRouteStorageMode
 
@@ -8,11 +8,11 @@
 
 ```ts
 type RestControllerRouteStorageMode =
-	| 'transient'
-	| 'wp-option'
-	| 'wp-taxonomy'
-	| 'wp-post'
-	| 'file'
-	| 'custom'
-	| (string & object);
+  | "transient"
+  | "wp-option"
+  | "wp-taxonomy"
+  | "wp-post"
+  | "file"
+  | "custom"
+  | string & object;
 ```

@@ -50,6 +50,7 @@ export type {
 	PipelinePauseSnapshot,
 	PipelinePaused,
 	PipelineExtensionRollbackErrorMetadata,
+	AgnosticPipeline,
 	ResumablePipeline,
 	AgnosticPipelineOptions,
 	PipelineStage,
@@ -62,7 +63,20 @@ export type {
 	PipelineStageDiagnostics,
 	PipelineHalt,
 } from './core/types';
-export type { PipelineHalt as Halt } from './core/types';
+import type { PipelineHalt } from './core/types';
+
+/**
+ * Concise alias for a terminal stage result.
+ *
+ * An error halt triggers rollback and rejects with its `error`. A result halt
+ * settles successfully with its `result`; a bare halt settles successfully
+ * with `undefined`. When both fields are present, the error is authoritative.
+ *
+ * @typeParam TRunResult - Successful pipeline result carried by a result halt.
+ * @see {@link PipelineHalt}
+ * @public
+ */
+export type Halt<TRunResult> = PipelineHalt<TRunResult>;
 
 export type {
 	Pipeline,

@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../README.md) / WpPhpFileMetadata
 
@@ -8,13 +8,13 @@
 
 ```ts
 type WpPhpFileMetadata =
-	| BaseControllerMetadata
-	| PersistenceRegistryMetadata
-	| BlockManifestMetadata
-	| BlockRegistrarMetadata
-	| CapabilityHelperMetadata
-	| IndexFileMetadata
-	| ResourceControllerMetadata;
+  | BaseControllerMetadata
+  | PersistenceRegistryMetadata
+  | BlockManifestMetadata
+  | BlockRegistrarMetadata
+  | CapabilityHelperMetadata
+  | IndexFileMetadata
+  | ResourceControllerMetadata;
 ```
 
 All possible WordPress PHP file metadata types.

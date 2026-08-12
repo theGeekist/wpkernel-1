@@ -1,25 +1,16 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/cli](../README.md) / HelperApplyFn
 
-# Type Alias: HelperApplyFn<TContext, TInput, TOutput, TReporter>
+# Type Alias: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;
 
 ```ts
-type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (
-	options,
-	next?
-) => MaybePromise<HelperApplyResult<TOutput> | void>;
+type HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt; = (options, next?) =&gt; MaybePromise&lt;HelperApplyResult&lt;TOutput&gt; | void&gt;;
 ```
 
-Function signature for a pipeline helper's apply method.
-
-This function is responsible for transforming the pipeline's input and output.
-It can optionally call `next()` to wrap the remainder of the helper chain.
-
-Helpers can also return a result object with transformed output and optional rollback
-for cleanup if the pipeline fails after the helper executes.
+Transformation invoked for one registered helper.
 
 ## Type Parameters
 
@@ -27,42 +18,49 @@ for cleanup if the pipeline fails after the helper executes.
 
 `TContext`
 
-The type of the pipeline context.
+Per-run context type.
 
 ### TInput
 
 `TInput`
 
-The type of the input artifact.
+Helper input type.
 
 ### TOutput
 
 `TOutput`
 
-The type of the output artifact.
+Helper output type.
 
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
 
-The type of the reporter used for logging.
+Reporter type.
 
 ## Parameters
 
 ### options
 
-[`HelperApplyOptions`](../interfaces/HelperApplyOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`>
+[`HelperApplyOptions`](../interfaces/HelperApplyOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`&gt;
 
-Options for the apply function, including context, input, output, and reporter.
+Invocation context, input and current output.
 
 ### next?
 
-`HelperNext`<`TOutput`>
+`HelperNext`&lt;`TOutput`&gt;
 
-Optional continuation that returns the downstream output.
+Continuation for wrapping downstream helpers.
 
 ## Returns
 
-`MaybePromise`<`HelperApplyResult`<`TOutput`> \| `void`>
+`MaybePromise`&lt;`HelperApplyResult`&lt;`TOutput`&gt; \| `void`&gt;
 
-A promise that resolves when the helper has finished its work, or a result object with optional output and rollback.
+A synchronous or asynchronous optional helper result.
+
+## Remarks
+
+A helper may mutate its output, return an immutable replacement, wrap the
+remainder of the chain through HelperNext, and register compensation
+through HelperApplyResult.rollback. Returning `void` preserves the
+current output and registers no rollback.

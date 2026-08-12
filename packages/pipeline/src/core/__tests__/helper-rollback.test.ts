@@ -58,6 +58,7 @@ function createTestPipeline(): {
 		createContext() {
 			return { reporter } satisfies TestContext;
 		},
+		createState: () => ({}),
 	});
 
 	return { pipeline, reporter };
@@ -118,6 +119,7 @@ describe('Helper Rollback', () => {
 		>({
 			helperKinds: ['builder'],
 			createContext: () => ({ reporter }),
+			createState: () => ({}),
 			onHelperRollbackError,
 		});
 
@@ -155,12 +157,115 @@ describe('Helper Rollback', () => {
 		);
 	});
 
+	it('attributes a shared rollback descriptor to each helper occurrence', async () => {
+		const rollbackError = new Error('shared rollback failed');
+		const sharedRollback = createPipelineRollback(() => {
+			throw rollbackError;
+		});
+		const observedHelpers: unknown[] = [];
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['builder'],
+			createContext: () => ({ reporter }),
+			createState: () => ({}),
+			onHelperRollbackError: ({ helper }) => observedHelpers.push(helper),
+		});
+		const first = createHelper({
+			key: 'builder.first',
+			kind: 'builder',
+			priority: 2,
+			apply: () => ({ rollback: sharedRollback }),
+		});
+		const second = createHelper({
+			key: 'builder.second',
+			kind: 'builder',
+			priority: 1,
+			apply: () => ({ rollback: sharedRollback }),
+		});
+
+		pipeline.use(first);
+		pipeline.use(second);
+		pipeline.use(
+			createHelper({
+				key: 'builder.failure',
+				kind: 'builder',
+				priority: 0,
+				apply: () => {
+					throw new Error('builder failed');
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('builder failed');
+		expect(observedHelpers).toEqual([second, first]);
+	});
+
+	it('protects admitted rollback occurrences from public state and callback mutation', async () => {
+		const originalRun = jest.fn();
+		const replacementRun = jest.fn();
+		const rollback = {
+			key: 'acquired',
+			label: 'release acquired resource',
+			run: originalRun,
+		};
+		const reporter = createTestReporter();
+		const pipeline = makePipeline({
+			helperKinds: ['acquire', 'failure'],
+			createContext: () => ({ reporter }),
+			createState: () => ({}),
+			createStages: (deps: any) => [
+				deps.makeHelperStage('acquire', {
+					onVisited: (
+						_state: unknown,
+						_visited: ReadonlySet<string>,
+						_registered: readonly unknown[],
+						rollbacks: readonly unknown[]
+					) => {
+						(rollbacks as unknown[]).length = 0;
+						return { rollbackJournal: [] };
+					},
+				}),
+				(state: unknown) => {
+					rollback.run = replacementRun;
+					return state;
+				},
+				deps.makeHelperStage('failure'),
+			],
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'acquire.resource',
+				kind: 'acquire',
+				apply: () => ({ rollback }),
+			})
+		);
+		pipeline.use(
+			createHelper({
+				key: 'failure.trigger',
+				kind: 'failure',
+				apply: () => {
+					throw new Error('failed after acquisition');
+				},
+			})
+		);
+
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toThrow('failed after acquisition');
+		expect(originalRun).toHaveBeenCalledTimes(1);
+		expect(replacementRun).not.toHaveBeenCalled();
+	});
+
 	it('rolls back successful helpers when a later helper stage fails', async () => {
 		const rollback = jest.fn();
 		const reporter = createTestReporter();
 		const pipeline = makePipeline({
 			helperKinds: ['fragment', 'builder'],
 			createContext: () => ({ reporter }),
+			createState: () => ({}),
 		});
 
 		pipeline.use(
@@ -196,6 +301,7 @@ describe('Helper Rollback', () => {
 		const pipeline = makePipeline({
 			helperKinds: ['fragment'],
 			createContext: () => ({ reporter }),
+			createState: () => ({}),
 			createStages: (deps: any) => [
 				deps.makeHelperStage('fragment'),
 				async () => {
@@ -285,6 +391,7 @@ describe('Helper Rollback', () => {
 		const pipeline = makePipeline({
 			helperKinds: ['fragment'],
 			createContext: () => ({ reporter }),
+			createState: () => ({}),
 			createStages: (deps: any) => [
 				deps.makeHelperStage('fragment'),
 				() => deps.halt(error),
@@ -325,6 +432,7 @@ describe('Helper Rollback', () => {
 			const pipeline = makePipeline({
 				helperKinds: ['fragment'],
 				createContext: () => ({ reporter }),
+				createState: () => ({}),
 				createStages: (deps: any) => [
 					deps.makeHelperStage('fragment'),
 					failStage,
@@ -356,6 +464,7 @@ describe('Helper Rollback', () => {
 		const pipeline = makePipeline({
 			helperKinds: ['fragment'],
 			createContext: () => ({ reporter }),
+			createState: () => ({}),
 			createRunResult() {
 				throw new Error('result failed');
 			},
@@ -385,6 +494,7 @@ describe('Helper Rollback', () => {
 		const pipeline = makePipeline({
 			helperKinds: ['builder'],
 			createContext: () => ({ reporter }),
+			createState: () => ({}),
 			extensions: {
 				lifecycles: ['prepare'],
 			},

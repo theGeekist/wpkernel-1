@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../README.md) / PhpScalar
 
@@ -8,11 +8,11 @@
 
 ```ts
 type PhpScalar =
-	| PhpScalarString
-	| PhpScalarLNumber
-	| PhpScalarDNumber
-	| PhpScalarMagicConst
-	| PhpScalarBase;
+  | PhpScalarString
+  | PhpScalarLNumber
+  | PhpScalarDNumber
+  | PhpScalarMagicConst
+  | PhpScalarBase;
 ```
 
 Represents any PHP scalar node.

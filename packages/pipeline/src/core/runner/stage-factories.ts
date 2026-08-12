@@ -333,19 +333,19 @@ export function makeHelperStageFactory<
 				},
 				writeOutput: spec.writeOutput,
 				onVisited: (nextState, visited, output) => {
-					const visitedState = spec.onVisited(
-						nextState,
+					const admittedState = spec.writeRollbacks
+						? spec.writeRollbacks(
+								nextState,
+								rollbacks,
+								state as TState
+							)
+						: nextState;
+					return spec.onVisited(
+						admittedState,
 						visited,
 						rollbacks,
 						output
 					);
-					return spec.writeRollbacks
-						? spec.writeRollbacks(
-								visitedState,
-								rollbacks,
-								state as TState
-							)
-						: visitedState;
 				},
 				registerRollback: registerPipelineRollback(rollbacks),
 			});

@@ -1,19 +1,19 @@
-[**@wpkernel/pipeline v1.2.1**](../README.md)
+[**@wpkernel/pipeline v1.3.0**](../README.md)
 
----
+***
 
 [@wpkernel/pipeline](../README.md) / PipelineStageResult
 
-# Type Alias: PipelineStageResult<TState, TRunResult>
+# Type Alias: PipelineStageResult&lt;TState, TRunResult&gt;
 
 ```ts
-type PipelineStageResult<TState, TRunResult> =
-	| TState
-	| PipelinePaused<TState>
-	| PipelineHalt<TRunResult>;
+type PipelineStageResult&lt;TState, TRunResult&gt; =
+  | TState
+  | PipelinePaused&lt;TState&gt;
+| PipelineHalt&lt;TRunResult&gt;;
 ```
 
-Result accepted from a custom pipeline stage.
+Complete result union accepted from a custom stage.
 
 ## Type Parameters
 
@@ -21,6 +21,15 @@ Result accepted from a custom pipeline stage.
 
 `TState`
 
+State passed between stages.
+
 ### TRunResult
 
 `TRunResult`
+
+Successful halt result type.
+
+## Remarks
+
+A stage either continues with state, suspends through
+[PipelinePaused](../interfaces/PipelinePaused.md), or terminates through [PipelineHalt](PipelineHalt.md).

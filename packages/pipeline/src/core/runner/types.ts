@@ -22,10 +22,15 @@ import type {
 import type { PipelineRollback } from '../rollback';
 import type { AgnosticDiagnosticManager } from './diagnostics';
 import type { ExtensionHookEntry, ExtensionHookExecution } from '../extensions';
+import type { rollbackJournalState } from './state';
 
 export interface ExtensionLifecycleState<TContext, TOptions, TUserState> {
 	readonly artifact: TUserState;
-	readonly results: ExtensionHookExecution<TContext, TOptions, TUserState>[];
+	readonly results: readonly ExtensionHookExecution<
+		TContext,
+		TOptions,
+		TUserState
+	>[];
 	readonly hooks: readonly ExtensionHookEntry<
 		TContext,
 		TOptions,
@@ -71,7 +76,6 @@ export interface AgnosticRunnerOptions<
 	readonly onExtensionRollbackError?: (options: {
 		readonly error: unknown;
 		readonly extensionKeys: readonly string[];
-		readonly hookSequence: readonly string[];
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TContext;
 	}) => void;
@@ -155,7 +159,7 @@ export interface AgnosticState<
 	readonly resumeInput?: unknown;
 
 	/** Rollback-bearing work recorded in forward execution order. */
-	readonly rollbackJournal: RollbackJournalEntry<
+	readonly [rollbackJournalState]: readonly RollbackJournalEntry<
 		TContext,
 		TRunOptions,
 		TUserState
@@ -183,7 +187,7 @@ export type Halt<TRunResult> = PipelineHalt<TRunResult>;
 
 export type RollbackContext<TContext, TOptions, TUserState> = {
 	readonly context: TContext;
-	readonly rollbackJournal: readonly RollbackJournalEntry<
+	readonly [rollbackJournalState]: readonly RollbackJournalEntry<
 		TContext,
 		TOptions,
 		TUserState
@@ -196,7 +200,7 @@ export type StageEnv<TState, TRunResult, TContext, TOptions, TUserState> = {
 	toRollbackContext: (
 		state: TState
 	) => RollbackContext<TContext, TOptions, TUserState>;
-	halt: (error?: unknown) => Halt<TRunResult>;
+	halt: (error: unknown) => Halt<TRunResult>;
 	isHalt: (value: unknown) => value is Halt<TRunResult>;
 	onHelperRollbackError?: (options: {
 		readonly error: unknown;

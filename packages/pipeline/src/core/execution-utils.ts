@@ -122,14 +122,10 @@ export function executeHelpers<
 					};
 		}
 
-		if (continuation.status === 'rejected') {
-			if (hasReturnedOutput(result)) {
-				return returnedOutput;
-			}
-			throw continuation.error;
+		if (hasReturnedOutput(result)) {
+			return returnedOutput;
 		}
-
-		throw new Error('Unhandled helper continuation state.');
+		throw continuation.error;
 	};
 
 	const rejectAfterContinuation = (

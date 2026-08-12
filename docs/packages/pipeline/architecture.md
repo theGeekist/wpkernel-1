@@ -2,7 +2,7 @@
 
 ## The Philosophy
 
-The pipeline is designed as a **Directed Acyclic Graph (DAG) Execution Engine**. Its primary goal is to take a set of "Helpers"—which can be anything from simple functions to complex services - sort them based on their dependencies, and execute them in a deterministic order.
+The pipeline is designed as a **Directed Acyclic Graph (DAG) Execution Engine**. Its primary goal is to take helper descriptors, sort them based on their dependencies, and execute their `apply` methods in a deterministic order.
 
 It is **NOT** opinionated about what your helpers do. It does **NOT** enforce a specific "Fragment/Builder" pattern, though that is a common use case.
 
@@ -73,12 +73,11 @@ diagnostics without sharing mutable diagnostic state with concurrent runs.
 
 #### Process-local suspension boundary
 
-The public API retains `pause` and `resume` for compatibility. A
-`PipelinePauseSnapshot` is deliberately process-local: its state contains live
-runner objects, including maps, sets, diagnostic managers, extension
-coordinators, and rollback callbacks. It is not a serializable or portable
-checkpoint and must be resumed by the same pipeline implementation in the same
-process.
+The public API retains `pause` and `resume`. A `PipelinePauseSnapshot` is a
+single-use, process-local capability owned by its creating pipeline instance.
+The visible state is a public projection; authoritative runner objects,
+transaction records and settlement coordinators remain private. The snapshot
+is not a serializable or portable checkpoint.
 
 Consumers own durable checkpoint concerns such as serialization, storage,
 transport, version binding, plan identity, approval state, and migrations.
@@ -104,11 +103,11 @@ While generic, WPKernel's main use case (code generation) uses a specific config
 1.  **Phase 1: Fragments (`kind: 'fragment'`)**
     - Helpers generate partial ASTs or code snippets.
     - They write to a shared "Draft" (e.g., a list of PHP blocks).
-    - Executed by `makeLifecycleStage` (internal primitive).
+    - Executed by a helper stage created with `makeHelperStage`.
 
 2.  **Phase 2: Builders (`kind: 'builder'`)**
     - Helpers take the finalized "Artifact" (merged fragments) and write files to disk.
-    - Executed by `makeLifecycleStage` (internal primitive).
+    - Executed by a helper stage created with `makeHelperStage`.
 
 3.  **Extensions**
     - Manage file system writes (committing files only if generation succeeds).

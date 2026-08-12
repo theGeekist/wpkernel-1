@@ -14,6 +14,14 @@ import type {
 	RollbackEntry,
 	RollbackJournalEntry,
 } from './types';
+import { markRollbackApplied, rollbackJournalState } from './state';
+
+const snapshotRollback = (rollback: PipelineRollback): PipelineRollback =>
+	Object.freeze({
+		key: rollback.key,
+		label: rollback.label,
+		run: rollback.run,
+	});
 
 export function appendHelperRollbackSegment<
 	TContext,
@@ -21,21 +29,44 @@ export function appendHelperRollbackSegment<
 	TArtifact,
 	THelper extends { readonly key: string },
 >(
-	journal: RollbackJournalEntry<TContext, TOptions, TArtifact>[],
+	journal: readonly RollbackJournalEntry<TContext, TOptions, TArtifact>[],
 	entries: readonly RollbackEntry<THelper>[]
 ): RollbackJournalEntry<TContext, TOptions, TArtifact>[] {
 	return entries.length === 0
-		? journal
-		: [...journal, { source: 'helper', entries }];
+		? [...journal]
+		: [
+				...journal,
+				Object.freeze({
+					source: 'helper' as const,
+					entries: Object.freeze(
+						entries.map(({ helper, rollback }) =>
+							Object.freeze({
+								helper,
+								rollback: snapshotRollback(rollback),
+							})
+						)
+					),
+				}),
+			];
 }
 
 export function appendExtensionRollbackSegment<TContext, TOptions, TArtifact>(
-	journal: RollbackJournalEntry<TContext, TOptions, TArtifact>[],
+	journal: readonly RollbackJournalEntry<TContext, TOptions, TArtifact>[],
 	state: ExtensionLifecycleState<TContext, TOptions, TArtifact>
 ): RollbackJournalEntry<TContext, TOptions, TArtifact>[] {
-	return state.results.some((execution) => execution.result.rollback)
-		? [...journal, { source: 'extension', state }]
-		: journal;
+	if (!state.results.some((execution) => execution.result.rollback)) {
+		return [...journal];
+	}
+
+	const admittedState = Object.freeze({
+		artifact: state.artifact,
+		results: Object.freeze([...state.results]),
+		hooks: Object.freeze([...state.hooks]),
+	});
+	return [
+		...journal,
+		Object.freeze({ source: 'extension' as const, state: admittedState }),
+	];
 }
 
 function runRollbackJournal<TContext, TOptions, TArtifact>(
@@ -69,17 +100,12 @@ function runRollbackJournal<TContext, TOptions, TArtifact>(
 				);
 			}
 
-			const helperRollbacks: readonly {
-				readonly helper: { readonly key: string };
-				readonly rollback: PipelineRollback;
-			}[] = entry.entries.map(({ helper, rollback }) => ({
-				helper,
-				rollback: {
-					key: rollback.key,
-					label: rollback.label,
-					run: () => rollback.run(),
-				},
-			}));
+			const helperRollbacks = entry.entries.map(
+				({ helper, rollback }) => ({
+					helper,
+					rollback: snapshotRollback(rollback),
+				})
+			);
 			const helperByRollback = new Map(
 				helperRollbacks.map(({ helper, rollback }) => [
 					rollback,
@@ -89,17 +115,13 @@ function runRollbackJournal<TContext, TOptions, TArtifact>(
 			return runRollbackStack(
 				helperRollbacks.map(({ rollback }) => rollback),
 				{
-					source: 'helper',
 					onError: ({ error, metadata, entry: rollback }) => {
-						const helper = helperByRollback.get(rollback);
-						if (helper) {
-							onHelperRollbackError?.({
-								error,
-								helper,
-								errorMetadata: metadata,
-								context,
-							});
-						}
+						onHelperRollbackError?.({
+							error,
+							helper: helperByRollback.get(rollback)!,
+							errorMetadata: metadata,
+							context,
+						});
 					},
 				}
 			);
@@ -125,7 +147,7 @@ export function runHelperRollbackPlan<
 	const { context, rollbackContext, helperRollbacks, onHelperRollbackError } =
 		plan;
 	const journal = appendHelperRollbackSegment(
-		[...rollbackContext.rollbackJournal],
+		rollbackContext[rollbackJournalState],
 		helperRollbacks
 	);
 
@@ -151,20 +173,18 @@ export function runRollbackToHalt<
 	THelper extends { key: string },
 >(
 	rollbackPlan: HelperRollbackPlan<TContext, TOptions, TArtifact, THelper>,
-	halt: (error?: unknown) => Halt<TRunResult>,
+	halt: (error: unknown) => Halt<TRunResult>,
 	error: unknown
 ): MaybePromise<Halt<TRunResult>> {
-	return maybeThen(runHelperRollbackPlan(rollbackPlan), () => ({
-		...halt(error),
-		__hasError: true,
-		__rollbackApplied: true,
-	}));
+	return maybeThen(runHelperRollbackPlan(rollbackPlan), () =>
+		markRollbackApplied(halt(error))
+	);
 }
 
 export function rollbackStateToHalt<TRunResult, TContext, TOptions, TArtifact>(
 	state: RollbackContext<TContext, TOptions, TArtifact>,
 	error: unknown,
-	halt: (error?: unknown) => Halt<TRunResult>,
+	halt: (error: unknown) => Halt<TRunResult>,
 	onHelperRollbackError?: (options: {
 		readonly error: unknown;
 		readonly helper: { readonly key: string };

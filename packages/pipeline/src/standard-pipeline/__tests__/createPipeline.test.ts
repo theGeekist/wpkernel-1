@@ -59,17 +59,16 @@ function createTestPipeline(options?: {
 	readonly onExtensionRollbackError?: ({
 		error,
 		extensionKeys,
-		hookSequence,
 		errorMetadata,
 		context,
 	}: {
 		readonly error: unknown;
 		readonly extensionKeys: readonly string[];
-		readonly hookSequence: readonly string[];
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TestContext;
 	}) => void;
 	readonly adoptReplacementOutputs?: boolean;
+	readonly onFragmentHelper?: (helper: unknown) => void;
 }): {
 	pipeline: TestPipeline;
 	reporter: TestReporter;
@@ -102,7 +101,8 @@ function createTestPipeline(options?: {
 		createFragmentState() {
 			return [] as TestDraft;
 		},
-		createFragmentArgs({ context, draft }) {
+		createFragmentArgs({ context, draft, helper }) {
+			options?.onFragmentHelper?.(helper);
 			return {
 				context,
 				input: undefined,
@@ -181,6 +181,38 @@ function createTestPipeline(options?: {
 }
 
 describe('createPipeline (extensions)', () => {
+	it('preserves helper identity and prototype methods through registration', async () => {
+		const observedHelpers: unknown[] = [];
+		const apply = jest.fn(
+			({ output }: HelperApplyOptions<TestContext, void, string[]>) => {
+				output.push('prototype-helper');
+			}
+		);
+		const prototype = { apply };
+		const helper = Object.assign(Object.create(prototype), {
+			key: 'fragment.prototype',
+			kind: 'fragment' as const,
+			mode: 'extend' as const,
+			priority: -1,
+			dependsOn: [] as const,
+		}) as Parameters<TestPipeline['ir']['use']>[0];
+		const { pipeline } = createTestPipeline({
+			onFragmentHelper: (candidate) => observedHelpers.push(candidate),
+		});
+		const assertRegistrationTypes = () => {
+			// @ts-expect-error generic registration accepts only standard helper kinds
+			pipeline.use({ ...helper, kind: 'invalid' });
+		};
+		void assertRegistrationTypes;
+
+		pipeline.use(helper);
+		await pipeline.run({});
+
+		expect(Object.getPrototypeOf(helper)).toBe(prototype);
+		expect(observedHelpers).toContain(helper);
+		expect(apply).toHaveBeenCalledTimes(1);
+	});
+
 	it('adopts immutable fragment and builder outputs when configured', async () => {
 		const { pipeline } = createTestPipeline({
 			adoptReplacementOutputs: true,
@@ -304,7 +336,6 @@ describe('createPipeline (extensions)', () => {
 		expect(event.error).toBeInstanceOf(Error);
 		expect((event.error as Error).message).toBe('rollback failure');
 		expect(event.extensionKeys).toEqual(['test.rollback']);
-		expect(event.hookSequence).toEqual(['test.rollback']);
 		expect(event.errorMetadata).toEqual(
 			expect.objectContaining({
 				message: 'rollback failure',
