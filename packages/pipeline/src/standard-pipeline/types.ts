@@ -5,7 +5,6 @@ import type {
 	HelperKind,
 	MaybePromise,
 	PipelineDiagnostic,
-	PipelineExtensionHookOptions,
 	PipelineReporter,
 	PipelineRunState,
 	PipelineStep,
@@ -16,21 +15,7 @@ export type {
 	PipelineExtensionRollbackErrorMetadata,
 	PipelineReporter,
 	PipelineRunState,
-	PipelineExtensionHookOptions,
 };
-
-/**
- * Standard pipeline extension lifecycles.
- * @public
- */
-export type PipelineExtensionLifecycle =
-	| 'prepare'
-	| 'before-fragments'
-	| 'after-fragments'
-	| 'before-builders'
-	| 'after-builders'
-	| 'finalize'
-	| (string & {});
 
 /**
  * Metadata from fragment helper execution.
@@ -182,16 +167,10 @@ export interface CreatePipelineOptions<
 		readonly reporter: TReporter;
 		readonly diagnostic: TDiagnostic;
 	}) => void;
-	readonly createExtensionHookOptions?: (options: {
-		readonly context: TContext;
-		readonly options: TRunOptions;
-		readonly buildOptions: TBuildOptions;
-		readonly artifact: TArtifact;
-		readonly lifecycle: PipelineExtensionLifecycle;
-	}) => PipelineExtensionHookOptions<TContext, TRunOptions, TArtifact>;
 	readonly onExtensionRollbackError?: (options: {
 		readonly error: unknown;
 		readonly extensionKeys: readonly string[];
+		/** @deprecated Use extensionKeys. */
 		readonly hookSequence: readonly string[];
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TContext;
@@ -365,13 +344,10 @@ export interface Pipeline<
 				TFragmentHelper,
 				TBuilderHelper
 			>
-		) => unknown | Promise<unknown>;
+		) => MaybePromise<unknown>;
 	};
-	use: (
-		helper:
-			| TFragmentHelper
-			| TBuilderHelper
-			| Helper<TContext, unknown, unknown, TReporter, HelperKind>
+	use: <TInput, TOutput, TKind extends HelperKind>(
+		helper: Helper<TContext, TInput, TOutput, TReporter, TKind>
 	) => void;
 	run: (options: TRunOptions) => MaybePromise<TRunResult>;
 }

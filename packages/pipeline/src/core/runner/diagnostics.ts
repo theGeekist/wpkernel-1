@@ -45,9 +45,8 @@ export interface AgnosticDiagnosticManager<
 > {
 	record: (diagnostic: TDiagnostic) => void;
 	setReporter: (reporter: TReporter) => void;
-	readDiagnostics: () => readonly TDiagnostic[];
 	getDiagnostics: () => readonly TDiagnostic[];
-	createRun?: (
+	createRun: (
 		reporter: TReporter,
 		initialDiagnostics?: readonly TDiagnostic[]
 	) => AgnosticDiagnosticManager<TReporter, TDiagnostic>;
@@ -70,9 +69,6 @@ export interface AgnosticDiagnosticManager<
 		reason: string,
 		dependsOn: readonly string[]
 	) => void;
-
-	prepareRun: () => void;
-	endRun: () => void;
 }
 
 /**
@@ -142,12 +138,7 @@ export function createAgnosticDiagnosticManager<
 				(runDiagnostics ?? staticDiagnostics).forEach(logDiagnostic);
 			},
 
-			readDiagnostics: () => runDiagnostics ?? staticDiagnostics,
 			getDiagnostics: () => runDiagnostics ?? staticDiagnostics,
-
-			// Retained as no-ops for compatibility with internal runner adapters.
-			prepareRun() {},
-			endRun() {},
 
 			flagConflict(helper, existing, kind, message) {
 				const diagnostic =

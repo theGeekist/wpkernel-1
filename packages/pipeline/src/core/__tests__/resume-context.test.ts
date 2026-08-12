@@ -8,11 +8,16 @@ import type {
 	PipelinePauseSnapshot,
 	PipelineReporter,
 } from '../types';
+import { createAgnosticDiagnosticManager } from '../runner/diagnostics';
 
 describe('prepareResumeContext', () => {
-	it('wires rollback handler and hook options from snapshot state', () => {
-		const onExtensionRollbackError = jest.fn();
+	it('restores reporter and hook options from snapshot state', () => {
 		const reporter: PipelineReporter = { warn: jest.fn() };
+		const diagnosticManager = createAgnosticDiagnosticManager<
+			PipelineReporter,
+			PipelineDiagnostic
+		>();
+		const setReporter = jest.spyOn(diagnosticManager, 'setReporter');
 
 		const state: AgnosticState<
 			{ id: string },
@@ -25,11 +30,14 @@ describe('prepareResumeContext', () => {
 			reporter,
 			runOptions: { id: 'resume' },
 			userState: { value: 42 },
-			helperRegistries: new Map(),
 			helperOrders: new Map(),
 			steps: [],
 			diagnostics: [],
+			diagnosticManager,
 			executedLifecycles: new Set(),
+			helperRollbackStack: [],
+			extensionStack: [],
+			committedExtensionStates: new Set(),
 		};
 
 		const snapshot: PipelinePauseSnapshot<typeof state> = {
@@ -50,44 +58,21 @@ describe('prepareResumeContext', () => {
 				createContext: () => ({ reporter }),
 				createState: () => ({ value: 0 }),
 				createError: (_code, message) => new Error(message),
-				onExtensionRollbackError,
 			},
 			helperRegistries: new Map(),
-			diagnosticManager: {
-				record: () => undefined,
-				readDiagnostics: () => [],
-				setReporter: () => undefined,
-				prepareRun: () => undefined,
-				getDiagnostics: () => [],
-				flagConflict: () => undefined,
-				flagMissingDependency: () => undefined,
-				flagUnusedHelper: () => undefined,
-				endRun: () => undefined,
-			},
+			diagnosticManager,
 			resolveRunResult: () => ({}),
 			extensionHooks: [],
+			stages: () => [],
 		};
 
 		const resumeContext = prepareResumeContext(dependencies, snapshot);
-		resumeContext.handleRollbackError({
-			error: new Error('rollback'),
-			extensionKeys: ['ext'],
-			hookSequence: ['hook'],
-			errorMetadata: {
-				name: 'Error',
-				message: 'rollback',
-				stack: '',
-				cause: undefined,
-			},
-			context: state.context,
-		});
-
 		const hookOptions = resumeContext.buildHookOptions(
 			state,
 			'resume-hook'
 		);
 
-		expect(onExtensionRollbackError).toHaveBeenCalled();
+		expect(setReporter).toHaveBeenCalledWith(reporter);
 		expect(hookOptions.options).toEqual({ id: 'resume' });
 		expect(hookOptions.artifact).toEqual({ value: 42 });
 	});

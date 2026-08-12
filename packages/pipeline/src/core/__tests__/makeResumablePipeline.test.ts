@@ -33,6 +33,28 @@ describe('makeResumablePipeline', () => {
 	const mockReporter: PipelineReporter = { warn: jest.fn() };
 	const mockContext: PauseContext = { reporter: mockReporter };
 
+	it('reports a settled extension registration failure to the next run', async () => {
+		const registrationError = new Error('extension registration failed');
+		const pipeline = makeResumablePipeline({
+			helperKinds: [],
+			createContext: () => mockContext,
+			createState: () => ({}),
+		});
+
+		const registration = pipeline.extensions.use({
+			key: 'failing-extension',
+			register: async () => {
+				throw registrationError;
+			},
+		});
+
+		await expect(registration).rejects.toBe(registrationError);
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toBe(registrationError);
+		expect(pipeline.run({})).toMatchObject({ artifact: {} });
+	});
+
 	it('pauses and resumes with snapshot state', async () => {
 		const pipeline: PausePipeline = makeResumablePipeline<
 			PauseRunOptions,

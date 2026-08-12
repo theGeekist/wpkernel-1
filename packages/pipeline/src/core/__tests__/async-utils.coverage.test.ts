@@ -1,4 +1,4 @@
-import { isPromiseLike, maybeAll, maybeThen, maybeTry } from '../async-utils';
+import { isPromiseLike, maybeThen, maybeTry } from '../async-utils';
 
 const thenable = <T>(value: T): PromiseLike<T> => ({
 	then: <TResult1 = T, TResult2 = never>(
@@ -22,18 +22,10 @@ describe('async-utils coverage', () => {
 		).toThrow('maybeThen: onFulfilled is not a function');
 	});
 
-	it('returns sync array for maybeAll when no promises', () => {
-		const input = [1, 2, 3] as const;
-		const result = maybeAll(input);
-		expect(result).toEqual([1, 2, 3]);
-		expect(result).not.toBe(input);
-	});
-
-	it('adopts non-native thenables across map, collect and recovery', async () => {
+	it('adopts non-native thenables across mapping and recovery', async () => {
 		await expect(
 			maybeThen(thenable(2), (value) => value * 3)
 		).resolves.toBe(6);
-		await expect(maybeAll([1, thenable(2), 3])).resolves.toEqual([1, 2, 3]);
 		await expect(
 			maybeTry(
 				() =>
@@ -59,7 +51,6 @@ describe('async-utils coverage', () => {
 
 		expect(isPromiseLike(hostile)).toBe(false);
 		expect(maybeThen(hostile, (value) => value)).toBe(hostile);
-		expect(maybeAll([hostile])).toEqual([hostile]);
 		expect(reads).toBe(0);
 	});
 

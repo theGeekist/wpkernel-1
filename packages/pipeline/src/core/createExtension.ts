@@ -1,4 +1,4 @@
-import { isPromiseLike } from './async-utils.js';
+import { maybeThen } from './async-utils.js';
 import type {
 	MaybePromise,
 	PipelineExtension,
@@ -268,13 +268,7 @@ export function createPipelineExtension<
 				>;
 			};
 
-			const setupResult = setup?.(pipeline);
-
-			if (setupResult && isPromiseLike(setupResult)) {
-				return setupResult.then(resolveHook);
-			}
-
-			return resolveHook();
+			return maybeThen(setup?.(pipeline), resolveHook);
 		},
 	} satisfies PipelineExtension<TPipeline, TContext, TOptions, TArtifact>;
 }

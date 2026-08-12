@@ -1,4 +1,4 @@
-import type { MaybePromise } from '@wpkernel/pipeline';
+import { isPromiseLike, type MaybePromise } from '@wpkernel/pipeline';
 /**
  * @typedef {Function} PipelineTask
  * A function representing a single task within a pipeline.
@@ -18,14 +18,6 @@ export type PipelineTask = () => MaybePromise<void> | void;
  * @public
  */
 export type TaskInput = PipelineTask | undefined | null;
-
-function isPromiseLike<T>(value: unknown): value is PromiseLike<T> {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		typeof (value as PromiseLike<T>).then === 'function'
-	);
-}
 
 function runSequential(tasks: readonly PipelineTask[]): MaybePromise<void> {
 	let index = 0;

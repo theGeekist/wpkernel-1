@@ -196,7 +196,12 @@ Calling `next()` without an argument passes the current output. The first call e
 Extensions wrap execution with hooks at specific lifecycle stages.
 
 **Standard Pipeline Lifecycles**:
-`prepare` → `before-fragments` → `after-fragments` → `before-builders` → `after-builders` → `finalize`
+`after-fragments` → `before-builders` → `after-builders` → `finalize`
+
+Standard extension hooks begin after fragment finalisation, so their typed
+`artifact` is always the final artifact shape. Work that must happen before
+fragment execution belongs in an extension's `setup`; custom pipelines can
+schedule arbitrary earlier lifecycles explicitly.
 
 > **Note**: Custom pipelines (using `makePipeline`) can define arbitrary lifecycle stages. Extensions can hook into any stage, standard or custom, as long as it exists in the pipeline's execution plan.
 

@@ -3,6 +3,40 @@
 All notable changes to `@wpkernel/pipeline` are recorded here. The package is
 versioned and released independently from the WPKernel monorepo.
 
+## Unreleased
+
+## 1.3.0 — 2026-08-12
+
+### Changed
+
+- Consolidated normal and resumable pipeline construction behind one internal
+  runtime without changing their public factory names.
+- Centralised synchronous-or-asynchronous adoption so helpers, stages,
+  extensions, commits, and rollbacks share the hardened thenable boundary.
+- Simplified runner preparation, settlement, diagnostics, and rollback state
+  while preserving synchronous completion, process-local suspension, and
+  reverse-order cleanup.
+
+### Fixed
+
+- Retained failed asynchronous extension registrations until the next run can
+  observe the failure.
+- Forwarded helper rollback failures through the configured callback.
+- Removed standard-pipeline configuration fields that compiled but had no
+  runtime effect.
+
+### Breaking
+
+- Removed wildcard `core` and `extensions` subpath exports. The package root is
+  the supported public entry point; runner implementation files are private.
+- Standard extension hooks now begin after fragment finalisation, so every hook
+  receives the declared artifact type. Removed the unsound `prepare` and
+  `before-fragments` standard lifecycle stages and the ignored
+  `createExtensionHookOptions` option.
+- Removed speculative extension blueprints, identity-only error helpers,
+  low-level registration/execution exports, the unimplemented `merge` helper
+  mode, and other internal types previously exposed through wildcard paths.
+
 ## 1.2.0 — 2026-07-30
 
 Measured from the published `1.1.0` baseline.

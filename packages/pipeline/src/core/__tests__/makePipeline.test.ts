@@ -105,4 +105,22 @@ describe('makePipeline', () => {
 		expect(result.steps[0]).not.toHaveProperty('helper');
 		expect(result.steps[0]).not.toHaveProperty('apply');
 	});
+
+	it('reports a settled extension registration failure to the next run', async () => {
+		const registrationError = new Error('extension registration failed');
+		const pipeline = makePipeline(baseOptions);
+
+		const registration = pipeline.extensions.use({
+			key: 'failing-extension',
+			register: async () => {
+				throw registrationError;
+			},
+		});
+
+		await expect(registration).rejects.toBe(registrationError);
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toBe(registrationError);
+		expect(pipeline.run({})).toMatchObject({ artifact: {} });
+	});
 });

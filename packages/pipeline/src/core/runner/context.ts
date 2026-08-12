@@ -10,13 +10,12 @@ import type {
 import type {
 	PipelineReporter,
 	PipelineDiagnostic,
-	PipelineExtensionRollbackErrorMetadata,
+	PipelineExtensionLifecycle,
 	PipelinePauseSnapshot,
 	PipelineStep,
+	HelperDescriptor,
 } from '../types';
-import { initExtensionCoordinator } from '../internal/extension-coordinator';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Prepares the pipeline execution context.
  *
@@ -51,42 +50,38 @@ export const prepareContext = <
 	const context = dependencies.options.createContext(runOptions);
 
 	// Each invocation owns its reporter and mutable diagnostic collection.
-	const diagnosticManager =
-		typeof dependencies.diagnosticManager.createRun === 'function'
-			? dependencies.diagnosticManager.createRun(context.reporter)
-			: dependencies.diagnosticManager;
-	if (diagnosticManager === dependencies.diagnosticManager) {
-		diagnosticManager.prepareRun();
-		diagnosticManager.setReporter(context.reporter);
-	}
+	const diagnosticManager = dependencies.diagnosticManager.createRun(
+		context.reporter
+	);
 
 	// Generic graph resolution for all registries
 	const helperOrders = new Map<string, RegisteredHelper<unknown>[]>();
 
 	for (const [kind, entries] of dependencies.helperRegistries) {
+		const helpers = entries as RegisteredHelper<HelperDescriptor>[];
 		const graph = createDependencyGraph(
-			entries as any,
+			helpers,
 			{
 				onMissingDependency: (issue) => {
 					diagnosticManager.flagMissingDependency(
-						issue.dependant.helper as any,
+						issue.dependant.helper,
 						issue.dependencyKey,
 						kind
 					);
 					diagnosticManager.flagUnusedHelper(
-						issue.dependant.helper as any,
+						issue.dependant.helper,
 						kind,
 						'has missing dependencies',
-						(issue.dependant.helper as any).dependsOn ?? []
+						issue.dependant.helper.dependsOn ?? []
 					);
 				},
 				onUnresolvedHelpers: ({ unresolved }) => {
 					for (const entry of unresolved) {
 						diagnosticManager.flagUnusedHelper(
-							entry.helper as any,
+							entry.helper,
 							kind,
 							'has unresolved dependencies (possible cycle)',
-							(entry.helper as any).dependsOn ?? []
+							entry.helper.dependsOn ?? []
 						);
 					}
 				},
@@ -94,7 +89,7 @@ export const prepareContext = <
 			},
 			dependencies.options.createError
 		);
-		helperOrders.set(kind, graph.order as any);
+		helperOrders.set(kind, graph.order);
 	}
 
 	const userState = dependencies.options.createState({
@@ -102,39 +97,8 @@ export const prepareContext = <
 		options: runOptions,
 	});
 
-	const steps: any[] = [];
-	const pushStep = (entry: RegisteredHelper<unknown>) => {
-		const helper = entry.helper as {
-			readonly key: string;
-			readonly kind: string;
-			readonly mode: PipelineStep['mode'];
-			readonly priority: number;
-			readonly dependsOn: readonly string[];
-			readonly origin?: string;
-		};
-		steps.push({
-			key: helper.key,
-			kind: helper.kind,
-			mode: helper.mode,
-			priority: helper.priority,
-			dependsOn: helper.dependsOn,
-			origin: helper.origin,
-			id: entry.id,
-			index: entry.index,
-		} satisfies PipelineStep);
-	};
-
-	const handleRollbackError = (options: {
-		readonly error: unknown;
-		readonly extensionKeys: readonly string[];
-		readonly hookSequence: readonly string[];
-		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
-		readonly context: TContext;
-	}) => {
-		if (dependencies.options.onExtensionRollbackError) {
-			dependencies.options.onExtensionRollbackError(options);
-		}
-	};
+	const steps: PipelineStep[] = [];
+	const pushStep = createStepRecorder(steps);
 
 	const buildHookOptions = (
 		currentState: AgnosticState<
@@ -144,11 +108,11 @@ export const prepareContext = <
 			TReporter,
 			TDiagnostic
 		>,
-		lifecycle: string
+		lifecycle: PipelineExtensionLifecycle
 	) => ({
 		context,
 		options: runOptions,
-		artifact: currentState.userState, // Extension expects UserState
+		artifact: currentState.userState,
 		lifecycle,
 	});
 
@@ -159,27 +123,23 @@ export const prepareContext = <
 		userState,
 		steps,
 
-		diagnostics: diagnosticManager.getDiagnostics() as TDiagnostic[], // Live reference
+		diagnostics: diagnosticManager.getDiagnostics(),
 		diagnosticManager,
-		// AgnosticState definition has diagnostics: TDiagnostic[]. Programs read it from here.
-		// finalizeResultStage updates it from manager.
-
-		helperRegistries: dependencies.helperRegistries,
 		helperOrders,
 		executedLifecycles: new Set(),
-		// Runtime maps
-		helperExecution: new Map(),
-		helperRollbacks: new Map(),
 		helperRollbackStack: [],
 
-		extensionCoordinator: initExtensionCoordinator((event) =>
-			handleRollbackError({
-				...event,
-				context,
-			})
-		),
+		extensionStack: [],
+		onExtensionRollbackError: dependencies.options.onExtensionRollbackError
+			? (event) =>
+					dependencies.options.onExtensionRollbackError?.({
+						...event,
+						hookSequence: event.extensionKeys,
+						context,
+					})
+			: undefined,
 		committedExtensionStates: new Set(),
-	} as unknown as AgnosticState<
+	} satisfies AgnosticState<
 		TRunOptions,
 		TUserState,
 		TContext,
@@ -188,16 +148,9 @@ export const prepareContext = <
 	>;
 
 	return {
-		runOptions,
-		context,
 		state,
-		steps,
 		pushStep,
-		helperRegistries: dependencies.helperRegistries,
-		helperOrders,
-		diagnosticManager,
 		buildHookOptions,
-		handleRollbackError,
 	};
 };
 
@@ -209,7 +162,7 @@ export const prepareResumeContext = <
 	TDiagnostic extends PipelineDiagnostic,
 	TRunResult,
 >(
-	dependencies: AgnosticRunnerDependencies<
+	_dependencies: AgnosticRunnerDependencies<
 		TRunOptions,
 		TUserState,
 		TContext,
@@ -230,18 +183,37 @@ export const prepareResumeContext = <
 	const state = snapshot.state;
 	const context = state.context;
 
-	const diagnosticManager =
-		state.diagnosticManager ??
-		(typeof dependencies.diagnosticManager.createRun === 'function'
-			? dependencies.diagnosticManager.createRun(
-					context.reporter,
-					state.diagnostics
-				)
-			: dependencies.diagnosticManager);
+	const diagnosticManager = state.diagnosticManager;
 	diagnosticManager.setReporter(context.reporter);
 
-	const steps = state.steps;
-	const pushStep = (entry: RegisteredHelper<unknown>) => {
+	const pushStep = createStepRecorder(state.steps);
+
+	const buildHookOptions = (
+		currentState: AgnosticState<
+			TRunOptions,
+			TUserState,
+			TContext,
+			TReporter,
+			TDiagnostic
+		>,
+		lifecycle: PipelineExtensionLifecycle
+	) => ({
+		context,
+		options: state.runOptions,
+		artifact: currentState.userState,
+		lifecycle,
+	});
+
+	return {
+		state,
+		pushStep,
+		buildHookOptions,
+	};
+};
+
+const createStepRecorder =
+	(steps: PipelineStep[]) =>
+	(entry: RegisteredHelper<unknown>): void => {
 		const helper = entry.helper as {
 			readonly key: string;
 			readonly kind: string;
@@ -261,45 +233,3 @@ export const prepareResumeContext = <
 			index: entry.index,
 		});
 	};
-
-	const handleRollbackError = (options: {
-		readonly error: unknown;
-		readonly extensionKeys: readonly string[];
-		readonly hookSequence: readonly string[];
-		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
-		readonly context: TContext;
-	}) => {
-		if (dependencies.options.onExtensionRollbackError) {
-			dependencies.options.onExtensionRollbackError(options);
-		}
-	};
-
-	const buildHookOptions = (
-		currentState: AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
-		lifecycle: string
-	) => ({
-		context,
-		options: state.runOptions,
-		artifact: currentState.userState,
-		lifecycle,
-	});
-
-	return {
-		runOptions: state.runOptions,
-		context,
-		state,
-		steps,
-		pushStep,
-		helperRegistries: state.helperRegistries,
-		helperOrders: state.helperOrders ?? new Map(),
-		diagnosticManager,
-		buildHookOptions,
-		handleRollbackError,
-	};
-};

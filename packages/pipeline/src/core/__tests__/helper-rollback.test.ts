@@ -104,6 +104,57 @@ describe('Helper Rollback', () => {
 		expect(rollback).toHaveBeenCalled();
 	});
 
+	it('forwards helper rollback failures to the configured observer', async () => {
+		const rollbackError = new Error('rollback failed');
+		const onHelperRollbackError = jest.fn();
+		const reporter = createTestReporter();
+		const pipeline = makePipeline<
+			TestRunOptions,
+			TestContext,
+			TestReporter,
+			TestUserState,
+			TestDiagnostic,
+			TestRunResult
+		>({
+			helperKinds: ['builder'],
+			createContext: () => ({ reporter }),
+			onHelperRollbackError,
+		});
+
+		pipeline.use(
+			createHelper({
+				key: 'builder.with-failing-rollback',
+				kind: 'builder',
+				priority: 1,
+				apply: () => ({
+					rollback: createPipelineRollback(() => {
+						throw rollbackError;
+					}),
+				}),
+			})
+		);
+		pipeline.use(
+			createHelper({
+				key: 'builder.failure',
+				kind: 'builder',
+				priority: 0,
+				apply: () => {
+					throw new Error('builder failed');
+				},
+			})
+		);
+
+		await expect(runPipeline(pipeline)).rejects.toThrow('builder failed');
+		expect(onHelperRollbackError).toHaveBeenCalledWith(
+			expect.objectContaining({
+				error: rollbackError,
+				helper: expect.objectContaining({
+					key: 'builder.with-failing-rollback',
+				}),
+			})
+		);
+	});
+
 	it('rolls back successful helpers when a later helper stage fails', async () => {
 		const rollback = jest.fn();
 		const reporter = createTestReporter();

@@ -63,11 +63,13 @@ describe('coverage improvements', () => {
 			// Mock dependencies
 			const createError = jest.fn((_, msg) => new Error(msg));
 			const diagnosticManager = {
-				prepareRun: jest.fn(),
 				setReporter: jest.fn(),
 				flagMissingDependency: jest.fn(),
 				flagUnusedHelper: jest.fn(),
 			};
+			Object.assign(diagnosticManager, {
+				createRun: jest.fn(() => diagnosticManager),
+			});
 
 			const circularHelperA = {
 				key: 'A',
@@ -114,11 +116,13 @@ describe('coverage improvements', () => {
 
 		it('handles missing dependencies during context preparation', () => {
 			const diagnosticManager = {
-				prepareRun: jest.fn(),
 				setReporter: jest.fn(),
 				flagMissingDependency: jest.fn(),
 				flagUnusedHelper: jest.fn(),
 			};
+			Object.assign(diagnosticManager, {
+				createRun: jest.fn(() => diagnosticManager),
+			});
 
 			const helperA = {
 				key: 'A',
@@ -150,70 +154,6 @@ describe('coverage improvements', () => {
 			).toHaveBeenCalledWith(helperA.helper, 'MISSING', 'kind');
 			expect(diagnosticManager.flagUnusedHelper).toHaveBeenCalled();
 		});
-
-		it('exposes handleRollbackError which calls options callback', () => {
-			const onExtensionRollbackError = jest.fn();
-			const dependencies = {
-				diagnosticManager: {
-					getDiagnostics: () => [],
-					prepareRun: jest.fn(),
-					setReporter: jest.fn(),
-				},
-				helperRegistries: new Map(),
-				options: {
-					createContext: () => ({ reporter: {} }),
-					createState: () => ({}),
-					onExtensionRollbackError,
-				},
-			};
-
-			const result = prepareContext(dependencies as any, {} as any);
-
-			const errorEvent = {
-				error: new Error('foo'),
-				extensionKeys: ['ext'],
-				hookSequence: ['hook'],
-				errorMetadata: {} as any,
-			};
-
-			result.handleRollbackError({
-				...errorEvent,
-				context: result.context,
-			} as any);
-
-			expect(onExtensionRollbackError).toHaveBeenCalledWith(
-				expect.objectContaining({
-					error: errorEvent.error,
-				})
-			);
-		});
-
-		it('handleRollbackError does nothing if handler not provided', () => {
-			const dependencies = {
-				diagnosticManager: {
-					getDiagnostics: () => [],
-					prepareRun: jest.fn(),
-					setReporter: jest.fn(),
-				},
-				helperRegistries: new Map(),
-				options: {
-					createContext: () => ({ reporter: {} }),
-					createState: () => ({}),
-					// onExtensionRollbackError undefined
-				},
-			};
-
-			const result = prepareContext(dependencies as any, {} as any);
-
-			// Should not throw
-			result.handleRollbackError({
-				error: new Error('foo'),
-				extensionKeys: [],
-				hookSequence: [],
-				errorMetadata: {} as any,
-				context: result.context,
-			});
-		});
 	});
 
 	describe('runner/diagnostics', () => {
@@ -235,16 +175,6 @@ describe('coverage improvements', () => {
 			context: { reporter: {} },
 			state: { userState: {} },
 		};
-
-		it('returns early if no stages defined', () => {
-			const result: any = executeRun(
-				{ ...baseDeps, stages: undefined } as any,
-				baseContext as any
-			);
-
-			expect(result).toBeDefined();
-			expect(result.steps).toEqual([]);
-		});
 
 		it('handles Halt result with success data', () => {
 			const customStage: any = () => ({

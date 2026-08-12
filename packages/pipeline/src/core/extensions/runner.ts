@@ -5,12 +5,7 @@ import type {
 	PipelineExtensionHookResult,
 	PipelineExtensionLifecycle,
 } from '../types';
-import {
-	isPromiseLike,
-	maybeThen,
-	maybeTry,
-	processSequentially,
-} from '../async-utils';
+import { maybeThen, maybeTry, processSequentially } from '../async-utils';
 import { runRollbackStack } from '../rollback';
 
 /**
@@ -42,7 +37,6 @@ export interface ExtensionHookExecution<TContext, TOptions, TArtifact> {
 export interface RollbackErrorArgs {
 	readonly error: unknown;
 	readonly extensionKeys: readonly string[];
-	readonly hookSequence: readonly string[];
 }
 
 /**
@@ -94,13 +88,12 @@ export function runExtensionHooks<TContext, TOptions, TArtifact>(
 
 	const process = () =>
 		processSequentially(lifecycleHooks, (entry) => {
-			const hookResult = entry.hook({
-				...baseOptions,
-				artifact,
-			});
-
-			if (isPromiseLike(hookResult)) {
-				return Promise.resolve(hookResult).then((resolved) => {
+			return maybeThen(
+				entry.hook({
+					...baseOptions,
+					artifact,
+				}),
+				(resolved) => {
 					if (!resolved) {
 						return undefined;
 					}
@@ -115,21 +108,8 @@ export function runExtensionHooks<TContext, TOptions, TArtifact>(
 					});
 
 					return undefined;
-				});
-			}
-
-			if (!hookResult) {
-				return undefined;
-			}
-
-			if (hookResult.artifact !== undefined) {
-				artifact = hookResult.artifact;
-			}
-
-			return void results.push({
-				hook: entry,
-				result: hookResult,
-			});
+				}
+			);
 		});
 
 	const processed = maybeTry(process, (error) =>
@@ -163,12 +143,7 @@ export function commitExtensionResults<TContext, TOptions, TArtifact>(
 			return undefined;
 		}
 
-		const commitResult = commit();
-		if (isPromiseLike(commitResult)) {
-			return commitResult.then(() => undefined);
-		}
-
-		return undefined;
+		return maybeThen(commit(), () => undefined);
 	});
 }
 
@@ -190,19 +165,11 @@ export function rollbackExtensionResults<TContext, TOptions, TArtifact>(
 	onRollbackError: (args: RollbackErrorArgs) => void
 ): MaybePromise<void> {
 	const hookKeys = hooks.map((entry) => entry.key);
-	const hookSequence = hookKeys;
 
-	// Convert extension hook results to PipelineRollback entries
-	const rollbackEntries = results
-		.map((execution) => ({
-			result: execution.result,
-			hook: execution.hook,
-		}))
-		.filter((entry) => entry.result.rollback)
-		.map((entry) => ({
-			key: entry.hook.key,
-			run: entry.result.rollback!,
-		}));
+	const rollbackEntries = results.flatMap(({ hook, result }) => {
+		const { rollback } = result;
+		return rollback ? [{ key: hook.key, run: rollback }] : [];
+	});
 
 	return runRollbackStack(rollbackEntries, {
 		source: 'extension',
@@ -210,7 +177,6 @@ export function rollbackExtensionResults<TContext, TOptions, TArtifact>(
 			onRollbackError({
 				error,
 				extensionKeys: hookKeys,
-				hookSequence,
 			});
 		},
 	});

@@ -1,21 +1,17 @@
 import type { RegisteredHelper } from '../dependency-graph';
-import type { Program } from '../async-utils';
 import type { ErrorFactory } from '../error-factory';
 import type {
 	Helper,
 	HelperApplyResult,
 	HelperApplyOptions,
-	HelperExecutionSnapshot,
 	HelperKind,
 	HelperNext,
 	MaybePromise,
-	PipelinePauseOptions,
 	PipelinePauseSnapshot,
 	PipelinePaused,
 	PipelineDiagnostic,
 	PipelineHalt,
 	PipelineStageDependencies,
-	PipelineStageState,
 	PipelineExtensionHookOptions,
 	PipelineExtensionLifecycle,
 	PipelineExtensionRollbackErrorMetadata,
@@ -23,16 +19,25 @@ import type {
 	PipelineStep,
 } from '../types';
 
-export type { HelperExecutionSnapshot };
 import type { PipelineRollback } from '../rollback';
-import type {
-	ExtensionCoordinator,
-	ExtensionLifecycleState,
-} from '../internal/extension-coordinator.types';
-
-export type { ExtensionCoordinator, ExtensionLifecycleState };
 import type { AgnosticDiagnosticManager } from './diagnostics';
-import type { ExtensionHookEntry } from '../extensions';
+import type { ExtensionHookEntry, ExtensionHookExecution } from '../extensions';
+
+export interface ExtensionLifecycleState<TContext, TOptions, TUserState> {
+	readonly artifact: TUserState;
+	readonly results: ExtensionHookExecution<TContext, TOptions, TUserState>[];
+	readonly hooks: readonly ExtensionHookEntry<
+		TContext,
+		TOptions,
+		TUserState
+	>[];
+}
+
+export type ExtensionRollbackHandler = (options: {
+	readonly error: unknown;
+	readonly extensionKeys: readonly string[];
+	readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
+}) => void;
 
 export interface AgnosticRunnerOptions<
 	TRunOptions,
@@ -76,8 +81,6 @@ export interface AgnosticRunContext<
 	TReporter extends PipelineReporter,
 	TDiagnostic extends PipelineDiagnostic,
 > {
-	readonly runOptions: TRunOptions;
-	readonly context: TContext;
 	readonly state: AgnosticState<
 		TRunOptions,
 		TUserState,
@@ -85,14 +88,7 @@ export interface AgnosticRunContext<
 		TReporter,
 		TDiagnostic
 	>;
-	readonly steps: PipelineStep[];
 	readonly pushStep: (entry: RegisteredHelper<unknown>) => void;
-	readonly helperRegistries: Map<string, RegisteredHelper<unknown>[]>;
-	readonly helperOrders: Map<string, RegisteredHelper<unknown>[]>;
-	readonly diagnosticManager?: AgnosticDiagnosticManager<
-		TReporter,
-		TDiagnostic
-	>;
 	readonly buildHookOptions: (
 		state: AgnosticState<
 			TRunOptions,
@@ -103,14 +99,6 @@ export interface AgnosticRunContext<
 		>,
 		lifecycle: PipelineExtensionLifecycle
 	) => PipelineExtensionHookOptions<TContext, TRunOptions, TUserState>;
-
-	readonly handleRollbackError: (options: {
-		readonly error: unknown;
-		readonly extensionKeys: readonly string[];
-		readonly hookSequence: readonly string[];
-		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
-		readonly context: TContext;
-	}) => void;
 }
 
 /**
@@ -131,16 +119,12 @@ export interface AgnosticState<
 	readonly runOptions: TRunOptions;
 	readonly userState: TUserState;
 
-	// Registry Maps (Input)
-	readonly helperRegistries: Map<string, RegisteredHelper<unknown>[]>;
-
-	// Resolved Orders (Computed)
-	readonly helperOrders?: Map<string, RegisteredHelper<unknown>[]>;
+	readonly helperOrders: Map<string, RegisteredHelper<unknown>[]>;
 
 	// Execution State
 	readonly steps: PipelineStep[];
-	readonly diagnostics: TDiagnostic[];
-	readonly diagnosticManager?: AgnosticDiagnosticManager<
+	readonly diagnostics: readonly TDiagnostic[];
+	readonly diagnosticManager: AgnosticDiagnosticManager<
 		TReporter,
 		TDiagnostic
 	>;
@@ -148,58 +132,28 @@ export interface AgnosticState<
 	readonly stageIndex?: number;
 	readonly resumeInput?: unknown;
 
-	readonly helperExecution?: Map<string, HelperExecutionSnapshot>;
-	readonly helperRollbacks?: Map<
-		string,
-		Array<{
-			readonly helper: unknown;
-			readonly rollback: PipelineRollback;
-		}>
-	>;
 	/**
 	 * Rollbacks registered by successfully completed helpers, in visitation
 	 * order across all helper stages in the current run.
 	 */
-	readonly helperRollbackStack?: Array<{
+	readonly helperRollbackStack: Array<{
 		readonly helper: { readonly key: string };
 		readonly rollback: PipelineRollback;
 	}>;
 
-	readonly extensionCoordinator?: ExtensionCoordinator<
+	readonly extensionStack: ExtensionLifecycleState<
 		TContext,
 		TRunOptions,
 		TUserState
-	>;
-	readonly extensionState?: ExtensionLifecycleState<
-		TContext,
-		TRunOptions,
-		TUserState
-	>;
-	readonly extensionStack?: Array<{
-		readonly coordinator: ExtensionCoordinator<
-			TContext,
-			TRunOptions,
-			TUserState
-		>;
-		readonly state: ExtensionLifecycleState<
-			TContext,
-			TRunOptions,
-			TUserState
-		>;
-	}>;
-	readonly committedExtensionStates?: Set<
+	>[];
+	readonly onExtensionRollbackError?: ExtensionRollbackHandler;
+	readonly committedExtensionStates: Set<
 		ExtensionLifecycleState<TContext, TRunOptions, TUserState>
 	>;
 }
 
 // Re-export shared types
 export type { ExtensionHookEntry };
-export type RollbackCapableCoordinator<TContext, TOptions, TUserState> = {
-	createRollbackHandler: <TResult>(
-		state: ExtensionLifecycleState<TContext, TOptions, TUserState>
-	) => (error: unknown) => MaybePromise<TResult>;
-};
-
 export type RollbackEntry<THelper> = {
 	readonly helper: THelper;
 	readonly rollback: PipelineRollback;
@@ -209,94 +163,37 @@ export type Halt<TRunResult> = PipelineHalt<TRunResult>;
 
 export type RollbackContext<TContext, TOptions, TUserState> = {
 	readonly context: TContext;
-	readonly extensionCoordinator?: RollbackCapableCoordinator<
+	readonly extensionStack: ExtensionLifecycleState<
 		TContext,
 		TOptions,
 		TUserState
-	>;
-	readonly extensionState?: ExtensionLifecycleState<
-		TContext,
-		TOptions,
-		TUserState
-	>;
-	readonly extensionStack?: Array<{
-		readonly coordinator: RollbackCapableCoordinator<
-			TContext,
-			TOptions,
-			TUserState
-		>;
-		readonly state: ExtensionLifecycleState<TContext, TOptions, TUserState>;
-	}>;
+	>[];
+	readonly onExtensionRollbackError?: ExtensionRollbackHandler;
 };
 
-export type StageEnv<
-	TState,
-	TRunResult,
-	TContext,
-	TOptions,
-	TReporter extends PipelineReporter,
-	TUserState,
-> = {
+export type StageEnv<TState, TRunResult, TContext, TOptions, TUserState> = {
 	pushStep: (entry: RegisteredHelper<unknown>) => void;
 	toRollbackContext: (
 		state: TState
 	) => RollbackContext<TContext, TOptions, TUserState>;
 	halt: (error?: unknown) => Halt<TRunResult>;
-	pause?: (
-		state: TState,
-		options?: PipelinePauseOptions
-	) => PipelinePaused<TState>;
 	isHalt: (value: unknown) => value is Halt<TRunResult>;
 	onHelperRollbackError?: (options: {
 		readonly error: unknown;
-		readonly helper: Helper<
-			TContext,
-			unknown,
-			unknown,
-			TReporter,
-			HelperKind
-		>;
+		readonly helper: unknown;
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TContext;
 	}) => void;
 };
 
-export type PipelineStage<TState, TResult> = Program<
-	TState | TResult | PipelinePaused<TState>
->;
+export type PipelineStage<TState, TResult> = (
+	state: TState | TResult | PipelinePaused<TState>
+) => MaybePromise<TState | TResult | PipelinePaused<TState>>;
 
 export type PipelineStepResult<TState, TRunResult> =
 	| TState
 	| PipelinePaused<TState>
 	| Halt<TRunResult>;
-
-/** @deprecated Use {@link PipelineStageDependencies}. */
-export type AgnosticStageDeps<
-	TState,
-	TResult,
-	TContext,
-	TRunOptions,
-	TReporter extends PipelineReporter,
-	TDiagnostic extends PipelineDiagnostic,
-	TUserState,
-> =
-	TState extends PipelineStageState<
-		TRunOptions,
-		TUserState,
-		TContext & { reporter: TReporter },
-		TReporter,
-		TDiagnostic
-	>
-		? PipelineStageDependencies<
-				TRunOptions,
-				TUserState,
-				TContext & { reporter: TReporter },
-				TReporter,
-				TDiagnostic,
-				TResult,
-				string
-			>
-		: never;
 
 /**
  * Dependency bundle consumed by {@link initAgnosticRunner}.
@@ -333,7 +230,6 @@ export interface AgnosticRunnerDependencies<
 		readonly context: TContext;
 		readonly userState: TUserState;
 		readonly options: TRunOptions;
-		readonly helpers: unknown;
 		readonly state: AgnosticState<
 			TRunOptions,
 			TUserState,
@@ -351,7 +247,7 @@ export interface AgnosticRunnerDependencies<
 
 	readonly extensionLifecycles?: readonly string[];
 
-	readonly stages?: (
+	readonly stages: (
 		deps: PipelineStageDependencies<
 			TRunOptions,
 			TUserState,
@@ -513,25 +409,6 @@ export type HelperStageSpec<
 	readonly readRollbacks?: (
 		state: TState
 	) => RollbackEntry<THelper>[] | undefined;
-};
-
-export type HelperStageRunPlan<
-	TState,
-	TRunResult,
-	TContext,
-	TOptions,
-	TUserState,
-	THelper extends { key: string },
-> = {
-	readonly state: TState;
-	readonly program: Program<TState>;
-	readonly rollbackPlan: HelperRollbackPlan<
-		TContext,
-		TOptions,
-		TUserState,
-		THelper
-	>;
-	readonly halt: (error?: unknown) => Halt<TRunResult>;
 };
 
 export type HelperRollbackPlan<

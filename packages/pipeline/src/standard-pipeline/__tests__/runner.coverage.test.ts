@@ -82,21 +82,23 @@ describe('standard pipeline runner coverage', () => {
 		expect(unusedSpy).toHaveBeenCalled();
 	});
 
-	it('adapts extension hooks for draft and artifact lifecycles', async () => {
+	it('runs standard extension hooks against the finalised artifact', async () => {
 		const reporter: PipelineReporter = { warn: jest.fn() };
 		let builderArtifact: unknown;
 
 		const pipeline = createPipeline({
 			createBuildOptions: () => ({}),
 			createContext: () => ({ reporter }),
-			createFragmentState: () => ({ title: 'draft' }),
+			createFragmentState: () => ({ draftTitle: 'draft' }),
 			createFragmentArgs: ({ draft, context }) => ({
 				context,
 				input: draft,
 				output: undefined,
 				reporter,
 			}),
-			finalizeFragmentState: ({ draft }) => draft,
+			finalizeFragmentState: ({ draft }) => ({
+				title: `${draft.draftTitle}-finalised`,
+			}),
 			createBuilderArgs: ({ artifact, context }) => {
 				builderArtifact = artifact;
 				return {
@@ -127,8 +129,13 @@ describe('standard pipeline runner coverage', () => {
 		});
 
 		pipeline.extensions.use({
-			key: 'draft-hook',
-			register: () => () => ({ artifact: { title: 'draft-updated' } }),
+			key: 'after-fragments-hook',
+			register:
+				() =>
+				({ artifact }) => {
+					expect(artifact).toEqual({ title: 'draft-finalised' });
+					return { artifact: { title: 'extension-updated' } };
+				},
 		});
 
 		pipeline.extensions.use({

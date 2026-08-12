@@ -1,4 +1,7 @@
-import type { PipelineRollback } from './rollback.js';
+import type {
+	PipelineRollback,
+	PipelineRollbackErrorMetadata,
+} from './rollback.js';
 
 /**
  * A type that can be either a value or a promise-compatible thenable.
@@ -16,23 +19,9 @@ export type HelperKind = string;
  * Helper execution mode - determines how it integrates with existing helpers.
  *
  * @remarks
- * Currently only `extend` and `override` modes have implementation/validation logic.
- * The `merge` mode is reserved for future use.
- *
  * @public
  */
-export type HelperMode = 'extend' | 'override' | 'merge';
-
-/**
- * Base error type for pipeline operations.
- * Consumers can extend this to add framework-specific error codes.
- * @public
- */
-export interface PipelineError extends Error {
-	readonly code: string;
-	readonly data?: Record<string, unknown>;
-	readonly context?: Record<string, unknown>;
-}
+export type HelperMode = 'extend' | 'override';
 
 /**
  * Interface for reporting pipeline events and warnings.
@@ -572,12 +561,8 @@ export interface PipelineExtensionHookResult<TArtifact> {
  * Metadata about an error during extension rollback.
  * @public
  */
-export interface PipelineExtensionRollbackErrorMetadata {
-	readonly name?: string;
-	readonly message?: string;
-	readonly stack?: string;
-	readonly cause?: unknown;
-}
+export type PipelineExtensionRollbackErrorMetadata =
+	PipelineRollbackErrorMetadata;
 
 /**
  * A pipeline extension hook function.
@@ -649,6 +634,20 @@ export interface AgnosticPipelineOptions<
 
 	readonly extensions?: {
 		readonly lifecycles?: readonly string[];
+		/**
+		 * Optional boundary between internal runner state and the artifact exposed
+		 * to extension hooks.
+		 *
+		 * Adapters use this when their stage state contains bookkeeping alongside
+		 * the public extension artifact.
+		 */
+		readonly artifact?: {
+			readonly read: (state: TUserState) => unknown;
+			readonly write: (
+				state: TUserState,
+				artifact: unknown
+			) => TUserState;
+		};
 	};
 
 	readonly createContext: (options: TRunOptions) => TContext;
@@ -718,7 +717,15 @@ export interface AgnosticPipelineOptions<
 	readonly onExtensionRollbackError?: (options: {
 		readonly error: unknown;
 		readonly extensionKeys: readonly string[];
+		/** @deprecated Use extensionKeys. */
 		readonly hookSequence: readonly string[];
+		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
+		readonly context: TContext;
+	}) => void;
+
+	readonly onHelperRollbackError?: (options: {
+		readonly error: unknown;
+		readonly helper: unknown;
 		readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
 		readonly context: TContext;
 	}) => void;

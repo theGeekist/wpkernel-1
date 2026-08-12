@@ -19,19 +19,11 @@ import type {
 	ResourcePipelineRunOptions,
 	ResourcePipelineRunResult,
 } from '../pipeline/resources/types';
-import type { MaybePromise } from '@wpkernel/pipeline';
+import { isPromiseLike, type MaybePromise } from '@wpkernel/pipeline';
 import { resolveNamespaceAndName } from './namespace';
 import { resolveResourceReporter } from './reporter';
 import type { NormalizedResourceConfig } from './buildResourceObject';
 import { validateConfig } from './validation';
-
-function isPromiseLike<T>(value: unknown): value is PromiseLike<T> {
-	return (
-		!!value &&
-		(typeof value === 'object' || typeof value === 'function') &&
-		typeof (value as PromiseLike<T>).then === 'function'
-	);
-}
 
 function assertSynchronousRunResult<T, TQuery>(
 	result: MaybePromise<ResourcePipelineRunResult<T, TQuery>>

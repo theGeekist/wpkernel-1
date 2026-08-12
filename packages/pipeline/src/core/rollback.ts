@@ -1,4 +1,4 @@
-import { isPromiseLike, maybeTry } from './async-utils.js';
+import { maybeThen, maybeTry, processSequentially } from './async-utils.js';
 import type { MaybePromise } from './types.js';
 
 /**
@@ -90,22 +90,26 @@ export function createPipelineRollback(
 export function createRollbackErrorMetadata(
 	error: unknown
 ): PipelineRollbackErrorMetadata {
-	if (error instanceof Error) {
-		const { name, message, stack } = error;
-		const cause = (error as Error & { cause?: unknown }).cause;
-
-		return {
-			name,
-			message,
-			stack,
-			cause,
-		};
-	}
-
 	if (typeof error === 'string') {
 		return {
 			message: error,
 		};
+	}
+
+	try {
+		if (error instanceof Error) {
+			const { name, message, stack } = error;
+			const cause = (error as Error & { cause?: unknown }).cause;
+
+			return {
+				name,
+				message,
+				stack,
+				cause,
+			};
+		}
+	} catch {
+		// Error metadata is diagnostic only and must not interrupt rollback.
 	}
 
 	return {};
@@ -128,44 +132,27 @@ export function runRollbackStack(
 	entries: readonly PipelineRollback[],
 	options: RunRollbackStackOptions
 ): MaybePromise<void> {
-	const reversed = [...entries].reverse();
+	return processSequentially(
+		entries,
+		(entry) =>
+			maybeTry<void>(
+				() => maybeThen(entry.run(), () => undefined),
+				(error) => {
+					const metadata = createRollbackErrorMetadata(error);
 
-	const runAt = (currentIndex: number): MaybePromise<void> => {
-		if (currentIndex >= reversed.length) {
-			return;
-		}
+					try {
+						options.onError?.({
+							error,
+							entry,
+							metadata,
+						});
+					} catch {
+						// Observers cannot prevent the remaining cleanup attempts.
+					}
 
-		const entry = reversed[currentIndex]!;
-
-		const rollbackResult = maybeTry(
-			() => entry.run(),
-			(error) => {
-				const metadata = createRollbackErrorMetadata(error);
-
-				options.onError?.({
-					error,
-					entry,
-					metadata,
-				});
-
-				return undefined;
-			}
-		);
-
-		if (isPromiseLike(rollbackResult)) {
-			return Promise.resolve(rollbackResult).then(() =>
-				runAt(currentIndex + 1)
-			);
-		}
-
-		return runAt(currentIndex + 1);
-	};
-
-	const result = runAt(0);
-
-	if (isPromiseLike(result)) {
-		return Promise.resolve(result).then(() => undefined);
-	}
-
-	return undefined;
+					return undefined;
+				}
+			),
+		'reverse'
+	);
 }

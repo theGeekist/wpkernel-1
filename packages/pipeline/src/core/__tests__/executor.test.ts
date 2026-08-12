@@ -1,4 +1,4 @@
-import { executeHelpers } from '../executor';
+import { executeHelpers } from '../execution-utils';
 import type {
 	Helper,
 	HelperKind,
@@ -37,6 +37,70 @@ const runHelper = (
 	helper.apply(args, next);
 
 describe('executor', () => {
+	it('adopts helper thenables without reading their then property', async () => {
+		type Output = string;
+		type OutputHelper = Helper<
+			TestContext,
+			TestInput,
+			Output,
+			TestReporter
+		>;
+		let thenReads = 0;
+		const invocation = new Proxy(
+			{
+				then(resolve: (value: HelperApplyResult<Output>) => void) {
+					resolve({ output: 'adopted' });
+				},
+			},
+			{
+				get() {
+					thenReads += 1;
+					throw new Error('then must be adopted from its descriptor');
+				},
+			}
+		);
+		const helpers: RegisteredHelper<OutputHelper>[] = [
+			{
+				id: 'hostile',
+				index: 0,
+				helper: {
+					key: 'hostile',
+					kind: 'fragment',
+					mode: 'extend',
+					priority: 0,
+					dependsOn: [],
+					apply: () =>
+						invocation as unknown as Promise<
+							HelperApplyResult<Output>
+						>,
+				},
+			},
+		];
+
+		await expect(
+			executeHelpers<
+				TestContext,
+				TestInput,
+				Output,
+				TestReporter,
+				HelperKind,
+				OutputHelper,
+				HelperApplyOptions<TestContext, TestInput, Output, TestReporter>
+			>(
+				helpers,
+				() => ({
+					context: {},
+					input: undefined,
+					output: 'initial',
+					reporter: {},
+				}),
+				(helper, args, next) => helper.apply(args, next),
+				() => undefined
+			)
+		).resolves.toMatchObject({ output: 'adopted' });
+		expect(thenReads).toBe(0);
+	});
+
 	it('runs async helpers sequentially', async () => {
 		const order: string[] = [];
 		const helpers: RegisteredHelper<TestHelper>[] = [

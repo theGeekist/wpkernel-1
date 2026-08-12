@@ -1,6 +1,7 @@
 import { makePipeline } from '../makePipeline';
 import { createAgnosticStages } from '../runner/program';
 import { prepareContext } from '../runner/context';
+import { createAgnosticDiagnosticManager } from '../runner/diagnostics';
 import type {
 	AgnosticRunnerDependencies,
 	AgnosticState,
@@ -11,7 +12,7 @@ import type { Helper, PipelineReporter, PipelineDiagnostic } from '../types';
 import type { RegisteredHelper } from '../dependency-graph';
 
 describe('program coverage', () => {
-	it('uses createHelperArgs when provided', async () => {
+	it('uses custom helper argument factories', async () => {
 		const inputs: unknown[] = [];
 		const reporter: PipelineReporter = { warn: jest.fn() };
 
@@ -20,20 +21,16 @@ describe('program coverage', () => {
 			createContext: () => ({ reporter }),
 			createState: () => ({}),
 			createStages: (deps: any) => [
-				deps.makeHelperStage(
-					'custom',
-					undefined,
-					({
-						context,
-					}: {
-						context: { reporter: PipelineReporter };
-					}) => ({
-						context,
-						input: 'from-create-helper-args',
-						output: undefined,
-						reporter: context.reporter,
-					})
-				),
+				deps.makeHelperStage('custom', {
+					makeArgs:
+						(state: { context: { reporter: PipelineReporter } }) =>
+						() => ({
+							context: state.context,
+							input: 'from-create-helper-args',
+							output: undefined,
+							reporter: state.context.reporter,
+						}),
+				}),
 				deps.finalizeResult,
 			],
 		});
@@ -91,17 +88,7 @@ describe('program coverage', () => {
 				createError: (_code, message) => new Error(message),
 			},
 			helperRegistries,
-			diagnosticManager: {
-				record: () => undefined,
-				setReporter: () => undefined,
-				readDiagnostics: () => [],
-				getDiagnostics: () => [],
-				flagConflict: () => undefined,
-				flagMissingDependency: () => undefined,
-				flagUnusedHelper: () => undefined,
-				prepareRun: () => undefined,
-				endRun: () => undefined,
-			},
+			diagnosticManager: createAgnosticDiagnosticManager(),
 			resolveRunResult: () => ({}),
 			extensionHooks: [],
 			stages: (deps) =>
@@ -131,42 +118,5 @@ describe('program coverage', () => {
 					'Invalid helper: expected function or object with .apply method.'
 				);
 			});
-	});
-
-	it('throws when stages factory is missing', () => {
-		const dependencies: AgnosticRunnerDependencies<
-			Record<string, never>,
-			Record<string, never>,
-			{ reporter: PipelineReporter },
-			PipelineReporter,
-			PipelineDiagnostic,
-			unknown
-		> = {
-			options: {
-				createContext: () => ({ reporter: { warn: jest.fn() } }),
-				createState: () => ({}),
-				createError: (_code, message) => new Error(message),
-			},
-			helperRegistries: new Map(),
-			diagnosticManager: {
-				record: () => undefined,
-				setReporter: () => undefined,
-				readDiagnostics: () => [],
-				getDiagnostics: () => [],
-				flagConflict: () => undefined,
-				flagMissingDependency: () => undefined,
-				flagUnusedHelper: () => undefined,
-				prepareRun: () => undefined,
-				endRun: () => undefined,
-			},
-			resolveRunResult: () => ({}),
-			extensionHooks: [],
-		};
-
-		const runContext = prepareContext(dependencies, {});
-
-		expect(() => createAgnosticStages(dependencies, runContext)).toThrow(
-			"Agnostic Runner requires 'stages' factory to be defined."
-		);
 	});
 });

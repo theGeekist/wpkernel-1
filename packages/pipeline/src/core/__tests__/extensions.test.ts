@@ -3,40 +3,65 @@ import {
 	rollbackExtensionResults,
 	commitExtensionResults,
 } from '../extensions';
-import { createRollbackErrorMetadata } from '../rollback';
 import type { ExtensionHookEntry, ExtensionHookExecution } from '../extensions';
 
 type TestArtifact = { artifact: string };
 type TestContext = Record<string, never>;
 type TestOptions = Record<string, never>;
 
+function hostileThenable<T>(value: T): {
+	readonly promise: Promise<T>;
+	readonly getThenReads: () => number;
+} {
+	let thenReads = 0;
+	const promise = new Proxy(
+		{
+			then(resolve: (resolved: T) => void) {
+				resolve(value);
+			},
+		},
+		{
+			get() {
+				thenReads += 1;
+				throw new Error('then must be adopted from its descriptor');
+			},
+		}
+	) as unknown as Promise<T>;
+
+	return { promise, getThenReads: () => thenReads };
+}
+
 describe('extensions', () => {
-	describe('createRollbackErrorMetadata', () => {
-		it('extracts metadata from Error objects', () => {
-			const error = new Error('fail');
-			const meta = createRollbackErrorMetadata(error);
-			expect(meta).toEqual({
-				name: 'Error',
-				message: 'fail',
-				stack: expect.any(String),
-				cause: undefined,
-			});
-		});
-
-		it('extracts metadata from strings', () => {
-			const meta = createRollbackErrorMetadata('fail');
-			expect(meta).toEqual({
-				message: 'fail',
-			});
-		});
-
-		it('returns empty object for unknown types', () => {
-			const meta = createRollbackErrorMetadata(123);
-			expect(meta).toEqual({});
-		});
-	});
-
 	describe('runExtensionHooks', () => {
+		it('adopts hook thenables without reading their then property', async () => {
+			const hookResult = hostileThenable({
+				artifact: { artifact: 'adopted' },
+			});
+			const hooks: ExtensionHookEntry<
+				TestContext,
+				TestOptions,
+				TestArtifact
+			>[] = [
+				{
+					key: 'hostile-hook',
+					lifecycle: 'after-fragments',
+					hook: () => hookResult.promise,
+				},
+			];
+
+			await expect(
+				runExtensionHooks(
+					hooks,
+					'after-fragments',
+					{ artifact: { artifact: 'initial' } } as any,
+					() => undefined
+				)
+			).resolves.toMatchObject({
+				artifact: { artifact: 'adopted' },
+			});
+			expect(hookResult.getThenReads()).toBe(0);
+		});
+
 		it('handles sync hooks returning values', () => {
 			const hook = jest.fn().mockReturnValue({
 				artifact: { artifact: 'sync' },
@@ -203,6 +228,28 @@ describe('extensions', () => {
 	});
 
 	describe('rollbackExtensionResults', () => {
+		it('adopts rollback thenables without reading their then property', async () => {
+			const rollbackResult = hostileThenable(undefined);
+			const results: ExtensionHookExecution<
+				TestContext,
+				TestOptions,
+				TestArtifact
+			>[] = [
+				{
+					hook: { key: 'hostile-rollback' } as any,
+					result: { rollback: () => rollbackResult.promise },
+				},
+			];
+
+			await rollbackExtensionResults(
+				results,
+				[{ key: 'hostile-rollback' } as any],
+				() => undefined
+			);
+
+			expect(rollbackResult.getThenReads()).toBe(0);
+		});
+
 		it('handles async rollbacks', async () => {
 			const rollback = jest.fn().mockResolvedValue(undefined);
 			const results: ExtensionHookExecution<
@@ -280,6 +327,24 @@ describe('extensions', () => {
 	});
 
 	describe('commitExtensionResults', () => {
+		it('adopts commit thenables without reading their then property', async () => {
+			const commitResult = hostileThenable(undefined);
+			const results: ExtensionHookExecution<
+				TestContext,
+				TestOptions,
+				TestArtifact
+			>[] = [
+				{
+					hook: { key: 'hostile-commit' } as any,
+					result: { commit: () => commitResult.promise },
+				},
+			];
+
+			await commitExtensionResults(results);
+
+			expect(commitResult.getThenReads()).toBe(0);
+		});
+
 		it('handles async commits', async () => {
 			const commit = jest.fn().mockResolvedValue(undefined);
 			const results: ExtensionHookExecution<

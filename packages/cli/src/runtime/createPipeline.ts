@@ -20,7 +20,6 @@ import type {
 	Pipeline,
 	PipelineContext,
 	PipelineDiagnostic,
-	PipelineExtensionHookOptions,
 	PipelineRunOptions,
 	PipelineRunResult,
 } from './types';
@@ -164,14 +163,6 @@ export function createPipeline(
 				diagnostics,
 				steps,
 			} satisfies PipelineRunResult;
-		},
-		createExtensionHookOptions({ context, options, artifact, lifecycle }) {
-			return {
-				context,
-				options,
-				artifact,
-				lifecycle,
-			} satisfies PipelineExtensionHookOptions;
 		},
 		onExtensionRollbackError({ error, extensionKeys, context }) {
 			context.reporter.warn('Pipeline extension rollback failed.', {

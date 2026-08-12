@@ -181,7 +181,10 @@ describe('stage-factories coverage', () => {
 		};
 		const stageFactory = makeHelperStageFactory({
 			pushStep: () => undefined,
-			toRollbackContext: (state) => ({ context: (state as any).context }),
+			toRollbackContext: (state) => ({
+				context: (state as any).context,
+				extensionStack: [],
+			}),
 			halt: () => ({ __halt: true }),
 			isHalt: (value: unknown): value is { __halt: true } =>
 				Boolean(

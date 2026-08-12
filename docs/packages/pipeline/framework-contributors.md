@@ -12,16 +12,20 @@ Framework contributors extend the pipeline along the **standard WPK model**:
 
 - Fragment helpers assemble intermediate IR and drafts
 - Builder helpers turn those drafts into real artifacts (files, AST rewrites, etc.)
-- Extensions wrap the run with transactional `prepare → commit/rollback` hooks
+- Extensions wrap the finalised artifact with transactional commit/rollback hooks
 
 The goal is that CLI, UI, and PHP codemod packages all share **the same helpers, the same extensions, and the same diagnostics**, while targeting different surfaces.
 
 ## Workflow
 
-Use `makePipeline()` to describe execution stages (fragments, builders, analysis passes, etc.), then register helpers that declare dependencies. When advanced behaviour is required, compose extensions that:
+Use `createPipeline()` for the standard fragment and builder sequence, then
+register helpers that declare dependencies. Use `makePipeline()` only for a
+custom stage model. When advanced behaviour is required, compose extensions
+that:
 
-- Attach to one or more **lifecycles** (e.g. `fragment`, `builder`, `plan-validate`)
-- Run transactional work inside the hook (`prepare`, `commit`, `rollback`)
+- Attach to one of the standard post-finalisation lifecycles, or to a custom
+  pipeline's declared lifecycle
+- Run transactional work inside the hook (`commit`, `rollback`)
 - Optionally register additional helpers as part of their setup
 
 Custom `createStages` callbacks are contextually typed. `createState`,
@@ -29,7 +33,9 @@ Custom `createStages` callbacks are contextually typed. `createState`,
 `createRunResult.state` retain the same user-state, context, reporter,
 diagnostic, and helper input/output types without consumer casts.
 
-Each lifecycle run creates its own extension coordinator and state; commits run **once per lifecycle** in the order they were executed, while rollbacks run in **reverse order (LIFO)** when anything fails. Within a lifecycle, extension commit order follows hook sequencing rules (priority/registration order — whatever your coordinator guarantees). Extension authors should assume:
+Each lifecycle run creates its own extension state; commits run **once per
+lifecycle** in registration order, while rollbacks run in **reverse order
+(LIFO)** when anything fails. Extension authors should assume:
 
 - your `commit` can be called alongside commits from other lifecycles
 - Each lifecycle may transform the artifact; later lifecycles see the updated artifact
@@ -39,11 +45,12 @@ Each lifecycle run creates its own extension coordinator and state; commits run 
 
 ```ts
 import * as fs from 'fs/promises';
+import { createPipelineExtension } from '@wpkernel/pipeline';
 
 const fileWriterExtension = createPipelineExtension({
 	key: 'acme.file-writer',
-	lifecycle: 'builder', // make the intent explicit in docs, even if optional
-	hook({ artifact, reporter }) {
+	lifecycle: 'after-builders',
+	hook({ artifact, context }) {
 		const tempPath = `/tmp/${Date.now()}.json`;
 		let committed = false;
 
@@ -52,12 +59,14 @@ const fileWriterExtension = createPipelineExtension({
 			async commit() {
 				await fs.writeFile(tempPath, JSON.stringify(artifact, null, 2));
 				committed = true;
-				reporter.info?.(`[file-writer] wrote artifact → ${tempPath}`);
+				context.reporter.info?.(
+					`[file-writer] wrote artifact at ${tempPath}`
+				);
 			},
 			async rollback() {
 				if (!committed) return;
 				await fs.unlink(tempPath).catch(() => {
-					reporter.warn?.(
+					context.reporter.warn?.(
 						`[file-writer] rollback could not remove ${tempPath} (already gone?)`
 					);
 				});
@@ -73,7 +82,7 @@ Prefer `createPipelineExtension()` over manual registration so setup and hook ph
 
 Typical framework patterns:
 
-- **FS transaction wrappers** for builder lifecycles (`builder:prepare/commit/rollback`)
+- **FS transaction wrappers** for builder lifecycles (`commit`/`rollback`)
 - **Live-runner / watcher extensions** that inject helpers into a dedicated `live-runner` lifecycle
 - **Analysis / validation passes** that attach to early lifecycles (`plan-validate`) and never touch the artifact
 
@@ -85,13 +94,19 @@ Always keep `commit` and `rollback` **idempotent**, and route logs through the s
 
 ## Extension Points
 
-Expose new helper families through dedicated registration functions that wrap `registerHelper()` with shared defaults. Common examples:
+Expose new helper families through dedicated registration functions that
+normalise metadata before calling `pipeline.ir.use()` or
+`pipeline.builders.use()`. Common examples:
 
-- `registerFragmentHelper()` – annotates fragment helpers with IR metadata and default priorities (wraps core `registerHelper`)
-- `registerBuilderHelper()` – locks helpers into the builder lifecycle with correct diagnostics wiring (wraps core `registerHelper`)
-- `registerCodemodHelper()` – targets PHP AST visitors for `php-json-ast` and codemod plans
+- `registerFragmentHelper()` - annotates fragment helpers with IR metadata and
+  default priorities
+- `registerBuilderHelper()` - locks helpers into the builder lifecycle with
+  correct diagnostics wiring
+- `registerCodemodHelper()` - targets PHP AST visitors for `php-json-ast` and
+  codemod plans
 
-These functions internally use the agnostic `registerHelper` from `@wpkernel/pipeline/core` but strictly type the `kind` field.
+These functions use the package's root-exported helper contract and strictly
+type the `kind` field. Runner internals are not package entry points.
 
 When widening extension payloads (`PipelineExtensionHookOptions`), update:
 
@@ -101,21 +116,9 @@ When widening extension payloads (`PipelineExtensionHookOptions`), update:
 
 so downstream packages inherit the new shape without ad-hoc adapters.
 
-## Official extension catalog
-
-The `@wpkernel/pipeline/extensions` entry point publishes `OFFICIAL_EXTENSION_BLUEPRINTS`, a typed manifest of incubating extensions (live runner, concurrency scheduler, etc.). Framework contributors can use the blueprint metadata to align helper annotations and reporter expectations before the factory lands.
-
-```ts
-import { OFFICIAL_EXTENSION_BLUEPRINTS } from '@wpkernel/pipeline/extensions';
-
-for (const blueprint of OFFICIAL_EXTENSION_BLUEPRINTS) {
-	if (blueprint.id === 'live-runner') {
-		console.log(blueprint.pipelineTouchPoints);
-	}
-}
-```
-
-When you add a new official extension, update the blueprint with helper annotations, lifecycle slots, and rollout notes so downstream packages can stage migrations against a stable contract.
+Planned extensions belong in design documentation until an implemented
+factory and runtime contract exist. The package exports implemented extension
+primitives from its root rather than publishing prose-only runtime manifests.
 
 ## Testing
 

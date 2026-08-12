@@ -49,7 +49,12 @@ Treat adapter extensions as transactional units. Each factory should validate in
 
 ## Extension Points
 
-`createExtensionHookOptions()` exposes CLI context, options, and artefacts to pipeline hooks. Use it when adding new lifecycle data so extensions can branch by phase without reaching into private state. For PHP transformations, feed codemod definitions from `serialisePhpCodemodConfiguration()` into the pipeline hook so the php-json-ast visitors run before workspace commits.
+Pipeline hooks receive the CLI context, complete run options, finalised IR, and
+lifecycle directly from the shared extension contract. Use the run `phase` when
+an extension must distinguish generation from application without reaching
+into private runner state. For PHP transformations, feed codemod definitions
+from `serialisePhpCodemodConfiguration()` into the pipeline hook so the
+php-json-ast visitors run before workspace commits.
 
 ## Testing
 

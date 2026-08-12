@@ -4,11 +4,9 @@ import type {
 	AgnosticRunContext,
 	AgnosticRunnerDependencies,
 	AgnosticState,
-	HelperExecutionSnapshot,
 	Halt,
 	PipelineStage,
 	PipelineStepResult,
-	RollbackEntry,
 } from './types';
 import type {
 	PipelineReporter,
@@ -17,21 +15,12 @@ import type {
 	PipelinePauseSnapshot,
 	PipelinePaused,
 } from '../types';
-import { isPromiseLike, maybeThen, maybeTry } from '../async-utils';
+import { adoptMaybePromise, maybeThen, maybeTry } from '../async-utils';
 import { createAgnosticStages } from './program';
 import { isHalt, isPaused } from './stage-factories';
 import { prepareResumeContext } from './context';
-import { makeRollbackHandler } from './rollback';
+import { rollbackStateToHalt as rollbackRunStateToHalt } from './rollback';
 import { commitPendingExtensions } from './commit';
-
-const createEmptySnapshot = (
-	kind: string
-): HelperExecutionSnapshot<string> => ({
-	kind,
-	registered: [],
-	executed: [],
-	missing: [],
-});
 
 const applyStageIndex = <TState extends { stageIndex?: number }>(
 	state: TState,
@@ -82,15 +71,11 @@ const finalizeRunState = <
 ): MaybePromise<TRunResult> => {
 	return maybeThen(commitPendingExtensions(result), () =>
 		dependencies.resolveRunResult({
-			diagnostics: result.diagnostics as TDiagnostic[],
+			diagnostics: result.diagnostics,
 			steps: result.steps,
 			context: result.context,
 			userState: result.userState,
 			options: result.runOptions,
-			helpers: {
-				fragments: createEmptySnapshot('dummy-fragment'),
-				builders: createEmptySnapshot('dummy-builder'),
-			},
 			state: result,
 		})
 	);
@@ -121,30 +106,16 @@ const rollbackStateToHalt = <
 	>,
 	error: unknown
 ): MaybePromise<Halt<TRunResult>> => {
-	const rollback = makeRollbackHandler<
-		TContext,
-		TRunOptions,
-		TUserState,
-		{ readonly key: string }
-	>(
-		{
-			context: state.context,
-			extensionCoordinator: state.extensionCoordinator,
-			extensionState: state.extensionState,
-			extensionStack: state.extensionStack,
-		},
-		(state.helperRollbackStack ?? []) as RollbackEntry<{
-			readonly key: string;
-		}>[],
+	return rollbackRunStateToHalt(
+		state,
+		error,
+		(failure) => ({
+			__halt: true,
+			__hasError: true,
+			error: failure,
+		}),
 		dependencies.options.onHelperRollbackError
 	);
-
-	return maybeThen(rollback(error), () => ({
-		__halt: true,
-		__hasError: true,
-		__rollbackApplied: true,
-		error,
-	}));
 };
 
 const haltHasError = <TRunResult>(halt: Halt<TRunResult>): boolean =>
@@ -241,84 +212,25 @@ const finalizeRunWithRollback = <
 	);
 
 const runStagesIteratively = <
-	TRunOptions,
-	TUserState,
-	TContext extends { reporter: TReporter },
-	TReporter extends PipelineReporter,
-	TDiagnostic extends PipelineDiagnostic,
+	TState extends { readonly stageIndex?: number },
 	TRunResult,
 >(
-	stages: PipelineStage<
-		AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
-		Halt<TRunResult>
-	>[],
-	initialState: AgnosticState<
-		TRunOptions,
-		TUserState,
-		TContext,
-		TReporter,
-		TDiagnostic
-	>,
+	stages: PipelineStage<TState, Halt<TRunResult>>[],
+	initialState: TState,
 	startIndex: number,
 	onStageError?: (
-		state: AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
+		state: TState,
 		error: unknown
 	) => MaybePromise<Halt<TRunResult>>,
 	onStageHalt?: (
-		state: AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
+		state: TState,
 		halt: Halt<TRunResult>
 	) => MaybePromise<Halt<TRunResult>>
-): MaybePromise<
-	PipelineStepResult<
-		AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
-		TRunResult
-	>
-> => {
+): MaybePromise<PipelineStepResult<TState, TRunResult>> => {
 	const runFrom = (
-		state: AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
+		state: TState,
 		stageIndex: number
-	): MaybePromise<
-		PipelineStepResult<
-			AgnosticState<
-				TRunOptions,
-				TUserState,
-				TContext,
-				TReporter,
-				TDiagnostic
-			>,
-			TRunResult
-		>
-	> => {
+	): MaybePromise<PipelineStepResult<TState, TRunResult>> => {
 		let currentState = state;
 
 		for (let index = stageIndex; index < stages.length; index += 1) {
@@ -327,75 +239,136 @@ const runStagesIteratively = <
 				return currentState;
 			}
 			const stageState = applyStageIndex(currentState, index);
-			let next;
-			try {
-				next = stage(stageState);
-			} catch (error) {
+			const continueFromResult = (
+				resolved: PipelineStepResult<TState, TRunResult>
+			) => {
+				const terminal = resolveTerminalStageResult(
+					stageState,
+					resolved,
+					onStageHalt
+				);
+				if (terminal) {
+					return terminal;
+				}
+
+				return adoptStageState(stageState, resolved as TState);
+			};
+			const handleStageError = (error: unknown) => {
 				if (onStageError) {
 					return onStageError(stageState, error);
 				}
 				throw error;
+			};
+			const next = adoptMaybePromise(
+				maybeTry(() => stage(stageState), handleStageError)
+			);
+
+			if (next.promise !== null) {
+				return next.promise.then((resolved) => {
+					const continued = continueFromResult(resolved);
+					return maybeThen(continued, (nextState) =>
+						isHalt<TRunResult>(nextState) ||
+						isPaused<TState>(nextState)
+							? nextState
+							: runFrom(nextState, index + 1)
+					);
+				});
 			}
 
-			if (isPromiseLike(next)) {
-				return Promise.resolve(next).then(
-					(resolved) => {
-						const terminal = resolveTerminalStageResult(
-							stageState,
-							resolved,
-							onStageHalt
-						);
-						if (terminal) {
-							return terminal;
-						}
-						return runFrom(
-							adoptStageState(
-								stageState,
-								resolved as AgnosticState<
-									TRunOptions,
-									TUserState,
-									TContext,
-									TReporter,
-									TDiagnostic
-								>
-							),
-							index + 1
-						);
-					},
-					(error: unknown) => {
-						if (onStageError) {
-							return onStageError(stageState, error);
-						}
-						throw error;
-					}
+			const continued = adoptMaybePromise(continueFromResult(next.value));
+			if (continued.promise !== null) {
+				return continued.promise.then((resolved) =>
+					isHalt<TRunResult>(resolved) || isPaused<TState>(resolved)
+						? resolved
+						: runFrom(resolved, index + 1)
 				);
 			}
-
-			const terminal = resolveTerminalStageResult(
-				stageState,
-				next,
-				onStageHalt
-			);
-			if (terminal) {
-				return terminal;
+			if (
+				isHalt<TRunResult>(continued.value) ||
+				isPaused(continued.value)
+			) {
+				return continued.value;
 			}
-
-			currentState = adoptStageState(
-				stageState,
-				next as AgnosticState<
-					TRunOptions,
-					TUserState,
-					TContext,
-					TReporter,
-					TDiagnostic
-				>
-			);
+			currentState = continued.value;
 		}
 
 		return currentState;
 	};
 
 	return runFrom(initialState, startIndex);
+};
+
+const executePreparedRun = <
+	TRunOptions,
+	TUserState,
+	TContext extends { reporter: TReporter },
+	TReporter extends PipelineReporter,
+	TDiagnostic extends PipelineDiagnostic,
+	TRunResult,
+>(
+	dependencies: AgnosticRunnerDependencies<
+		TRunOptions,
+		TUserState,
+		TContext,
+		TReporter,
+		TDiagnostic,
+		TRunResult
+	>,
+	runContext: AgnosticRunContext<
+		TRunOptions,
+		TUserState,
+		TContext,
+		TReporter,
+		TDiagnostic
+	>,
+	startIndex: number,
+	allowPause: boolean
+): MaybePromise<
+	| TRunResult
+	| PipelinePaused<
+			AgnosticState<
+				TRunOptions,
+				TUserState,
+				TContext,
+				TReporter,
+				TDiagnostic
+			>
+	  >
+> => {
+	const initialState = runContext.state;
+	const stages = createAgnosticStages(dependencies, runContext);
+	const runResult = runStagesIteratively(
+		stages,
+		initialState,
+		startIndex,
+		(state, error) => rollbackStateToHalt(dependencies, state, error),
+		(state, halt) => rollbackUnhandledHalt(dependencies, state, halt)
+	);
+
+	return maybeThen(runResult, (result) => {
+		if (isHalt(result)) {
+			if (haltHasError(result)) {
+				throw result.error;
+			}
+			return result.result!;
+		}
+		if (isPaused(result)) {
+			if (allowPause) {
+				return result;
+			}
+			const error = new Error(
+				'Pipeline paused during executeRun. Use makeResumablePipeline to enable pause/resume.'
+			);
+			return maybeThen(
+				rollbackStateToHalt(dependencies, result.snapshot.state, error),
+				() => {
+					throw error;
+				}
+			);
+		}
+
+		return finalizeRunWithRollback(dependencies, result);
+	});
 };
 
 export const executeRun = <
@@ -421,99 +394,13 @@ export const executeRun = <
 		TReporter,
 		TDiagnostic
 	>
-): MaybePromise<TRunResult> => {
-	const {
-		runOptions,
-		context,
-	}: AgnosticRunContext<
-		TRunOptions,
-		TUserState,
-		TContext,
-		TReporter,
-		TDiagnostic
-	> = runContext;
-
-	// AgnosticState is already prepared by prepareContext
-
-	const initialState: AgnosticState<
-		TRunOptions,
-		TUserState,
-		TContext,
-		TReporter,
-		TDiagnostic
-	> = runContext.state;
-
-	if (!dependencies.stages) {
-		return dependencies.resolveRunResult({
-			diagnostics: [],
-			steps: [],
-			context,
-			userState: initialState.userState,
-			options: runOptions,
-			helpers: {
-				builders: createEmptySnapshot('dummy-builder'),
-			},
-			state: initialState,
-		});
-	}
-
-	const stages = createAgnosticStages(dependencies, runContext);
-	const runResult = runStagesIteratively(
-		stages,
-		initialState,
+): MaybePromise<TRunResult> =>
+	executePreparedRun(
+		dependencies,
+		runContext,
 		0,
-		(state, error) => rollbackStateToHalt(dependencies, state, error),
-		(state, halt) => rollbackUnhandledHalt(dependencies, state, halt)
-	);
-
-	return maybeThen(
-		runResult,
-		(
-			result:
-				| AgnosticState<
-						TRunOptions,
-						TUserState,
-						TContext,
-						TReporter,
-						TDiagnostic
-				  >
-				| Halt<TRunResult>
-				| PipelinePaused<
-						AgnosticState<
-							TRunOptions,
-							TUserState,
-							TContext,
-							TReporter,
-							TDiagnostic
-						>
-				  >
-		) => {
-			if (isHalt(result)) {
-				if (haltHasError(result)) {
-					throw result.error;
-				}
-				return result.result!;
-			}
-			if (isPaused(result)) {
-				const error = new Error(
-					'Pipeline paused during executeRun. Use makeResumablePipeline to enable pause/resume.'
-				);
-				return maybeThen(
-					rollbackStateToHalt(
-						dependencies,
-						result.snapshot.state,
-						error
-					),
-					() => {
-						throw error;
-					}
-				);
-			}
-
-			return finalizeRunWithRollback(dependencies, result);
-		}
-	);
-};
+		false
+	) as MaybePromise<TRunResult>;
 
 export const executeRunWithPause = <
 	TRunOptions,
@@ -538,60 +425,7 @@ export const executeRunWithPause = <
 		TReporter,
 		TDiagnostic
 	>
-): MaybePromise<
-	| TRunResult
-	| PipelinePaused<
-			AgnosticState<
-				TRunOptions,
-				TUserState,
-				TContext,
-				TReporter,
-				TDiagnostic
-			>
-	  >
-> => {
-	const { runOptions, context } = runContext;
-
-	const initialState = runContext.state;
-
-	if (!dependencies.stages) {
-		return dependencies.resolveRunResult({
-			diagnostics: [],
-			steps: [],
-			context,
-			userState: initialState.userState,
-			options: runOptions,
-			helpers: {
-				builders: createEmptySnapshot('dummy-builder'),
-			},
-			state: initialState,
-		});
-	}
-
-	const stages = createAgnosticStages(dependencies, runContext);
-	const runResult = runStagesIteratively(
-		stages,
-		initialState,
-		0,
-		(state, error) => rollbackStateToHalt(dependencies, state, error),
-		(state, halt) => rollbackUnhandledHalt(dependencies, state, halt)
-	);
-
-	return maybeThen(runResult, (result) => {
-		if (isHalt(result)) {
-			if (haltHasError(result)) {
-				throw result.error;
-			}
-			return result.result!;
-		}
-
-		if (isPaused(result)) {
-			return result;
-		}
-
-		return finalizeRunWithRollback(dependencies, result);
-	});
-};
+) => executePreparedRun(dependencies, runContext, 0, true);
 
 export const executeResume = <
 	TRunOptions,
@@ -625,36 +459,17 @@ export const executeResume = <
 			>
 	  >
 > => {
-	if (!dependencies.stages) {
-		return finalizeRunState(dependencies, snapshot.state);
-	}
-
 	const resumeContext = prepareResumeContext(dependencies, snapshot);
-	const resumeState = {
-		...resumeContext.state,
-		resumeInput,
-	};
-	const stages = createAgnosticStages(dependencies, resumeContext);
-	const runResult = runStagesIteratively(
-		stages,
-		resumeState,
+	return executePreparedRun(
+		dependencies,
+		{
+			...resumeContext,
+			state: {
+				...resumeContext.state,
+				resumeInput,
+			},
+		},
 		snapshot.stageIndex,
-		(state, error) => rollbackStateToHalt(dependencies, state, error),
-		(state, halt) => rollbackUnhandledHalt(dependencies, state, halt)
+		true
 	);
-
-	return maybeThen(runResult, (result) => {
-		if (isHalt(result)) {
-			if (haltHasError(result)) {
-				throw result.error;
-			}
-			return result.result!;
-		}
-
-		if (isPaused(result)) {
-			return result;
-		}
-
-		return finalizeRunWithRollback(dependencies, result);
-	});
 };

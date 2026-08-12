@@ -54,6 +54,17 @@ describe('rollback', () => {
 			const meta = createRollbackErrorMetadata(123);
 			expect(meta).toEqual({});
 		});
+
+		it('contains errors raised while reading error metadata', () => {
+			const error = new Error('hidden');
+			Object.defineProperty(error, 'message', {
+				get: () => {
+					throw new Error('metadata failed');
+				},
+			});
+
+			expect(createRollbackErrorMetadata(error)).toEqual({});
+		});
 	});
 
 	describe('runRollbackStack', () => {
@@ -68,6 +79,21 @@ describe('rollback', () => {
 			await runRollbackStack(rollbacks, { source: 'helper' });
 
 			expect(order).toEqual([3, 2, 1]);
+		});
+
+		it('preserves synchronous execution when every rollback is synchronous', () => {
+			const order: number[] = [];
+
+			const result = runRollbackStack(
+				[
+					createPipelineRollback(() => order.push(1)),
+					createPipelineRollback(() => order.push(2)),
+				],
+				{ source: 'helper' }
+			);
+
+			expect(result).toBeUndefined();
+			expect(order).toEqual([2, 1]);
 		});
 
 		it('handles async rollbacks', async () => {
@@ -133,6 +159,27 @@ describe('rollback', () => {
 			});
 
 			// Should have executed rollback1 and rollback3 despite rollback2 failing
+			expect(order).toEqual([3, 1]);
+		});
+
+		it('continues rolling back when the error observer throws', () => {
+			const order: number[] = [];
+			const rollbacks = [
+				createPipelineRollback(() => order.push(1)),
+				createPipelineRollback(() => {
+					throw new Error('rollback failed');
+				}),
+				createPipelineRollback(() => order.push(3)),
+			];
+
+			const outcome = runRollbackStack(rollbacks, {
+				source: 'helper',
+				onError: () => {
+					throw new Error('observer failed');
+				},
+			});
+
+			expect(outcome).toBeUndefined();
 			expect(order).toEqual([3, 1]);
 		});
 

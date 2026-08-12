@@ -8,7 +8,7 @@ import type {
 	PipelineReporter,
 } from './types';
 import type { RegisteredHelper } from './dependency-graph';
-import { isPromiseLike } from './async-utils';
+import { adoptMaybePromise, maybeThen } from './async-utils';
 
 export interface HelperExecutionResult<TOutput> {
 	readonly visited: Set<string>;
@@ -195,8 +195,9 @@ export function executeHelpers<
 					output: nextOutput,
 				});
 
-				if (isPromiseLike(downstream)) {
-					const pending = Promise.resolve(downstream).then(
+				const adoptedDownstream = adoptMaybePromise(downstream);
+				if (adoptedDownstream.promise !== null) {
+					const pending = adoptedDownstream.promise.then(
 						(result) => {
 							continuation = {
 								status: 'fulfilled',
@@ -215,39 +216,23 @@ export function executeHelpers<
 
 				continuation = {
 					status: 'fulfilled',
-					output: downstream.output,
+					output: adoptedDownstream.value.output,
 				};
-				return downstream.output;
+				return adoptedDownstream.value.output;
 			} catch (error) {
 				continuation = { status: 'rejected', error };
 				throw error;
 			}
 		};
 
-		const invocation = invoke(entry.helper, args, next, index);
-
-		if (isPromiseLike(invocation)) {
-			return Promise.resolve(invocation).then((result) =>
-				resolveInvocation(result, current, index, continuation)
-			);
-		}
-
-		return resolveInvocation(invocation, current, index, continuation);
+		return maybeThen(invoke(entry.helper, args, next, index), (result) =>
+			resolveInvocation(result, current, index, continuation)
+		);
 	}
 
-	const execution = runAt(0);
-
-	if (isPromiseLike(execution)) {
-		return execution.then((result) => ({
-			visited,
-			hasOutput: result.hasOutput,
-			output: result.output,
-		}));
-	}
-
-	return {
+	return maybeThen(runAt(0), (result) => ({
 		visited,
-		hasOutput: execution.hasOutput,
-		output: execution.output,
-	};
+		hasOutput: result.hasOutput,
+		output: result.output,
+	}));
 }

@@ -87,10 +87,13 @@ new pipeline invocation rather than persist pipeline suspension state.
 
 ### 3. Extensions & Lifecycles
 
-Extensions wrap the execution flow. They attach to lifecycle hooks (defined by strings like `'prepare'`, `'commit'`, `'finalize'`).
+Extensions wrap the execution flow. Custom pipelines can attach hooks to
+arbitrary lifecycle names. The standard pipeline begins extension execution
+after fragment finalisation so every hook receives the declared artifact type.
 This allows for cross-cutting concerns:
 
-- **Transactions**: Open a transaction in `prepare`, commit in `commit`, rollback in `rollback`.
+- **Transactions**: Prepare resources during extension registration, then
+  commit or roll them back through lifecycle hook results.
 - **Logging**: Log start/end times.
 - **Resource Management**: Connect/Disconnect databases.
 

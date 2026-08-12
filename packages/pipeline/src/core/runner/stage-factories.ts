@@ -1,9 +1,4 @@
-import {
-	isPromiseLike,
-	maybeThen,
-	maybeTry,
-	type Program,
-} from '../async-utils';
+import { maybeThen, maybeTry } from '../async-utils';
 import { executeHelpers } from '../execution-utils';
 import type { PipelineRollback } from '../rollback';
 import type {
@@ -12,9 +7,9 @@ import type {
 	HelperApplyOptions,
 	HelperKind,
 	HelperNext,
+	HelperExecutionSnapshot,
 	MaybePromise,
 	PipelinePaused,
-	PipelineExtensionRollbackErrorMetadata,
 	PipelineReporter,
 } from '../types';
 import type { RegisteredHelper } from '../dependency-graph';
@@ -26,23 +21,7 @@ import type {
 	HelperStageSpec,
 	HelperRollbackPlan,
 } from './types';
-import { runHelperStageWithRollback } from './rollback';
-
-interface StateWithExecution {
-	helperExecution?: Map<
-		string,
-		{
-			executed: readonly string[];
-			registered: unknown[];
-			missing: unknown[];
-			kind: string;
-		}
-	>;
-}
-
-interface HelperWithKey {
-	key: string;
-}
+import { runRollbackToHalt } from './rollback';
 
 export function isHalt<TRunResult>(value: unknown): value is Halt<TRunResult> {
 	return Boolean(
@@ -126,19 +105,12 @@ export function createHelpersProgram<
 	): MaybePromise<HelperApplyResult<TOutput> | void> => {
 		const invocation = invoke({ helper, args, next });
 
-		if (!registerRollback) {
-			return invocation;
-		}
-
-		if (isPromiseLike(invocation)) {
-			return invocation.then((resolved) => {
-				registerRollback(helper, resolved, executionIndex);
-				return resolved;
-			});
-		}
-
-		registerRollback(helper, invocation, executionIndex);
-		return invocation;
+		return registerRollback
+			? maybeThen(invocation, (resolved) => {
+					registerRollback(helper, resolved, executionIndex);
+					return resolved;
+				})
+			: invocation;
 	};
 
 	return (state) => {
@@ -163,75 +135,30 @@ export function createHelpersProgram<
 	};
 }
 
-/**
- * Pure finalizer for fragment state.
- * @param options
- * @param options.isHalt
- * @param options.snapshotFragments
- * @param options.applyArtifact
- * @param options.isPaused
- */
-export function makeFinalizeFragmentsStage<
-	TState,
-	THalt extends Halt<unknown>,
-	TFragments,
->(options: {
+type GuardedStageOptions<TState, THalt extends Halt<unknown>> = {
 	isHalt: (value: TState | THalt) => value is THalt;
 	isPaused?: (value: unknown) => value is PipelinePaused<TState>;
-	snapshotFragments: (state: TState) => TFragments;
-	applyArtifact: (state: TState, fragments: TFragments) => TState;
-}): Program<TState | THalt | PipelinePaused<TState>> {
-	const {
+	execute: (state: TState) => MaybePromise<TState | THalt>;
+};
+
+export const makeGuardedStage =
+	<TState, THalt extends Halt<unknown>>({
 		isHalt: isHaltState,
 		isPaused: isPausedState,
-		snapshotFragments,
-		applyArtifact,
-	} = options;
-
-	return (state) => {
-		if (isPausedState && isPausedState(state)) {
-			return state;
-		}
-
-		if (isHaltState(state as TState | THalt)) {
-			return state;
-		}
-
-		return applyArtifact(
-			state as TState,
-			snapshotFragments(state as TState)
-		);
-	};
-}
-
-/**
- * Generic stage builder for "after fragments" style hooks.
- * @param options
- * @param options.isHalt
- * @param options.execute
- * @param options.isPaused
- */
-export function makeAfterFragmentsStage<
-	TState,
-	THalt extends Halt<unknown>,
->(options: {
-	isHalt: (value: TState | THalt) => value is THalt;
-	isPaused?: (value: unknown) => value is PipelinePaused<TState>;
-	execute: (state: TState) => MaybePromise<TState>;
-}): Program<TState | THalt | PipelinePaused<TState>> {
-	const { isHalt: isHaltState, isPaused: isPausedState, execute } = options;
-	return (state) => {
-		if (isPausedState && isPausedState(state)) {
-			return state;
-		}
-
-		if (isHaltState(state as TState | THalt)) {
+		execute,
+	}: GuardedStageOptions<TState, THalt>): ((
+		state: TState | THalt | PipelinePaused<TState>
+	) => MaybePromise<TState | THalt | PipelinePaused<TState>>) =>
+	(state) => {
+		if (
+			(isPausedState && isPausedState(state)) ||
+			isHaltState(state as TState | THalt)
+		) {
 			return state;
 		}
 
 		return execute(state as TState);
 	};
-}
 
 /**
  * Commit stage builder.
@@ -246,7 +173,9 @@ export function makeCommitStage<TState, THalt extends Halt<unknown>>(options: {
 	isPaused?: (value: unknown) => value is PipelinePaused<TState>;
 	commit: (state: TState) => MaybePromise<void>;
 	rollbackToHalt: (state: TState, error: unknown) => MaybePromise<THalt>;
-}): Program<TState | THalt | PipelinePaused<TState>> {
+}): (
+	state: TState | THalt | PipelinePaused<TState>
+) => MaybePromise<TState | THalt | PipelinePaused<TState>> {
 	const {
 		isHalt: isHaltState,
 		isPaused: isPausedState,
@@ -265,46 +194,11 @@ export function makeCommitStage<TState, THalt extends Halt<unknown>>(options: {
 		);
 	};
 
-	return (state) => {
-		if (isPausedState && isPausedState(state)) {
-			return state;
-		}
-
-		if (isHaltState(state as TState | THalt)) {
-			return state;
-		}
-
-		return runCommit(state as TState);
-	};
-}
-
-/**
- * Simple finalizer that snapshots helpers/diagnostics into state.
- * @param options
- * @param options.isHalt
- * @param options.finalize
- * @param options.isPaused
- */
-export function makeFinalizeResultStage<
-	TState,
-	THalt extends Halt<unknown>,
->(options: {
-	isHalt: (value: TState | THalt) => value is THalt;
-	isPaused?: (value: unknown) => value is PipelinePaused<TState>;
-	finalize: (state: TState) => TState;
-}): Program<TState | THalt | PipelinePaused<TState>> {
-	const { isHalt: isHaltState, isPaused: isPausedState, finalize } = options;
-	return (state) => {
-		if (isPausedState && isPausedState(state)) {
-			return state;
-		}
-
-		if (isHaltState(state as TState | THalt)) {
-			return state;
-		}
-
-		return finalize(state as TState);
-	};
+	return makeGuardedStage({
+		isHalt: isHaltState,
+		isPaused: isPausedState,
+		execute: runCommit,
+	});
 }
 
 export function makeHelperStageFactory<
@@ -314,16 +208,7 @@ export function makeHelperStageFactory<
 	TOptions,
 	TReporter extends PipelineReporter,
 	TUserState,
->(
-	config: StageEnv<
-		TState,
-		TRunResult,
-		TContext,
-		TOptions,
-		TReporter,
-		TUserState
-	>
-) {
+>(config: StageEnv<TState, TRunResult, TContext, TOptions, TUserState>) {
 	return function makeStage<
 		TKind extends HelperKind,
 		THelper extends Helper<TContext, TInput, TOutput, TReporter, TKind>,
@@ -340,7 +225,9 @@ export function makeHelperStageFactory<
 			TInput,
 			TOutput
 		>
-	): Program<TState | Halt<TRunResult> | PipelinePaused<TState>> {
+	): (
+		state: TState | Halt<TRunResult> | PipelinePaused<TState>
+	) => MaybePromise<TState | Halt<TRunResult> | PipelinePaused<TState>> {
 		const {
 			pushStep,
 			toRollbackContext,
@@ -397,26 +284,6 @@ export function makeHelperStageFactory<
 			};
 		};
 
-		const toRollbackErrorHandler = () =>
-			onHelperRollbackError
-				? (options: {
-						readonly error: unknown;
-						readonly helper: THelper;
-						readonly errorMetadata: PipelineExtensionRollbackErrorMetadata;
-						readonly context: TContext;
-					}) =>
-						onHelperRollbackError({
-							...options,
-							helper: options.helper as Helper<
-								TContext,
-								unknown,
-								unknown,
-								TReporter,
-								HelperKind
-							>,
-						})
-				: undefined;
-
 		return (state) => {
 			if (isHaltState(state)) {
 				return state;
@@ -425,34 +292,28 @@ export function makeHelperStageFactory<
 				return state;
 			}
 
-			// Initialize helper execution snapshot
-			let executionMap = (state as unknown as StateWithExecution)
-				.helperExecution;
-
-			if (!executionMap) {
-				executionMap = new Map();
-				(state as unknown as StateWithExecution).helperExecution =
-					executionMap;
-			}
-
-			let snapshot = executionMap.get(kind);
-
-			if (!snapshot) {
-				snapshot = {
-					kind,
-					executed: [],
-					missing: [],
-					registered: [], // Registered populated by getOrder result?
-				};
-				executionMap.set(kind, snapshot);
-			}
-
-			const recordStep = (entry: RegisteredHelper<unknown>) => {
-				pushStep(entry);
-				(snapshot!.executed as string[]).push(
-					(entry.helper as HelperWithKey).key
-				);
+			const ordered = spec.getOrder(state as TState);
+			const helperExecution = new Map(
+				(
+					state as TState & {
+						readonly helperExecution?: ReadonlyMap<
+							string,
+							HelperExecutionSnapshot
+						>;
+					}
+				).helperExecution
+			);
+			const execution: HelperExecutionSnapshot<TKind> = {
+				kind: kind as TKind,
+				registered: ordered.map((entry) => entry.helper.key),
+				executed: [],
+				missing: [],
 			};
+			helperExecution.set(kind, execution);
+			const stateWithExecution = {
+				...(state as TState),
+				helperExecution,
+			} as TState;
 
 			const rollbacks = [
 				...(spec.readRollbacks?.(state as TState) ?? []),
@@ -469,10 +330,15 @@ export function makeHelperStageFactory<
 				TOutput,
 				TState
 			>({
-				getOrder: spec.getOrder,
+				getOrder: () => ordered,
 				makeArgs: spec.makeArgs,
 				invoke: invokeHelper,
-				recordStep,
+				recordStep: (entry) => {
+					pushStep(entry);
+					(execution.executed as string[]).push(
+						(entry.helper as { readonly key: string }).key
+					);
+				},
 				writeOutput: spec.writeOutput,
 				onVisited: (nextState, visited, output) => {
 					const visitedState = spec.onVisited(
@@ -500,22 +366,20 @@ export function makeHelperStageFactory<
 				context: rollbackContext.context,
 				rollbackContext,
 				helperRollbacks: rollbacks,
-				onHelperRollbackError: toRollbackErrorHandler(),
+				onHelperRollbackError,
 			};
 
-			return runHelperStageWithRollback<
-				TState,
-				TRunResult,
-				TContext,
-				TOptions,
-				TUserState,
-				THelper
-			>({
-				state: state as TState,
-				program,
-				rollbackPlan,
-				halt,
-			}) as MaybePromise<TState | Halt<TRunResult>>;
+			return maybeTry<TState | Halt<TRunResult>>(
+				() => program(stateWithExecution),
+				(error) =>
+					runRollbackToHalt<
+						TRunResult,
+						TContext,
+						TOptions,
+						TUserState,
+						THelper
+					>(rollbackPlan, halt, error)
+			);
 		};
 	};
 }

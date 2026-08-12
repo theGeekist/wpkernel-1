@@ -13,6 +13,9 @@ import { fileURLToPath } from 'node:url';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repositoryRoot = resolve(packageRoot, '..', '..');
+const sourceManifest = JSON.parse(
+	readFileSync(join(packageRoot, 'package.json'), 'utf8')
+);
 const qualificationRoot = mkdtempSync(
 	join(tmpdir(), 'wpkernel-pipeline-qualification-')
 );
@@ -20,15 +23,18 @@ const qualificationRoot = mkdtempSync(
 const source = String.raw`
 import {
 	createHelper,
+	createPipeline,
 	isPromiseLike,
 	makePipeline,
 	type Helper,
 	type MaybePromise,
 	type MissingDependencyDiagnostic,
+	type Pipeline,
 	type PipelineRunState,
 	type PipelineStage,
 	type PipelineStageDependencies,
 	type PipelineStageState,
+	type StandardPipelineExtension,
 } from '@wpkernel/pipeline';
 
 type Kind = 'compiler';
@@ -176,6 +182,71 @@ if (JSON.stringify(result.artifact.nodes) !== JSON.stringify(expected)) {
 			JSON.stringify(result.artifact.nodes)
 	);
 }
+
+type StandardDraft = { readonly parts: readonly string[] };
+type StandardArtifact = { readonly value: string };
+type StandardResult = PipelineRunState<StandardArtifact>;
+type StandardPipeline = Pipeline<
+	Options,
+	StandardResult,
+	Context,
+	Reporter,
+	Record<string, never>,
+	StandardArtifact,
+	StandardDraft,
+	StandardDraft,
+	StandardArtifact,
+	StandardArtifact
+>;
+
+const standardPipeline: StandardPipeline = createPipeline({
+	createBuildOptions: () => ({}),
+	createContext: () => ({ reporter: {} }),
+	createFragmentState: (): StandardDraft => ({ parts: ['draft'] }),
+	createFragmentArgs: ({ context, draft }) => ({
+		context,
+		input: draft,
+		output: draft,
+		reporter: context.reporter,
+	}),
+	finalizeFragmentState: ({ draft }): StandardArtifact => ({
+		value: draft.parts.join(':'),
+	}),
+	createBuilderArgs: ({ context, artifact }) => ({
+		context,
+		input: artifact,
+		output: artifact,
+		reporter: context.reporter,
+	}),
+});
+type ExportedStandardExtension = StandardPipelineExtension<
+	Options,
+	StandardResult,
+	Context,
+	Reporter,
+	Record<string, never>,
+	StandardArtifact,
+	StandardDraft,
+	StandardDraft,
+	StandardArtifact,
+	StandardArtifact
+>;
+const exportedStandardExtension: ExportedStandardExtension = {
+	register: () => ({ artifact }) => ({
+		artifact: { value: artifact.value + ':typed' },
+	}),
+};
+standardPipeline.extensions.use(exportedStandardExtension);
+
+const standardResult = standardPipeline.run({ source: 'standard' });
+if (isPromiseLike(standardResult)) {
+	throw new Error('A synchronous standard pipeline returned a Promise.');
+}
+if (standardResult.artifact.value !== 'draft:typed') {
+	throw new Error(
+		'Standard extension did not receive and replace the finalised artifact.'
+	);
+}
 `;
 
 try {
@@ -210,6 +281,26 @@ try {
 		],
 		{ stdio: 'pipe' }
 	);
+
+	const packedManifest = JSON.parse(
+		readFileSync(join(installedPackage, 'package.json'), 'utf8')
+	);
+	if (
+		packedManifest.name !== sourceManifest.name ||
+		packedManifest.version !== sourceManifest.version
+	) {
+		throw new Error(
+			'Packed package identity does not match the source manifest.'
+		);
+	}
+	const exportKeys = Object.keys(packedManifest.exports ?? {}).sort();
+	if (
+		JSON.stringify(exportKeys) !== JSON.stringify(['.', './package.json'])
+	) {
+		throw new Error(
+			`Packed package exposes unexpected entry points: ${exportKeys.join(', ')}`
+		);
+	}
 
 	writeFileSync(
 		join(fixtureRoot, 'package.json'),

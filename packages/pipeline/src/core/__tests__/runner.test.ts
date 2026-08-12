@@ -2,11 +2,11 @@ import { initAgnosticRunner } from '../runner';
 import type {
 	AgnosticRunnerDependencies,
 	PipelineStage,
-	AgnosticState,
 	Halt,
 } from '../runner/types';
 import type { PipelineReporter, PipelineDiagnostic } from '../types';
 import type { RegisteredHelper } from '../dependency-graph';
+import { createAgnosticDiagnosticManager } from '../runner/diagnostics';
 
 describe('Agnostic Runner', () => {
 	type TestOptions = { initialCount: number };
@@ -35,9 +35,14 @@ describe('Agnostic Runner', () => {
 			helper: {
 				key: 'add1',
 				kind: 'adder',
+				mode: 'extend',
 				priority: 10,
 				dependsOn: [],
-				run: (s: TestState) => (s.count += 1),
+				apply: ({ output }: { output: TestState }, next: any) => {
+					output.count += 1;
+					output.log.push('ran add1');
+					return next(output);
+				},
 			} as any,
 		},
 		{
@@ -46,30 +51,23 @@ describe('Agnostic Runner', () => {
 			helper: {
 				key: 'add2',
 				kind: 'adder',
+				mode: 'extend',
 				priority: 20,
 				dependsOn: [],
-				run: (s: TestState) => (s.count += 2),
+				apply: ({ output }: { output: TestState }, next: any) => {
+					output.count += 2;
+					output.log.push('ran add2');
+					return next(output);
+				},
 			} as any,
 		},
 	]);
 
 	// Simple generic stage
-	const makeStages = (deps: any): PipelineStage<any, Halt<any>>[] => {
-		const { runnerEnv } = deps;
-		return [
-			(state: AgnosticState<any, TestState, any, any, any>) => {
-				// Manually run helpers for test
-				const entries = state.helperOrders?.get('adder') || [];
-				entries.forEach((entry) => {
-					runnerEnv.pushStep(entry);
-					(entry.helper as any).run(state.userState);
-					state.userState.log.push(`ran ${entry.id}`);
-				});
-				return state;
-			},
-			deps.finalizeResult,
-		];
-	};
+	const makeStages = (deps: any): PipelineStage<any, Halt<any>>[] => [
+		deps.makeHelperStage('adder'),
+		deps.finalizeResult,
+	];
 
 	it('initializes and executes a run with pure state', async () => {
 		const dependencies: AgnosticRunnerDependencies<
@@ -89,12 +87,7 @@ describe('Agnostic Runner', () => {
 				createError,
 			},
 			helperRegistries,
-			diagnosticManager: {
-				readDiagnostics: () => [],
-				setReporter: jest.fn(),
-				prepareRun: jest.fn(),
-				getDiagnostics: () => [],
-			} as any,
+			diagnosticManager: createAgnosticDiagnosticManager(),
 			resolveRunResult: resolveRunResult as any,
 			extensionHooks: [],
 			stages: makeStages as any,

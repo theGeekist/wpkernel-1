@@ -26,30 +26,3 @@ export function createDefaultError(code: string, message: string): Error {
 	(error as Error & { code: string }).code = code;
 	return error;
 }
-
-/**
- * Creates an error factory that wraps a custom error class.
- *
- * @param create - A function that creates an Error instance based on a code and message.
- * @param create
- * @returns An error factory function
- *
- * @example
- * ```typescript
- * class WPKernelError extends Error {
- *   constructor(code: string, options: { message: string }) {
- *     super(options.message);
- *     this.name = code;
- *   }
- * }
- *
- * const createError = createErrorFactory(
- *   (code, message) => new WPKernelError(code, { message })
- * );
- * ```
- */
-export function createErrorFactory(
-	create: (code: string, message: string) => Error
-): ErrorFactory {
-	return create;
-}

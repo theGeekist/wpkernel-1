@@ -1,4 +1,4 @@
-import { composeK, maybeThen, type Program } from '../async-utils';
+import { maybeThen } from '../async-utils';
 import type {
 	AgnosticRunnerDependencies,
 	AgnosticRunContext,
@@ -6,15 +6,13 @@ import type {
 	Halt,
 	HelperStageSpec,
 	PipelineStage,
-	PipelineStepResult,
 	RollbackEntry,
 } from './types';
 import {
 	isHalt,
 	isPaused,
 	makeHelperStageFactory,
-	makeFinalizeResultStage,
-	makeAfterFragmentsStage,
+	makeGuardedStage,
 	makeCommitStage,
 } from './stage-factories';
 import type { RegisteredHelper } from '../dependency-graph';
@@ -33,8 +31,10 @@ import type {
 	PipelineStage as PublicPipelineStage,
 	PipelineStageState,
 } from '../types';
-import { makeRollbackHandler } from './rollback';
+import { rollbackStateToHalt } from './rollback';
 import { commitPendingExtensions } from './commit';
+import { runExtensionHooks } from '../extensions';
+import { createRollbackErrorMetadata } from '../rollback';
 
 const readStageIndex = (state: { stageIndex?: number }): number =>
 	state.stageIndex ?? 0;
@@ -97,7 +97,7 @@ export const createAgnosticStages = <
 		| RunnerState
 		| Halt<TRunResult>
 		| PipelinePaused<RunnerState>;
-	type RunnerProgram = Program<RunnerResult>;
+	type RunnerProgram = (state: RunnerResult) => MaybePromise<RunnerResult>;
 	type PublicState = PipelineStageState<
 		TRunOptions,
 		TUserState,
@@ -114,12 +114,7 @@ export const createAgnosticStages = <
 		TRunResult,
 		string
 	>;
-	type InternalDependencies = PublicDependencies & {
-		readonly runnerEnv: typeof runnerEnv;
-		readonly diagnosticManager: typeof diagnosticManager;
-	};
-	const diagnosticManager =
-		runContext.diagnosticManager ?? dependencies.diagnosticManager;
+	const diagnosticManager = runContext.state.diagnosticManager;
 
 	const halt = (...errors: [error?: unknown]): Halt<TRunResult> =>
 		errors.length === 0
@@ -144,9 +139,8 @@ export const createAgnosticStages = <
 		pushStep: runContext.pushStep,
 		toRollbackContext: (state: RunnerState) => ({
 			context: state.context,
-			extensionCoordinator: state.extensionCoordinator,
-			extensionState: state.extensionState,
 			extensionStack: state.extensionStack,
+			onExtensionRollbackError: state.onExtensionRollbackError,
 		}),
 		halt,
 		pause: dependencies.options.supportsPause
@@ -166,18 +160,7 @@ export const createAgnosticStages = <
 		TRunOptions,
 		TReporter,
 		TUserState
-	>({
-		pushStep: runContext.pushStep,
-		toRollbackContext: (state) => ({
-			context: state.context,
-			extensionCoordinator: state.extensionCoordinator,
-			extensionState: state.extensionState,
-			extensionStack: state.extensionStack,
-		}),
-		halt,
-		isHalt,
-		onHelperRollbackError: dependencies.options.onHelperRollbackError,
-	});
+	>(runnerEnv);
 
 	const makeHelperStage = (
 		kind: string,
@@ -192,35 +175,29 @@ export const createAgnosticStages = <
 				output: unknown
 			) => RunnerState;
 			writeOutput?: (state: RunnerState, output: unknown) => RunnerState;
-		},
-		createHelperArgs?: (args: {
-			state: RunnerState;
-			helper: unknown;
-			context: TContext;
-		}) => unknown
+		}
 	): RunnerProgram => {
-		// Construct the full stage spec
 		const stageSpec = {
 			getOrder: (state: RunnerState) =>
-				state.helperOrders?.get(kind) ?? [],
-			makeArgs: defaultMakeArgs,
+				state.helperOrders.get(kind) ?? [],
+			makeArgs: spec?.makeArgs ?? defaultMakeArgs,
 			onVisited: (
 				state: RunnerState,
 				visited: Set<string>,
 				rollbacks: unknown[],
 				output: unknown
 			): RunnerState => {
-				return spec?.onVisited
-					? spec.onVisited(state, visited, rollbacks, output)
-					: state;
+				return (
+					spec?.onVisited?.(state, visited, rollbacks, output) ??
+					state
+				);
 			},
 			writeRollbacks: (state: RunnerState, rollbacks: unknown[]) => ({
 				...state,
 				helperRollbackStack:
 					rollbacks as RunnerState['helperRollbackStack'],
 			}),
-			readRollbacks: (state: RunnerState) =>
-				state.helperRollbackStack ?? [],
+			readRollbacks: (state: RunnerState) => state.helperRollbackStack,
 			invoke: ({
 				helper,
 				args,
@@ -260,28 +237,15 @@ export const createAgnosticStages = <
 					`Invalid helper: expected function or object with .apply method. Got: ${typeof helper}`
 				);
 			},
-			writeOutput: spec
-				? spec.writeOutput
-				: (state: RunnerState, output: unknown) => ({
-						...state,
-						userState: output as TUserState,
-					}),
-			...spec,
+			writeOutput:
+				spec === undefined
+					? (state: RunnerState, output: unknown) => ({
+							...state,
+							userState: output as TUserState,
+						})
+					: spec.writeOutput,
 		};
 
-		// Override makeArgs only if provided or createHelperArgs is present
-		if (spec?.makeArgs) {
-			stageSpec.makeArgs = spec.makeArgs;
-		} else if (createHelperArgs) {
-			// Adapter-like makeArgs wrapping createHelperArgs
-			stageSpec.makeArgs =
-				(state: RunnerState) => (entry: RegisteredHelper<unknown>) =>
-					createHelperArgs({
-						state,
-						helper: entry.helper,
-						context: state.context,
-					});
-		}
 		// Type assertion required because stageSpec is built dynamically and
 		// TypeScript cannot infer the full generic relationship at compile time.
 		return makeStage(
@@ -299,42 +263,52 @@ export const createAgnosticStages = <
 	};
 
 	const makeLifecycleStage = (lifecycle: string): RunnerProgram =>
-		makeAfterFragmentsStage<RunnerState, Halt<TRunResult>>({
+		makeGuardedStage<RunnerState, Halt<TRunResult>>({
 			isHalt,
 			isPaused,
 			execute: (state) => {
-				state.executedLifecycles.add(lifecycle);
-				const coordinator = state.extensionCoordinator;
-				if (!coordinator) {
-					return state;
-				}
-
 				// runContext.buildHookOptions expects AgnosticState (RunnerState)
 				const hookOptions = runContext.buildHookOptions(
 					state,
 					lifecycle as unknown as PipelineExtensionLifecycle
 				);
 
+				const lifecycleHooks = dependencies.extensionHooks.filter(
+					(entry) => entry.lifecycle === lifecycle
+				);
 				return maybeThen(
-					coordinator.runLifecycle(
+					runExtensionHooks(
+						dependencies.extensionHooks,
 						lifecycle as unknown as PipelineExtensionLifecycle,
-						{
-							hooks: dependencies.extensionHooks,
-							hookOptions,
-						}
+						hookOptions,
+						({ error, extensionKeys }) =>
+							state.onExtensionRollbackError?.({
+								error,
+								extensionKeys,
+								errorMetadata:
+									createRollbackErrorMetadata(error),
+							})
 					),
-					(newExtensionState) => ({
-						...state,
-						extensionState: newExtensionState,
-						extensionStack: [
-							...(state.extensionStack ?? []),
-							{
-								coordinator,
-								state: newExtensionState,
-							},
-						],
-						userState: newExtensionState.artifact,
-					})
+					(result) => {
+						const executedLifecycles = new Set(
+							state.executedLifecycles
+						);
+						executedLifecycles.add(lifecycle);
+						const newExtensionState = {
+							artifact: result.artifact,
+							results: result.results,
+							hooks: lifecycleHooks,
+						};
+						return {
+							...state,
+							executedLifecycles,
+							extensionStack: [
+								...state.extensionStack,
+								newExtensionState,
+							],
+							userState: newExtensionState.artifact,
+						};
+					}
 				);
 			},
 		});
@@ -347,46 +321,26 @@ export const createAgnosticStages = <
 		isHalt,
 		isPaused,
 		commit: (state) => commitPendingExtensions(state),
-		rollbackToHalt: (state, error) => {
-			const rollback = makeRollbackHandler<
-				TContext,
-				TRunOptions,
-				TUserState,
-				{ readonly key: string }
-			>(
-				{
-					context: state.context,
-					extensionCoordinator: state.extensionCoordinator,
-					extensionState: state.extensionState,
-					extensionStack: state.extensionStack,
-				},
-				(state.helperRollbackStack ?? []) as RollbackEntry<{
-					readonly key: string;
-				}>[],
-				dependencies.options.onHelperRollbackError
-			);
-
-			return maybeThen(rollback(error), () => ({
-				__halt: true,
-				__hasError: true,
-				__rollbackApplied: true,
+		rollbackToHalt: (state, error) =>
+			rollbackStateToHalt(
+				state,
 				error,
-			}));
-		},
+				halt,
+				dependencies.options.onHelperRollbackError
+			),
 	});
 
-	const finalizeResultProgram: RunnerProgram = makeFinalizeResultStage<
+	const finalizeResultProgram: RunnerProgram = makeGuardedStage<
 		RunnerState,
 		Halt<TRunResult>
 	>({
 		isHalt,
 		isPaused,
-		finalize: (state) => {
-			const s = state;
+		execute: (state) => {
 			const nextState = {
-				...s,
-				diagnostics: diagnosticManager.readDiagnostics(),
-			} as unknown as RunnerState;
+				...state,
+				diagnostics: diagnosticManager.getDiagnostics(),
+			};
 
 			// Validate Ignored Hooks
 			if (dependencies.extensionHooks.length > 0) {
@@ -394,7 +348,7 @@ export const createAgnosticStages = <
 				const ignoredLifecycles = new Set<string>();
 
 				for (const hook of dependencies.extensionHooks) {
-					if (!visited?.has(hook.lifecycle)) {
+					if (!visited.has(hook.lifecycle)) {
 						ignoredLifecycles.add(hook.lifecycle);
 					}
 				}
@@ -422,7 +376,7 @@ export const createAgnosticStages = <
 		Parameters<typeof makeHelperStage>[1]
 	>;
 
-	const deps: InternalDependencies = {
+	const deps: PublicDependencies = {
 		finalizeResult: toPublicStage(finalizeResultProgram),
 		makeLifecycleStage: (lifecycle) =>
 			toPublicStage(makeLifecycleStage(lifecycle)),
@@ -444,8 +398,7 @@ export const createAgnosticStages = <
 					rollbacks: readonly RollbackEntry<unknown>[],
 					output: unknown
 				) => PublicState;
-			},
-			createHelperArgs?: Parameters<typeof makeHelperStage>[2]
+			}
 		) => {
 			const internalSpec: Parameters<typeof makeHelperStage>[1] =
 				publicSpec
@@ -458,15 +411,13 @@ export const createAgnosticStages = <
 								(publicSpec.onVisited?.(
 									state as unknown as PublicState,
 									visited,
-									state.helperOrders?.get(kind) ?? [],
+									state.helperOrders.get(kind) ?? [],
 									rollbacks as RollbackEntry<unknown>[],
 									output
 								) ?? state) as unknown as RunnerState,
 						}
 					: undefined;
-			return toPublicStage(
-				makeHelperStage(kind, internalSpec, createHelperArgs)
-			);
+			return toPublicStage(makeHelperStage(kind, internalSpec));
 		}) as PublicDependencies['makeHelperStage'],
 		halt,
 		pause: runnerEnv.pause
@@ -490,75 +441,10 @@ export const createAgnosticStages = <
 		extensions: {
 			lifecycles: dependencies.extensionLifecycles,
 		},
-		runnerEnv,
-		diagnosticManager,
 	};
-
-	if (!dependencies.stages) {
-		throw new Error(
-			"Agnostic Runner requires 'stages' factory to be defined."
-		);
-	}
 
 	return dependencies.stages(deps) as PipelineStage<
 		RunnerState,
 		Halt<TRunResult>
 	>[];
-};
-
-export const createAgnosticProgram = <
-	TRunOptions,
-	TUserState,
-	TContext extends { reporter: TReporter },
-	TReporter extends PipelineReporter,
-	TDiagnostic extends PipelineDiagnostic,
-	TRunResult,
->(
-	dependencies: AgnosticRunnerDependencies<
-		TRunOptions,
-		TUserState,
-		TContext,
-		TReporter,
-		TDiagnostic,
-		TRunResult
-	>,
-	runContext: AgnosticRunContext<
-		TRunOptions,
-		TUserState,
-		TContext,
-		TReporter,
-		TDiagnostic
-	>
-): Program<
-	PipelineStepResult<
-		AgnosticState<
-			TRunOptions,
-			TUserState,
-			TContext,
-			TReporter,
-			TDiagnostic
-		>,
-		TRunResult
-	>
-> => {
-	const stages = createAgnosticStages(dependencies, runContext);
-	return composeK<
-		| AgnosticState<
-				TRunOptions,
-				TUserState,
-				TContext,
-				TReporter,
-				TDiagnostic
-		  >
-		| Halt<TRunResult>
-		| PipelinePaused<
-				AgnosticState<
-					TRunOptions,
-					TUserState,
-					TContext,
-					TReporter,
-					TDiagnostic
-				>
-		  >
-	>(...[...stages].reverse());
 };

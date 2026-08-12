@@ -1,6 +1,5 @@
 import { makePipeline } from '../../core/makePipeline';
 import { isPaused } from '../../core/runner/stage-factories';
-import { maybeThen } from '../../core/async-utils';
 import type {
 	PipelineDiagnostic,
 	PipelineReporter,
@@ -25,14 +24,13 @@ import type {
  *
  * This adapter wraps the agnostic core pipeline, enforcing the opinionated
  * standard pipeline lifecycle:
- * 1. Prepare
- * 2. Before Fragments
- * 3. Fragments (Parallel/Ordered)
- * 4. After Fragments
- * 5. Before Builders
- * 6. Builders (Parallel/Ordered)
- * 7. After Builders
- * 8. Finalize
+ * 1. Fragments (Parallel/Ordered)
+ * 2. Fragment finalisation
+ * 3. After Fragments
+ * 4. Before Builders
+ * 5. Builders (Parallel/Ordered)
+ * 6. After Builders
+ * 7. Finalize
  * @param options
  */
 export function createStandardPipeline<
@@ -112,11 +110,17 @@ export function createStandardPipeline<
 	TFragmentHelper,
 	TBuilderHelper
 > {
-	// 1. Define Standard State Wrapper
+	const pendingArtifact = Symbol('pipeline.pending-artifact');
 	type StandardState = {
 		buildOptions: TBuildOptions;
 		draft: TDraft;
-		artifact: TArtifact | null;
+		artifact: TArtifact | typeof pendingArtifact;
+	};
+	const readArtifact = (state: StandardState): TArtifact => {
+		if (state.artifact === pendingArtifact) {
+			throw new Error('Pipeline artifact is not available yet.');
+		}
+		return state.artifact;
 	};
 	type StageState = PipelineStageState<
 		TRunOptions,
@@ -125,12 +129,7 @@ export function createStandardPipeline<
 		TReporter,
 		TDiagnostic
 	>;
-
-	const fragmentKind = (options.fragmentKind ?? 'fragment') as TFragmentKind;
-	const builderKind = (options.builderKind ?? 'builder') as TBuilderKind;
-
-	// 2. Map Options to Agnostic
-	const agnosticOptions: AgnosticPipelineOptions<
+	type CoreOptions = AgnosticPipelineOptions<
 		TRunOptions,
 		TContext,
 		TReporter,
@@ -138,11 +137,44 @@ export function createStandardPipeline<
 		TDiagnostic,
 		TRunResult,
 		TFragmentKind | TBuilderKind
-	> = {
+	>;
+	const readHelperExecution = <TSelectedKind extends HelperKind>(
+		state: StageState,
+		kind: TSelectedKind
+	): HelperExecutionSnapshot<TSelectedKind> =>
+		(state.helperExecution?.get(kind) ?? {
+			kind,
+			executed: [],
+			missing: [],
+			registered: [],
+		}) as HelperExecutionSnapshot<TSelectedKind>;
+
+	const fragmentKind = (options.fragmentKind ?? 'fragment') as TFragmentKind;
+	const builderKind = (options.builderKind ?? 'builder') as TBuilderKind;
+
+	const agnosticOptions: CoreOptions = {
 		helperKinds: [fragmentKind, builderKind],
 		createContext: options.createContext,
 		createError: options.createError,
+		extensions: {
+			artifact: {
+				read: readArtifact,
+				write: (state, artifact) => ({
+					...state,
+					artifact: artifact as TArtifact,
+				}),
+			},
+		},
 		onExtensionRollbackError: options.onExtensionRollbackError,
+		onHelperRollbackError: options.onHelperRollbackError
+			? (rollbackOptions) =>
+					options.onHelperRollbackError?.({
+						...rollbackOptions,
+						helper: rollbackOptions.helper as
+							| TFragmentHelper
+							| TBuilderHelper,
+					})
+			: undefined,
 
 		createState: ({ options: runOpts, context }) => {
 			const buildOptions = options.createBuildOptions(runOpts);
@@ -154,39 +186,16 @@ export function createStandardPipeline<
 			return {
 				buildOptions,
 				draft,
-				artifact: null,
+				artifact: pendingArtifact,
 			};
 		},
 		onDiagnostic: options.onDiagnostic,
-		createConflictDiagnostic: options.createConflictDiagnostic
-			? (opts) =>
-					options.createConflictDiagnostic!(
-						opts as unknown as Parameters<
-							NonNullable<typeof options.createConflictDiagnostic>
-						>[0]
-					)
-			: undefined,
+		createConflictDiagnostic:
+			options.createConflictDiagnostic as CoreOptions['createConflictDiagnostic'],
 		createMissingDependencyDiagnostic:
-			options.createMissingDependencyDiagnostic
-				? (opts) =>
-						options.createMissingDependencyDiagnostic!(
-							opts as unknown as Parameters<
-								NonNullable<
-									typeof options.createMissingDependencyDiagnostic
-								>
-							>[0]
-						)
-				: undefined,
-		createUnusedHelperDiagnostic: options.createUnusedHelperDiagnostic
-			? (opts) =>
-					options.createUnusedHelperDiagnostic!(
-						opts as unknown as Parameters<
-							NonNullable<
-								typeof options.createUnusedHelperDiagnostic
-							>
-						>[0]
-					)
-			: undefined,
+			options.createMissingDependencyDiagnostic as CoreOptions['createMissingDependencyDiagnostic'],
+		createUnusedHelperDiagnostic:
+			options.createUnusedHelperDiagnostic as CoreOptions['createUnusedHelperDiagnostic'],
 		providedKeys: {
 			[fragmentKind]: options.fragmentProvidedKeys ?? [],
 			[builderKind]: options.builderProvidedKeys ?? [],
@@ -237,7 +246,7 @@ export function createStandardPipeline<
 						options: state.runOptions,
 						context: state.context,
 						buildOptions: state.userState.buildOptions,
-						draft: state.userState.draft!,
+						draft: state.userState.draft,
 					});
 				},
 				writeOutput: (state, output) =>
@@ -264,17 +273,12 @@ export function createStandardPipeline<
 					return state;
 				}
 
-				const fragments = (state.helperExecution?.get(fragmentKind) ?? {
-					kind: fragmentKind,
-					executed: [],
-					missing: [],
-					registered: [],
-				}) as HelperExecutionSnapshot<TFragmentKind>;
+				const fragments = readHelperExecution(state, fragmentKind);
 				const metadata: FragmentFinalizationMetadata<TFragmentKind> = {
 					fragments,
 				};
 				const result = options.finalizeFragmentState({
-					draft: state.userState.draft!,
+					draft: state.userState.draft,
 					options: state.runOptions,
 					context: state.context,
 					buildOptions: state.userState.buildOptions,
@@ -291,11 +295,9 @@ export function createStandardPipeline<
 			};
 
 			return [
-				makeLifecycleStage('prepare'),
-				makeLifecycleStage('before-fragments'),
 				fragmentStage,
-				makeLifecycleStage('after-fragments'),
 				finalizeFragmentStage,
+				makeLifecycleStage('after-fragments'),
 				makeLifecycleStage('before-builders'),
 				// Standard Builder Stage
 				makeHelperStage<
@@ -310,7 +312,7 @@ export function createStandardPipeline<
 							options: state.runOptions,
 							context: state.context,
 							buildOptions: state.userState.buildOptions,
-							artifact: state.userState.artifact!,
+							artifact: readArtifact(state.userState),
 						}),
 					writeOutput: (state, output) =>
 						options.adoptBuilderOutput
@@ -319,7 +321,9 @@ export function createStandardPipeline<
 									userState: {
 										...state.userState,
 										artifact: options.adoptBuilderOutput({
-											artifact: state.userState.artifact!,
+											artifact: readArtifact(
+												state.userState
+											),
 											output,
 										}),
 									},
@@ -343,48 +347,59 @@ export function createStandardPipeline<
 		}) => {
 			if (options.createRunResult) {
 				return options.createRunResult({
-					artifact: state.artifact as TArtifact,
+					artifact: readArtifact(state),
 					diagnostics,
 					steps,
 					context,
 					buildOptions: state.buildOptions,
 					options: runOpts,
 					helpers: {
-						fragments:
-							(agnosticState.helperExecution?.get(
-								fragmentKind
-							) as unknown as HelperExecutionSnapshot<TFragmentKind>) ??
-							({
-								kind: fragmentKind,
-								executed: [],
-								missing: [],
-								registered: [],
-							} as unknown as HelperExecutionSnapshot<TFragmentKind>),
-						builders:
-							(agnosticState.helperExecution?.get(
-								builderKind
-							) as unknown as HelperExecutionSnapshot<TBuilderKind>) ??
-							({
-								kind: builderKind,
-								executed: [],
-								missing: [],
-								registered: [],
-							} as unknown as HelperExecutionSnapshot<TBuilderKind>),
+						fragments: readHelperExecution(
+							agnosticState,
+							fragmentKind
+						),
+						builders: readHelperExecution(
+							agnosticState,
+							builderKind
+						),
 					},
 				});
 			}
 			return {
-				artifact: state.artifact,
+				artifact: readArtifact(state),
 				diagnostics,
 				steps,
 			} as unknown as TRunResult;
 		},
 	};
 
-	// 3. Create Pipeline
 	const pipeline = makePipeline(agnosticOptions);
+	const registerHelper = (
+		helper: TFragmentHelper | TBuilderHelper,
+		kind: TFragmentKind | TBuilderKind,
+		surface: 'ir.use()' | 'builders.use()'
+	) => {
+		if (helper.kind !== kind) {
+			const message = `Attempted to register helper of kind "${helper.kind}" via ${surface} (expected "${kind}")`;
+			if (options.createError) {
+				throw options.createError('ValidationError', message);
+			}
+			const error = new Error(message);
+			error.name = 'ValidationError';
+			throw error;
+		}
+		pipeline.use({
+			...helper,
+			kind,
+		} as unknown as Helper<
+			TContext,
+			unknown,
+			unknown,
+			TReporter,
+			HelperKind
+		>);
+	};
 
-	// 4. Adapt to Standard Pipeline Interface
 	const wrapper: Pipeline<
 		TRunOptions,
 		TRunResult,
@@ -405,187 +420,21 @@ export function createStandardPipeline<
 		fragmentKind,
 		builderKind,
 		ir: {
-			use: (helper: TFragmentHelper) => {
-				if (helper.kind && helper.kind !== fragmentKind) {
-					const message = `Attempted to register helper of kind "${helper.kind}" via ir.use() (expected "${fragmentKind}")`;
-					if (options.createError) {
-						throw options.createError('ValidationError', message);
-					}
-					const error = new Error(message);
-					error.name = 'ValidationError';
-					throw error;
-				}
-				pipeline.use({
-					...helper,
-					kind: fragmentKind,
-				} as unknown as Helper<
-					TContext,
-					unknown,
-					unknown,
-					TReporter,
-					HelperKind
-				>);
-			},
+			use: (helper: TFragmentHelper) =>
+				registerHelper(helper, fragmentKind, 'ir.use()'),
 		},
 		builders: {
-			use: (helper: TBuilderHelper) => {
-				if (helper.kind && helper.kind !== builderKind) {
-					const message = `Attempted to register helper of kind "${helper.kind}" via builders.use() (expected "${builderKind}")`;
-					if (options.createError) {
-						throw options.createError('ValidationError', message);
-					}
-					const error = new Error(message);
-					error.name = 'ValidationError';
-					throw error;
-				}
-				pipeline.use({
-					...helper,
-					kind: builderKind,
-				} as unknown as Helper<
-					TContext,
-					unknown,
-					unknown,
-					TReporter,
-					HelperKind
-				>);
-			},
+			use: (helper: TBuilderHelper) =>
+				registerHelper(helper, builderKind, 'builders.use()'),
 		},
 		extensions: {
-			use: (extension) => {
-				// Proxy the extension to pass the standard wrapper to register/setup
-				// AND wrap the returned hook to adapt TState <-> TArtifact
-				const proxyExtension = {
+			use: (extension) =>
+				pipeline.extensions.use({
 					...extension,
-					register: () => {
-						return maybeThen(
-							extension.register(wrapper),
-							(result) => {
-								const adaptHook = (
-									hook: (input: unknown) => unknown
-								) => {
-									return (input: {
-										artifact: unknown;
-										lifecycle: string;
-									}) => {
-										// Input.artifact is actually the StandardState (userState)
-										const state =
-											input.artifact as StandardState;
-										const lifecycle =
-											input.lifecycle as string;
-
-										// Determine which state property to expose as "artifact" based on lifecycle
-										// For standard pipeline:
-										// - Before/during fragments: "artifact" exposed to extensions is usually the Draft
-										// - After fragments: Draft
-										// - Before/during builders: Artifact
-										const usesDraft = [
-											'prepare',
-											'before-fragments',
-											'after-fragments',
-										].includes(lifecycle);
-										const exposedArtifact = usesDraft
-											? state.draft
-											: state.artifact;
-
-										// Call original hook with extracted artifact
-										const hookResult = hook({
-											...input,
-											artifact: exposedArtifact,
-										});
-
-										// Handle result with maybeThen
-										return maybeThen(
-											hookResult,
-											(res: unknown) => {
-												if (
-													res &&
-													typeof res === 'object' &&
-													'artifact' in res &&
-													(
-														res as {
-															artifact: unknown;
-														}
-													).artifact !== undefined
-												) {
-													// Map result artifact back to correct state property
-													if (usesDraft) {
-														return {
-															...res,
-															artifact: {
-																...state,
-																draft: (
-																	res as {
-																		artifact: unknown;
-																	}
-																).artifact,
-															},
-														};
-													}
-													return {
-														...res,
-														artifact: {
-															...state,
-															artifact: (
-																res as {
-																	artifact: unknown;
-																}
-															).artifact,
-														},
-													};
-												}
-												return res;
-											}
-										);
-									};
-								};
-
-								if (typeof result === 'function') {
-									return adaptHook(
-										result as (input: unknown) => unknown
-									);
-								}
-
-								if (
-									result &&
-									typeof result === 'object' &&
-									'hook' in result
-								) {
-									return {
-										...result,
-										hook: adaptHook(
-											(
-												result as {
-													hook: (
-														input: unknown
-													) => unknown;
-												}
-											).hook
-										),
-									};
-								}
-
-								return result;
-							}
-						);
-					},
-				};
-				return pipeline.extensions.use(
-					proxyExtension as unknown as Parameters<
-						typeof pipeline.extensions.use
-					>[0]
-				);
-			},
+					register: () => extension.register(wrapper),
+				} as unknown as Parameters<typeof pipeline.extensions.use>[0]),
 		},
-		use: (helper) =>
-			pipeline.use(
-				helper as unknown as Helper<
-					TContext,
-					unknown,
-					unknown,
-					TReporter,
-					HelperKind
-				>
-			),
+		use: (helper) => pipeline.use(helper),
 		run: (opts) => pipeline.run(opts),
 	};
 

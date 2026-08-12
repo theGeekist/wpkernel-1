@@ -56,6 +56,26 @@ function adoptThenable<T>(value: unknown, then: ThenMethod): Promise<T> {
 }
 
 /**
+ * Adopt a promise-like value using the exact `then` method found during safe
+ * descriptor inspection. Returns `null` for synchronous values.
+ *
+ * @param value - A value that may or may not be promise-like
+ * @returns An adopted native promise, or `null` when the value is synchronous
+ *
+ * @internal
+ */
+export function adoptMaybePromise<T>(
+	value: MaybePromise<T>
+):
+	| { readonly promise: Promise<T>; readonly value?: never }
+	| { readonly promise: null; readonly value: T } {
+	const then = findThenMethod(value);
+	return then === null
+		? { promise: null, value: value as T }
+		: { promise: adoptThenable<T>(value, then) };
+}
+
+/**
  * Type guard to check if a value is promise-like (has a `.then` method).
  *
  * @param value - The value to check
@@ -63,6 +83,10 @@ function adoptThenable<T>(value: unknown, then: ThenMethod): Promise<T> {
  *
  * @internal
  */
+export function isPromiseLike<T>(
+	value: MaybePromise<T>
+): value is PromiseLike<T>;
+export function isPromiseLike(value: unknown): value is PromiseLike<unknown>;
 export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
 	return findThenMethod(value) !== null;
 }
@@ -87,12 +111,12 @@ export function maybeThen<T, TResult>(
 		throw new TypeError('maybeThen: onFulfilled is not a function');
 	}
 
-	const then = findThenMethod(value);
-	if (then !== null) {
-		return adoptThenable<T>(value, then).then(onFulfilled);
+	const adopted = adoptMaybePromise(value);
+	if (adopted.promise !== null) {
+		return adopted.promise.then(onFulfilled);
 	}
 
-	return onFulfilled(value as T);
+	return onFulfilled(adopted.value);
 }
 
 /**
@@ -114,14 +138,12 @@ export function maybeTry<T>(
 	try {
 		const result = run();
 
-		const then = findThenMethod(result);
-		if (then !== null) {
-			return adoptThenable<T>(result, then).catch((error) =>
-				onError(error)
-			);
+		const adopted = adoptMaybePromise(result);
+		if (adopted.promise !== null) {
+			return adopted.promise.catch((error) => onError(error));
 		}
 
-		return result;
+		return adopted.value;
 	} catch (error) {
 		return onError(error);
 	}
@@ -163,13 +185,9 @@ export function processSequentially<T>(
 			index = advance(index)
 		) {
 			const item = items[index]!;
-			const result = handler(item, index);
-
-			const then = findThenMethod(result);
-			if (then !== null) {
-				return adoptThenable<void>(result, then).then(() =>
-					iterate(advance(index))
-				);
+			const adopted = adoptMaybePromise(handler(item, index));
+			if (adopted.promise !== null) {
+				return adopted.promise.then(() => iterate(advance(index)));
 			}
 		}
 	};
@@ -180,62 +198,27 @@ export function processSequentially<T>(
 }
 
 /**
- * A small abstraction representing a state transformer that may be async.
+ * Resolves maybe-promise values together while preserving the synchronous path
+ * when every value is already available.
  *
- * @internal
- */
-
-export type Program<S> = (state: S) => MaybePromise<S>;
-/**
- * Right-to-left composition for {@link Program} functions that short-circuits
- * on promises while preserving synchronous execution when possible.
+ * Each thenable is adopted with the exact data-property method captured during
+ * descriptor inspection.
  *
- * @param {...any} fns
- * @internal
- */
-
-export const composeK =
-	<S>(...fns: Program<S>[]): Program<S> =>
-	(initial: S) =>
-		fns.reduceRight(
-			(acc, fn) => maybeThen(acc, fn),
-			initial as MaybePromise<S>
-		);
-
-/**
- * Sync-friendly Promise.all equivalent.
- *
- * @param values
- * @returns
- *
- * @internal
+ * @param values - Values to resolve
+ * @returns The values directly, or a promise when any value is asynchronous
+ * @public
  */
 export function maybeAll<T>(
 	values: readonly MaybePromise<T>[]
 ): MaybePromise<T[]> {
-	const methods = values.map(findThenMethod);
-	if (methods.every((method) => method === null)) {
-		return values.slice() as T[];
+	const adopted = values.map(adoptMaybePromise);
+	if (adopted.every((entry) => entry.promise === null)) {
+		return adopted.map((entry) => entry.value as T);
 	}
 
-	const boxed = values.map((value, index) => {
-		const then = methods[index];
-		if (then === null || then === undefined) {
-			return Promise.resolve({ value: value as T });
-		}
-		return new Promise<{ value: T }>((resolve, reject) => {
-			try {
-				then.call(
-					value,
-					(resolved) => resolve({ value: resolved as T }),
-					reject
-				);
-			} catch (error) {
-				reject(error);
-			}
-		});
-	});
-	return Promise.all(boxed).then((resolved) =>
-		resolved.map(({ value }) => value)
+	return Promise.all(
+		adopted.map((entry) =>
+			entry.promise === null ? entry.value : entry.promise
+		)
 	);
 }

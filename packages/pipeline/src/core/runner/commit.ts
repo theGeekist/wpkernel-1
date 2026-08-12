@@ -1,27 +1,15 @@
-import { maybeThen } from '../async-utils';
+import { maybeThen, processSequentially } from '../async-utils';
+import { commitExtensionResults } from '../extensions';
 import type { MaybePromise } from '../types';
-import type { ExtensionCoordinator, ExtensionLifecycleState } from './types';
-
-type ExtensionCommitEntry<TContext, TOptions, TArtifact> = {
-	readonly coordinator: ExtensionCoordinator<TContext, TOptions, TArtifact>;
-	readonly state: ExtensionLifecycleState<TContext, TOptions, TArtifact>;
-};
+import type { ExtensionLifecycleState } from './types';
 
 export type ExtensionCommitState<TContext, TOptions, TArtifact> = {
-	readonly extensionCoordinator?: ExtensionCoordinator<
+	readonly extensionStack: ExtensionLifecycleState<
 		TContext,
 		TOptions,
 		TArtifact
-	>;
-	readonly extensionState?: ExtensionLifecycleState<
-		TContext,
-		TOptions,
-		TArtifact
-	>;
-	readonly extensionStack?: Array<
-		ExtensionCommitEntry<TContext, TOptions, TArtifact>
-	>;
-	readonly committedExtensionStates?: Set<
+	>[];
+	readonly committedExtensionStates: Set<
 		ExtensionLifecycleState<TContext, TOptions, TArtifact>
 	>;
 };
@@ -37,45 +25,13 @@ export type ExtensionCommitState<TContext, TOptions, TArtifact> = {
 export function commitPendingExtensions<TContext, TOptions, TArtifact>(
 	state: ExtensionCommitState<TContext, TOptions, TArtifact>
 ): MaybePromise<void> {
-	const committed =
-		state.committedExtensionStates ??
-		new Set<ExtensionLifecycleState<TContext, TOptions, TArtifact>>();
+	return processSequentially(state.extensionStack, (extensionState) => {
+		if (state.committedExtensionStates.has(extensionState)) {
+			return;
+		}
 
-	if (!state.committedExtensionStates) {
-		(
-			state as {
-				committedExtensionStates: Set<
-					ExtensionLifecycleState<TContext, TOptions, TArtifact>
-				>;
-			}
-		).committedExtensionStates = committed;
-	}
-
-	let entries = state.extensionStack ?? [];
-	if (
-		entries.length === 0 &&
-		state.extensionCoordinator &&
-		state.extensionState
-	) {
-		entries = [
-			{
-				coordinator: state.extensionCoordinator,
-				state: state.extensionState,
-			},
-		];
-	}
-
-	return entries.reduce<MaybePromise<void>>(
-		(previous, entry) =>
-			maybeThen(previous, () => {
-				if (committed.has(entry.state)) {
-					return;
-				}
-
-				return maybeThen(entry.coordinator.commit(entry.state), () => {
-					committed.add(entry.state);
-				});
-			}),
-		undefined
-	);
+		return maybeThen(commitExtensionResults(extensionState.results), () => {
+			state.committedExtensionStates.add(extensionState);
+		});
+	});
 }

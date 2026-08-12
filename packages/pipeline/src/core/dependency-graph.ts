@@ -353,7 +353,7 @@ function handleUnresolvedHelpers<THelper extends HelperDescriptor>(
  * @param  entries     - All registered helpers with their IDs
  * @param  options     - Optional callbacks for diagnostic reporting
  * @param  createError - Error factory function
- * @returns Ordered helpers and the adjacency list
+ * @returns Ordered helpers
  * @throws {Error} If dependencies are missing or unresolved
  *
  * @internal
@@ -364,7 +364,6 @@ export function createDependencyGraph<THelper extends HelperDescriptor>(
 	createError: (code: string, message: string) => Error
 ): {
 	order: RegisteredHelper<THelper>[];
-	adjacency: Map<string, Set<string>>;
 } {
 	const graph = createGraphState(entries);
 	const missing = registerHelperDependencies(entries, graph);
@@ -380,5 +379,5 @@ export function createDependencyGraph<THelper extends HelperDescriptor>(
 
 	handleUnresolvedHelpers(unresolved, options, createError);
 
-	return { order: ordered, adjacency: graph.adjacency };
+	return { order: ordered };
 }
