@@ -36,6 +36,44 @@ const runHelper = (
 ): MaybePromise<HelperApplyResult<TestOutput> | void> =>
 	helper.apply(args, next);
 
+const helperEntry = (
+	key: string,
+	index: number,
+	apply: TestHelper['apply']
+): RegisteredHelper<TestHelper> => ({
+	id: String(index),
+	index,
+	helper: {
+		key,
+		kind: 'fragment',
+		mode: 'extend',
+		priority: 0,
+		dependsOn: [],
+		apply,
+	},
+});
+
+const executeTestHelpers = (helpers: RegisteredHelper<TestHelper>[]) =>
+	executeHelpers<
+		TestContext,
+		TestInput,
+		TestOutput,
+		TestReporter,
+		HelperKind,
+		TestHelper,
+		TestApplyOptions
+	>(
+		helpers,
+		() => ({
+			context: {},
+			input: undefined,
+			output: undefined,
+			reporter: {},
+		}),
+		(helper, args, next) => runHelper(helper, args, next),
+		() => undefined
+	);
+
 describe('executor', () => {
 	it('adopts helper thenables without reading their then property', async () => {
 		type Output = string;
@@ -277,6 +315,56 @@ describe('executor', () => {
 		);
 
 		expect(order).toEqual(['h1-start', 'h2', 'h1-end']);
+	});
+
+	it('settles launched downstream work before propagating a helper failure', async () => {
+		let releaseDownstream: (() => void) | undefined;
+		const downstreamGate = new Promise<void>((resolve) => {
+			releaseDownstream = resolve;
+		});
+		const failure = new Error('wrapper failed');
+		const order: string[] = [];
+		const outcome = executeTestHelpers([
+			helperEntry('wrapper', 0, (_args, next) => {
+				void next?.();
+				order.push('wrapper-failed');
+				throw failure;
+			}),
+			helperEntry('downstream', 1, async () => {
+				await downstreamGate;
+				order.push('downstream-settled');
+			}),
+		]);
+		const settled = jest.fn();
+		const rejection = Promise.resolve(outcome).catch((error) => {
+			settled();
+			throw error;
+		});
+
+		await Promise.resolve();
+		expect(settled).not.toHaveBeenCalled();
+		expect(order).toEqual(['wrapper-failed']);
+
+		releaseDownstream?.();
+		await expect(rejection).rejects.toBe(failure);
+		expect(order).toEqual(['wrapper-failed', 'downstream-settled']);
+	});
+
+	it('preserves the helper failure when launched downstream work also rejects', async () => {
+		const wrapperFailure = new Error('wrapper failed');
+		const downstreamFailure = new Error('downstream failed');
+		const outcome = executeTestHelpers([
+			helperEntry('wrapper', 0, (_args, next) => {
+				void next?.();
+				throw wrapperFailure;
+			}),
+			helperEntry('downstream', 1, async () => {
+				await Promise.resolve();
+				throw downstreamFailure;
+			}),
+		]);
+
+		await expect(Promise.resolve(outcome)).rejects.toBe(wrapperFailure);
 	});
 
 	it('threads returned output through automatic continuation', () => {

@@ -45,6 +45,54 @@ const adoptStageState = <TState extends object>(
 	...result,
 });
 
+const terminalHaltKind = Symbol('pipeline.terminal-halt');
+
+type TerminalHalt<TRunResult> =
+	| {
+			readonly [terminalHaltKind]: 'result';
+			readonly result: TRunResult;
+	  }
+	| { readonly [terminalHaltKind]: 'bare' }
+	| {
+			readonly [terminalHaltKind]: 'error';
+			readonly error: unknown;
+			readonly rollbackApplied: boolean;
+	  };
+
+const isTerminalHalt = <TRunResult>(
+	value: unknown
+): value is TerminalHalt<TRunResult> =>
+	Boolean(value && typeof value === 'object' && terminalHaltKind in value);
+
+/**
+ * Classify the permissive public halt shape once at the stage boundary. Error
+ * presence deliberately wins over a result to preserve the established halt
+ * semantics, including an explicitly supplied `undefined` error.
+ * @param halt
+ */
+const classifyHalt = <TRunResult>(
+	halt: Halt<TRunResult>
+): TerminalHalt<TRunResult> => {
+	const hasError =
+		halt.__hasError === true ||
+		Object.prototype.hasOwnProperty.call(halt, 'error');
+
+	if (hasError) {
+		return {
+			[terminalHaltKind]: 'error',
+			error: halt.error,
+			rollbackApplied: halt.__rollbackApplied === true,
+		};
+	}
+
+	return Object.prototype.hasOwnProperty.call(halt, 'result')
+		? {
+				[terminalHaltKind]: 'result',
+				result: halt.result as TRunResult,
+			}
+		: { [terminalHaltKind]: 'bare' };
+};
+
 const finalizeRunState = <
 	TRunOptions,
 	TUserState,
@@ -118,10 +166,6 @@ const rollbackStateToHalt = <
 	);
 };
 
-const haltHasError = <TRunResult>(halt: Halt<TRunResult>): boolean =>
-	halt.__hasError === true ||
-	Object.prototype.hasOwnProperty.call(halt, 'error');
-
 const rollbackUnhandledHalt = <
 	TRunOptions,
 	TUserState,
@@ -145,13 +189,16 @@ const rollbackUnhandledHalt = <
 		TReporter,
 		TDiagnostic
 	>,
-	halt: Halt<TRunResult>
-): MaybePromise<Halt<TRunResult>> => {
-	if (!haltHasError(halt) || halt.__rollbackApplied) {
+	halt: TerminalHalt<TRunResult>
+): MaybePromise<TerminalHalt<TRunResult>> => {
+	if (halt[terminalHaltKind] !== 'error' || halt.rollbackApplied) {
 		return halt;
 	}
 
-	return rollbackStateToHalt(dependencies, state, halt.error);
+	return maybeThen(
+		rollbackStateToHalt(dependencies, state, halt.error),
+		classifyHalt
+	);
 };
 
 const resolveTerminalStageResult = <TState extends object, TRunResult>(
@@ -159,11 +206,14 @@ const resolveTerminalStageResult = <TState extends object, TRunResult>(
 	result: unknown,
 	onStageHalt?: (
 		state: TState,
-		halt: Halt<TRunResult>
-	) => MaybePromise<Halt<TRunResult>>
-): MaybePromise<Halt<TRunResult> | PipelinePaused<TState>> | undefined => {
+		halt: TerminalHalt<TRunResult>
+	) => MaybePromise<TerminalHalt<TRunResult>>
+):
+	| MaybePromise<TerminalHalt<TRunResult> | PipelinePaused<TState>>
+	| undefined => {
 	if (isHalt<TRunResult>(result)) {
-		return onStageHalt ? onStageHalt(state, result) : result;
+		const terminal = classifyHalt(result);
+		return onStageHalt ? onStageHalt(state, terminal) : terminal;
 	}
 
 	if (!isPaused<TState>(result)) {
@@ -221,16 +271,18 @@ const runStagesIteratively = <
 	onStageError?: (
 		state: TState,
 		error: unknown
-	) => MaybePromise<Halt<TRunResult>>,
+	) => MaybePromise<TerminalHalt<TRunResult>>,
 	onStageHalt?: (
 		state: TState,
-		halt: Halt<TRunResult>
-	) => MaybePromise<Halt<TRunResult>>
-): MaybePromise<PipelineStepResult<TState, TRunResult>> => {
+		halt: TerminalHalt<TRunResult>
+	) => MaybePromise<TerminalHalt<TRunResult>>
+): MaybePromise<TState | PipelinePaused<TState> | TerminalHalt<TRunResult>> => {
 	const runFrom = (
 		state: TState,
 		stageIndex: number
-	): MaybePromise<PipelineStepResult<TState, TRunResult>> => {
+	): MaybePromise<
+		TState | PipelinePaused<TState> | TerminalHalt<TRunResult>
+	> => {
 		let currentState = state;
 
 		for (let index = stageIndex; index < stages.length; index += 1) {
@@ -240,8 +292,13 @@ const runStagesIteratively = <
 			}
 			const stageState = applyStageIndex(currentState, index);
 			const continueFromResult = (
-				resolved: PipelineStepResult<TState, TRunResult>
+				resolved:
+					| PipelineStepResult<TState, TRunResult>
+					| TerminalHalt<TRunResult>
 			) => {
+				if (isTerminalHalt<TRunResult>(resolved)) {
+					return resolved;
+				}
 				const terminal = resolveTerminalStageResult(
 					stageState,
 					resolved,
@@ -260,14 +317,17 @@ const runStagesIteratively = <
 				throw error;
 			};
 			const next = adoptMaybePromise(
-				maybeTry(() => stage(stageState), handleStageError)
+				maybeTry<
+					| PipelineStepResult<TState, TRunResult>
+					| TerminalHalt<TRunResult>
+				>(() => stage(stageState), handleStageError)
 			);
 
 			if (next.promise !== null) {
 				return next.promise.then((resolved) => {
 					const continued = continueFromResult(resolved);
 					return maybeThen(continued, (nextState) =>
-						isHalt<TRunResult>(nextState) ||
+						isTerminalHalt<TRunResult>(nextState) ||
 						isPaused<TState>(nextState)
 							? nextState
 							: runFrom(nextState, index + 1)
@@ -278,13 +338,14 @@ const runStagesIteratively = <
 			const continued = adoptMaybePromise(continueFromResult(next.value));
 			if (continued.promise !== null) {
 				return continued.promise.then((resolved) =>
-					isHalt<TRunResult>(resolved) || isPaused<TState>(resolved)
+					isTerminalHalt<TRunResult>(resolved) ||
+					isPaused<TState>(resolved)
 						? resolved
 						: runFrom(resolved, index + 1)
 				);
 			}
 			if (
-				isHalt<TRunResult>(continued.value) ||
+				isTerminalHalt<TRunResult>(continued.value) ||
 				isPaused(continued.value)
 			) {
 				return continued.value;
@@ -341,16 +402,22 @@ const executePreparedRun = <
 		stages,
 		initialState,
 		startIndex,
-		(state, error) => rollbackStateToHalt(dependencies, state, error),
+		(state, error) =>
+			maybeThen(
+				rollbackStateToHalt(dependencies, state, error),
+				classifyHalt
+			),
 		(state, halt) => rollbackUnhandledHalt(dependencies, state, halt)
 	);
 
 	return maybeThen(runResult, (result) => {
-		if (isHalt(result)) {
-			if (haltHasError(result)) {
+		if (isTerminalHalt<TRunResult>(result)) {
+			if (result[terminalHaltKind] === 'error') {
 				throw result.error;
 			}
-			return result.result!;
+			return result[terminalHaltKind] === 'result'
+				? result.result
+				: (undefined as TRunResult);
 		}
 		if (isPaused(result)) {
 			if (allowPause) {

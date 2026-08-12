@@ -3,6 +3,14 @@ import { createHelper } from '../helper';
 import { type PipelineStage } from '../runner/types';
 import type { PipelineReporter } from '../types';
 
+const deferred = () => {
+	let resolve!: () => void;
+	const promise = new Promise<void>((next) => {
+		resolve = next;
+	});
+	return { promise, resolve };
+};
+
 describe('makePipeline', () => {
 	const mockReporter: PipelineReporter = { warn: jest.fn() };
 	const mockContext = { reporter: mockReporter };
@@ -106,7 +114,86 @@ describe('makePipeline', () => {
 		expect(result.steps[0]).not.toHaveProperty('apply');
 	});
 
-	it('reports a settled extension registration failure to the next run', async () => {
+	it('uses one immutable registration snapshot for each run', async () => {
+		const gate = deferred();
+		const firstHook = jest.fn();
+		const laterHook = jest.fn();
+		const pipeline = makePipeline({
+			...baseOptions,
+			createStages: (deps: any) => [
+				(state: unknown) => gate.promise.then(() => state),
+				deps.makeLifecycleStage('after-fragments'),
+				deps.finalizeResult,
+			],
+		});
+
+		pipeline.extensions.use({
+			key: 'first',
+			register: () => firstHook,
+		});
+		const firstRun = pipeline.run({});
+
+		pipeline.extensions.use({
+			key: 'later',
+			register: () => laterHook,
+		});
+		gate.resolve();
+		await firstRun;
+
+		expect(firstHook).toHaveBeenCalledTimes(1);
+		expect(laterHook).not.toHaveBeenCalled();
+
+		await pipeline.run({});
+		expect(firstHook).toHaveBeenCalledTimes(2);
+		expect(laterHook).toHaveBeenCalledTimes(1);
+	});
+
+	it('waits for extension registration to become quiescent before preparing a run', async () => {
+		const first = deferred();
+		const second = deferred();
+		const firstHook = jest.fn();
+		const secondHook = jest.fn();
+		const pipeline = makePipeline({
+			...baseOptions,
+			createStages: (deps: any) => [
+				deps.makeLifecycleStage('after-fragments'),
+				deps.finalizeResult,
+			],
+		});
+
+		const firstRegistration = pipeline.extensions.use({
+			key: 'first',
+			register: async () => {
+				await first.promise;
+				return firstHook;
+			},
+		});
+		let runSettled = false;
+		const run = Promise.resolve(pipeline.run({})).then((result) => {
+			runSettled = true;
+			return result;
+		});
+		const secondRegistration = pipeline.extensions.use({
+			key: 'second',
+			register: async () => {
+				await second.promise;
+				return secondHook;
+			},
+		});
+
+		first.resolve();
+		await firstRegistration;
+		await Promise.resolve();
+		expect(runSettled).toBe(false);
+		expect(firstHook).not.toHaveBeenCalled();
+
+		second.resolve();
+		await Promise.all([secondRegistration, run]);
+		expect(firstHook).toHaveBeenCalledTimes(1);
+		expect(secondHook).toHaveBeenCalledTimes(1);
+	});
+
+	it('keeps an asynchronous extension registration failure attached to the pipeline', async () => {
 		const registrationError = new Error('extension registration failed');
 		const pipeline = makePipeline(baseOptions);
 
@@ -118,9 +205,47 @@ describe('makePipeline', () => {
 		});
 
 		await expect(registration).rejects.toBe(registrationError);
+		const runs = await Promise.allSettled([
+			Promise.resolve().then(() => pipeline.run({})),
+			Promise.resolve().then(() => pipeline.run({})),
+		]);
+		expect(runs).toEqual([
+			{ status: 'rejected', reason: registrationError },
+			{ status: 'rejected', reason: registrationError },
+		]);
 		await expect(
 			Promise.resolve().then(() => pipeline.run({}))
 		).rejects.toBe(registrationError);
-		expect(pipeline.run({})).toMatchObject({ artifact: {} });
+	});
+
+	it('keeps a synchronous extension registration failure attached to the pipeline', () => {
+		const registrationError = new Error('extension registration failed');
+		const pipeline = makePipeline(baseOptions);
+
+		expect(() =>
+			pipeline.extensions.use({
+				key: 'failing-extension',
+				register: () => {
+					throw registrationError;
+				},
+			})
+		).toThrow(registrationError);
+		expect(() => pipeline.run({})).toThrow(registrationError);
+		expect(() => pipeline.run({})).toThrow(registrationError);
+	});
+
+	it('rejects helpers outside the configured helper kinds', () => {
+		const pipeline = makePipeline(baseOptions);
+
+		expect(() =>
+			pipeline.use({
+				key: 'unknown',
+				kind: 'unknown',
+				mode: 'extend',
+				priority: 0,
+				dependsOn: [],
+				apply: () => undefined,
+			})
+		).toThrow('Helper kind "unknown" is not configured for this pipeline.');
 	});
 });

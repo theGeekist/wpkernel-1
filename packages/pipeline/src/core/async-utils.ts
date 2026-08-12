@@ -6,8 +6,9 @@ type ThenMethod = (
 ) => unknown;
 
 /**
- * Find a data-property `then` without invoking accessors or proxy traps.
- * Values that cannot be inspected safely remain synchronous data.
+ * Find a data-property `then` without reading it through ordinary property
+ * access. Descriptor and prototype traps are contained; values that cannot be
+ * inspected remain synchronous data.
  *
  * @param value - Candidate value to inspect.
  */
@@ -56,8 +57,8 @@ function adoptThenable<T>(value: unknown, then: ThenMethod): Promise<T> {
 }
 
 /**
- * Adopt a promise-like value using the exact `then` method found during safe
- * descriptor inspection. Returns `null` for synchronous values.
+ * Adopt a promise-like value using the exact `then` method found during
+ * guarded descriptor inspection. Returns `null` for synchronous values.
  *
  * @param value - A value that may or may not be promise-like
  * @returns An adopted native promise, or `null` when the value is synchronous

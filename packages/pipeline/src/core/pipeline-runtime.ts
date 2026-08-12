@@ -71,7 +71,10 @@ export function createPipelineRuntime<
 		TUserState
 	>[] = [];
 	const pendingExtensionRegistrations = new Set<Promise<void>>();
-	const extensionRegistrationFailures: unknown[] = [];
+	let extensionRegistrationFailure: { readonly error: unknown } | undefined;
+	const failRegistration = (error: unknown) => {
+		extensionRegistrationFailure ??= { error };
+	};
 	const artifactAdapter = options.extensions?.artifact;
 	const adaptExtensionHook = (
 		hook: PipelineExtensionHook<TContext, TRunOptions, unknown>
@@ -295,28 +298,15 @@ export function createPipelineRuntime<
 			() => pendingExtensionRegistrations.delete(pending),
 			(error) => {
 				pendingExtensionRegistrations.delete(pending);
-				extensionRegistrationFailures.push(error);
+				failRegistration(error);
 			}
 		);
 		return registration;
 	};
 
-	const consumeFailure = (error?: unknown) => {
-		const index = extensionRegistrationFailures.findIndex((failure) =>
-			Object.is(failure, error)
-		);
-		if (index >= 0) {
-			extensionRegistrationFailures.splice(index, 1);
-		} else if (extensionRegistrationFailures.length > 0) {
-			extensionRegistrationFailures.shift();
-		}
-	};
-
 	const waitForExtensionRegistrations = (): MaybePromise<void> => {
-		if (extensionRegistrationFailures.length > 0) {
-			const error = extensionRegistrationFailures[0];
-			consumeFailure(error);
-			throw error;
+		if (extensionRegistrationFailure) {
+			throw extensionRegistrationFailure.error;
 		}
 		if (pendingExtensionRegistrations.size === 0) {
 			return;
@@ -326,10 +316,10 @@ export function createPipelineRuntime<
 			() =>
 				maybeThen(
 					Promise.all([...pendingExtensionRegistrations]),
-					() => undefined
+					waitForExtensionRegistrations
 				),
 			(error) => {
-				consumeFailure(error);
+				failRegistration(error);
 				throw error;
 			}
 		);
@@ -346,20 +336,31 @@ export function createPipelineRuntime<
 				unknown
 			>
 		) {
-			const registration = extension.register(pipeline);
-			const handled = maybeThen(registration, (registered) =>
-				handleExtensionRegisterResult(
-					extension.key,
-					adaptExtensionRegistration(registered),
-					extensionHooks
-				)
-			);
-			return trackExtensionRegistration(handled);
+			try {
+				const registration = extension.register(pipeline);
+				const handled = maybeThen(registration, (registered) =>
+					handleExtensionRegisterResult(
+						extension.key,
+						adaptExtensionRegistration(registered),
+						extensionHooks
+					)
+				);
+				return trackExtensionRegistration(handled);
+			} catch (error) {
+				failRegistration(error);
+				throw error;
+			}
 		},
 		registerHelper<TInput, TOutput, TSelectedKind extends HelperKind>(
 			helper: Helper<TContext, TInput, TOutput, TReporter, TSelectedKind>
 		) {
 			const kind = helper.kind;
+			if (!helperRegistries.has(kind)) {
+				throw createError(
+					'ValidationError',
+					`Helper kind "${kind}" is not configured for this pipeline.`
+				);
+			}
 			registerHelper<
 				TContext,
 				unknown,
@@ -376,7 +377,7 @@ export function createPipelineRuntime<
 					HelperKind
 				>,
 				kind,
-				ensureRegistry(kind) as RegisteredHelper<
+				helperRegistries.get(kind)! as RegisteredHelper<
 					Helper<TContext, unknown, unknown, TReporter, HelperKind>
 				>[],
 				kind,

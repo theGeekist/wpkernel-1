@@ -174,7 +174,7 @@ export function createHelper<
 			kind,
 			mode,
 			priority,
-			dependsOn: Array.from(dependsOn),
+			dependsOn: Object.freeze(Array.from(dependsOn)),
 			origin,
 			apply(
 				runtimeOptions: Parameters<

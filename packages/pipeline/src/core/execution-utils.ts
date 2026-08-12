@@ -8,7 +8,7 @@ import type {
 	PipelineReporter,
 } from './types';
 import type { RegisteredHelper } from './dependency-graph';
-import { adoptMaybePromise, maybeThen } from './async-utils';
+import { adoptMaybePromise, maybeThen, maybeTry } from './async-utils';
 
 export interface HelperExecutionResult<TOutput> {
 	readonly visited: Set<string>;
@@ -132,6 +132,24 @@ export function executeHelpers<
 		throw new Error('Unhandled helper continuation state.');
 	};
 
+	const rejectAfterContinuation = (
+		error: unknown,
+		continuation: ContinuationState<TOutput>
+	): MaybePromise<never> => {
+		if (continuation.status !== 'pending') {
+			throw error;
+		}
+
+		return continuation.result.then(
+			() => {
+				throw error;
+			},
+			() => {
+				throw error;
+			}
+		);
+	};
+
 	function runAt(
 		index: number,
 		incoming?: OutputState<TOutput>
@@ -225,8 +243,12 @@ export function executeHelpers<
 			}
 		};
 
-		return maybeThen(invoke(entry.helper, args, next, index), (result) =>
-			resolveInvocation(result, current, index, continuation)
+		return maybeTry(
+			() =>
+				maybeThen(invoke(entry.helper, args, next, index), (result) =>
+					resolveInvocation(result, current, index, continuation)
+				),
+			(error) => rejectAfterContinuation(error, continuation)
 		);
 	}
 

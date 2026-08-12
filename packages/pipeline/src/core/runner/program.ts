@@ -273,12 +273,12 @@ export const createAgnosticStages = <
 					lifecycle as unknown as PipelineExtensionLifecycle
 				);
 
-				const lifecycleHooks = dependencies.extensionHooks.filter(
+				const lifecycleHooks = state.extensionHooks.filter(
 					(entry) => entry.lifecycle === lifecycle
 				);
 				return maybeThen(
 					runExtensionHooks(
-						dependencies.extensionHooks,
+						state.extensionHooks,
 						lifecycle as unknown as PipelineExtensionLifecycle,
 						hookOptions,
 						({ error, extensionKeys }) =>
@@ -343,11 +343,11 @@ export const createAgnosticStages = <
 			};
 
 			// Validate Ignored Hooks
-			if (dependencies.extensionHooks.length > 0) {
+			if (nextState.extensionHooks.length > 0) {
 				const visited = nextState.executedLifecycles;
 				const ignoredLifecycles = new Set<string>();
 
-				for (const hook of dependencies.extensionHooks) {
+				for (const hook of nextState.extensionHooks) {
 					if (!visited.has(hook.lifecycle)) {
 						ignoredLifecycles.add(hook.lifecycle);
 					}

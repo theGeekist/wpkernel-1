@@ -73,6 +73,43 @@ describe('execution coverage', () => {
 		}),
 	});
 
+	const baseState = (
+		count: number,
+		overrides: Partial<
+			AgnosticState<
+				TestOptions,
+				TestState,
+				TestContext,
+				PipelineReporter,
+				TestDiagnostic
+			>
+		> = {}
+	): AgnosticState<
+		TestOptions,
+		TestState,
+		TestContext,
+		PipelineReporter,
+		TestDiagnostic
+	> => {
+		const context = { reporter: {} };
+		return {
+			context,
+			reporter: context.reporter,
+			runOptions: { id: 'run' },
+			userState: { count },
+			helperOrders: new Map(),
+			extensionHooks: [],
+			steps: [],
+			diagnostics: [],
+			diagnosticManager: createAgnosticDiagnosticManager(),
+			executedLifecycles: new Set(),
+			helperRollbackStack: [],
+			extensionStack: [],
+			committedExtensionStates: new Set(),
+			...overrides,
+		};
+	};
+
 	it('commits extension stack when present', async () => {
 		const commit = jest.fn();
 		const stages: PipelineStage<
@@ -101,26 +138,7 @@ describe('execution coverage', () => {
 			hooks: [hook],
 		};
 
-		const state: AgnosticState<
-			TestOptions,
-			TestState,
-			TestContext,
-			PipelineReporter,
-			TestDiagnostic
-		> = {
-			context: { reporter: {} },
-			reporter: {},
-			runOptions: { id: 'run' },
-			userState: { count: 2 },
-			helperOrders: new Map(),
-			steps: [],
-			diagnostics: [],
-			diagnosticManager: createAgnosticDiagnosticManager(),
-			executedLifecycles: new Set(),
-			helperRollbackStack: [],
-			extensionStack: [extensionState],
-			committedExtensionStates: new Set(),
-		};
+		const state = baseState(2, { extensionStack: [extensionState] });
 
 		const result = await executeRunWithPause(
 			dependencies,
@@ -152,29 +170,41 @@ describe('execution coverage', () => {
 			stages: () => stages,
 		});
 
-		const state: AgnosticState<
-			TestOptions,
-			TestState,
-			TestContext,
-			PipelineReporter,
-			TestDiagnostic
-		> = {
-			context: { reporter: {} },
-			reporter: {},
-			runOptions: { id: 'run' },
-			userState: { count: 9 },
-			helperOrders: new Map(),
-			steps: [],
-			diagnostics: [],
-			diagnosticManager: createAgnosticDiagnosticManager(),
-			executedLifecycles: new Set(),
-			helperRollbackStack: [],
-			extensionStack: [],
-			committedExtensionStates: new Set(),
-		};
+		const state = baseState(9);
 
 		const result = executeRunWithPause(dependencies, baseRunContext(state));
 
 		expect(result).toEqual({ artifact: { count: 9 } });
+	});
+
+	it('preserves the established undefined result for a bare halt', () => {
+		const dependencies = baseDependencies({
+			stages: () => [() => ({ __halt: true })],
+		});
+		const state = baseState(0);
+
+		expect(
+			executeRunWithPause(dependencies, baseRunContext(state))
+		).toBeUndefined();
+	});
+
+	it('gives an explicit error precedence over a simultaneous result', async () => {
+		const error = new Error('halt failed');
+		const dependencies = baseDependencies({
+			stages: () => [
+				() => ({
+					__halt: true,
+					error,
+					result: { artifact: { count: 9 } },
+				}),
+			],
+		});
+		const state = baseState(0);
+
+		await expect(
+			Promise.resolve().then(() =>
+				executeRunWithPause(dependencies, baseRunContext(state))
+			)
+		).rejects.toBe(error);
 	});
 });

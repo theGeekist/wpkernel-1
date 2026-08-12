@@ -219,13 +219,22 @@ await extensions.use(myAsyncExtension);
 
 > **Recommendation**: We recommend `await`ing registration when possible for consistency, but you may omit it if you are certain the extension initializes synchronously. `pipeline.run()` will automatically wait for any pending async registrations.
 
+Each run captures its helper and extension configuration when preparation
+begins. Registrations made while a run is active apply to later runs, including
+when the active run is paused and resumed. If extension registration fails, the
+pipeline instance remains invalid and every later run reports the first
+registration failure, whether registration failed synchronously or
+asynchronously.
+
 ### Rollbacks
 
 The pipeline supports robust rollback for both helper application and extension lifecycle commit phases:
 
 - **Extensions**: Can provide transactional overhead via the `commit` phase. If extensive failure occurs, `rollback` hooks are triggered.
 - **Helpers**: Can return a `rollback` function in their result. These are executed LIFO if a later failure occurs.
-- **Robustness**: The rollback stack continues execution even if individual rollback actions fail (errors are collected and reported).
+- **Robustness**: Helper rollbacks complete LIFO before extension rollbacks,
+  and each layer continues after individual rollback failures while collecting
+  and reporting them.
 
 ### Re-run Semantics
 

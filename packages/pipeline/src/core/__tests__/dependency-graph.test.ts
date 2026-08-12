@@ -4,6 +4,23 @@ import type { RegisteredHelper } from '../dependency-graph';
 
 type TestHelper = Helper<any, any, any, PipelineReporter>;
 
+const helperEntry = (
+	key: string,
+	index: number,
+	dependsOn: string[] = [],
+	priority = 0
+): RegisteredHelper<TestHelper> => ({
+	id: `fragment:${key}#${index}`,
+	index,
+	helper: {
+		key,
+		kind: 'fragment',
+		dependsOn,
+		priority,
+		apply: () => undefined,
+	} as unknown as TestHelper,
+});
+
 describe('dependency-graph', () => {
 	describe('createDependencyGraph', () => {
 		it('handles missing dependencies with callbacks and error throw', () => {
@@ -161,6 +178,29 @@ describe('dependency-graph', () => {
 			);
 
 			expect(graph.order).toEqual([dependencyEntry, dependantEntry]);
+		});
+
+		it('waits for every helper registered under a dependency key', () => {
+			const firstEntry = helperEntry('dependency', 0);
+			const dependantEntry = helperEntry(
+				'dependant',
+				1,
+				['dependency'],
+				100
+			);
+			const secondEntry = helperEntry('dependency', 2);
+
+			const graph = createDependencyGraph(
+				[dependantEntry, secondEntry, firstEntry],
+				undefined,
+				(_code, message) => new Error(message)
+			);
+
+			expect(graph.order).toEqual([
+				firstEntry,
+				secondEntry,
+				dependantEntry,
+			]);
 		});
 	});
 

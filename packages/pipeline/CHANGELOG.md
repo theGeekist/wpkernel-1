@@ -16,6 +16,13 @@ versioned and released independently from the WPKernel monorepo.
 - Simplified runner preparation, settlement, diagnostics, and rollback state
   while preserving synchronous completion, process-local suspension, and
   reverse-order cleanup.
+- Captured helper and extension configuration once per run after pending
+  extension registrations reach quiescence. Registrations made during an
+  active or paused run apply to later runs.
+- Modelled helper dependencies with one indexed graph representation while
+  preserving priority, override, and dependency ordering.
+- Normalised permissive public halt values into explicit internal terminal
+  states at the stage boundary.
 
 ### Fixed
 
@@ -24,6 +31,15 @@ versioned and released independently from the WPKernel monorepo.
 - Forwarded helper rollback failures through the configured callback.
 - Removed standard-pipeline configuration fields that compiled but had no
   runtime effect.
+- Kept the first synchronous or asynchronous extension registration failure
+  attached to the pipeline so every later run observes the invalid
+  configuration.
+- Rejected helpers whose kind is not configured for the pipeline instead of
+  registering work that can never execute.
+- Settled launched downstream helper work before propagating a wrapper failure,
+  ensuring downstream cleanup is registered before rollback begins.
+- Froze copied helper dependency metadata as part of the immutable helper
+  descriptor.
 
 ### Breaking
 

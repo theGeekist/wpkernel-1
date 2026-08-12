@@ -16,10 +16,15 @@ export interface RegisteredHelper<THelper> {
  *
  * @internal
  */
+interface DependencyGraphNode<THelper> {
+	readonly entry: RegisteredHelper<THelper>;
+	readonly dependants: Set<string>;
+	indegree: number;
+}
+
 interface DependencyGraphState<THelper> {
-	readonly adjacency: Map<string, Set<string>>;
-	readonly indegree: Map<string, number>;
-	readonly entryById: Map<string, RegisteredHelper<THelper>>;
+	readonly nodes: Map<string, DependencyGraphNode<THelper>>;
+	readonly entriesByKey: Map<string, RegisteredHelper<THelper>[]>;
 }
 
 /**
@@ -107,20 +112,41 @@ export function compareHelpers<THelper extends HelperDescriptor>(
  *
  * @internal
  */
-function createGraphState<THelper>(
+function createGraphState<THelper extends HelperDescriptor>(
 	entries: RegisteredHelper<THelper>[]
 ): DependencyGraphState<THelper> {
-	const adjacency = new Map<string, Set<string>>();
-	const indegree = new Map<string, number>();
-	const entryById = new Map<string, RegisteredHelper<THelper>>();
+	const nodes = new Map<string, DependencyGraphNode<THelper>>();
+	const entriesByKey = new Map<string, RegisteredHelper<THelper>[]>();
 
 	for (const entry of entries) {
-		adjacency.set(entry.id, new Set());
-		indegree.set(entry.id, 0);
-		entryById.set(entry.id, entry);
+		nodes.set(entry.id, {
+			entry,
+			dependants: new Set(),
+			indegree: 0,
+		});
+		const key = entry.helper.key;
+		const matching = entriesByKey.get(key) ?? [];
+		matching.push(entry);
+		entriesByKey.set(key, matching);
 	}
 
-	return { adjacency, indegree, entryById };
+	return { nodes, entriesByKey };
+}
+
+function linkDependencies<THelper>(
+	graph: DependencyGraphState<THelper>,
+	dependantId: string,
+	dependencies: readonly RegisteredHelper<THelper>[]
+): void {
+	const dependant = graph.nodes.get(dependantId)!;
+	for (const dependency of dependencies) {
+		const dependants = graph.nodes.get(dependency.id)!.dependants;
+		const previousSize = dependants.size;
+		dependants.add(dependantId);
+		if (dependants.size !== previousSize) {
+			dependant.indegree += 1;
+		}
+	}
 }
 
 /**
@@ -143,68 +169,20 @@ function registerHelperDependencies<THelper extends HelperDescriptor>(
 
 	for (const entry of entries) {
 		for (const dependencyKey of new Set(entry.helper.dependsOn)) {
-			const linked = linkDependency(
-				entries,
-				graph,
-				dependencyKey,
-				entry.id
-			);
-
-			if (!linked) {
+			const dependencies = graph.entriesByKey.get(dependencyKey);
+			if (!dependencies) {
 				missing.push({
 					dependant: entry,
 					dependencyKey,
 				});
+				continue;
 			}
+
+			linkDependencies(graph, entry.id, dependencies);
 		}
 	}
 
 	return missing;
-}
-
-/**
- * Links a dependency key to all matching helpers.
- *
- * A helper can depend on a key that matches multiple helper instances
- * (e.g., different modes or priorities). All matches are linked.
- *
- * @param entries       - All registered helpers
- * @param graph         - The graph state
- * @param dependencyKey - The key from `dependsOn`
- * @param dependantId   - The ID of the dependent helper
- * @returns `true` if at least one match found, `false` if no matches
- *
- * @internal
- */
-function linkDependency<THelper extends HelperDescriptor>(
-	entries: RegisteredHelper<THelper>[],
-	graph: DependencyGraphState<THelper>,
-	dependencyKey: string,
-	dependantId: string
-): boolean {
-	const related = entries.filter(
-		({ helper }) => helper.key === dependencyKey
-	);
-
-	if (related.length === 0) {
-		return false;
-	}
-
-	for (const dependency of related) {
-		const neighbours = graph.adjacency.get(dependency.id);
-		if (!neighbours) {
-			continue;
-		}
-
-		const edgeCount = neighbours.size;
-		neighbours.add(dependantId);
-		if (neighbours.size > edgeCount) {
-			const current = graph.indegree.get(dependantId) ?? 0;
-			graph.indegree.set(dependantId, current + 1);
-		}
-	}
-
-	return true;
 }
 
 /**
@@ -227,12 +205,14 @@ function sortByDependencies<THelper extends HelperDescriptor>(
 	unresolved: RegisteredHelper<THelper>[];
 } {
 	const ready = entries.filter(
-		(entry) => (graph.indegree.get(entry.id) ?? 0) === 0
+		(entry) => graph.nodes.get(entry.id)!.indegree === 0
 	);
 	ready.sort(compareHelpers);
 
 	const ordered: RegisteredHelper<THelper>[] = [];
-	const indegree = new Map(graph.indegree);
+	const indegree = new Map(
+		Array.from(graph.nodes, ([id, node]) => [id, node.indegree])
+	);
 	const visited = new Set<string>();
 
 	while (ready.length > 0) {
@@ -244,24 +224,14 @@ function sortByDependencies<THelper extends HelperDescriptor>(
 		ordered.push(current);
 		visited.add(current.id);
 
-		const neighbours = graph.adjacency.get(current.id);
-		if (!neighbours) {
-			continue;
-		}
-
-		for (const neighbourId of neighbours) {
+		for (const neighbourId of graph.nodes.get(current.id)!.dependants) {
 			const nextValue = (indegree.get(neighbourId) ?? 0) - 1;
 			indegree.set(neighbourId, nextValue);
 			if (nextValue !== 0) {
 				continue;
 			}
 
-			const neighbour = graph.entryById.get(neighbourId);
-			if (!neighbour) {
-				continue;
-			}
-
-			ready.push(neighbour);
+			ready.push(graph.nodes.get(neighbourId)!.entry);
 			ready.sort(compareHelpers);
 		}
 	}

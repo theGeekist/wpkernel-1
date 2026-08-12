@@ -539,6 +539,61 @@ describe('Helper Rollback', () => {
 		expect(rollbackOrder).toEqual(['inner', 'outer']);
 	});
 
+	it('registers downstream cleanup before rolling back a wrapper failure', async () => {
+		let releaseDownstream: (() => void) | undefined;
+		const downstreamGate = new Promise<void>((resolve) => {
+			releaseDownstream = resolve;
+		});
+		const events: string[] = [];
+		const failure = new Error('wrapper failed');
+		const rollback = jest.fn(() => {
+			events.push('downstream-rollback');
+		});
+		const { pipeline } = createTestPipeline();
+
+		pipeline.use(
+			createHelper({
+				key: 'wrapper',
+				kind: 'builder',
+				priority: 2,
+				apply: (_args, next) => {
+					void next?.();
+					throw failure;
+				},
+			})
+		);
+		pipeline.use(
+			createHelper({
+				key: 'downstream',
+				kind: 'builder',
+				priority: 1,
+				apply: async () => {
+					await downstreamGate;
+					events.push('downstream-settled');
+					return {
+						rollback: createPipelineRollback(rollback),
+					};
+				},
+			})
+		);
+
+		const outcome = runPipeline(pipeline);
+		const settled = jest.fn();
+		const rejection = outcome.catch((error) => {
+			settled();
+			throw error;
+		});
+
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(settled).not.toHaveBeenCalled();
+		expect(rollback).not.toHaveBeenCalled();
+
+		releaseDownstream?.();
+		await expect(rejection).rejects.toBe(failure);
+		expect(events).toEqual(['downstream-settled', 'downstream-rollback']);
+	});
+
 	it('rolls back helpers respecting dependency order', async () => {
 		const rollbackOrder: string[] = [];
 		const { pipeline } = createTestPipeline();

@@ -120,6 +120,12 @@ export interface AgnosticState<
 	readonly userState: TUserState;
 
 	readonly helperOrders: Map<string, RegisteredHelper<unknown>[]>;
+	/** Extension configuration captured when this run was prepared. */
+	readonly extensionHooks: readonly ExtensionHookEntry<
+		TContext,
+		TRunOptions,
+		TUserState
+	>[];
 
 	// Execution State
 	readonly steps: PipelineStep[];

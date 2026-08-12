@@ -4,7 +4,7 @@ describe('Registration Diagnostics Reproduction', () => {
 	it('preserves registration-time diagnostics after run() is called', async () => {
 		const onDiagnostic = jest.fn();
 		const pipeline = makePipeline({
-			helperKinds: [],
+			helperKinds: ['fragment'],
 			createStages: (deps: any) => [
 				deps.makeLifecycleStage('fragment'),
 				deps.finalizeResult,

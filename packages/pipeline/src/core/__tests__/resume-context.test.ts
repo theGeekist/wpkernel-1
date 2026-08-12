@@ -31,6 +31,7 @@ describe('prepareResumeContext', () => {
 			runOptions: { id: 'resume' },
 			userState: { value: 42 },
 			helperOrders: new Map(),
+			extensionHooks: [],
 			steps: [],
 			diagnostics: [],
 			diagnosticManager,

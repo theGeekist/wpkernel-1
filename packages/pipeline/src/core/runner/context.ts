@@ -126,6 +126,7 @@ export const prepareContext = <
 		diagnostics: diagnosticManager.getDiagnostics(),
 		diagnosticManager,
 		helperOrders,
+		extensionHooks: [...dependencies.extensionHooks],
 		executedLifecycles: new Set(),
 		helperRollbackStack: [],
 

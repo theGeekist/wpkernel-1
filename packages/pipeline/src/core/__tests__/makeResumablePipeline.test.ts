@@ -33,7 +33,7 @@ describe('makeResumablePipeline', () => {
 	const mockReporter: PipelineReporter = { warn: jest.fn() };
 	const mockContext: PauseContext = { reporter: mockReporter };
 
-	it('reports a settled extension registration failure to the next run', async () => {
+	it('keeps a settled extension registration failure attached to the pipeline', async () => {
 		const registrationError = new Error('extension registration failed');
 		const pipeline = makeResumablePipeline({
 			helperKinds: [],
@@ -52,10 +52,14 @@ describe('makeResumablePipeline', () => {
 		await expect(
 			Promise.resolve().then(() => pipeline.run({}))
 		).rejects.toBe(registrationError);
-		expect(pipeline.run({})).toMatchObject({ artifact: {} });
+		await expect(
+			Promise.resolve().then(() => pipeline.run({}))
+		).rejects.toBe(registrationError);
 	});
 
 	it('pauses and resumes with snapshot state', async () => {
+		const initialHook = jest.fn();
+		const laterHook = jest.fn();
 		const pipeline: PausePipeline = makeResumablePipeline<
 			PauseRunOptions,
 			PauseContext,
@@ -83,8 +87,13 @@ describe('makeResumablePipeline', () => {
 						userState: { count: state.userState.count + 1 },
 					};
 				},
+				deps.makeLifecycleStage('after-fragments'),
 				deps.finalizeResult,
 			],
+		});
+		pipeline.extensions.use({
+			key: 'initial',
+			register: () => initialHook,
 		});
 
 		const initial = await pipeline.run({});
@@ -96,6 +105,10 @@ describe('makeResumablePipeline', () => {
 		expect(paused.snapshot.stageIndex).toBe(0);
 		expect(paused.snapshot.pauseKind).toBe('test');
 		expect(paused.snapshot.payload).toEqual({ step: 'first' });
+		pipeline.extensions.use({
+			key: 'later',
+			register: () => laterHook,
+		});
 
 		const resumed = await pipeline.resume(paused.snapshot, {
 			resumed: true,
@@ -104,6 +117,8 @@ describe('makeResumablePipeline', () => {
 		expect((resumed as PipelinePaused<unknown>).__paused).not.toBe(true);
 		const result = resumed as PipelineRunState<{ count: number }>;
 		expect(result.artifact.count).toBe(1);
+		expect(initialHook).toHaveBeenCalledTimes(1);
+		expect(laterHook).not.toHaveBeenCalled();
 	});
 
 	it('retains live object identity across process-local suspension', async () => {
