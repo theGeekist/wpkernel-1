@@ -2,6 +2,11 @@
 	"name": "@wpkernel/pipeline",
 	"version": "1.4.0",
 	"description": "Framework-agnostic pipeline orchestration primitives for WPKernel",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wpkernel/wpkernel.git",
+		"directory": "packages/pipeline"
+	},
 	"type": "module",
 	"sideEffects": false,
 	"publishConfig": {
