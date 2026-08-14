@@ -190,6 +190,13 @@ export function createStandardPipeline<
 
 	const fragmentKind = (options.fragmentKind ?? 'fragment') as TFragmentKind;
 	const builderKind = (options.builderKind ?? 'builder') as TBuilderKind;
+	if ((fragmentKind as string) === (builderKind as string)) {
+		const message = 'Fragment and builder helper kinds must be distinct.';
+		if (options.createError) {
+			throw options.createError('ValidationError', message);
+		}
+		throw new Error(message);
+	}
 
 	const agnosticOptions: CoreOptions = {
 		helperKinds: [fragmentKind, builderKind],
