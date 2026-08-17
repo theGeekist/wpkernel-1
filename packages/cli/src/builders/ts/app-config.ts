@@ -285,13 +285,13 @@ function writeTaxonomyFields(
 
 		writer.writeLine('{');
 		writer.indent(() => {
-			writer.writeLine(`id: '${taxonomy}',`);
+			writer.writeLine(`id: '${key}',`);
 			writer.writeLine(`label: __('${label}', '${namespace}'),`);
 			writer.writeLine(`type: 'text',`);
 			writer.writeLine('enableSorting: false,');
 			writer.writeLine('enableHiding: true,');
 			writer.writeLine(
-				`getValue: ({ item }: { item: Record<string, unknown> }) => Array.isArray(item['${taxonomy}']) ? item['${taxonomy}'].join(', ') : '',`
+				`getValue: ({ item }: { item: Record<string, unknown> }) => Array.isArray(item['${key}']) ? item['${key}'].join(', ') : '',`
 			);
 		});
 		writer.writeLine('},');
@@ -311,8 +311,8 @@ function collectTaxonomyFieldEntries(
 	taxonomies: Record<string, { taxonomy?: string }> | undefined,
 	claimed: Set<string>
 ): Array<[string, { taxonomy?: string }]> {
-	return Object.entries(taxonomies ?? {}).filter(([key, config]) =>
-		claimField(claimed, config?.taxonomy ?? key)
+	return Object.entries(taxonomies ?? {}).filter(([key]) =>
+		claimField(claimed, key)
 	) as Array<[string, { taxonomy?: string }]>;
 }
 
@@ -346,9 +346,7 @@ function getVisibleFields(resource: IRResource): string[] {
 
 		if (storage.taxonomies) {
 			// Add first few taxonomies
-			const taxKeys = Object.values(storage.taxonomies)
-				.map((t) => t?.taxonomy)
-				.filter(Boolean) as string[];
+			const taxKeys = Object.keys(storage.taxonomies);
 			taxKeys.slice(0, 2).forEach(add);
 		}
 

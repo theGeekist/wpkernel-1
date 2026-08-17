@@ -26,6 +26,8 @@ type PostTaxonomyField = {
 
 type PostFormFields = {
 	readonly hasTitle: boolean;
+	readonly hasContent: boolean;
+	readonly hasExcerpt: boolean;
 	readonly hasImplicitStatus: boolean;
 	readonly meta: readonly PostMetaField[];
 	readonly taxonomies: readonly PostTaxonomyField[];
@@ -199,7 +201,7 @@ function populateAppFormSourceFile({
 		formInputType,
 		resource,
 	});
-	addActionsBuilder(sourceFile, buildActionsName, entityType);
+	addActionsBuilder(sourceFile, buildActionsName, entityType, resource);
 }
 
 function addAppFormImports(sourceFile: SourceFile): void {
@@ -291,6 +293,12 @@ function addDefaultForm(
 							if (fields.hasTitle) {
 								writer.writeLine("title: '',");
 							}
+							if (fields.hasContent) {
+								writer.writeLine("content: '',");
+							}
+							if (fields.hasExcerpt) {
+								writer.writeLine("excerpt: '',");
+							}
 							if (fields.hasImplicitStatus) {
 								writer.writeLine("status: 'publish',");
 							}
@@ -355,7 +363,17 @@ function addPayloadBuilder(
 
 				if (fields.hasTitle) {
 					writer.writeLine(
-						'if (input.title) payload.title = input.title;'
+						'if (input.title !== undefined) payload.title = input.title;'
+					);
+				}
+				if (fields.hasContent) {
+					writer.writeLine(
+						'if (input.content !== undefined) payload.content = input.content;'
+					);
+				}
+				if (fields.hasExcerpt) {
+					writer.writeLine(
+						'if (input.excerpt !== undefined) payload.excerpt = input.excerpt;'
 					);
 				}
 				if (fields.hasImplicitStatus) {
@@ -414,13 +432,19 @@ function addMutationActionBuilder(
 						"if (!mutate) throw new WPKernelError('DeveloperError', { message: `${mode} mutation not available.` });"
 					);
 					writer.writeLine(
+						"if (mode === 'create' && !mutate.create) throw new WPKernelError('DeveloperError', { message: 'create mutation not available.' });"
+					);
+					writer.writeLine(
+						"if (mode === 'update' && !mutate.update) throw new WPKernelError('DeveloperError', { message: 'update mutation not available.' });"
+					);
+					writer.writeLine(
 						"if (mode === 'update' && !input.id) throw new WPKernelError('DeveloperError', { message: 'Missing id for update.' });"
 					);
 					writer.writeLine(
 						`const payload = build${pascalName}Payload(input);`
 					);
 					writer.writeLine(
-						"return mode === 'create' ? mutate.create?.(payload as never) : mutate.update?.(input.id as string | number, payload as never);"
+						"return mode === 'create' ? mutate.create(payload as never) : mutate.update(input.id as string | number, payload as never);"
 					);
 				});
 				writer.writeLine('},');
@@ -433,8 +457,14 @@ function addMutationActionBuilder(
 function addActionsBuilder(
 	sourceFile: SourceFile,
 	buildActionsName: string,
-	entityType: string
+	entityType: string,
+	resource: IRResource
 ): void {
+	const canQuickEdit =
+		hasItemRoute(resource, ['GET']) &&
+		hasItemRoute(resource, ['POST', 'PUT', 'PATCH']);
+	const canDelete = hasItemRoute(resource, ['DELETE']);
+
 	sourceFile.addFunction({
 		name: buildActionsName,
 		isExported: true,
@@ -454,33 +484,46 @@ function addActionsBuilder(
 		statements: (writer: CodeBlockWriter) => {
 			writer.writeLine('const { mutate } = controller.resource || {};');
 			writer.writeLine('if (!mutate) return [];');
-
 			writer.writeLine(
-				'const deleteAction = defineAction<{ ids: Array<string | number> }, void>({'
+				`const actions: Array<ResourceDataViewActionConfig<${entityType}, unknown, unknown>> = [];`
 			);
-			writer.indent(() => {
-				writer.writeLine("name: 'Delete',");
-				writer.writeLine('handler: async (_ctx, { ids }) => {');
+
+			if (canDelete) {
+				writer.writeLine('if (mutate.remove) {');
 				writer.indent(() => {
-					writer.writeLine('if (!ids?.length) return;');
 					writer.writeLine(
-						'await Promise.all(ids.map(id => mutate.remove?.(id).catch(() => undefined)));'
+						'const deleteAction = defineAction<{ ids: Array<string | number> }, void>({'
+					);
+					writer.indent(() => {
+						writer.writeLine("name: 'Delete',");
+						writer.writeLine('handler: async (_ctx, { ids }) => {');
+						writer.indent(() => {
+							writer.writeLine('if (!ids?.length) return;');
+							writer.writeLine(
+								'await Promise.all(ids.map(id => mutate.remove(id).catch(() => undefined)));'
+							);
+						});
+						writer.writeLine('},');
+					});
+					writer.writeLine('});');
+					writer.writeLine(
+						'actions.push({ id: "delete", label: "Delete", action: deleteAction, isDestructive: true, supportsBulk: true, getActionArgs: ({ selection }: any) => ({ ids: selection }) });'
 					);
 				});
-				writer.writeLine('},');
-			});
-			writer.writeLine('});');
+				writer.writeLine('}');
+			}
 
-			writer.writeLine('return [');
-			writer.indent(() => {
-				writer.writeLine(
-					'{ id: "delete", label: "Delete", action: deleteAction, isDestructive: true, supportsBulk: true, getActionArgs: ({ selection }: any) => ({ ids: selection }) },'
-				);
-				writer.writeLine(
-					'{ id: "quick-edit", label: "Quick Edit", action: defineAction<{id: string|number}, void>({ name: "Edit", handler: async (_c, {id}) => openQuickEdit(id), options: { scope: "tabLocal", bridged: false } }), getActionArgs: ({ selection }: any) => ({ id: selection[0] }) },'
-				);
-			});
-			writer.writeLine('];');
+			if (canQuickEdit) {
+				writer.writeLine('if (mutate.update) {');
+				writer.indent(() => {
+					writer.writeLine(
+						'actions.push({ id: "quick-edit", label: "Quick Edit", action: defineAction<{id: string|number}, void>({ name: "Edit", handler: async (_c, {id}) => openQuickEdit(id), options: { scope: "tabLocal", bridged: false } }), getActionArgs: ({ selection }: any) => ({ id: selection[0] }) });'
+					);
+				});
+				writer.writeLine('}');
+			}
+
+			writer.writeLine('return actions;');
 		},
 	});
 }
@@ -514,6 +557,12 @@ function writePostFormInputFields(
 	const fields = classifyPostFormFields(storage);
 	if (fields.hasTitle) {
 		writer.writeLine('title?: string;');
+	}
+	if (fields.hasContent) {
+		writer.writeLine('content?: string;');
+	}
+	if (fields.hasExcerpt) {
+		writer.writeLine('excerpt?: string;');
 	}
 	if (fields.hasImplicitStatus) {
 		writer.writeLine('status?: string;');
@@ -552,18 +601,26 @@ function mapMetaType(desc: { type?: string }): 'number' | 'boolean' | 'string' {
 }
 
 /**
- * Assign each form key to one source. Identity and supported title are
- * reserved; explicit metadata and taxonomy fields take precedence over the
- * implicit publish/draft status fallback.
+ * Assign each form key to one source. Identity and supported core post fields
+ * are reserved; explicit metadata and taxonomy fields take precedence over
+ * the implicit publish/draft status fallback.
  *
  * @param storage - WordPress post storage configuration to classify.
  * @returns Deduplicated form fields grouped by semantic source.
  */
 function classifyPostFormFields(storage: WpPostStorage): PostFormFields {
 	const hasTitle = storage.supports?.includes('title') ?? false;
+	const hasContent = storage.supports?.includes('editor') ?? false;
+	const hasExcerpt = storage.supports?.includes('excerpt') ?? false;
 	const claimed = new Set<string>(['id']);
 	if (hasTitle) {
 		claimed.add('title');
+	}
+	if (hasContent) {
+		claimed.add('content');
+	}
+	if (hasExcerpt) {
+		claimed.add('excerpt');
 	}
 
 	const meta = collectPostMetaFields(storage, claimed);
@@ -572,6 +629,8 @@ function classifyPostFormFields(storage: WpPostStorage): PostFormFields {
 
 	return {
 		hasTitle,
+		hasContent,
+		hasExcerpt,
 		hasImplicitStatus,
 		meta,
 		taxonomies,
@@ -739,6 +798,16 @@ function writeBaseFieldDefinitions(
 			`textField<${formInputType}>('title', { label: 'Title', form: { required: true } }),`
 		);
 	}
+	if (fields.hasContent) {
+		writer.writeLine(
+			`textField<${formInputType}>('content', { label: 'Content', edit: 'text' }),`
+		);
+	}
+	if (fields.hasExcerpt) {
+		writer.writeLine(
+			`textField<${formInputType}>('excerpt', { label: 'Excerpt', edit: 'text' }),`
+		);
+	}
 	if (fields.hasImplicitStatus) {
 		writer.writeLine(
 			`statusField<${formInputType}>('status', [{ label: 'Publish', value: 'publish' }, { label: 'Draft', value: 'draft' }], { label: 'Status', form: { required: true } }),`
@@ -797,7 +866,20 @@ type FetchInfo = {
 	pathTemplate: string;
 };
 
-function resolveFetchInfo(resource: IRResource): FetchInfo {
+function hasItemRoute(
+	resource: IRResource,
+	methods: readonly string[]
+): boolean {
+	const identityParam = resource.identity?.param ?? 'id';
+	const placeholders = [`:${identityParam}`, `{${identityParam}}`];
+	return (resource.routes ?? []).some(
+		(route) =>
+			methods.includes(route.method.toUpperCase()) &&
+			placeholders.some((placeholder) => route.path.includes(placeholder))
+	);
+}
+
+function resolveFetchInfo(resource: IRResource): FetchInfo | undefined {
 	const identityParam = resource.identity?.param ?? 'id';
 	const placeholders = [`:${identityParam}`, `{${identityParam}}`];
 	const getRoute = (resource.routes ?? []).find(
@@ -805,11 +887,13 @@ function resolveFetchInfo(resource: IRResource): FetchInfo {
 			route.method.toUpperCase() === 'GET' &&
 			placeholders.some((placeholder) => route.path.includes(placeholder))
 	);
-	const routePath = getRoute?.path ?? `/${resource.name}/:${identityParam}`;
+	if (!getRoute) {
+		return undefined;
+	}
 	const pathTemplate = placeholders.reduce(
 		(candidatePath, placeholder) =>
 			candidatePath.replace(placeholder, '${editId}'),
-		routePath
+		getRoute.path
 	);
 
 	return { pathTemplate };
@@ -819,7 +903,7 @@ function writeLoadEffect(
 	writer: CodeBlockWriter,
 	pascalName: string,
 	entityType: string,
-	fetchInfo: FetchInfo
+	fetchInfo: FetchInfo | undefined
 ): void {
 	writer.writeLine('useEffect(() => {');
 	writer.indent(() => {
@@ -829,6 +913,12 @@ function writeLoadEffect(
 			writer.writeLine(
 				`if (!isEdit || !editId) { setData({ ...default${pascalName}Form }); return; }`
 			);
+			if (!fetchInfo) {
+				writer.writeLine(
+					`setData({ ...default${pascalName}Form }); setError('Editing is not available for this resource.'); return;`
+				);
+				return;
+			}
 			writer.writeLine('try {');
 			writer.indent(() => {
 				writer.writeLine('setIsLoading(true); setError(null);');
