@@ -1,6 +1,6 @@
 import { PhpAuthoringError } from './errors';
 
-const variableDescriptorBrand: unique symbol = Symbol('php-authoring-variable');
+const variableDescriptors = new WeakSet<object>();
 
 export interface NormalizedPhpVariableReference {
 	/** Variable name without the leading sigil. */
@@ -12,7 +12,6 @@ export interface NormalizedPhpVariableReference {
 export interface PhpVariableValue {
 	readonly kind: 'variable';
 	readonly name: string;
-	readonly [variableDescriptorBrand]: true;
 }
 
 /**
@@ -65,18 +64,19 @@ export function normalizePhpVariableReference(
  */
 export function variable(name: string): PhpVariableValue {
 	const reference = normalizePhpVariableReference(name);
-	return Object.freeze({
+	const descriptor = Object.freeze({
 		kind: 'variable',
 		name: reference.raw,
-		[variableDescriptorBrand]: true as const,
 	});
+	variableDescriptors.add(descriptor);
+	return descriptor;
 }
 
 export function isPhpVariableValue(value: unknown): value is PhpVariableValue {
 	return (
-		Boolean(value) &&
+		value !== null &&
 		typeof value === 'object' &&
-		(value as Partial<PhpVariableValue>)[variableDescriptorBrand] === true
+		variableDescriptors.has(value)
 	);
 }
 

@@ -9,6 +9,7 @@ import {
 	type PhpStmtElseIf,
 } from '../nodes';
 import { PhpAuthoringError } from './errors';
+import { readDenseArrayEntries, readOwnProperty } from './properties';
 import {
 	isPhpVariableValue,
 	variable,
@@ -16,14 +17,11 @@ import {
 } from './references';
 import { renderPhpValue, type PhpAuthoringValue } from './values';
 
-const statementDescriptorBrand: unique symbol = Symbol(
-	'php-authoring-statement'
-);
+const statementDescriptors = new WeakSet<object>();
 
 export interface PhpStatementValue {
 	readonly kind: 'statement';
 	readonly statement: PhpStmt;
-	readonly [statementDescriptorBrand]: true;
 }
 
 export interface PhpConditionalBranch {
@@ -81,26 +79,32 @@ export function returnStatement(
  * @param options - Conditional branches.
  */
 export function ifStatement(options: PhpIfStatementOptions): PhpStatementValue {
-	assertBranch(options, '$if');
-	const elseIfs = (options.elseIf ?? []).map((branch, index) => {
-		assertBranch(branch, `$if.elseIf[${index}]`);
+	const branch = readBranch(options, '$if');
+	const elseIfs = readOptionalStatementOption(options, 'elseIf', '$if');
+	const elseIfBranches =
+		elseIfs === undefined ? [] : readStatementArray(elseIfs, '$if.elseIf');
+	const renderedElseIfs = elseIfBranches.map((elseIf, index) => {
+		const nestedBranch = readBranch(elseIf, `$if.elseIf[${index}]`);
 		return buildNode<PhpStmtElseIf>('Stmt_ElseIf', {
-			cond: renderPhpValue(branch.condition),
-			stmts: renderPhpStatements(branch.statements),
+			cond: renderPhpValue(nestedBranch.condition),
+			stmts: renderPhpStatements(nestedBranch.statements),
 		});
 	});
+	const elseStatements = readOptionalStatementOption(options, 'else', '$if');
 	const elseBranch =
-		options.else === undefined
+		elseStatements === undefined
 			? null
 			: buildNode<PhpStmtElse>('Stmt_Else', {
-					stmts: renderPhpStatements(options.else),
+					stmts: renderPhpStatements(
+						elseStatements as readonly PhpStatementValue[]
+					),
 				});
 
 	return statement(
 		buildIfStatement(
-			renderPhpValue(options.condition),
-			renderPhpStatements(options.statements),
-			{ elseifs: elseIfs, elseBranch }
+			renderPhpValue(branch.condition),
+			renderPhpStatements(branch.statements),
+			{ elseifs: renderedElseIfs, elseBranch }
 		)
 	);
 }
@@ -113,21 +117,40 @@ export function ifStatement(options: PhpIfStatementOptions): PhpStatementValue {
 export function foreachStatement(
 	options: PhpForeachStatementOptions
 ): PhpStatementValue {
+	assertStatementOptions(options, '$foreach');
+	const iterable = requireStatementOption(options, 'iterable', '$foreach');
+	const value = requireStatementOption(options, 'value', '$foreach');
+	const key = readOptionalStatementOption(options, 'key', '$foreach');
+	const byReference = readOptionalStatementOption(
+		options,
+		'byReference',
+		'$foreach'
+	);
+	const statements = requireStatementOption(
+		options,
+		'statements',
+		'$foreach'
+	);
 	const valueVariable = normalizeLoopVariable(
-		options.value,
+		value as string | PhpVariableValue,
 		'$foreach.value'
 	);
 	const keyVariable =
-		options.key === undefined || options.key === null
+		key === undefined || key === null
 			? null
-			: normalizeLoopVariable(options.key, '$foreach.key');
+			: normalizeLoopVariable(
+					key as string | PhpVariableValue,
+					'$foreach.key'
+				);
 
 	return statement(
-		buildForeach(renderPhpValue(options.iterable), {
+		buildForeach(renderPhpValue(iterable as PhpAuthoringValue), {
 			valueVar: renderPhpValue(valueVariable),
 			keyVar: keyVariable ? renderPhpValue(keyVariable) : null,
-			byRef: options.byReference ?? false,
-			stmts: renderPhpStatements(options.statements),
+			byRef: (byReference as boolean | undefined) ?? false,
+			stmts: renderPhpStatements(
+				statements as readonly PhpStatementValue[]
+			),
 		})
 	);
 }
@@ -155,10 +178,8 @@ export function renderPhpStatement(value: PhpStatementValue): PhpStmt {
 export function renderPhpStatements(
 	values: readonly PhpStatementValue[]
 ): PhpStmt[] {
-	if (!Array.isArray(values)) {
-		throw invalidStatement('$statements', 'Expected a statement array.');
-	}
-	return values.map((value, index) => {
+	const statementValues = readStatementArray(values, '$statements');
+	return statementValues.map((value, index) => {
 		if (!isPhpStatementValue(value)) {
 			throw invalidStatement(
 				`$statements[${index}]`,
@@ -169,33 +190,79 @@ export function renderPhpStatements(
 	});
 }
 
+function readStatementArray(value: unknown, path: string): unknown[] {
+	return readDenseArrayEntries(value, path, (errorPath, message) =>
+		invalidStatement(errorPath, message)
+	);
+}
+
 function statement(value: PhpStmt): PhpStatementValue {
-	return Object.freeze({
+	const descriptor = Object.freeze({
 		kind: 'statement',
 		statement: value,
-		[statementDescriptorBrand]: true as const,
 	});
+	statementDescriptors.add(descriptor);
+	return descriptor;
 }
 
 function isPhpStatementValue(value: unknown): value is PhpStatementValue {
 	return (
-		Boolean(value) &&
+		value !== null &&
 		typeof value === 'object' &&
-		(value as Partial<PhpStatementValue>)[statementDescriptorBrand] === true
+		statementDescriptors.has(value)
 	);
 }
 
-function assertBranch(
-	value: PhpConditionalBranch,
-	path: string
-): asserts value is PhpConditionalBranch {
+function readBranch(value: unknown, path: string): PhpConditionalBranch {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) {
 		throw invalidStatement(path, 'Conditional branch must be a record.');
 	}
-	if (!Object.prototype.hasOwnProperty.call(value, 'condition')) {
-		throw invalidStatement(path, 'Conditional branch requires condition.');
+	const condition = requireStatementOption(value, 'condition', path);
+	const statements = requireStatementOption(value, 'statements', path);
+	renderPhpStatements(statements as readonly PhpStatementValue[]);
+	return {
+		condition: condition as PhpAuthoringValue,
+		statements: statements as readonly PhpStatementValue[],
+	};
+}
+
+function assertStatementOptions(
+	value: unknown,
+	path: string
+): asserts value is object {
+	if (!value || typeof value !== 'object' || Array.isArray(value)) {
+		throw invalidStatement(path, 'Statement options must be a record.');
 	}
-	renderPhpStatements(value.statements);
+}
+
+function requireStatementOption(
+	value: object,
+	key: string,
+	path: string
+): unknown {
+	const option = readOwnProperty(value, key);
+	if (option.kind !== 'data') {
+		throw invalidStatement(
+			`${path}.${key}`,
+			'Statement options must use own data properties.'
+		);
+	}
+	return option.value;
+}
+
+function readOptionalStatementOption(
+	value: object,
+	key: string,
+	path: string
+): unknown | undefined {
+	const option = readOwnProperty(value, key);
+	if (option.kind === 'accessor') {
+		throw invalidStatement(
+			`${path}.${key}`,
+			'Statement options must use own data properties, not accessors.'
+		);
+	}
+	return option.kind === 'data' ? option.value : undefined;
 }
 
 function normalizeLoopVariable(
