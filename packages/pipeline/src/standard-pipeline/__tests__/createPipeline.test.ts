@@ -69,6 +69,8 @@ function createTestPipeline(options?: {
 	}) => void;
 	readonly adoptReplacementOutputs?: boolean;
 	readonly onFragmentHelper?: (helper: unknown) => void;
+	readonly fragmentKind?: 'fragment';
+	readonly builderKind?: 'builder';
 }): {
 	pipeline: TestPipeline;
 	reporter: TestReporter;
@@ -92,6 +94,8 @@ function createTestPipeline(options?: {
 		createError(code, message) {
 			throw new Error(`[${code}] ${message}`);
 		},
+		fragmentKind: options?.fragmentKind,
+		builderKind: options?.builderKind,
 		createBuildOptions() {
 			return {};
 		},
@@ -181,6 +185,17 @@ function createTestPipeline(options?: {
 }
 
 describe('createPipeline (extensions)', () => {
+	it('rejects identical fragment and builder kinds', () => {
+		expect(() =>
+			createTestPipeline({
+				fragmentKind: 'shared' as 'fragment',
+				builderKind: 'shared' as 'builder',
+			})
+		).toThrow(
+			'[ValidationError] Fragment and builder helper kinds must be distinct.'
+		);
+	});
+
 	it('preserves helper identity and prototype methods through registration', async () => {
 		const observedHelpers: unknown[] = [];
 		const apply = jest.fn(
