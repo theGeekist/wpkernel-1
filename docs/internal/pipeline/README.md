@@ -1,0 +1,34 @@
+# Pipeline v2 programme
+
+Architecture version: 1
+Task contract version: 1
+Target package version: 2.0.0
+
+This directory is the internal engineering authority for Pipeline v2. Public
+documentation continues to describe the released v1 contract until v2 exists
+and qualifies as a packed artefact.
+
+The programme starts from an explicit correction: Pipeline v1 validates and
+topologically orders helper dependencies, then executes a serial transformation
+chain inside a sequential stage programme. It is not yet a dataflow DAG.
+
+- [`ROADMAP.md`](ROADMAP.md) shows programme dependencies and external release
+  lanes. Task front matter owns lifecycle state.
+- [`COORDINATION.md`](COORDINATION.md) defines safe parallel execution.
+- [`decisions/`](decisions/) records accepted semantic boundaries.
+- [`contracts/`](contracts/) contains versioned implementation contracts.
+- [`tasks/`](tasks/) contains the executable work briefs.
+
+Three boundaries are non-negotiable:
+
+1. The compiled graph is the execution authority. Nodes do not schedule the
+   remainder of the graph.
+2. Dataflow values are immutable. Concurrency cannot derive meaning from
+   settlement timing.
+3. Pipeline remains a process-local evaluator. Durable admission, leases,
+   retries, journals, process supervision and external-effect idempotency
+   belong to its host.
+
+The current 1.4.x package remains supported while v2 is built beside it. V2 is
+a major version, not a silent reinterpretation of `dependsOn`, `next(output?)`,
+extensions or pause snapshots.

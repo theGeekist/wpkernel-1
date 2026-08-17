@@ -5,6 +5,11 @@
 > that work at the time. They are not current release guidance or a public v2
 > roadmap.
 
+> **Historical v1 record.** This plan describes the hardening work that shipped
+> across Pipeline 1.2 through 1.4. It is not the authority for Pipeline v2.
+> Current v2 decisions and executable tasks live in the internal
+> [Pipeline v2 programme](../../internal/pipeline/README.md).
+
 ## Purpose
 
 This plan tracked the generic pipeline work required before `llm-core` treated

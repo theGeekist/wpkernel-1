@@ -1,10 +1,6 @@
 # @wpkernel/pipeline
 
-`@wpkernel/pipeline` 1.4.1 provides dependency-validated serial helper
-composition, extension hooks, process-local suspension and rollback guarantees
-shared by the kernel, CLI and codemod packages. It validates a helper graph,
-then executes one ordered transformation chain. It is not a concurrent dataflow
-scheduler.
+`@wpkernel/pipeline` delivers the helper DAG, extension hooks, and rollback guarantees shared by the kernel, CLI, and codemod packages. Use the architecture guide to understand execution phases and the framework contributor guide to extend helpers safely.
 
 Use the architecture guide to understand the released execution model and the
 framework contributor guide to extend helpers without relying on private runner
@@ -33,7 +29,7 @@ The Phase 6 exported type set is:
 - `PipelineHalt`
 
 These names were introduced in 1.2.0 and pass external packed-artifact
-qualification in the current 1.4.1 release.
+qualification through the current 1.4 line.
 
 - [Architecture Guide](./pipeline/architecture.md)
 - [Framework Contributors](./pipeline/framework-contributors.md)
