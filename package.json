@@ -79,11 +79,16 @@
 		"docs:build": "pnpm docs:api && pnpm docs:site",
 		"docs:build:fast": "pnpm docs:api && pnpm docs:site:fast",
 		"docs:preview": "vitepress preview docs",
+		"task-graph:plan": "pnpm exec task-graph --project-config task-graph.project.json",
+		"task-graph:context": "pnpm exec task-graph --project-config task-graph.project.json --context",
+		"task-workbench:build": "TASK_GRAPH_PROJECT_CONFIG=task-graph.project.json pnpm exec task-workbench build",
+		"task-workbench:dev": "TASK_GRAPH_PROJECT_CONFIG=task-graph.project.json pnpm exec task-workbench dev",
 		"preinstall": "npx only-allow pnpm",
 		"refresh": "pnpm i && pnpm build && pnpm docs:build && pnpm lint --fix && pnpm format && git add --all"
 	},
 	"devDependencies": {
 		"@braintree/sanitize-url": "^7.1.1",
+		"@geekist/task-graph": "github:theGeekist/task-graph#c460305c5ad9a211cbb50613bae854f4a41b59ca",
 		"@eslint/eslintrc": "^3.3.1",
 		"@eslint/js": "^9.39.1",
 		"@kucrut/vite-for-wp": "^0.12.0",

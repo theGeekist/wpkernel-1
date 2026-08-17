@@ -1,17 +1,17 @@
 # `@wpkernel/php-json-ast` Authoring and Qualification Roadmap
 
-> **Authority:** This is the canonical monorepo plan for the PHP JSON AST
-> compiler, its framework-neutral authoring layer, WordPress adoption, CLI
-> repair, and runtime qualification.
+> **Role:** This document preserves the technical rationale, recovered evidence
+> and original milestone decomposition for the PHP JSON AST programme. Exact
+> lifecycle, dependency and write-scope authority now lives in
+> [`tasks/`](tasks/); programme admission lives in [`ROADMAP.md`](ROADMAP.md).
 >
 > **Publishing:** This file is tracked for monorepo coordination but is
 > excluded from VitePress by `srcExclude: ['internal/**']`. Public package and
 > contributor pages must not link to it.
 >
-> **Last reviewed:** 2026-07-31
+> **Last reviewed:** 2026-08-13
 >
-> **Overall status:** `G0 — Truth` passed; Wave 1 contract and safety-net work
-> is active.
+> **Architecture version:** 1. Task contract version 1.
 
 ## Decision
 
@@ -61,7 +61,11 @@ WordPress-specific generators, but no ergonomic, framework-neutral authoring
 surface between them. As a result, short PHP programs require large amounts of
 TypeScript node assembly.
 
-## Status vocabulary
+## Historical status vocabulary
+
+The table below records the vocabulary used by the recovered spike ledger. New
+execution uses the lifecycle in [`tasks/README.md`](tasks/README.md). It remains
+here only to interpret the historical evidence accurately.
 
 Tasks use the following states:
 
@@ -334,7 +338,11 @@ If agents share one worktree:
 When agents use separate branches or worktrees, the same logical ownership
 applies. Shared-surface changes are still integrated only at checkpoints.
 
-## Task ledger
+## Recovered task ledger
+
+This ledger is a historical decomposition source. It is not current task state.
+Every continuing item has been re-expressed as an independently owned brief in
+[`tasks/`](tasks/) with explicit dependency and write-scope metadata.
 
 ### M0 — Truth and frozen baseline
 
@@ -462,7 +470,10 @@ release-candidate artifact completes the agreed canary/soak period with verified
 rollback. This qualifies the PHP codegen subsystem, not automatically the whole
 WPKernel framework.
 
-## Suggested parallel waves
+## Historical parallel-wave proposal
+
+This proposal predates executable scope admission. Use [`ROADMAP.md`](ROADMAP.md)
+and the task planner for current concurrency decisions.
 
 With three implementation agents and one coordinator:
 

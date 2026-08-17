@@ -109,8 +109,7 @@ gutenberg
 !AGENTS.md
 docs/internal/*
 !docs/internal/php-json-ast/
-docs/internal/php-json-ast/*
-!docs/internal/php-json-ast/authoring-roadmap.md
+!docs/internal/php-json-ast/**
 artifacts/
 **/.wpk/
 .turbo
