@@ -100,6 +100,31 @@ describe('wp-post mutation helpers', () => {
 		expect(method).toMatchSnapshot('taxonomy-sync-output');
 	});
 
+	it('reads meta and taxonomy values through WP_REST_Request', () => {
+		const resource = buildResource();
+		const helpers = [
+			syncWpPostMeta({
+				resource,
+				pascalName: 'Book',
+				identity: IDENTITY,
+			}),
+			syncWpPostTaxonomies({
+				resource,
+				pascalName: 'Book',
+				identity: IDENTITY,
+			}),
+		];
+
+		for (const helper of helpers) {
+			const generatedAst = JSON.stringify(helper);
+
+			expect(generatedAst).toContain('get_param');
+			expect(generatedAst).not.toContain(
+				'rest_sanitize_value_from_request'
+			);
+		}
+	});
+
 	it('returns early when no taxonomies are configured', () => {
 		const resource = buildResource({ taxonomies: {} });
 

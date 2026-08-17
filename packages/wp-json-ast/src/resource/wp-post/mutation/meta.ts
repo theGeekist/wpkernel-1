@@ -4,6 +4,7 @@ import {
 	buildExpressionStatement,
 	buildFuncCall,
 	buildIdentifier,
+	buildMethodCall,
 	buildName,
 	buildParam,
 	buildScalarFloat,
@@ -76,12 +77,10 @@ export function syncWpPostMeta(
 			buildExpressionStatement(
 				buildAssign(
 					buildVariable(variableName),
-					buildFuncCall(
-						buildName(['rest_sanitize_value_from_request']),
-						[
-							buildArg(buildScalarString(key)),
-							buildArg(buildVariable('request')),
-						]
+					buildMethodCall(
+						buildVariable('request'),
+						buildIdentifier('get_param'),
+						[buildArg(buildScalarString(key))]
 					)
 				)
 			)

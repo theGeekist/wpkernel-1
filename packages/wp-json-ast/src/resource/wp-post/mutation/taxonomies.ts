@@ -7,6 +7,7 @@ import {
 	buildIdentifier,
 	buildName,
 	buildIfStatement,
+	buildMethodCall,
 	buildParam,
 	buildReturn,
 	buildScalarBool,
@@ -79,12 +80,10 @@ export function syncWpPostTaxonomies(
 			buildExpressionStatement(
 				buildAssign(
 					buildVariable(variableName),
-					buildFuncCall(
-						buildName(['rest_sanitize_value_from_request']),
-						[
-							buildArg(buildScalarString(key)),
-							buildArg(buildVariable('request')),
-						]
+					buildMethodCall(
+						buildVariable('request'),
+						buildIdentifier('get_param'),
+						[buildArg(buildScalarString(key))]
 					)
 				)
 			)
