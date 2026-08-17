@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / ResumablePipeline
 
@@ -18,14 +18,14 @@ suspended run.
 ```ts
 const result = await pipeline.run(options);
 if ('paused' in result) {
-  const resumed = await pipeline.resume(result.snapshot, userDecision);
+	const resumed = await pipeline.resume(result.snapshot, userDecision);
 }
 ```
 
 ## See
 
- - [PipelinePaused](PipelinePaused.md)
- - [PipelinePauseSnapshot](PipelinePauseSnapshot.md)
+- [PipelinePaused](PipelinePaused.md)
+- [PipelinePauseSnapshot](PipelinePauseSnapshot.md)
 
 ## Extends
 
@@ -47,13 +47,13 @@ Successful terminal result.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 Per-run context containing the reporter.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter exposed to helpers and diagnostics.
 
@@ -65,7 +65,7 @@ Public state projection exposed by pause snapshots.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Configured helper-kind union accepted by `use`.
 
@@ -112,10 +112,10 @@ identity.
 #### Inherited from
 
 ```ts
-PipelineBase.extensions
+PipelineBase.extensions;
 ```
 
-***
+---
 
 ### resume()
 
@@ -138,7 +138,7 @@ Process-local capability returned by a prior pause.
 `unknown`
 
 Optional value exposed as `state.resumeInput` while the
-                   paused stage is re-entered.
+paused stage is re-entered.
 
 #### Returns
 
@@ -152,7 +152,7 @@ serialised, cloned, replayed or resumed concurrently. Execution re-enters
 the paused stage with `resumeInput`; it may complete or pause again with a
 fresh snapshot.
 
-***
+---
 
 ### run()
 
@@ -175,7 +175,7 @@ Starts a new run.
 A successful result, or a paused value containing the single-use
 snapshot needed by [ResumablePipeline.resume](#resume).
 
-***
+---
 
 ### use()
 
@@ -219,5 +219,5 @@ accidental registration of helper kinds that the pipeline cannot schedule.
 #### Inherited from
 
 ```ts
-PipelineBase.use
+PipelineBase.use;
 ```

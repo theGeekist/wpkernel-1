@@ -1,13 +1,14 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / promptConfirm
 
 # Function: promptConfirm()
 
 ```ts
-function promptConfirm(options): Promise&lt;boolean&gt;;
+function promptConfirm(options): Promise & lt;
+boolean & gt;
 ```
 
 Prompts the user for a yes/no confirmation.

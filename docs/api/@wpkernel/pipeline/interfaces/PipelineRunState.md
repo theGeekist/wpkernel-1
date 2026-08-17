@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineRunState
 
@@ -24,7 +24,7 @@ Final artifact or user-state type.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 Diagnostic union collected by the run.
 
@@ -38,7 +38,7 @@ readonly artifact: TArtifact;
 
 Final artifact after all stages, hooks and output adoption.
 
-***
+---
 
 ### diagnostics
 
@@ -48,7 +48,7 @@ readonly diagnostics: readonly TDiagnostic[];
 
 Diagnostics recorded during registration or this run.
 
-***
+---
 
 ### steps
 

@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildFuncCall
 
 # Function: buildFuncCall()
 
 ```ts
-function buildFuncCall(
-   name, 
-   args, 
-   attributes?): PhpExprFuncCall;
+function buildFuncCall(name, args, attributes?): PhpExprFuncCall;
 ```
 
 Builds a PHP function call expression node.

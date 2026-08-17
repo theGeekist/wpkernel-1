@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / persistProgramArtifacts
 
@@ -8,11 +8,11 @@
 
 ```ts
 function persistProgramArtifacts(
-   context, 
-   output, 
-   filePath, 
-   code, 
-   ast, 
+   context,
+   output,
+   filePath,
+   code,
+   ast,
 options): Promise&lt;void&gt;;
 ```
 

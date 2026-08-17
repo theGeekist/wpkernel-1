@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / FlushBufferedMessageResult
 
@@ -14,7 +14,7 @@
 readonly remaining: string;
 ```
 
-***
+---
 
 ### error?
 
@@ -22,7 +22,7 @@ readonly remaining: string;
 readonly optional error: unknown;
 ```
 
-***
+---
 
 ### message?
 

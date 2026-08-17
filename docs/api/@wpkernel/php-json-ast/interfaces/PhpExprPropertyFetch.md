@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / PhpExprPropertyFetch
 
@@ -24,17 +24,17 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
-***
+---
 
 ### name
 
 ```ts
-readonly name: 
+readonly name:
   | PhpExpr
   | PhpIdentifier;
 ```
 
-***
+---
 
 ### nodeType
 
@@ -46,7 +46,7 @@ readonly nodeType: "Expr_PropertyFetch";
 
 [`PhpExprBase`](PhpExprBase.md).[`nodeType`](PhpExprBase.md#nodetype)
 
-***
+---
 
 ### var
 

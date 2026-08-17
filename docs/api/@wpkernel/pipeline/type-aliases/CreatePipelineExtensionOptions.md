@@ -1,13 +1,13 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / CreatePipelineExtensionOptions
 
 # Type Alias: CreatePipelineExtensionOptions&lt;TPipeline, TContext, TOptions, TArtifact&gt;
 
 ```ts
-type CreatePipelineExtensionOptions&lt;TPipeline, TContext, TOptions, TArtifact&gt; = 
+type CreatePipelineExtensionOptions&lt;TPipeline, TContext, TOptions, TArtifact&gt; =
   | CreatePipelineExtensionWithRegister&lt;TPipeline, TContext, TOptions, TArtifact&gt;
 | CreatePipelineExtensionWithSetup&lt;TPipeline, TContext, TOptions, TArtifact&gt;;
 ```

@@ -1,6 +1,6 @@
 **@wpkernel/pipeline v1.4.0**
 
-***
+---
 
 # @wpkernel/pipeline v1.4.0
 

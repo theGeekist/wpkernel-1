@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / PhpAstChannel
 
@@ -18,7 +18,7 @@ entries: () =&gt; readonly PhpAstContextEntry[];
 
 readonly [`PhpAstContextEntry`](PhpAstContextEntry.md)[]
 
-***
+---
 
 ### get()
 
@@ -36,7 +36,7 @@ get: (key) =&gt; PhpAstContextEntry | undefined;
 
 [`PhpAstContextEntry`](PhpAstContextEntry.md) \| `undefined`
 
-***
+---
 
 ### open()
 
@@ -68,7 +68,7 @@ open: (options) =&gt; PhpAstContextEntry;
 
 [`PhpAstContextEntry`](PhpAstContextEntry.md)
 
-***
+---
 
 ### reset()
 

@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / WPKernelUIRuntime
 
@@ -14,7 +14,7 @@
 events: WPKernelEventBus;
 ```
 
-***
+---
 
 ### namespace
 
@@ -22,7 +22,7 @@ events: WPKernelEventBus;
 namespace: string;
 ```
 
-***
+---
 
 ### reporter
 
@@ -30,7 +30,7 @@ namespace: string;
 reporter: Reporter;
 ```
 
-***
+---
 
 ### capabilities?
 
@@ -38,7 +38,7 @@ reporter: Reporter;
 optional capabilities: WPKUICapabilityRuntime;
 ```
 
-***
+---
 
 ### dataviews?
 
@@ -46,7 +46,7 @@ optional capabilities: WPKUICapabilityRuntime;
 optional dataviews: WPKernelDataViewsRuntime;
 ```
 
-***
+---
 
 ### invalidate()?
 
@@ -68,7 +68,7 @@ optional invalidate: (patterns, options?) =&gt; void;
 
 `void`
 
-***
+---
 
 ### options?
 
@@ -76,7 +76,7 @@ optional invalidate: (patterns, options?) =&gt; void;
 optional options: UIIntegrationOptions;
 ```
 
-***
+---
 
 ### registry?
 
@@ -84,7 +84,7 @@ optional options: UIIntegrationOptions;
 optional registry: any;
 ```
 
-***
+---
 
 ### wpk?
 

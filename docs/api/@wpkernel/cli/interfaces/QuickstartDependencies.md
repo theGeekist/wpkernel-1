@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / QuickstartDependencies
 
@@ -29,10 +29,10 @@ written by the current process.
 import { access, constants } from 'node:fs/promises';
 
 try {
-  await access('/etc/passwd', constants.R_OK | constants.W_OK);
-  console.log('can access');
+	await access('/etc/passwd', constants.R_OK | constants.W_OK);
+	console.log('can access');
 } catch {
-  console.error('cannot access');
+	console.error('cannot access');
 }
 ```
 
@@ -62,7 +62,7 @@ Fulfills with `undefined` upon success.
 
 v10.0.0
 
-***
+---
 
 ### exec()
 
@@ -153,8 +153,8 @@ readonly `string`[] | `null` | `undefined`
 
 ```ts
 (
-   file, 
-   args, 
+   file,
+   args,
    options): PromiseWithChild&lt;{
 }&gt;;
 ```
@@ -204,8 +204,8 @@ readonly `string`[] | `null` | `undefined`
 
 ```ts
 (
-   file, 
-   args, 
+   file,
+   args,
    options): PromiseWithChild&lt;{
 }&gt;;
 ```
@@ -255,8 +255,8 @@ readonly `string`[] | `null` | `undefined`
 
 ```ts
 (
-   file, 
-   args, 
+   file,
+   args,
    options): PromiseWithChild&lt;{
 }&gt;;
 ```
@@ -280,7 +280,7 @@ readonly `string`[] | `null` | `undefined`
 `PromiseWithChild`&lt;\{
 \}&gt;
 
-***
+---
 
 ### mkdtemp()
 
@@ -313,9 +313,9 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 try {
-  await mkdtemp(join(tmpdir(), 'foo-'));
+	await mkdtemp(join(tmpdir(), 'foo-'));
 } catch (err) {
-  console.error(err);
+	console.error(err);
 }
 ```
 
@@ -394,7 +394,7 @@ The encoding (or an object specifying the encoding), used as the encoding of the
 
 `Promise`&lt;`string` \| `NonSharedBuffer`&gt;
 
-***
+---
 
 ### resolve()
 
@@ -418,7 +418,7 @@ readonly resolve: (id, opts?) =&gt; string;
 
 `string`
 
-***
+---
 
 ### rm()
 

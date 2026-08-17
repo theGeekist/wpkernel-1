@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ActionDefinedEvent
 
@@ -15,10 +15,11 @@ type ActionDefinedEvent = object;
 ### action
 
 ```ts
-action: DefinedAction&lt;unknown, unknown&gt;;
+action: DefinedAction & lt;
+(unknown, unknown & gt);
 ```
 
-***
+---
 
 ### namespace
 

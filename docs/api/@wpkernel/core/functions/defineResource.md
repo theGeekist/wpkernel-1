@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / defineResource
 
@@ -15,12 +15,13 @@ function defineResource&lt;T, TQuery, TRoutes&gt;(config): ResourceObject&lt;T, 
 Define a resource with typed REST client
 
 Creates a resource object with:
+
 - Typed client methods (fetchList, fetch, create, update, remove)
 - Store key for @wordpress/data registration
 - Cache key generators for invalidation
 - Route definitions
 - Thin-flat API (useGet, useList, prefetchGet, prefetchList, invalidate, key)
-- Grouped API (select.*, use.*, get.*, mutate.*, cache.*, storeApi.*, events.*)
+- Grouped API (select._, use._, get._, mutate._, cache._, storeApi._, events.\*)
 
 ### Type Parameters
 
@@ -38,7 +39,7 @@ Query parameters type for list operations (e.g., { search?: string })
 
 #### TRoutes
 
-`TRoutes` *extends* [`ResourceRoutes`](../type-aliases/ResourceRoutes.md) = [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)
+`TRoutes` _extends_ [`ResourceRoutes`](../type-aliases/ResourceRoutes.md) = [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)
 
 ### Parameters
 
@@ -67,18 +68,19 @@ function defineResource&lt;Config&gt;(config): ResourceObject&lt;InferResourceDe
 Define a resource with typed REST client
 
 Creates a resource object with:
+
 - Typed client methods (fetchList, fetch, create, update, remove)
 - Store key for @wordpress/data registration
 - Cache key generators for invalidation
 - Route definitions
 - Thin-flat API (useGet, useList, prefetchGet, prefetchList, invalidate, key)
-- Grouped API (select.*, use.*, get.*, mutate.*, cache.*, storeApi.*, events.*)
+- Grouped API (select._, use._, get._, mutate._, cache._, storeApi._, events.\*)
 
 ### Type Parameters
 
 #### Config
 
-`Config` *extends* [`ResourceConfig`](../type-aliases/ResourceConfig.md)&lt;`unknown`, `unknown`, [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)&gt;
+`Config` _extends_ [`ResourceConfig`](../type-aliases/ResourceConfig.md)&lt;`unknown`, `unknown`, [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)&gt;
 
 ### Parameters
 

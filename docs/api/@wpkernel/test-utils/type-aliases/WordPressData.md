@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / WordPressData
 
@@ -26,7 +26,7 @@ Shape returned by ensureWpData().
 createReduxStore: jest.Mock;
 ```
 
-***
+---
 
 ### dispatch
 
@@ -34,7 +34,7 @@ createReduxStore: jest.Mock;
 dispatch: jest.Mock;
 ```
 
-***
+---
 
 ### register
 
@@ -42,7 +42,7 @@ dispatch: jest.Mock;
 register: jest.Mock;
 ```
 
-***
+---
 
 ### select
 
@@ -50,7 +50,7 @@ register: jest.Mock;
 select: jest.Mock;
 ```
 
-***
+---
 
 ### subscribe
 

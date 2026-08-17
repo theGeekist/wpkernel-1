@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / GitHelperDependencies
 
@@ -28,7 +28,7 @@ readonly detectRepository: (cwd, __namedParameters) =&gt; Promise&lt;boolean&gt;
 
 `Promise`&lt;`boolean`&gt;
 
-***
+---
 
 ### initRepository()
 

@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / createHelper
 
@@ -60,11 +60,11 @@ visitation order and later unwound in reverse order. Use
 
 ### TReporter
 
-`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
 
 ### TKind
 
-`TKind` *extends* `string` = `string`
+`TKind` _extends_ `string` = `string`
 
 ## Parameters
 

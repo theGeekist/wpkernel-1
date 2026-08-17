@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildDeclareItem
 
 # Function: buildDeclareItem()
 
 ```ts
-function buildDeclareItem(
-   key, 
-   value, 
-   attributes?): PhpDeclareItem;
+function buildDeclareItem(key, value, attributes?): PhpDeclareItem;
 ```
 
 Builds a PHP declare item node.

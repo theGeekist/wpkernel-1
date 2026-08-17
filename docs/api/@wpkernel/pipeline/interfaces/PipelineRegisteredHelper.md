@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineRegisteredHelper
 
@@ -26,7 +26,7 @@ readonly helper: THelper;
 
 Original registered helper object.
 
-***
+---
 
 ### id
 
@@ -36,7 +36,7 @@ readonly id: string;
 
 Stable identity combining kind, key and registration index.
 
-***
+---
 
 ### index
 

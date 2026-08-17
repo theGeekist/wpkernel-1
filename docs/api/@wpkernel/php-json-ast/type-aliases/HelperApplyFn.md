@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / HelperApplyFn
 
@@ -34,7 +34,7 @@ Helper output type.
 
 ### TReporter
 
-`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
 
 Reporter type.
 

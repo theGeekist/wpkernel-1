@@ -1,13 +1,14 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / createWorkspaceHygieneReadinessHelper
 
 # Function: createWorkspaceHygieneReadinessHelper()
 
 ```ts
-function createWorkspaceHygieneReadinessHelper(overrides): ReadinessHelper&lt;WorkspaceHygieneState&gt;;
+function createWorkspaceHygieneReadinessHelper(overrides): ReadinessHelper & lt;
+WorkspaceHygieneState & gt;
 ```
 
 ## Parameters

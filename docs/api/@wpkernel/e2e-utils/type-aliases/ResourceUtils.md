@@ -1,6 +1,6 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../index.md) / ResourceUtils
 
@@ -33,7 +33,7 @@ WARNING: This will delete all resources of this type
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### remove()
 
@@ -55,7 +55,7 @@ Resource ID to delete
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### seed()
 
@@ -79,7 +79,7 @@ Resource data to create
 
 Created resource with ID
 
-***
+---
 
 ### seedMany()
 

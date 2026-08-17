@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / BuilderInput
 
@@ -22,7 +22,7 @@ readonly ir: IRv1 | null;
 
 The finalized Intermediate Representation (IR).
 
-***
+---
 
 ### options
 
@@ -32,7 +32,7 @@ readonly options: BuilderOptions;
 
 Options for builder execution (no raw config).
 
-***
+---
 
 ### phase
 
@@ -43,5 +43,5 @@ readonly phase: PipelinePhase;
 #### Inherited from
 
 ```ts
-Omit.phase
+Omit.phase;
 ```

@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineStageDependencies
 
@@ -24,8 +24,8 @@ order, and one rollback failure does not prevent later cleanup.
 
 ## See
 
- - [PipelineStage](../type-aliases/PipelineStage.md)
- - [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md)
+- [PipelineStage](../type-aliases/PipelineStage.md)
+- [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md)
 
 ## Type Parameters
 
@@ -43,19 +43,19 @@ User-owned artifact threaded through stages.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 Per-run context containing the reporter.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter available to helpers and diagnostics.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 Diagnostic union recorded by the runner.
 
@@ -67,7 +67,7 @@ Terminal result returned by the pipeline.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Configured helper-kind union.
 
@@ -87,7 +87,7 @@ Pending commit callbacks run sequentially in their original hook-execution
 order. Most compositions can rely on terminal settlement; use this stage
 only when a custom composition deliberately needs an earlier commit point.
 
-***
+---
 
 ### diagnostics
 
@@ -97,7 +97,7 @@ readonly diagnostics: PipelineStageDiagnostics&lt;TDiagnostic, TKind&gt;;
 
 Diagnostic recording helpers bound to the current run.
 
-***
+---
 
 ### extensions
 
@@ -115,7 +115,7 @@ readonly optional lifecycles: readonly string[];
 
 Lifecycle names recognised by this pipeline, in configured order.
 
-***
+---
 
 ### finalizeResult
 
@@ -132,7 +132,7 @@ Place this after stages that contribute helpers, diagnostics or artifact
 state. Lifecycle names configured but never executed are reported through
 the pipeline reporter when this stage settles the run.
 
-***
+---
 
 ### halt()
 
@@ -153,7 +153,7 @@ initiates reverse-order rollback before the error is rethrown.
 
 [`PipelineHalt`](../type-aliases/PipelineHalt.md)&lt;`TRunResult`&gt;
 
-***
+---
 
 ### isHalt()
 
@@ -173,7 +173,7 @@ Runtime type guard for terminal [PipelineHalt](../type-aliases/PipelineHalt.md) 
 
 `value is PipelineHalt&lt;TRunResult&gt;`
 
-***
+---
 
 ### makeHelperStage()
 
@@ -195,11 +195,11 @@ Creates a dependency-ordered stage for one configured helper kind.
 
 ##### TSelectedKind
 
-`TSelectedKind` *extends* `string` = `TKind`
+`TSelectedKind` _extends_ `string` = `TKind`
 
 ##### THelper
 
-`THelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt;
+`THelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt; = [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TSelectedKind`&gt;
 
 #### Parameters
 
@@ -226,7 +226,7 @@ unusable helpers are not executed.
 The optional adapters support phase-specific inputs and state projections
 while retaining runner-managed rollback and execution metadata.
 
-***
+---
 
 ### makeLifecycleStage()
 
@@ -254,7 +254,7 @@ no-op after its first successful execution. If a hook fails, hooks already
 completed in that lifecycle roll back in reverse order before the error is
 propagated.
 
-***
+---
 
 ### pause()?
 

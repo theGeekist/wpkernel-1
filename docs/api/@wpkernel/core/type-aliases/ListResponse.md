@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ListResponse
 
@@ -30,7 +30,7 @@ items: T[];
 
 Array of resource entities
 
-***
+---
 
 ### hasMore?
 
@@ -40,7 +40,7 @@ optional hasMore: boolean;
 
 Whether there are more pages
 
-***
+---
 
 ### nextCursor?
 
@@ -50,7 +50,7 @@ optional nextCursor: string;
 
 Pagination cursor for next page
 
-***
+---
 
 ### total?
 

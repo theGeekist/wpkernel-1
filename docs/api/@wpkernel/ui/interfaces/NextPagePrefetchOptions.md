@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/ui](../index.md) / NextPagePrefetchOptions
 
@@ -38,7 +38,7 @@ The current query.
 
 The next query to prefetch.
 
-***
+---
 
 ### when?
 
@@ -51,5 +51,5 @@ If true, the prefetch will be triggered.
 #### Default
 
 ```ts
-true
+true;
 ```

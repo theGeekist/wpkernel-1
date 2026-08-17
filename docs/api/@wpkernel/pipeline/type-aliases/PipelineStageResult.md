@@ -1,13 +1,13 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineStageResult
 
 # Type Alias: PipelineStageResult&lt;TState, TRunResult&gt;
 
 ```ts
-type PipelineStageResult&lt;TState, TRunResult&gt; = 
+type PipelineStageResult&lt;TState, TRunResult&gt; =
   | TState
   | PipelinePaused&lt;TState&gt;
 | PipelineHalt&lt;TRunResult&gt;;

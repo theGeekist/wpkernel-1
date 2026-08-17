@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildClosureUse
 
 # Function: buildClosureUse()
 
 ```ts
-function buildClosureUse(
-   variable, 
-   options, 
-   attributes?): PhpClosureUse;
+function buildClosureUse(variable, options, attributes?): PhpClosureUse;
 ```
 
 Builds a PHP closure use node.

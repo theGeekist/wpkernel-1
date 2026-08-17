@@ -1,13 +1,13 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineExtensionRegisterOutput
 
 # Type Alias: PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt;
 
 ```ts
-type PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt; = 
+type PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt; =
   | void
   | PipelineExtensionHook&lt;TContext, TOptions, TArtifact&gt;
 | PipelineExtensionHookRegistration&lt;TContext, TOptions, TArtifact&gt;;

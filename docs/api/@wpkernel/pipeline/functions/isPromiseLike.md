@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / isPromiseLike
 
@@ -52,9 +52,9 @@ Candidate synchronous value or thenable.
 import { isPromiseLike } from '@wpkernel/pipeline';
 
 const accessorBacked = Object.defineProperty({}, 'then', {
-  get() {
-    throw new Error('must not execute');
-  },
+	get() {
+		throw new Error('must not execute');
+	},
 });
 
 isPromiseLike(Promise.resolve('ready')); // true
@@ -64,7 +64,8 @@ isPromiseLike(accessorBacked); // false, getter was not evaluated
 ## Call Signature
 
 ```ts
-function isPromiseLike(value): value is PromiseLike&lt;unknown&gt;;
+function isPromiseLike(value): value is PromiseLike & lt;
+unknown & gt;
 ```
 
 Tests whether a value exposes an inspectable data-property `then` method.
@@ -101,9 +102,9 @@ Candidate synchronous value or thenable.
 import { isPromiseLike } from '@wpkernel/pipeline';
 
 const accessorBacked = Object.defineProperty({}, 'then', {
-  get() {
-    throw new Error('must not execute');
-  },
+	get() {
+		throw new Error('must not execute');
+	},
 });
 
 isPromiseLike(Promise.resolve('ready')); // true

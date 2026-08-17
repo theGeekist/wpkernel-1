@@ -1,13 +1,13 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / InteractionActionInput
 
 # Type Alias: InteractionActionInput&lt;TArgs, TResult&gt;
 
 ```ts
-type InteractionActionInput&lt;TArgs, TResult&gt; = 
+type InteractionActionInput&lt;TArgs, TResult&gt; =
   | InteractionActionBinding&lt;TArgs, TResult&gt;
 | DefinedAction&lt;TArgs, TResult&gt;;
 ```

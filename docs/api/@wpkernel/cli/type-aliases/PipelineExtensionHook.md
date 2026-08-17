@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / PipelineExtensionHook
 
@@ -23,5 +23,5 @@ Represents a pipeline extension hook function.
 ## Returns
 
 `Promise`&lt;
-  \| [`PipelineExtensionHookResult`](../interfaces/PipelineExtensionHookResult.md)
-  \| `void`&gt;
+\| [`PipelineExtensionHookResult`](../interfaces/PipelineExtensionHookResult.md)
+\| `void`&gt;

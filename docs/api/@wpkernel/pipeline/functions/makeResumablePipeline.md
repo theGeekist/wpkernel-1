@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / makeResumablePipeline
 
@@ -48,11 +48,11 @@ participating work becomes asynchronous.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TUserState
 
@@ -60,7 +60,7 @@ participating work becomes asynchronous.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 ### TRunResult
 
@@ -68,7 +68,7 @@ participating work becomes asynchronous.
 
 ### TKind
 
-`TKind` *extends* `string` = `string`
+`TKind` _extends_ `string` = `string`
 
 ## Parameters
 

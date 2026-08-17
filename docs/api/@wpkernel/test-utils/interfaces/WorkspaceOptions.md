@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / WorkspaceOptions
 
@@ -18,7 +18,7 @@ optional chdir: boolean;
 
 Whether to change the current working directory to the workspace.
 
-***
+---
 
 ### files?
 
@@ -28,7 +28,7 @@ optional files: Record&lt;string, string | Buffer&lt;ArrayBufferLike&gt;&gt;;
 
 A map of relative file paths to their content (string or Buffer).
 
-***
+---
 
 ### prefix?
 
@@ -38,7 +38,7 @@ optional prefix: string;
 
 A prefix for the temporary directory name.
 
-***
+---
 
 ### setup()?
 
@@ -58,7 +58,7 @@ A setup function to run before the test.
 
 `void` \| `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### teardown()?
 

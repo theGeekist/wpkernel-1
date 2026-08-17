@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ResourceSelectors
 
@@ -56,7 +56,7 @@ The cache key
 
 Error message or undefined
 
-***
+---
 
 ### getItem()
 
@@ -86,7 +86,7 @@ Item ID
 
 The item or undefined if not found
 
-***
+---
 
 ### getItems()
 
@@ -116,7 +116,7 @@ Query parameters
 
 Array of items
 
-***
+---
 
 ### getList()
 
@@ -146,7 +146,7 @@ Query parameters
 
 List response with items and metadata
 
-***
+---
 
 ### getListError()
 
@@ -176,7 +176,7 @@ Query parameters
 
 Error message or undefined
 
-***
+---
 
 ### getListStatus()
 
@@ -206,7 +206,7 @@ Query parameters
 
 List status
 
-***
+---
 
 ### hasFinishedResolution()
 
@@ -245,7 +245,7 @@ Arguments passed to the selector
 
 True if resolution has finished
 
-***
+---
 
 ### hasStartedResolution()
 
@@ -284,7 +284,7 @@ Arguments passed to the selector
 
 True if resolution has started
 
-***
+---
 
 ### isResolving()
 

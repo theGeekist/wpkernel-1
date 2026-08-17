@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / BuildCreateCommandOptions
 
@@ -61,7 +61,7 @@ Optional: Custom readiness registry builder.
 
 [`ReadinessRegistry`](../classes/ReadinessRegistry.md)
 
-***
+---
 
 #### buildReporter()?
 
@@ -81,7 +81,7 @@ Optional: Custom reporter builder function.
 
 `Reporter`
 
-***
+---
 
 #### buildWorkspace()?
 
@@ -101,7 +101,7 @@ Optional: Custom workspace builder function.
 
 [`Workspace`](Workspace.md)
 
-***
+---
 
 #### installComposerDependencies()?
 
@@ -129,7 +129,7 @@ Optional: Custom Composer dependency installer function.
 
 `Promise`&lt;`InstallerResult`&gt;
 
-***
+---
 
 #### installNodeDependencies()?
 
@@ -161,7 +161,7 @@ Optional: Custom Node.js dependency installer function.
 
 `Promise`&lt;`InstallerResult`&gt;
 
-***
+---
 
 #### loadWPKernelConfig()?
 
@@ -175,7 +175,7 @@ Optional: Custom kernel config loader.
 
 `Promise`&lt;[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)&gt;
 
-***
+---
 
 #### runWorkflow()?
 

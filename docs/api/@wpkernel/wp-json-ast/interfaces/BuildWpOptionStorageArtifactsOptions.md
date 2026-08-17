@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / BuildWpOptionStorageArtifactsOptions
 
@@ -24,7 +24,7 @@ readonly errorCodeFactory: (suffix) =&gt; string;
 
 `string`
 
-***
+---
 
 ### optionName
 
@@ -32,7 +32,7 @@ readonly errorCodeFactory: (suffix) =&gt; string;
 readonly optionName: string;
 ```
 
-***
+---
 
 ### pascalName
 

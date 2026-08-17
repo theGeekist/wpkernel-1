@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / createWpPhpFileBuilder
 
@@ -19,15 +19,15 @@ such as automatic generation of file headers and guards.
 
 ### TContext
 
-`TContext` *extends* `PipelineContext` = `PipelineContext`
+`TContext` _extends_ `PipelineContext` = `PipelineContext`
 
 ### TInput
 
-`TInput` *extends* `BuilderInput` = `BuilderInput`
+`TInput` _extends_ `BuilderInput` = `BuilderInput`
 
 ### TOutput
 
-`TOutput` *extends* `BuilderOutput` = `BuilderOutput`
+`TOutput` _extends_ `BuilderOutput` = `BuilderOutput`
 
 ## Parameters
 

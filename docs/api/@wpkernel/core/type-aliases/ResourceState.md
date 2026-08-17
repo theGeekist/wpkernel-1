@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ResourceState
 
@@ -28,22 +28,24 @@ Entity shape stored in the resource.
 ### errors
 
 ```ts
-errors: Record&lt;string, string&gt;;
+errors: Record & lt;
+(string, string & gt);
 ```
 
 Error messages by cache key.
 
-***
+---
 
 ### items
 
 ```ts
-items: Record&lt;string | number, T&gt;;
+items: Record & lt;
+(string | number, T & gt);
 ```
 
 Map of items by ID.
 
-***
+---
 
 ### listMeta
 
@@ -58,7 +60,7 @@ listMeta: Record&lt;string, {
 
 List metadata (total count, pagination, etc).
 
-***
+---
 
 ### lists
 

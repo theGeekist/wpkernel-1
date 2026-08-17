@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildNode
 
@@ -8,8 +8,8 @@
 
 ```ts
 function buildNode&lt;T&gt;(
-   nodeType, 
-   props, 
+   nodeType,
+   props,
    attributes?): T;
 ```
 
@@ -22,7 +22,7 @@ Use this generic builder for niche constructs that do not yet have a typed facto
 
 ### T
 
-`T` *extends* [`PhpNode`](../interfaces/PhpNode.md)
+`T` _extends_ [`PhpNode`](../interfaces/PhpNode.md)
 
 ## Parameters
 

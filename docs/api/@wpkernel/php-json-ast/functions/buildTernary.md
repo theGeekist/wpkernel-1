@@ -1,17 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildTernary
 
 # Function: buildTernary()
 
 ```ts
-function buildTernary(
-   cond, 
-   ifExpr, 
-   elseExpr, 
-   attributes?): PhpExprTernary;
+function buildTernary(cond, ifExpr, elseExpr, attributes?): PhpExprTernary;
 ```
 
 Builds a PHP ternary expression node.

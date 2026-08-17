@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / ActionRuntimeOverrides
 
@@ -18,7 +18,7 @@ optional capability: any;
 
 Override for the capability object within the runtime.
 
-***
+---
 
 ### runtime?
 

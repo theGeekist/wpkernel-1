@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / RestBaseControllerDocblockOptions
 
@@ -18,7 +18,7 @@ readonly origin: string;
 
 The origin of the controller.
 
-***
+---
 
 ### sanitizedNamespace
 

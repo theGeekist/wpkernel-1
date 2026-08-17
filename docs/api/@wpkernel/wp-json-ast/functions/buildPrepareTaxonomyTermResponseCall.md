@@ -1,13 +1,16 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / buildPrepareTaxonomyTermResponseCall
 
 # Function: buildPrepareTaxonomyTermResponseCall()
 
 ```ts
-function buildPrepareTaxonomyTermResponseCall(pascalName, termVariable): PhpExprMethodCall;
+function buildPrepareTaxonomyTermResponseCall(
+	pascalName,
+	termVariable
+): PhpExprMethodCall;
 ```
 
 ## Parameters

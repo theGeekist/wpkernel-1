@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / StandardPipelineExtension
 
@@ -37,11 +37,11 @@ snapshot. Extensions added after that boundary participate in later runs.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TBuildOptions
 
@@ -69,23 +69,23 @@ snapshot. Extensions added after that boundary participate in later runs.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* [`HelperKind`](HelperKind.md) = `"fragment"`
+`TFragmentKind` _extends_ [`HelperKind`](HelperKind.md) = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* [`HelperKind`](HelperKind.md) = `"builder"`
+`TBuilderKind` _extends_ [`HelperKind`](HelperKind.md) = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
+`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
+`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
 
 ## See
 

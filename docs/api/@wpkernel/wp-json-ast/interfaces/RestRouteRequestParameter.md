@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / RestRouteRequestParameter
 
@@ -24,7 +24,7 @@ The name of the parameter to retrieve.
 
 [`RequestParamAssignmentOptions`](RequestParamAssignmentOptions.md).[`param`](RequestParamAssignmentOptions.md#param)
 
-***
+---
 
 ### cast?
 
@@ -38,7 +38,7 @@ An optional scalar cast to apply to the parameter value.
 
 [`RequestParamAssignmentOptions`](RequestParamAssignmentOptions.md).[`cast`](RequestParamAssignmentOptions.md#cast)
 
-***
+---
 
 ### requestVariable?
 
@@ -46,7 +46,7 @@ An optional scalar cast to apply to the parameter value.
 readonly optional requestVariable: string;
 ```
 
-***
+---
 
 ### targetVariable?
 

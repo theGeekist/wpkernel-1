@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / CreatePipelineOptions
 
@@ -35,11 +35,11 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TDraft
 
@@ -51,7 +51,7 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
 
 ### TRunResult
 
@@ -75,19 +75,19 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* [`HelperKind`](HelperKind.md) = `"fragment"`
+`TFragmentKind` _extends_ [`HelperKind`](HelperKind.md) = `"fragment"`
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* [`HelperKind`](HelperKind.md) = `"builder"`
+`TBuilderKind` _extends_ [`HelperKind`](HelperKind.md) = `"builder"`
 
 ### TFragmentHelper
 
-`TFragmentHelper` *extends* [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
+`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
 
 ### TBuilderHelper
 
-`TBuilderHelper` *extends* [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
+`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
 
 ## Example
 
@@ -115,5 +115,5 @@ const pipeline = createPipeline({
 
 ## See
 
- - [Pipeline](../interfaces/Pipeline.md)
- - [StandardPipelineExtension](StandardPipelineExtension.md)
+- [Pipeline](../interfaces/Pipeline.md)
+- [StandardPipelineExtension](StandardPipelineExtension.md)

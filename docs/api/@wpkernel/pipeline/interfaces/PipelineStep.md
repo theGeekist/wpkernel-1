@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineStep
 
@@ -21,7 +21,7 @@ executable function.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Helper-kind union represented by the step.
 
@@ -39,7 +39,7 @@ Helper keys that must complete before this helper may execute.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`dependsOn`](HelperDescriptor.md#dependson)
 
-***
+---
 
 ### id
 
@@ -49,7 +49,7 @@ readonly id: string;
 
 Run-stable registration identity.
 
-***
+---
 
 ### index
 
@@ -59,7 +59,7 @@ readonly index: number;
 
 Monotonic registration index within the helper kind.
 
-***
+---
 
 ### key
 
@@ -73,7 +73,7 @@ Dependency and override identity within [kind](HelperDescriptor.md#kind).
 
 [`HelperDescriptor`](HelperDescriptor.md).[`key`](HelperDescriptor.md#key)
 
-***
+---
 
 ### kind
 
@@ -87,7 +87,7 @@ Execution phase and registry containing this helper.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`kind`](HelperDescriptor.md#kind)
 
-***
+---
 
 ### mode
 
@@ -101,7 +101,7 @@ Duplicate-key registration policy.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`mode`](HelperDescriptor.md#mode)
 
-***
+---
 
 ### priority
 
@@ -115,7 +115,7 @@ Relative ordering hint; higher values run first when dependencies permit.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`priority`](HelperDescriptor.md#priority)
 
-***
+---
 
 ### origin?
 

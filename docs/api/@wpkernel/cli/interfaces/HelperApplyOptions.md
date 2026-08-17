@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / HelperApplyOptions
 
@@ -30,7 +30,7 @@ Current transformation value.
 
 ### TReporter
 
-`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
 
 Reporter available both directly and through context.
 
@@ -44,7 +44,7 @@ readonly context: TContext;
 
 Per-run services and capabilities.
 
-***
+---
 
 ### input
 
@@ -54,7 +54,7 @@ readonly input: TInput;
 
 Read-only input selected for this helper phase.
 
-***
+---
 
 ### output
 
@@ -64,7 +64,7 @@ readonly output: TOutput;
 
 Current output, including replacements produced upstream.
 
-***
+---
 
 ### reporter
 

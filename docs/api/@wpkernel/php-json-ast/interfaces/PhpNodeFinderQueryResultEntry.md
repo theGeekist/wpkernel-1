@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / PhpNodeFinderQueryResultEntry
 
@@ -14,7 +14,7 @@
 readonly description: string;
 ```
 
-***
+---
 
 ### key
 
@@ -22,7 +22,7 @@ readonly description: string;
 readonly key: PhpNodeFinderQueryKey;
 ```
 
-***
+---
 
 ### label
 
@@ -30,7 +30,7 @@ readonly key: PhpNodeFinderQueryKey;
 readonly label: string;
 ```
 
-***
+---
 
 ### matchCount
 
@@ -38,7 +38,7 @@ readonly label: string;
 readonly matchCount: number;
 ```
 
-***
+---
 
 ### matches
 

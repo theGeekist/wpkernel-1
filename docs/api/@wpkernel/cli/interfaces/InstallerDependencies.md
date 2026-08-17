@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / InstallerDependencies
 
@@ -54,8 +54,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -195,8 +195,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -336,8 +336,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -477,8 +477,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -618,8 +618,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -759,8 +759,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -900,8 +900,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1041,8 +1041,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1182,8 +1182,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1323,8 +1323,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1451,8 +1451,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args?, 
+   command,
+   args?,
    options?): ChildProcessWithoutNullStreams;
 ```
 
@@ -1467,8 +1467,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1601,8 +1601,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;Writable, Readable, Readable&gt;;
 ```
 
@@ -1617,8 +1617,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1751,8 +1751,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;Writable, Readable, null&gt;;
 ```
 
@@ -1767,8 +1767,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -1901,8 +1901,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;Writable, null, Readable&gt;;
 ```
 
@@ -1917,8 +1917,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -2051,8 +2051,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;null, Readable, Readable&gt;;
 ```
 
@@ -2067,8 +2067,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -2201,8 +2201,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;Writable, null, null&gt;;
 ```
 
@@ -2217,8 +2217,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -2351,8 +2351,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;null, Readable, null&gt;;
 ```
 
@@ -2367,8 +2367,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -2501,8 +2501,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;null, null, Readable&gt;;
 ```
 
@@ -2517,8 +2517,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -2651,8 +2651,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
 options): ChildProcessByStdio&lt;null, null, null&gt;;
 ```
 
@@ -2667,8 +2667,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 
@@ -2801,8 +2801,8 @@ v0.1.90
 
 ```ts
 (
-   command, 
-   args, 
+   command,
+   args,
    options): ChildProcess;
 ```
 
@@ -2817,8 +2817,8 @@ A third argument may be used to specify additional options, with these defaults:
 
 ```js
 const defaults = {
-  cwd: undefined,
-  env: process.env,
+	cwd: undefined,
+	env: process.env,
 };
 ```
 

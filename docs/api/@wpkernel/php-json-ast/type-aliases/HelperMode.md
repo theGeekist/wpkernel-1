@@ -1,13 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / HelperMode
 
 # Type Alias: HelperMode
 
 ```ts
-type HelperMode = "extend" | "override";
+type HelperMode = 'extend' | 'override';
 ```
 
 Registration policy for helpers that share a key.

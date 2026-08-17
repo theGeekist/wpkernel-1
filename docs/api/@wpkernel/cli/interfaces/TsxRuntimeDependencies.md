@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / TsxRuntimeDependencies
 
@@ -97,8 +97,8 @@ readonly `string`[] | `null` | `undefined`
 
 ```ts
 (
-   file, 
-   args, 
+   file,
+   args,
    options): PromiseWithChild&lt;{
 }&gt;;
 ```
@@ -148,8 +148,8 @@ readonly `string`[] | `null` | `undefined`
 
 ```ts
 (
-   file, 
-   args, 
+   file,
+   args,
    options): PromiseWithChild&lt;{
 }&gt;;
 ```
@@ -199,8 +199,8 @@ readonly `string`[] | `null` | `undefined`
 
 ```ts
 (
-   file, 
-   args, 
+   file,
+   args,
    options): PromiseWithChild&lt;{
 }&gt;;
 ```
@@ -224,7 +224,7 @@ readonly `string`[] | `null` | `undefined`
 `PromiseWithChild`&lt;\{
 \}&gt;
 
-***
+---
 
 ### resolve()
 

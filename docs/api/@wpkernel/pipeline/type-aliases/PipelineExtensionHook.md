@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineExtensionHook
 
@@ -43,8 +43,8 @@ Extension-visible artifact type.
 ## Returns
 
 [`MaybePromise`](MaybePromise.md)&lt;
-  \| [`PipelineExtensionHookResult`](../interfaces/PipelineExtensionHookResult.md)&lt;`TArtifact`&gt;
-  \| `void`&gt;
+\| [`PipelineExtensionHookResult`](../interfaces/PipelineExtensionHookResult.md)&lt;`TArtifact`&gt;
+\| `void`&gt;
 
 ## Remarks
 

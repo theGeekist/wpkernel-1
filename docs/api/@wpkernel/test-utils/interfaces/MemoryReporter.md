@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / MemoryReporter
 
@@ -22,7 +22,7 @@ Clears all captured log entries.
 
 `void`
 
-***
+---
 
 ### entries
 
@@ -32,7 +32,7 @@ readonly entries: MemoryReporterEntry[];
 
 An array of captured log entries.
 
-***
+---
 
 ### namespace
 
@@ -42,7 +42,7 @@ readonly namespace: string;
 
 The namespace of the reporter.
 
-***
+---
 
 ### reporter
 

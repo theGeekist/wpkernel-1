@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / CapabilityHelpers
 
@@ -16,7 +16,7 @@ Runtime helpers exposed by `defineCapability()`.
 
 ### K
 
-`K` *extends* `Record`&lt;`string`, `unknown`&gt;
+`K` _extends_ `Record`&lt;`string`, `unknown`&gt;
 
 ## Properties
 
@@ -30,7 +30,7 @@ assert: &lt;Key&gt;(key, ...params) =&gt; void | Promise&lt;void&gt;;
 
 ##### Key
 
-`Key` *extends* keyof `K`
+`Key` _extends_ keyof `K`
 
 #### Parameters
 
@@ -46,7 +46,7 @@ assert: &lt;Key&gt;(key, ...params) =&gt; void | Promise&lt;void&gt;;
 
 `void` \| `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### cache
 
@@ -54,7 +54,7 @@ assert: &lt;Key&gt;(key, ...params) =&gt; void | Promise&lt;void&gt;;
 readonly cache: CapabilityCache;
 ```
 
-***
+---
 
 ### can()
 
@@ -66,7 +66,7 @@ can: &lt;Key&gt;(key, ...params) =&gt; boolean | Promise&lt;boolean&gt;;
 
 ##### Key
 
-`Key` *extends* keyof `K`
+`Key` _extends_ keyof `K`
 
 #### Parameters
 
@@ -82,7 +82,7 @@ can: &lt;Key&gt;(key, ...params) =&gt; boolean | Promise&lt;boolean&gt;;
 
 `boolean` \| `Promise`&lt;`boolean`&gt;
 
-***
+---
 
 ### extend()
 
@@ -100,7 +100,7 @@ extend: (additionalMap) =&gt; void;
 
 `void`
 
-***
+---
 
 ### keys()
 

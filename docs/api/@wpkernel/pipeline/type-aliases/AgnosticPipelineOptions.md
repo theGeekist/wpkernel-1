@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / AgnosticPipelineOptions
 
@@ -25,13 +25,13 @@ Input supplied to the returned pipeline's `run` method.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 Per-run context containing the reporter.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 Reporter exposed by the context.
 
@@ -43,7 +43,7 @@ User-owned artifact threaded through stages.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](PipelineDiagnostic.md) = [`PipelineDiagnostic`](PipelineDiagnostic.md)
 
 Diagnostic union recorded by the runner.
 
@@ -55,7 +55,7 @@ Public successful run result.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](HelperKind.md) = [`HelperKind`](HelperKind.md)
+`TKind` _extends_ [`HelperKind`](HelperKind.md) = [`HelperKind`](HelperKind.md)
 
 Helper-kind union accepted by the pipeline.
 

@@ -1,13 +1,14 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ResourceQueryParams
 
 # Type Alias: ResourceQueryParams
 
 ```ts
-type ResourceQueryParams = Record&lt;string, ResourceQueryParamDescriptor&gt;;
+type ResourceQueryParams = Record & lt;
+(string, ResourceQueryParamDescriptor & gt);
 ```
 
 Declarative map of supported query parameters for the resource.

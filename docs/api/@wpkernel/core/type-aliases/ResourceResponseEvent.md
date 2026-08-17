@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ResourceResponseEvent
 
@@ -28,7 +28,7 @@ data: T;
 
 Response data
 
-***
+---
 
 ### duration
 
@@ -38,7 +38,7 @@ duration: number;
 
 Duration in milliseconds
 
-***
+---
 
 ### method
 
@@ -48,7 +48,7 @@ method: HttpMethod;
 
 HTTP method
 
-***
+---
 
 ### path
 
@@ -58,7 +58,7 @@ path: string;
 
 Request path
 
-***
+---
 
 ### requestId
 
@@ -68,7 +68,7 @@ requestId: string;
 
 Request ID for correlation
 
-***
+---
 
 ### status
 
@@ -78,7 +78,7 @@ status: number;
 
 Response status code
 
-***
+---
 
 ### timestamp
 

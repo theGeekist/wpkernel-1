@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineHelperRollback
 
@@ -31,7 +31,7 @@ readonly helper: THelper;
 
 Original helper that produced the rollback.
 
-***
+---
 
 ### rollback
 

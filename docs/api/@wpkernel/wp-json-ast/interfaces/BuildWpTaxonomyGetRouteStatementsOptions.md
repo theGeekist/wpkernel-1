@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / BuildWpTaxonomyGetRouteStatementsOptions
 
@@ -14,7 +14,7 @@
 readonly cacheSegments: readonly unknown[];
 ```
 
-***
+---
 
 ### errorCodeFactory()
 
@@ -32,7 +32,7 @@ readonly errorCodeFactory: (suffix) =&gt; string;
 
 `string`
 
-***
+---
 
 ### identity
 
@@ -40,7 +40,7 @@ readonly errorCodeFactory: (suffix) =&gt; string;
 readonly identity: ResolvedIdentity;
 ```
 
-***
+---
 
 ### metadataHost
 
@@ -48,7 +48,7 @@ readonly identity: ResolvedIdentity;
 readonly metadataHost: ResourceMetadataHost;
 ```
 
-***
+---
 
 ### pascalName
 
@@ -56,7 +56,7 @@ readonly metadataHost: ResourceMetadataHost;
 readonly pascalName: string;
 ```
 
-***
+---
 
 ### storage
 
@@ -64,7 +64,7 @@ readonly pascalName: string;
 readonly storage: ResourceStorageConfig | undefined;
 ```
 
-***
+---
 
 ### identityVariable?
 
@@ -72,7 +72,7 @@ readonly storage: ResourceStorageConfig | undefined;
 readonly optional identityVariable: string;
 ```
 
-***
+---
 
 ### requestVariable?
 
@@ -80,7 +80,7 @@ readonly optional identityVariable: string;
 readonly optional requestVariable: string;
 ```
 
-***
+---
 
 ### resourceName?
 

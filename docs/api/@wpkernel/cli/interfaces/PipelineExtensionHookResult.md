@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / PipelineExtensionHookResult
 
@@ -18,7 +18,7 @@ readonly optional artifact: IRv1;
 
 Optional: A modified IR artifact.
 
-***
+---
 
 ### commit()?
 
@@ -32,7 +32,7 @@ Optional: A function to commit changes made by the hook.
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### rollback()?
 

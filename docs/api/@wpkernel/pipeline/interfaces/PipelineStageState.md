@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineStageState
 
@@ -44,19 +44,19 @@ User-owned state threaded through stages.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 Per-run context.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter contained by the context.
 
 ### TDiagnostic
 
-`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 Diagnostic union collected by the run.
 
@@ -70,7 +70,7 @@ readonly context: TContext;
 
 Context created once for this run.
 
-***
+---
 
 ### diagnostics
 
@@ -80,7 +80,7 @@ readonly diagnostics: readonly TDiagnostic[];
 
 Diagnostics recorded so far.
 
-***
+---
 
 ### executedLifecycles
 
@@ -90,7 +90,7 @@ readonly executedLifecycles: ReadonlySet&lt;string&gt;;
 
 Extension lifecycle names already executed by this run.
 
-***
+---
 
 ### reporter
 
@@ -100,7 +100,7 @@ readonly reporter: TReporter;
 
 Reporter associated with the current context.
 
-***
+---
 
 ### runOptions
 
@@ -110,7 +110,7 @@ readonly runOptions: TRunOptions;
 
 Original options supplied to the run.
 
-***
+---
 
 ### steps
 
@@ -120,7 +120,7 @@ readonly steps: readonly PipelineStep&lt;string&gt;[];
 
 Helpers executed so far.
 
-***
+---
 
 ### userState
 
@@ -130,7 +130,7 @@ readonly userState: TUserState;
 
 User-owned state that stages may replace immutably.
 
-***
+---
 
 ### helperExecution?
 
@@ -140,7 +140,7 @@ readonly optional helperExecution: ReadonlyMap&lt;string, HelperExecutionSnapsho
 
 Execution summary by helper kind after helper stages complete.
 
-***
+---
 
 ### resumeInput?
 
@@ -150,7 +150,7 @@ readonly optional resumeInput: unknown;
 
 Value supplied to `resume()` when re-entering a paused stage.
 
-***
+---
 
 ### stageIndex?
 

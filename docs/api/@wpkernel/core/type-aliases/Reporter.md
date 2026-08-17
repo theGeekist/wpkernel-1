@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / Reporter
 
@@ -28,7 +28,7 @@ child: (namespace) =&gt; Reporter;
 
 `Reporter`
 
-***
+---
 
 ### debug()
 
@@ -50,7 +50,7 @@ debug: (message, context?) =&gt; void;
 
 `void`
 
-***
+---
 
 ### error()
 
@@ -72,7 +72,7 @@ error: (message, context?) =&gt; void;
 
 `void`
 
-***
+---
 
 ### info()
 
@@ -94,7 +94,7 @@ info: (message, context?) =&gt; void;
 
 `void`
 
-***
+---
 
 ### warn()
 

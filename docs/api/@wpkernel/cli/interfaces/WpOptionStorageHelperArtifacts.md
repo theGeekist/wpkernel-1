@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / WpOptionStorageHelperArtifacts
 
@@ -18,7 +18,7 @@ readonly helperMethods: readonly PhpStmtClassMethod[];
 
 The helper methods generated for WP Option storage.
 
-***
+---
 
 ### routeHandlers
 

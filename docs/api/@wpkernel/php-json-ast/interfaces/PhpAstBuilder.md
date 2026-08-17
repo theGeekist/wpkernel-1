@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / PhpAstBuilder
 
@@ -28,7 +28,7 @@ addUse: (statement) =&gt; void;
 
 `void`
 
-***
+---
 
 ### appendDocblock()
 
@@ -46,7 +46,7 @@ appendDocblock: (line) =&gt; void;
 
 `void`
 
-***
+---
 
 ### appendProgramStatement()
 
@@ -64,7 +64,7 @@ appendProgramStatement: (statement) =&gt; void;
 
 `void`
 
-***
+---
 
 ### appendStatement()
 
@@ -82,7 +82,7 @@ appendStatement: (statement) =&gt; void;
 
 `void`
 
-***
+---
 
 ### getMetadata()
 
@@ -94,7 +94,7 @@ getMetadata: () =&gt; PhpFileMetadata;
 
 [`PhpFileMetadata`](../type-aliases/PhpFileMetadata.md)
 
-***
+---
 
 ### getNamespace()
 
@@ -106,7 +106,7 @@ getNamespace: () =&gt; string;
 
 `string`
 
-***
+---
 
 ### getProgramAst()
 
@@ -118,7 +118,7 @@ getProgramAst: () =&gt; PhpProgram;
 
 [`PhpProgram`](../type-aliases/PhpProgram.md)
 
-***
+---
 
 ### getStatements()
 
@@ -130,7 +130,7 @@ getStatements: () =&gt; readonly string[];
 
 readonly `string`[]
 
-***
+---
 
 ### setMetadata()
 
@@ -148,7 +148,7 @@ setMetadata: (metadata) =&gt; void;
 
 `void`
 
-***
+---
 
 ### setNamespace()
 

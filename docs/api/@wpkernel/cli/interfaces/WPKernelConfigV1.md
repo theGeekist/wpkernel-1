@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / WPKernelConfigV1
 
@@ -20,7 +20,7 @@ Short, slug-style identifier for this plugin or feature.
 Used as a prefix for generated PHP namespaces, JS store keys,
 and WordPress capability names.
 
-***
+---
 
 ### resources
 
@@ -31,7 +31,7 @@ resources: ResourceRegistry;
 Registry of resource descriptors keyed by identifier.
 Required and drives routes, storage, capabilities, UI, and builders.
 
-***
+---
 
 ### schemas
 
@@ -42,7 +42,7 @@ schemas: SchemaRegistry;
 Registry of shared schema descriptors keyed by identifier.
 Required but may be empty.
 
-***
+---
 
 ### version
 
@@ -50,7 +50,7 @@ Required but may be empty.
 version: 1;
 ```
 
-***
+---
 
 ### $schema?
 
@@ -61,7 +61,7 @@ optional $schema: string;
 Optional JSON Schema URI used by editors and tooling.
 Ignored by WPKernel at runtime.
 
-***
+---
 
 ### adapters?
 
@@ -69,7 +69,7 @@ Ignored by WPKernel at runtime.
 optional adapters: AdaptersConfig&lt;unknown, unknown&gt;;
 ```
 
-***
+---
 
 ### directories?
 
@@ -82,7 +82,7 @@ directories (omit the ".applied" suffix). Supported keys:
 blocks, blocks.applied, controllers, controllers.applied, plugin,
 plugin.loader.
 
-***
+---
 
 ### meta?
 
@@ -93,7 +93,7 @@ optional meta: PluginMetaConfig;
 Optional plugin metadata used for generated plugin headers. When omitted,
 sane defaults are derived from the namespace.
 
-***
+---
 
 ### readiness?
 

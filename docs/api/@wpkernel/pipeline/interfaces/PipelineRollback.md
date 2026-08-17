@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineRollback
 
@@ -51,7 +51,7 @@ Cleanup operation invoked at most once by one rollback traversal.
 
 `unknown`
 
-***
+---
 
 ### key?
 
@@ -61,7 +61,7 @@ readonly optional key: string;
 
 Stable machine-readable owner key for diagnostics.
 
-***
+---
 
 ### label?
 

@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineExecutionMetadata
 
@@ -20,11 +20,11 @@ standard helper sequence.
 
 ### TFragmentKind
 
-`TFragmentKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TFragmentKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 ### TBuilderKind
 
-`TBuilderKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TBuilderKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 ## Properties
 
@@ -36,7 +36,7 @@ readonly builders: HelperExecutionSnapshot&lt;TBuilderKind&gt;;
 
 Snapshot of builder helper resolution and execution for this run.
 
-***
+---
 
 ### fragments
 

@@ -1,10 +1,10 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ResourceResolvers
 
-# Type Alias: ResourceResolvers&lt;_T, TQuery&gt;
+# Type Alias: ResourceResolvers&lt;\_T, TQuery&gt;
 
 ```ts
 type ResourceResolvers&lt;_T, TQuery&gt; = object & Record&lt;string, AnyFn&gt;;
@@ -79,7 +79,7 @@ Query parameters
 
 ## Type Parameters
 
-### _T
+### \_T
 
 `_T`
 

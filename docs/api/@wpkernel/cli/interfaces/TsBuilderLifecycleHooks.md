@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / TsBuilderLifecycleHooks
 
@@ -31,7 +31,7 @@ Hook executed after a creator generates an artifact.
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### onAfterEmit()?
 
@@ -51,7 +51,7 @@ Hook executed after all TypeScript files have been emitted.
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### onBeforeCreate()?
 

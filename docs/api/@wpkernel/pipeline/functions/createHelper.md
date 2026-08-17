@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / createHelper
 
@@ -60,11 +60,11 @@ visitation order and later unwound in reverse order. Use
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 ### TKind
 
-`TKind` *extends* `string` = `string`
+`TKind` _extends_ `string` = `string`
 
 ## Parameters
 

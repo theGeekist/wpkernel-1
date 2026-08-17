@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / TransportRequest
 
@@ -22,7 +22,7 @@ method: HttpMethod;
 
 HTTP method
 
-***
+---
 
 ### path
 
@@ -32,7 +32,7 @@ path: string;
 
 REST API path (e.g., '/my-plugin/v1/things' or '/my-plugin/v1/things/123')
 
-***
+---
 
 ### data?
 
@@ -42,7 +42,7 @@ optional data: unknown;
 
 Request body (for POST/PUT/PATCH)
 
-***
+---
 
 ### fields?
 
@@ -50,10 +50,10 @@ Request body (for POST/PUT/PATCH)
 optional fields: string[];
 ```
 
-Fields to request (_fields query parameter)
-If provided, will be added as ?_fields=field1,field2
+Fields to request (\_fields query parameter)
+If provided, will be added as ?\_fields=field1,field2
 
-***
+---
 
 ### meta?
 
@@ -63,7 +63,7 @@ optional meta: TransportMeta;
 
 Metadata used for reporter instrumentation.
 
-***
+---
 
 ### query?
 
@@ -73,7 +73,7 @@ optional query: Record&lt;string, unknown&gt;;
 
 Query parameters (automatically appended to path)
 
-***
+---
 
 ### requestId?
 

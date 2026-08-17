@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / BuildApplyCommandOptions
 
@@ -77,7 +77,7 @@ readonly optional appendApplyLog: (workspace, entry) =&gt; Promise&lt;void&gt;;
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 #### buildBuilderOutput()?
 
@@ -89,7 +89,7 @@ readonly optional buildBuilderOutput: () =&gt; BuilderOutput;
 
 `BuilderOutput`
 
-***
+---
 
 #### buildReadinessRegistry()?
 
@@ -107,7 +107,7 @@ readonly optional buildReadinessRegistry: (options?) =&gt; ReadinessRegistry;
 
 [`ReadinessRegistry`](../classes/ReadinessRegistry.md)
 
-***
+---
 
 #### buildWorkspace()?
 
@@ -125,7 +125,7 @@ readonly optional buildWorkspace: (root) =&gt; Workspace;
 
 [`Workspace`](Workspace.md)
 
-***
+---
 
 #### createBackups()?
 
@@ -143,7 +143,7 @@ readonly optional createBackups: (options) =&gt; Promise&lt;void&gt;;
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 #### ensureGitRepository()?
 
@@ -161,7 +161,7 @@ readonly optional ensureGitRepository: (workspace) =&gt; Promise&lt;void&gt;;
 
 `Promise`&lt;`void`&gt;
 
-***
+---
 
 #### loadWPKernelConfig()?
 
@@ -173,7 +173,7 @@ readonly optional loadWPKernelConfig: () =&gt; Promise&lt;LoadedWPKernelConfig&g
 
 `Promise`&lt;[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)&gt;
 
-***
+---
 
 #### promptConfirm()?
 
@@ -205,7 +205,7 @@ readonly optional promptConfirm: (options) =&gt; Promise&lt;boolean&gt;;
 
 `Promise`&lt;`boolean`&gt;
 
-***
+---
 
 #### readManifest()?
 
@@ -223,7 +223,7 @@ readonly optional readManifest: (workspace) =&gt; Promise&lt;PatchManifest | nul
 
 `Promise`&lt;[`PatchManifest`](PatchManifest.md) \| `null`&gt;
 
-***
+---
 
 #### resolveWorkspaceRoot()?
 

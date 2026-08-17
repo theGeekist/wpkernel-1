@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / RunProcessOptions
 
@@ -18,7 +18,7 @@
 optional cwd: string | URL;
 ```
 
-***
+---
 
 ### env?
 
@@ -26,7 +26,7 @@ optional cwd: string | URL;
 optional env: ProcessEnv;
 ```
 
-***
+---
 
 ### input?
 
@@ -34,7 +34,7 @@ optional env: ProcessEnv;
 optional input: string | Buffer&lt;ArrayBufferLike&gt;;
 ```
 
-***
+---
 
 ### signal?
 
@@ -42,7 +42,7 @@ optional input: string | Buffer&lt;ArrayBufferLike&gt;;
 optional signal: AbortSignal;
 ```
 
-***
+---
 
 ### stdio?
 

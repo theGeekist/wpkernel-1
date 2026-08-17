@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildClassMethod
 
 # Function: buildClassMethod()
 
 ```ts
-function buildClassMethod(
-   name, 
-   options, 
-   attributes?): PhpStmtClassMethod;
+function buildClassMethod(name, options, attributes?): PhpStmtClassMethod;
 ```
 
 Builds a PHP class method declaration statement node.

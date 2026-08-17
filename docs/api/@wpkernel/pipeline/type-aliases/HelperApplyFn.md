@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / HelperApplyFn
 
@@ -36,7 +36,7 @@ Helper output type.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](../interfaces/PipelineReporter.md) = [`PipelineReporter`](../interfaces/PipelineReporter.md)
 
 Reporter type.
 
@@ -57,8 +57,8 @@ Continuation for wrapping downstream helpers.
 ## Returns
 
 [`MaybePromise`](MaybePromise.md)&lt;
-  \| [`HelperApplyResult`](../interfaces/HelperApplyResult.md)&lt;`TOutput`&gt;
-  \| `void`&gt;
+\| [`HelperApplyResult`](../interfaces/HelperApplyResult.md)&lt;`TOutput`&gt;
+\| `void`&gt;
 
 A synchronous or asynchronous optional helper result.
 

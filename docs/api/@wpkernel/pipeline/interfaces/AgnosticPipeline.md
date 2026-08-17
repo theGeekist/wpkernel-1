@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / AgnosticPipeline
 
@@ -18,8 +18,8 @@ available compensation before they are rethrown or rejected.
 
 ## See
 
- - [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md)
- - [ResumablePipeline](ResumablePipeline.md)
+- [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md)
+- [ResumablePipeline](ResumablePipeline.md)
 
 ## Extends
 
@@ -41,19 +41,19 @@ Successful terminal result.
 
 ### TContext
 
-`TContext` *extends* `object`
+`TContext` _extends_ `object`
 
 Per-run context containing the reporter.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter exposed to helpers and diagnostics.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Configured helper-kind union accepted by `use`.
 
@@ -100,10 +100,10 @@ identity.
 #### Inherited from
 
 ```ts
-PipelineBase.extensions
+PipelineBase.extensions;
 ```
 
-***
+---
 
 ### run()
 
@@ -128,7 +128,7 @@ Immutable input used to create context, state and result.
 The configured result directly for a synchronous run, otherwise a
 promise for that result.
 
-***
+---
 
 ### use()
 
@@ -172,5 +172,5 @@ accidental registration of helper kinds that the pipeline cannot schedule.
 #### Inherited from
 
 ```ts
-PipelineBase.use
+PipelineBase.use;
 ```

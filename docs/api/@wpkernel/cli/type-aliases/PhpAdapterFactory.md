@@ -1,13 +1,13 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / PhpAdapterFactory
 
 # Type Alias: PhpAdapterFactory&lt;TConfigSurface, TIr&gt;
 
 ```ts
-type PhpAdapterFactory&lt;TConfigSurface, TIr&gt; = (context) =&gt; 
+type PhpAdapterFactory&lt;TConfigSurface, TIr&gt; = (context) =&gt;
   | PhpAdapterConfig&lt;TConfigSurface, TIr&gt;
   | void;
 ```
@@ -32,5 +32,5 @@ Factory for producing PHP adapter configuration.
 
 ## Returns
 
-  \| [`PhpAdapterConfig`](../interfaces/PhpAdapterConfig.md)&lt;`TConfigSurface`, `TIr`&gt;
-  \| `void`
+\| [`PhpAdapterConfig`](../interfaces/PhpAdapterConfig.md)&lt;`TConfigSurface`, `TIr`&gt;
+\| `void`

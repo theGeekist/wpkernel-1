@@ -1,16 +1,14 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / runNodeProcess
 
 # Function: runNodeProcess()
 
 ```ts
-function runNodeProcess(
-   scriptPath, 
-   args, 
-options): Promise&lt;RunProcessResult&gt;;
+function runNodeProcess(scriptPath, args, options): Promise & lt;
+RunProcessResult & gt;
 ```
 
 ## Parameters

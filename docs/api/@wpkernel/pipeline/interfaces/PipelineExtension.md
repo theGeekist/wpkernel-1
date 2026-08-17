@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineExtension
 
@@ -67,7 +67,7 @@ immutable hook snapshot.
 
 [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;[`PipelineExtensionRegisterOutput`](../type-aliases/PipelineExtensionRegisterOutput.md)&lt;`TContext`, `TOptions`, `TArtifact`&gt;&gt;
 
-***
+---
 
 ### key?
 

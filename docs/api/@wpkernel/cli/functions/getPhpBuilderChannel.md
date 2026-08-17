@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / getPhpBuilderChannel
 
@@ -14,7 +14,7 @@ function getPhpBuilderChannel&lt;TContext&gt;(context): PhpBuilderChannel;
 
 ### TContext
 
-`TContext` *extends* `PipelineContext`
+`TContext` _extends_ `PipelineContext`
 
 ## Parameters
 

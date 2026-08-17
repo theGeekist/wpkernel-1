@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildForeach
 
 # Function: buildForeach()
 
 ```ts
-function buildForeach(
-   expr, 
-   options, 
-   attributes?): PhpStmtForeach;
+function buildForeach(expr, options, attributes?): PhpStmtForeach;
 ```
 
 Builds a PHP `foreach` loop statement node.

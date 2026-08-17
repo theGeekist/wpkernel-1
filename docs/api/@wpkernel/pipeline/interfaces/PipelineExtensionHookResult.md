@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineExtensionHookResult
 
@@ -33,7 +33,7 @@ readonly optional artifact: TArtifact;
 
 Replacement artifact passed to the next hook and written back to state.
 
-***
+---
 
 ### commit()?
 
@@ -47,7 +47,7 @@ Finalises the hook's prepared side effect after successful execution.
 
 [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`void`&gt;
 
-***
+---
 
 ### rollback()?
 

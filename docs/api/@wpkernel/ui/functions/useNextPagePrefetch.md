@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/ui](../index.md) / useNextPagePrefetch
 
@@ -8,8 +8,8 @@
 
 ```ts
 function useNextPagePrefetch&lt;TRecord, TQuery&gt;(
-   resource, 
-   currentQuery, 
+   resource,
+   currentQuery,
    options): void;
 ```
 
@@ -23,7 +23,7 @@ Prefetches the next page of a paginated resource.
 
 ### TQuery
 
-`TQuery` *extends* `Record`&lt;`string`, `unknown`&gt;
+`TQuery` _extends_ `Record`&lt;`string`, `unknown`&gt;
 
 ## Parameters
 

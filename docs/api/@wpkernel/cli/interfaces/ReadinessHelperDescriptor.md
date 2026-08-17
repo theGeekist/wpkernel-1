@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / ReadinessHelperDescriptor
 
@@ -14,7 +14,7 @@
 readonly key: ReadinessKey;
 ```
 
-***
+---
 
 ### metadata
 

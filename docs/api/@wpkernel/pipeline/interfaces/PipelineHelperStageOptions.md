@@ -1,6 +1,6 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineHelperStageOptions
 
@@ -43,19 +43,19 @@ Value transformed by the helper chain.
 
 ### TReporter
 
-`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md)
+`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md)
 
 Reporter available to helpers.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md)
 
 Selected helper kind.
 
 ### THelper
 
-`THelper` *extends* [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
+`THelper` _extends_ [`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 Concrete helper type stored in the registry.
 
@@ -91,7 +91,7 @@ Builds invocation arguments for each registered helper.
 
 [`HelperApplyOptions`](HelperApplyOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`&gt;
 
-***
+---
 
 ### onVisited()?
 
@@ -127,7 +127,7 @@ readonly [`PipelineHelperRollback`](PipelineHelperRollback.md)&lt;`THelper`&gt;[
 
 `TState`
 
-***
+---
 
 ### writeOutput()?
 

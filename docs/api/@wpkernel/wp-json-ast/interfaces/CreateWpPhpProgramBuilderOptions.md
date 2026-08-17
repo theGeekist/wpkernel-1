@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / CreateWpPhpProgramBuilderOptions
 
@@ -37,15 +37,15 @@ const builder = createWpPhpProgramBuilder({
 
 ### TContext
 
-`TContext` *extends* `PipelineContext` = `PipelineContext`
+`TContext` _extends_ `PipelineContext` = `PipelineContext`
 
 ### TInput
 
-`TInput` *extends* `BuilderInput` = `BuilderInput`
+`TInput` _extends_ `BuilderInput` = `BuilderInput`
 
 ### TOutput
 
-`TOutput` *extends* `BuilderOutput` = `BuilderOutput`
+`TOutput` _extends_ `BuilderOutput` = `BuilderOutput`
 
 ## Properties
 
@@ -75,7 +75,7 @@ The PHP AST context entry.
 
 `void` \| `Promise`&lt;`void`&gt;
 
-***
+---
 
 ### filePath
 
@@ -86,10 +86,10 @@ readonly filePath: string;
 #### Inherited from
 
 ```ts
-Omit.filePath
+Omit.filePath;
 ```
 
-***
+---
 
 ### key
 
@@ -100,10 +100,10 @@ readonly key: string;
 #### Inherited from
 
 ```ts
-Omit.key
+Omit.key;
 ```
 
-***
+---
 
 ### metadata
 
@@ -117,7 +117,7 @@ Metadata for the WordPress PHP file.
 
 WpPhpFileMetadata
 
-***
+---
 
 ### namespace
 
@@ -128,10 +128,10 @@ readonly namespace: string;
 #### Inherited from
 
 ```ts
-Omit.namespace
+Omit.namespace;
 ```
 
-***
+---
 
 ### dependsOn?
 
@@ -148,10 +148,10 @@ Prerequisite helper keys.
 #### Inherited from
 
 ```ts
-Omit.dependsOn
+Omit.dependsOn;
 ```
 
-***
+---
 
 ### mode?
 
@@ -168,10 +168,10 @@ Duplicate-key policy.
 #### Inherited from
 
 ```ts
-Omit.mode
+Omit.mode;
 ```
 
-***
+---
 
 ### origin?
 
@@ -184,10 +184,10 @@ Optional provenance label used in diagnostics.
 #### Inherited from
 
 ```ts
-Omit.origin
+Omit.origin;
 ```
 
-***
+---
 
 ### priority?
 
@@ -204,5 +204,5 @@ Relative ordering hint.
 #### Inherited from
 
 ```ts
-Omit.priority
+Omit.priority;
 ```

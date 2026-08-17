@@ -1,13 +1,13 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ResourceStorageConfig
 
 # Type Alias: ResourceStorageConfig
 
 ```ts
-type ResourceStorageConfig = 
+type ResourceStorageConfig =
   | {
   mode: "transient";
 }

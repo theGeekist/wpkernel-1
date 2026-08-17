@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / BuildResourceControllerMetadataOptions
 
@@ -14,7 +14,7 @@
 readonly cacheKeys: ResourceCacheKeysPlan;
 ```
 
-***
+---
 
 ### identity
 
@@ -22,7 +22,7 @@ readonly cacheKeys: ResourceCacheKeysPlan;
 readonly identity: ResourceControllerIdentityMetadataPlan;
 ```
 
-***
+---
 
 ### name
 
@@ -30,7 +30,7 @@ readonly identity: ResourceControllerIdentityMetadataPlan;
 readonly name: string;
 ```
 
-***
+---
 
 ### routes
 
@@ -38,7 +38,7 @@ readonly name: string;
 readonly routes: readonly RouteDefinition[];
 ```
 
-***
+---
 
 ### mutationMetadata?
 

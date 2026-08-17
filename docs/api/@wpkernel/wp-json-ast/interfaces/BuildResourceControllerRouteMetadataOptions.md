@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / BuildResourceControllerRouteMetadataOptions
 
@@ -14,7 +14,7 @@
 readonly cacheKeys: ResourceCacheKeysPlan;
 ```
 
-***
+---
 
 ### canonicalBasePaths
 
@@ -22,7 +22,7 @@ readonly cacheKeys: ResourceCacheKeysPlan;
 readonly canonicalBasePaths: ReadonlySet&lt;string&gt;;
 ```
 
-***
+---
 
 ### identity
 
@@ -30,7 +30,7 @@ readonly canonicalBasePaths: ReadonlySet&lt;string&gt;;
 readonly identity: ResourceControllerIdentityPlan;
 ```
 
-***
+---
 
 ### routes
 
@@ -38,7 +38,7 @@ readonly identity: ResourceControllerIdentityPlan;
 readonly routes: readonly RouteDefinition[];
 ```
 
-***
+---
 
 ### mutationMetadata?
 

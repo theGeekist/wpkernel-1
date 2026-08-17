@@ -1,13 +1,14 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/test-utils](../index.md) / loadTestLayout
 
 # Function: loadTestLayout()
 
 ```ts
-function loadTestLayout(options): Promise&lt;TestLayout&gt;;
+function loadTestLayout(options): Promise & lt;
+TestLayout & gt;
 ```
 
 Backwards-compatible async loader that resolves the default layout manifest

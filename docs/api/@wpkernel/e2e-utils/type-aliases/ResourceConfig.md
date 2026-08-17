@@ -1,10 +1,10 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../index.md) / ResourceConfig
 
-# Type Alias: ResourceConfig&lt;T, TQuery, TRoutes, _TTypes&gt;
+# Type Alias: ResourceConfig&lt;T, TQuery, TRoutes, \_TTypes&gt;
 
 ```ts
 type ResourceConfig&lt;T, TQuery, TRoutes, _TTypes&gt; = object;
@@ -13,6 +13,7 @@ type ResourceConfig&lt;T, TQuery, TRoutes, _TTypes&gt; = object;
 Declarative configuration for a resource.
 
 This is consumed by `defineResource()` to:
+
 - describe REST routes and capabilities
 - configure cache keys and store behavior
 - attach optional UI and persistence metadata for generators and tooling
@@ -33,9 +34,9 @@ Query shape for list operations (e.g. `{ search?: string }`).
 
 ### TRoutes
 
-`TRoutes` *extends* `ResourceRoutes` = `ResourceRoutes`
+`TRoutes` _extends_ `ResourceRoutes` = `ResourceRoutes`
 
-### _TTypes
+### \_TTypes
 
 `_TTypes` = \[`T`, `TQuery`, `TRoutes`\]
 
@@ -53,7 +54,7 @@ Unique resource name (lowercase, singular recommended)
 
 Used for store keys, event names, and debugging
 
-***
+---
 
 ### routes
 
@@ -65,7 +66,7 @@ REST route definitions
 
 Define only the operations your resource supports
 
-***
+---
 
 ### cacheKeys?
 
@@ -77,7 +78,7 @@ Cache key generators
 
 Optional. If omitted, default cache keys based on resource name will be used
 
-***
+---
 
 ### capabilities?
 
@@ -101,7 +102,7 @@ capabilities: {
 }
 ```
 
-***
+---
 
 ### identity?
 
@@ -113,7 +114,7 @@ Optional identifier hints used by tooling.
 
 The runtime ignores this field; CLI tooling can derive store defaults and route helpers.
 
-***
+---
 
 ### namespace?
 
@@ -129,12 +130,12 @@ For explicit control, provide a namespace string.
 #### Example
 
 ```ts
-namespace: 'my-plugin'  // Explicit namespace
+namespace: 'my-plugin'; // Explicit namespace
 // OR
-name: 'my-plugin:job'   // Shorthand namespace:name format
+name: 'my-plugin:job'; // Shorthand namespace:name format
 ```
 
-***
+---
 
 ### queryParams?
 
@@ -144,7 +145,7 @@ optional queryParams: ResourceQueryParams;
 
 Optional query parameter descriptors for tooling.
 
-***
+---
 
 ### reporter?
 
@@ -157,7 +158,7 @@ Optional reporter override for resource instrumentation.
 When provided, the resource will emit debug/info/error logs through this
 reporter instead of creating a child reporter from the WPKernel instance.
 
-***
+---
 
 ### schema?
 
@@ -172,10 +173,10 @@ Optional. Provides runtime type safety and validation errors
 #### Example
 
 ```ts
-schema: import('../../contracts/thing.schema.json')
+schema: import('../../contracts/thing.schema.json');
 ```
 
-***
+---
 
 ### storage?
 
@@ -187,7 +188,7 @@ Optional persistence strategy metadata.
 
 The runtime ignores this field; CLI tooling can emit registration scaffolding.
 
-***
+---
 
 ### store?
 
@@ -199,7 +200,7 @@ Optional overrides for store configuration.
 
 Provided for forward compatibility with CLI-generated descriptors.
 
-***
+---
 
 ### ui?
 

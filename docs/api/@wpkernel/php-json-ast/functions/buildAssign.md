@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildAssign
 
 # Function: buildAssign()
 
 ```ts
-function buildAssign(
-   variable, 
-   expr, 
-   attributes?): PhpExprAssign;
+function buildAssign(variable, expr, attributes?): PhpExprAssign;
 ```
 
 Builds a PHP assignment expression node.

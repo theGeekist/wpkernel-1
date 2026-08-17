@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / InteractionActionBinding
 
@@ -26,12 +26,12 @@ Declarative binding describing an action exposed to the runtime.
 readonly action: DefinedAction&lt;TArgs, TResult&gt;;
 ```
 
-***
+---
 
 ### meta?
 
 ```ts
-readonly optional meta: 
+readonly optional meta:
   | Record&lt;string, unknown&gt;
 | InteractionActionMetaResolver&lt;TArgs&gt;;
 ```

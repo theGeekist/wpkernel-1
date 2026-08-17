@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / ResourceAccessorRegistry
 
@@ -24,7 +24,7 @@ addCache: (descriptor) =&gt; void;
 
 `void`
 
-***
+---
 
 ### addHelper()
 
@@ -42,7 +42,7 @@ addHelper: (descriptor) =&gt; void;
 
 `void`
 
-***
+---
 
 ### addMutation()
 
@@ -60,7 +60,7 @@ addMutation: (descriptor) =&gt; void;
 
 `void`
 
-***
+---
 
 ### addQuery()
 
@@ -78,7 +78,7 @@ addQuery: (descriptor) =&gt; void;
 
 `void`
 
-***
+---
 
 ### addRequest()
 

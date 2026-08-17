@@ -1,6 +1,6 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../index.md) / WPKernelUtils
 
@@ -34,7 +34,7 @@ Selection options for the DataView wrapper.
 
 [`DataViewHelper`](DataViewHelper.md)
 
-***
+---
 
 ### events()
 
@@ -64,7 +64,7 @@ Optional configuration for event filtering
 
 Event recorder with capture and query methods
 
-***
+---
 
 ### resource()
 
@@ -94,7 +94,7 @@ Resource configuration from defineResource
 
 Resource utilities with typed methods
 
-***
+---
 
 ### store()
 

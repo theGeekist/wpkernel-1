@@ -1,16 +1,13 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / buildParam
 
 # Function: buildParam()
 
 ```ts
-function buildParam(
-   variable, 
-   options, 
-   attributes?): PhpParam;
+function buildParam(variable, options, attributes?): PhpParam;
 ```
 
 Builds a PHP parameter node.

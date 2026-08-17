@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/wp-json-ast](../index.md) / ensureStorage
 
@@ -25,7 +25,7 @@ Ensures the resource is configured with `wp-post` storage.
 ### mode
 
 ```ts
-mode: "wp-post";
+mode: 'wp-post';
 ```
 
 ### meta?

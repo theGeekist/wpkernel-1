@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / WordPressRESTError
 
@@ -24,7 +24,7 @@ code: string;
 
 Error code from WordPress (e.g., 'rest_forbidden', 'invalid_param')
 
-***
+---
 
 ### message
 
@@ -34,7 +34,7 @@ message: string;
 
 Human-readable error message
 
-***
+---
 
 ### data?
 

@@ -1,13 +1,13 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
-[@wpkernel/wp-json-ast](../index.md) / AUTO\_GUARD\_BEGIN
+[@wpkernel/wp-json-ast](../index.md) / AUTO_GUARD_BEGIN
 
-# Variable: AUTO\_GUARD\_BEGIN
+# Variable: AUTO_GUARD_BEGIN
 
 ```ts
-const AUTO_GUARD_BEGIN: "WPK:BEGIN AUTO" = 'WPK:BEGIN AUTO';
+const AUTO_GUARD_BEGIN: 'WPK:BEGIN AUTO' = 'WPK:BEGIN AUTO';
 ```
 
 The beginning of an auto-generated code block.

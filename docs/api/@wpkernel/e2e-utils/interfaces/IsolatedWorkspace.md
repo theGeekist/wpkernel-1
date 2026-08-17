@@ -1,6 +1,6 @@
 [**@wpkernel/e2e-utils v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/e2e-utils](../index.md) / IsolatedWorkspace
 
@@ -25,10 +25,10 @@ dispose: () =&gt; void | Promise&lt;void&gt;;
 #### Inherited from
 
 ```ts
-Disposable.dispose
+Disposable.dispose;
 ```
 
-***
+---
 
 ### env
 
@@ -38,7 +38,7 @@ readonly env: ProcessEnv;
 
 Normalised environment variables applied to spawned processes
 
-***
+---
 
 ### root
 
@@ -48,7 +48,7 @@ readonly root: string;
 
 Absolute path to the workspace root
 
-***
+---
 
 ### run()
 
@@ -82,7 +82,7 @@ spawn overrides
 
 `Promise`&lt;[`CliTranscript`](CliTranscript.md)&gt;
 
-***
+---
 
 ### tools
 

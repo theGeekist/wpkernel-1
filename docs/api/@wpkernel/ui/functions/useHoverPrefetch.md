@@ -1,16 +1,13 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/ui](../index.md) / useHoverPrefetch
 
 # Function: useHoverPrefetch()
 
 ```ts
-function useHoverPrefetch(
-   ref, 
-   fn, 
-   options): void;
+function useHoverPrefetch(ref, fn, options): void;
 ```
 
 Triggers a prefetch when the user hovers over an element.

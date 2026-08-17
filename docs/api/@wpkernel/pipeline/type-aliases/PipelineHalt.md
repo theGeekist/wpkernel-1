@@ -1,13 +1,13 @@
 [**@wpkernel/pipeline v1.4.0**](../index.md)
 
-***
+---
 
 [@wpkernel/pipeline](../index.md) / PipelineHalt
 
 # Type Alias: PipelineHalt&lt;TRunResult&gt;
 
 ```ts
-type PipelineHalt&lt;TRunResult&gt; = 
+type PipelineHalt&lt;TRunResult&gt; =
   | {
   __halt: true;
   error: unknown;

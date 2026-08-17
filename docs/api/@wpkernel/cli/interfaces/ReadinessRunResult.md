@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / ReadinessRunResult
 
@@ -16,7 +16,7 @@ Summary returned after running a readiness plan.
 readonly outcomes: ReadinessOutcome&lt;unknown&gt;[];
 ```
 
-***
+---
 
 ### error?
 

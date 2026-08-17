@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/php-json-ast](../index.md) / ConsumePhpProgramIngestionOptions
 
@@ -14,7 +14,7 @@
 readonly context: PipelineContext;
 ```
 
-***
+---
 
 ### source
 
@@ -22,7 +22,7 @@ readonly context: PipelineContext;
 readonly source: PhpProgramIngestionSource;
 ```
 
-***
+---
 
 ### defaultMetadata?
 
@@ -30,7 +30,7 @@ readonly source: PhpProgramIngestionSource;
 readonly optional defaultMetadata: PhpFileMetadata;
 ```
 
-***
+---
 
 ### reporter?
 
@@ -38,7 +38,7 @@ readonly optional defaultMetadata: PhpFileMetadata;
 readonly optional reporter: Reporter;
 ```
 
-***
+---
 
 ### resolveFilePath()?
 

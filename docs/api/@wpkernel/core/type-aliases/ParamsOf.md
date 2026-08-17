@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / ParamsOf
 
@@ -21,4 +21,4 @@ Ensures that void params are optional while others remain required.
 
 ### Key
 
-`Key` *extends* keyof `K`
+`Key` _extends_ keyof `K`

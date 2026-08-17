@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/cli](../index.md) / CreateHelperOptions
 
@@ -35,13 +35,13 @@ Value transformed by the helper chain.
 
 ### TReporter
 
-`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
+`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
 
 Reporter type available during execution.
 
 ### TKind
 
-`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Literal helper kind represented by the descriptor.
 
@@ -55,7 +55,7 @@ readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 
 Helper implementation.
 
-***
+---
 
 ### key
 
@@ -65,7 +65,7 @@ readonly key: string;
 
 Dependency and override identity within the helper kind.
 
-***
+---
 
 ### kind
 
@@ -75,7 +75,7 @@ readonly kind: TKind;
 
 Pipeline phase in which the helper executes.
 
-***
+---
 
 ### dependsOn?
 
@@ -89,7 +89,7 @@ Prerequisite helper keys.
 
 `[]`
 
-***
+---
 
 ### mode?
 
@@ -103,7 +103,7 @@ Duplicate-key policy.
 
 `'extend'`
 
-***
+---
 
 ### origin?
 
@@ -113,7 +113,7 @@ readonly optional origin: string;
 
 Optional provenance label used in diagnostics.
 
-***
+---
 
 ### priority?
 

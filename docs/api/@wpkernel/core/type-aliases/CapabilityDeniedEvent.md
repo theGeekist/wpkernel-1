@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / CapabilityDeniedEvent
 
@@ -20,7 +20,7 @@ Payload emitted with `{namespace}.capability.denied` events.
 capabilityKey: string;
 ```
 
-***
+---
 
 ### timestamp
 
@@ -28,7 +28,7 @@ capabilityKey: string;
 timestamp: number;
 ```
 
-***
+---
 
 ### context?
 
@@ -36,7 +36,7 @@ timestamp: number;
 optional context: Record&lt;string, unknown&gt;;
 ```
 
-***
+---
 
 ### messageKey?
 
@@ -44,7 +44,7 @@ optional context: Record&lt;string, unknown&gt;;
 optional messageKey: string;
 ```
 
-***
+---
 
 ### reason?
 
@@ -52,7 +52,7 @@ optional messageKey: string;
 optional reason: string;
 ```
 
-***
+---
 
 ### requestId?
 

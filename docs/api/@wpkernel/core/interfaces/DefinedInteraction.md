@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
-***
+---
 
 [@wpkernel/core](../index.md) / DefinedInteraction
 
@@ -26,7 +26,7 @@ readonly getServerState: () =&gt; object;
 
 `object`
 
-***
+---
 
 ### namespace
 
@@ -34,7 +34,7 @@ readonly getServerState: () =&gt; object;
 readonly namespace: string;
 ```
 
-***
+---
 
 ### store
 
@@ -42,7 +42,7 @@ readonly namespace: string;
 readonly store: TStoreResult;
 ```
 
-***
+---
 
 ### syncServerState()
 
