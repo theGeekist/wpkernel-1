@@ -110,6 +110,8 @@ gutenberg
 docs/internal/*
 !docs/internal/php-json-ast/
 !docs/internal/php-json-ast/**
+!docs/internal/pipeline/
+!docs/internal/pipeline/**
 artifacts/
 **/.wpk/
 .turbo

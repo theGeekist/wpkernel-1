@@ -1,6 +1,6 @@
 # @wpkernel/pipeline
 
-`@wpkernel/pipeline` delivers the helper DAG, extension hooks, and rollback guarantees shared by the kernel, CLI, and codemod packages. Use the architecture guide to understand execution phases, the framework contributor guide to extend helpers safely, and the migration guide when moving from legacy imports.
+`@wpkernel/pipeline` delivers the helper DAG, extension hooks, and rollback guarantees shared by the kernel, CLI, and codemod packages. Use the architecture guide to understand execution phases and the framework contributor guide to extend helpers safely.
 
 The [pipeline hardening plan](./pipeline/hardening-plan.md) tracks the
 cross-package contract work, verification state, and independent release gates
@@ -28,8 +28,8 @@ The Phase 6 exported type set is:
 - `PipelineStageDiagnostics`
 - `PipelineHalt`
 
-These names are implemented and pass external packed-artifact qualification
-in the `1.2.0` release candidate.
+These names were introduced in 1.2.0 and pass external packed-artifact
+qualification through the current 1.4 line.
 
 - [Architecture Guide](./pipeline/architecture.md)
 - [Framework Contributors](./pipeline/framework-contributors.md)

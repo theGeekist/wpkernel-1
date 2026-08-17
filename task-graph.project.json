@@ -20,6 +20,21 @@
 			"optional": false,
 			"preferredOwnerKind": "codex",
 			"reviewOwner": "coordinator"
+		},
+		"pipeline-v2": {
+			"architectureVersion": 1,
+			"architectureRoot": "docs/internal/pipeline",
+			"governingReading": [
+				"README.md",
+				"docs/internal/pipeline/README.md",
+				"docs/internal/pipeline/COORDINATION.md",
+				"docs/internal/pipeline/tasks/README.md"
+			],
+			"label": "Pipeline v2",
+			"logicalMount": null,
+			"optional": false,
+			"preferredOwnerKind": "codex",
+			"reviewOwner": "coordinator"
 		}
 	},
 	"contextSources": [
@@ -30,6 +45,51 @@
 		}
 	],
 	"commands": [
+		{
+			"id": "pipeline.typecheck",
+			"label": "Typecheck Pipeline",
+			"description": "Typecheck Pipeline source and tests.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "Pipeline source typecheck",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/pipeline",
+						"typecheck"
+					]
+				},
+				{
+					"heading": "Pipeline test typecheck",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/pipeline",
+						"typecheck:tests"
+					]
+				}
+			]
+		},
+		{
+			"id": "pipeline.test",
+			"label": "Test Pipeline",
+			"description": "Run the Pipeline package tests.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "Pipeline tests",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/pipeline",
+						"test"
+					]
+				}
+			]
+		},
 		{
 			"id": "ast.php-tests",
 			"label": "Test PHP AST",
