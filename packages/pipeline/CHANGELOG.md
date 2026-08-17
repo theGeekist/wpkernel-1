@@ -5,6 +5,11 @@ versioned and released independently from the WPKernel monorepo.
 
 ## Unreleased
 
+### Fixed
+
+- Rejected standard-pipeline configurations where fragment and builder helper
+  kinds are identical, preventing ambiguous registration and execution.
+
 ## 1.4.0 — 2026-08-12
 
 ### Changed

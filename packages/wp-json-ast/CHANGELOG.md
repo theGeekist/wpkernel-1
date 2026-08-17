@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- Generated post meta and taxonomy mutation helpers now read values through
+  `WP_REST_Request::get_param()` instead of emitting the non-existent
+  `rest_sanitize_value_from_request()` function.
+
 ### In progress
 
 - **Phase 8 placeholder** - Task 46 will collect incremental diagnostics (starting with the CLI LogLayer reporter) after the bootstrap flow ships.

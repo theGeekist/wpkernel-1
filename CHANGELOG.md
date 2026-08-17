@@ -16,10 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Core package exports** - Fixed missing Vite build entry points for `namespace` and `events` submodules, ensuring `@wpkernel/core/namespace` and `@wpkernel/core/events` imports work correctly at runtime. Updated package.json export paths to match actual build output structure.
+- **AST authoring safety** - Authoring descriptors now use private runtime provenance, reject accessor-backed inputs without invoking getters, preserve legal `__proto__` data keys through codec round trips, and prevent untyped props from overriding AST node identity.
+- **WordPress mutation generation** - Generated post meta and taxonomy helpers now read values through `WP_REST_Request::get_param()` instead of emitting a non-existent sanitiser function.
+- **Generated admin capabilities** - Admin screens and forms now expose create, edit and delete controls only when matching routes exist, preserve taxonomy aliases and intentional empty values, and support configured content and excerpt fields.
+- **Pipeline helper registration** - Standard pipelines reject configurations where fragment and builder helper kinds are identical.
 
 ### Documentation
 
 - **Import patterns** - Removed outdated namespace import pattern (`import { http } from '@wpkernel/core'`) from README and package documentation. Framework now documents two patterns: submodule imports (recommended for tree-shaking) and flat imports (convenient).
+- **Generated API routes** - API generation now emits stable root and package index routes and verifies the rendered `/api/` entry point as part of the documentation build.
 
 ### In progress
 

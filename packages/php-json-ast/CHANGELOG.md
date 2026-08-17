@@ -4,6 +4,14 @@ All notable changes to `@wpkernel/php-json-ast` will be documented in this file.
 
 ## Unreleased
 
+### Fixed
+
+- Replaced discoverable symbol brands with private runtime provenance for
+  authoring descriptors and rejected accessor-backed records and arrays without
+  invoking caller-controlled getters.
+- Preserved legal `__proto__` data keys through codec normalisation and prevented
+  untyped node props from overriding `nodeType` or supplied attributes.
+
 ### In progress
 
 - **Phase 8 placeholder** - Task 46 will collect incremental diagnostics (starting with the CLI LogLayer reporter) after the bootstrap flow ships.
