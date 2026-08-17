@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+remote_name=${1:-unknown}
+remote_url=${2:-unknown}
+
+case "$remote_url" in
+	https://github.com/theGeekist/wpkernel-1.git | git@github.com:theGeekist/wpkernel-1.git)
+		exit 0
+		;;
+esac
+
+cat >&2 <<EOF
+Push blocked: '${remote_name}' resolves to '${remote_url}'.
+Ordinary WPKernel pushes may target only theGeekist/wpkernel-1.
+The public wpkernel/wpkernel repository is updated by the publishing workflow.
+EOF
+exit 1
