@@ -10,16 +10,14 @@ import {
 	type PhpExpr,
 } from '../nodes';
 import { PhpAuthoringError } from './errors';
+import { readDenseArrayEntries, readOwnProperty } from './properties';
 import { isPhpVariableValue, type PhpVariableValue } from './references';
 
-const expressionDescriptorBrand: unique symbol = Symbol(
-	'php-authoring-expression'
-);
+const expressionDescriptors = new WeakSet<object>();
 
 export interface PhpExpressionValue {
 	readonly kind: 'expression';
 	readonly expr: PhpExpr;
-	readonly [expressionDescriptorBrand]: true;
 }
 
 export interface PhpValueRecord {
@@ -43,11 +41,12 @@ export type PhpAuthoringValue =
  */
 export function expression(expr: PhpExpr): PhpExpressionValue {
 	assertPhpExpression(expr);
-	return Object.freeze({
+	const descriptor = Object.freeze({
 		kind: 'expression',
 		expr,
-		[expressionDescriptorBrand]: true as const,
 	});
+	expressionDescriptors.add(descriptor);
+	return descriptor;
 }
 
 /**
@@ -69,6 +68,15 @@ function renderValue(
 	}
 	if (isPhpExpressionValue(value)) {
 		return value.expr;
+	}
+	if (looksLikeAuthoringDescriptor(value)) {
+		throw new PhpAuthoringError({
+			code: 'AMBIGUOUS_VALUE',
+			path,
+			message:
+				'Authoring descriptors must be created by this authoring layer',
+			hint: 'Use variable(...) or expression(...) to create a trusted descriptor.',
+		});
 	}
 	if (typeof value === 'string') {
 		return buildScalarString(value);
@@ -123,7 +131,7 @@ function renderArray(
 	ancestors: Set<object>
 ): PhpExpr {
 	return withAncestor(value, path, ancestors, () => {
-		const entries = requireDenseArrayEntries(value, path);
+		const entries = readDenseArrayEntries(value, path, ambiguousValue);
 		return buildArray(
 			entries.map((entry, index) =>
 				buildArrayItem(
@@ -174,7 +182,8 @@ function assertPhpExpression(value: unknown): asserts value is PhpExpr {
 		throw invalidExpression('Expected a PHP expression AST object');
 	}
 
-	const { nodeType, attributes } = value;
+	const nodeType = readExpressionProperty(value, 'nodeType');
+	const attributes = readExpressionProperty(value, 'attributes');
 	if (
 		typeof nodeType !== 'string' ||
 		(!nodeType.startsWith('Expr_') && !nodeType.startsWith('Scalar_'))
@@ -190,56 +199,43 @@ function assertPhpExpression(value: unknown): asserts value is PhpExpr {
 	}
 }
 
+function readExpressionProperty(
+	value: Record<string, unknown>,
+	key: string
+): unknown {
+	const property = readOwnProperty(value, key);
+	if (property.kind !== 'data') {
+		throw invalidExpression(
+			`Expected expression ${key} to be an own data property`
+		);
+	}
+	return property.value;
+}
+
 export function isPhpExpressionValue(
 	value: unknown
 ): value is PhpExpressionValue {
 	return (
-		Boolean(value) &&
+		value !== null &&
 		typeof value === 'object' &&
-		(value as Partial<PhpExpressionValue>)[expressionDescriptorBrand] ===
-			true
+		expressionDescriptors.has(value)
 	);
 }
 
-function requireDenseArrayEntries(
-	value: readonly unknown[],
-	path: string
-): unknown[] {
-	const entries: unknown[] = [];
-	const allowedKeys = new Set<string>(['length']);
-
-	for (let index = 0; index < value.length; index += 1) {
-		const key = String(index);
-		allowedKeys.add(key);
-		const descriptor = Object.getOwnPropertyDescriptor(value, key);
-		if (
-			!descriptor ||
-			!descriptor.enumerable ||
-			!Object.prototype.hasOwnProperty.call(descriptor, 'value')
-		) {
-			throw new PhpAuthoringError({
-				code: 'AMBIGUOUS_VALUE',
-				path: `${path}[${index}]`,
-				message:
-					'Sparse arrays and accessor entries cannot be authored deterministically',
-				hint: 'Materialize every entry explicitly, usually with null.',
-			});
-		}
-		entries.push(descriptor.value);
+function looksLikeAuthoringDescriptor(value: unknown): boolean {
+	if (!value || typeof value !== 'object') {
+		return false;
 	}
 
-	for (const key of Reflect.ownKeys(value)) {
-		if (typeof key === 'symbol' || !allowedKeys.has(key)) {
-			throw new PhpAuthoringError({
-				code: 'AMBIGUOUS_VALUE',
-				path,
-				message: 'Arrays with custom properties are not supported',
-				hint: 'Use a plain record for keyed values.',
-			});
-		}
-	}
-
-	return entries;
+	// Do not read an untrusted `kind` property. Apart from making descriptor
+	// detection non-deterministic, that would execute an accessor before the
+	// record validation below can reject it.
+	const descriptor = Object.getOwnPropertyDescriptor(value, 'kind');
+	return (
+		descriptor !== undefined &&
+		Object.prototype.hasOwnProperty.call(descriptor, 'value') &&
+		(descriptor.value === 'variable' || descriptor.value === 'expression')
+	);
 }
 
 function assertEnumerableDataProperties(
@@ -313,6 +309,15 @@ function unsupportedValue(value: unknown, path: string): PhpAuthoringError {
 		path,
 		message: `Unsupported JavaScript value type "${typeof value}"`,
 		hint: 'Supported values are strings, finite numbers, booleans, null, arrays, records, variables, and authored expressions.',
+	});
+}
+
+function ambiguousValue(path: string, message: string): PhpAuthoringError {
+	return new PhpAuthoringError({
+		code: 'AMBIGUOUS_VALUE',
+		path,
+		message,
+		hint: 'Use JSON-style arrays or plain records for structured values.',
 	});
 }
 

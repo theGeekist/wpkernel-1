@@ -139,10 +139,10 @@ function normalizeNode(
 			if (key === 'nodeType' || key === 'attributes') {
 				continue;
 			}
-			normalized[key] = normalizeValue(
-				record[key],
-				propertyPath(path, key),
-				ancestors
+			defineNormalizedProperty(
+				normalized,
+				key,
+				normalizeValue(record[key], propertyPath(path, key), ancestors)
 			);
 		}
 
@@ -176,10 +176,14 @@ function normalizeAttributes(
 				continue;
 			}
 
-			normalized[key] = normalizeValue(
-				attributes[key],
-				propertyPath(path, key),
-				ancestors
+			defineNormalizedProperty(
+				normalized,
+				key,
+				normalizeValue(
+					attributes[key],
+					propertyPath(path, key),
+					ancestors
+				)
 			);
 		}
 		return normalized;
@@ -230,10 +234,10 @@ function normalizeComment(
 		) {
 			continue;
 		}
-		normalized[key] = normalizeValue(
-			record[key],
-			propertyPath(path, key),
-			ancestors
+		defineNormalizedProperty(
+			normalized,
+			key,
+			normalizeValue(record[key], propertyPath(path, key), ancestors)
 		);
 	}
 	return normalized;
@@ -247,13 +251,26 @@ function normalizeRecord(
 	return withAncestor(record, path, ancestors, () => {
 		const normalized: Record<string, unknown> = {};
 		for (const key of sortedKeys(record)) {
-			normalized[key] = normalizeValue(
-				record[key],
-				propertyPath(path, key),
-				ancestors
+			defineNormalizedProperty(
+				normalized,
+				key,
+				normalizeValue(record[key], propertyPath(path, key), ancestors)
 			);
 		}
 		return normalized;
+	});
+}
+
+function defineNormalizedProperty(
+	target: Record<string, unknown>,
+	key: string,
+	value: unknown
+): void {
+	Object.defineProperty(target, key, {
+		configurable: true,
+		enumerable: true,
+		value,
+		writable: true,
 	});
 }
 

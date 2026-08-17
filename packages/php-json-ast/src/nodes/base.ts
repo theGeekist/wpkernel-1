@@ -86,8 +86,8 @@ export function buildNode<T extends PhpNode>(
 	attributes?: PhpAttributes
 ): T {
 	return {
+		...(props as Record<string, unknown>),
 		nodeType,
 		attributes: normaliseAttributes(attributes),
-		...(props as Record<string, unknown>),
 	} as T;
 }

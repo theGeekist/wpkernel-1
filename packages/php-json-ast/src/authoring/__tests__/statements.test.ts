@@ -133,6 +133,37 @@ describe('PHP statement authoring', () => {
 		);
 	});
 
+	it('rejects accessor-backed statement options without evaluating them', () => {
+		const conditional = accessorOption('statements');
+		Object.assign(conditional.value, { condition: true });
+		const foreachStatements = accessorOption('statements');
+		Object.assign(foreachStatements.value, {
+			iterable: variable('items'),
+			value: variable('item'),
+		});
+		const foreachByReference = accessorOption('byReference');
+		Object.assign(foreachByReference.value, {
+			iterable: variable('items'),
+			value: variable('item'),
+			statements: [],
+		});
+
+		for (const operation of [
+			() => ifStatement(conditional.value as never),
+			() => foreachStatement(foreachStatements.value as never),
+			() => foreachStatement(foreachByReference.value as never),
+		]) {
+			expect(operation).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'INVALID_STATEMENT',
+				})
+			);
+		}
+		expect(conditional.reads()).toBe(0);
+		expect(foreachStatements.reads()).toBe(0);
+		expect(foreachByReference.reads()).toBe(0);
+	});
+
 	it('rejects ambiguous foreach variables', () => {
 		expect(() =>
 			foreachStatement({
@@ -147,4 +178,64 @@ describe('PHP statement authoring', () => {
 			})
 		);
 	});
+
+	it.each([
+		[
+			'conditional elseIf branches',
+			(input: unknown[]) =>
+				ifStatement({
+					condition: true,
+					statements: [],
+					elseIf: input as never,
+				}),
+		],
+		[
+			'statement lists',
+			(input: unknown[]) => renderPhpStatements(input as never),
+		],
+	])(
+		'rejects accessor-backed map on %s without evaluating it',
+		(_label, operation) => {
+			const input = accessorMapArray();
+
+			expect(() => operation(input.value)).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'INVALID_STATEMENT',
+				})
+			);
+			expect(input.reads()).toBe(0);
+		}
+	);
 });
+
+function accessorOption(key: string): {
+	readonly value: Record<string, unknown>;
+	readonly reads: () => number;
+} {
+	let reads = 0;
+	const value: Record<string, unknown> = {};
+	Object.defineProperty(value, key, {
+		enumerable: true,
+		get: () => {
+			reads += 1;
+			return [];
+		},
+	});
+	return { value, reads: () => reads };
+}
+
+function accessorMapArray<T = never>(): {
+	readonly value: T[];
+	readonly reads: () => number;
+} {
+	let reads = 0;
+	const value = [] as T[];
+	Object.defineProperty(value, 'map', {
+		enumerable: true,
+		get: () => {
+			reads += 1;
+			throw new Error('must not invoke map');
+		},
+	});
+	return { value, reads: () => reads };
+}

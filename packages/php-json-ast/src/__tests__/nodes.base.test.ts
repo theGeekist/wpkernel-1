@@ -51,6 +51,24 @@ describe('PHP AST node helpers', () => {
 		expect(node.attributes).toEqual({ startLine: 42 });
 	});
 
+	it('preserves the declared node type and supplied attributes over untyped props', () => {
+		const node = buildNode<TestNode>(
+			TEST_NODE_TYPE,
+			{
+				value: 'example',
+				nodeType: 'Expr_Variable',
+				attributes: { injected: true },
+			} as never,
+			{ startLine: 42 }
+		);
+
+		expect(node).toEqual({
+			value: 'example',
+			nodeType: TEST_NODE_TYPE,
+			attributes: { startLine: 42 },
+		});
+	});
+
 	it('merges new attribute data without mutating the source node', () => {
 		const node = createTestNode('value', { startLine: 1 });
 		const merged = mergeNodeAttributes(node, { endLine: 2 });
