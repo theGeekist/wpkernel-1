@@ -1,13 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / FileWriteStatus
+[@wpkernel/cli](../index.md) / FileWriteStatus
 
 # Type Alias: FileWriteStatus
 
 ```ts
-type FileWriteStatus = 'written' | 'unchanged' | 'skipped';
+type FileWriteStatus = "written" | "unchanged" | "skipped";
 ```
 
 Outcome recorded for a file write attempt.

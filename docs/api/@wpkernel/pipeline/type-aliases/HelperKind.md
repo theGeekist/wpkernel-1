@@ -1,8 +1,8 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / HelperKind
+[@wpkernel/pipeline](../index.md) / HelperKind
 
 # Type Alias: HelperKind
 

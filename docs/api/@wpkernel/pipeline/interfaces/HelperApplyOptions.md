@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / HelperApplyOptions
+[@wpkernel/pipeline](../index.md) / HelperApplyOptions
 
-# Interface: HelperApplyOptions<TContext, TInput, TOutput, TReporter>
+# Interface: HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;
 
 Immutable invocation envelope passed to a helper.
 
@@ -30,7 +30,7 @@ Current transformation value.
 
 ### TReporter
 
-`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter available both directly and through context.
 
@@ -44,7 +44,7 @@ readonly context: TContext;
 
 Per-run services and capabilities.
 
----
+***
 
 ### input
 
@@ -54,7 +54,7 @@ readonly input: TInput;
 
 Read-only input selected for this helper phase.
 
----
+***
 
 ### output
 
@@ -64,7 +64,7 @@ readonly output: TOutput;
 
 Current output, including replacements produced upstream.
 
----
+***
 
 ### reporter
 

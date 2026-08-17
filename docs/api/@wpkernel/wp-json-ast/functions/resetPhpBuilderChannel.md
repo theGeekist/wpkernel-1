@@ -1,20 +1,20 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / resetPhpBuilderChannel
+[@wpkernel/wp-json-ast](../index.md) / resetPhpBuilderChannel
 
 # Function: resetPhpBuilderChannel()
 
 ```ts
-function resetPhpBuilderChannel<TContext>(context): void;
+function resetPhpBuilderChannel&lt;TContext&gt;(context): void;
 ```
 
 ## Type Parameters
 
 ### TContext
 
-`TContext` _extends_ `PipelineContext`
+`TContext` *extends* `PipelineContext`
 
 ## Parameters
 

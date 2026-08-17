@@ -1,23 +1,23 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineHalt
+[@wpkernel/pipeline](../index.md) / PipelineHalt
 
-# Type Alias: PipelineHalt<TRunResult>
+# Type Alias: PipelineHalt&lt;TRunResult&gt;
 
 ```ts
-type PipelineHalt<TRunResult> =
-	| {
-			__halt: true;
-			error: unknown;
-			result?: never;
-	  }
-	| {
-			__halt: true;
-			result: TRunResult;
-			error?: never;
-	  };
+type PipelineHalt&lt;TRunResult&gt; = 
+  | {
+  __halt: true;
+  error: unknown;
+  result?: never;
+}
+  | {
+  __halt: true;
+  result: TRunResult;
+  error?: never;
+};
 ```
 
 Terminal result produced by a custom pipeline stage.

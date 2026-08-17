@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineStageState
+[@wpkernel/pipeline](../index.md) / PipelineStageState
 
-# Interface: PipelineStageState<TRunOptions, TUserState, TContext, TReporter, TDiagnostic>
+# Interface: PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;
 
 Public state threaded through custom pipeline stages.
 
@@ -22,9 +22,9 @@ the stage that paused and exposes the caller's resume value through
 ## Example
 
 ```ts
-const increment = (state: PipelineStageState<Options, State, Context>) => ({
-	...state,
-	userState: { ...state.userState, count: state.userState.count + 1 },
+const increment = (state: PipelineStageState&lt;Options, State, Context&gt;) =&gt; ({
+  ...state,
+  userState: { ...state.userState, count: state.userState.count + 1 },
 });
 ```
 
@@ -44,19 +44,19 @@ User-owned state threaded through stages.
 
 ### TContext
 
-`TContext` _extends_ `object`
+`TContext` *extends* `object`
 
 Per-run context.
 
 ### TReporter
 
-`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter contained by the context.
 
 ### TDiagnostic
 
-`TDiagnostic` _extends_ [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
+`TDiagnostic` *extends* [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md) = [`PipelineDiagnostic`](../type-aliases/PipelineDiagnostic.md)
 
 Diagnostic union collected by the run.
 
@@ -70,7 +70,7 @@ readonly context: TContext;
 
 Context created once for this run.
 
----
+***
 
 ### diagnostics
 
@@ -80,17 +80,17 @@ readonly diagnostics: readonly TDiagnostic[];
 
 Diagnostics recorded so far.
 
----
+***
 
 ### executedLifecycles
 
 ```ts
-readonly executedLifecycles: ReadonlySet<string>;
+readonly executedLifecycles: ReadonlySet&lt;string&gt;;
 ```
 
 Extension lifecycle names already executed by this run.
 
----
+***
 
 ### reporter
 
@@ -100,7 +100,7 @@ readonly reporter: TReporter;
 
 Reporter associated with the current context.
 
----
+***
 
 ### runOptions
 
@@ -110,17 +110,17 @@ readonly runOptions: TRunOptions;
 
 Original options supplied to the run.
 
----
+***
 
 ### steps
 
 ```ts
-readonly steps: readonly PipelineStep<string>[];
+readonly steps: readonly PipelineStep&lt;string&gt;[];
 ```
 
 Helpers executed so far.
 
----
+***
 
 ### userState
 
@@ -130,17 +130,17 @@ readonly userState: TUserState;
 
 User-owned state that stages may replace immutably.
 
----
+***
 
 ### helperExecution?
 
 ```ts
-readonly optional helperExecution: ReadonlyMap<string, HelperExecutionSnapshot<string>>;
+readonly optional helperExecution: ReadonlyMap&lt;string, HelperExecutionSnapshot&lt;string&gt;&gt;;
 ```
 
 Execution summary by helper kind after helper stages complete.
 
----
+***
 
 ### resumeInput?
 
@@ -150,7 +150,7 @@ readonly optional resumeInput: unknown;
 
 Value supplied to `resume()` when re-entering a paused stage.
 
----
+***
 
 ### stageIndex?
 

@@ -1,16 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / HelperApplyFn
+[@wpkernel/php-json-ast](../index.md) / HelperApplyFn
 
-# Type Alias: HelperApplyFn<TContext, TInput, TOutput, TReporter>
+# Type Alias: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;
 
 ```ts
-type HelperApplyFn<TContext, TInput, TOutput, TReporter> = (
-	options,
-	next?
-) => MaybePromise<HelperApplyResult<TOutput> | void>;
+type HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt; = (options, next?) =&gt; MaybePromise&lt;HelperApplyResult&lt;TOutput&gt; | void&gt;;
 ```
 
 Transformation invoked for one registered helper.
@@ -37,7 +34,7 @@ Helper output type.
 
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
 
 Reporter type.
 
@@ -45,19 +42,19 @@ Reporter type.
 
 ### options
 
-[`HelperApplyOptions`](../interfaces/HelperApplyOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`>
+[`HelperApplyOptions`](../interfaces/HelperApplyOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`&gt;
 
 Invocation context, input and current output.
 
 ### next?
 
-`HelperNext`<`TOutput`>
+`HelperNext`&lt;`TOutput`&gt;
 
 Continuation for wrapping downstream helpers.
 
 ## Returns
 
-`MaybePromise`<`HelperApplyResult`<`TOutput`> \| `void`>
+`MaybePromise`&lt;`HelperApplyResult`&lt;`TOutput`&gt; \| `void`&gt;
 
 A synchronous or asynchronous optional helper result.
 

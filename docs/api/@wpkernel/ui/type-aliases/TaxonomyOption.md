@@ -1,8 +1,8 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/ui](../README.md) / TaxonomyOption
+[@wpkernel/ui](../index.md) / TaxonomyOption
 
 # Type Alias: TaxonomyOption
 
@@ -18,7 +18,7 @@ type TaxonomyOption = object;
 label: string;
 ```
 
----
+***
 
 ### value
 

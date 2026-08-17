@@ -1,10 +1,10 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / CreateWpPhpProgramBuilderOptions
+[@wpkernel/wp-json-ast](../index.md) / CreateWpPhpProgramBuilderOptions
 
-# Interface: CreateWpPhpProgramBuilderOptions<TContext, TInput, TOutput>
+# Interface: CreateWpPhpProgramBuilderOptions&lt;TContext, TInput, TOutput&gt;
 
 Options for creating a WordPress PHP program builder.
 
@@ -19,38 +19,40 @@ const builder = createWpPhpProgramBuilder({
 		pluginName: 'my-plugin',
 		description: 'My plugin description.',
 	},
-	build: (builder) => {
+	build: (builder) =&gt; {
 		builder.appendProgramStatement(
-			buildReturn(buildScalarString('Hello from my plugin!'))
+			buildReturn(
+				buildScalarString('Hello from my plugin!')
+			)
 		);
-	},
+	}
 });
 ```
 
 ## Extends
 
-- `Omit`<`BaseCreatePhpProgramBuilderOptions`<`TContext`, `TInput`, `TOutput`>, `"metadata"` \| `"build"`>
+- `Omit`&lt;`BaseCreatePhpProgramBuilderOptions`&lt;`TContext`, `TInput`, `TOutput`&gt;, `"metadata"` \| `"build"`&gt;
 
 ## Type Parameters
 
 ### TContext
 
-`TContext` _extends_ `PipelineContext` = `PipelineContext`
+`TContext` *extends* `PipelineContext` = `PipelineContext`
 
 ### TInput
 
-`TInput` _extends_ `BuilderInput` = `BuilderInput`
+`TInput` *extends* `BuilderInput` = `BuilderInput`
 
 ### TOutput
 
-`TOutput` _extends_ `BuilderOutput` = `BuilderOutput`
+`TOutput` *extends* `BuilderOutput` = `BuilderOutput`
 
 ## Properties
 
 ### build()
 
 ```ts
-readonly build: (builder, entry) => void | Promise<void>;
+readonly build: (builder, entry) =&gt; void | Promise&lt;void&gt;;
 ```
 
 The build function that constructs the PHP AST.
@@ -71,9 +73,9 @@ The PHP AST context entry.
 
 #### Returns
 
-`void` \| `Promise`<`void`>
+`void` \| `Promise`&lt;`void`&gt;
 
----
+***
 
 ### filePath
 
@@ -84,10 +86,10 @@ readonly filePath: string;
 #### Inherited from
 
 ```ts
-Omit.filePath;
+Omit.filePath
 ```
 
----
+***
 
 ### key
 
@@ -98,10 +100,10 @@ readonly key: string;
 #### Inherited from
 
 ```ts
-Omit.key;
+Omit.key
 ```
 
----
+***
 
 ### metadata
 
@@ -115,7 +117,7 @@ Metadata for the WordPress PHP file.
 
 WpPhpFileMetadata
 
----
+***
 
 ### namespace
 
@@ -126,10 +128,10 @@ readonly namespace: string;
 #### Inherited from
 
 ```ts
-Omit.namespace;
+Omit.namespace
 ```
 
----
+***
 
 ### dependsOn?
 
@@ -146,10 +148,10 @@ Prerequisite helper keys.
 #### Inherited from
 
 ```ts
-Omit.dependsOn;
+Omit.dependsOn
 ```
 
----
+***
 
 ### mode?
 
@@ -166,10 +168,10 @@ Duplicate-key policy.
 #### Inherited from
 
 ```ts
-Omit.mode;
+Omit.mode
 ```
 
----
+***
 
 ### origin?
 
@@ -182,10 +184,10 @@ Optional provenance label used in diagnostics.
 #### Inherited from
 
 ```ts
-Omit.origin;
+Omit.origin
 ```
 
----
+***
 
 ### priority?
 
@@ -202,5 +204,5 @@ Relative ordering hint.
 #### Inherited from
 
 ```ts
-Omit.priority;
+Omit.priority
 ```

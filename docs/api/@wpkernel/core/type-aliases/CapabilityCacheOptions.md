@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / CapabilityCacheOptions
+[@wpkernel/core](../index.md) / CapabilityCacheOptions
 
 # Type Alias: CapabilityCacheOptions
 
@@ -20,7 +20,7 @@ Cache storage options for capability evaluations.
 optional crossTab: boolean;
 ```
 
----
+***
 
 ### storage?
 
@@ -28,7 +28,7 @@ optional crossTab: boolean;
 optional storage: "memory" | "session";
 ```
 
----
+***
 
 ### ttlMs?
 

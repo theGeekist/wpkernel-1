@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / StageRenderStubsOptions
+[@wpkernel/cli](../index.md) / StageRenderStubsOptions
 
 # Interface: StageRenderStubsOptions
 
@@ -16,7 +16,7 @@ Options for staging block render callback stubs to workspace.
 readonly output: BuilderOutput;
 ```
 
----
+***
 
 ### reporter
 
@@ -24,7 +24,7 @@ readonly output: BuilderOutput;
 readonly reporter: Reporter;
 ```
 
----
+***
 
 ### stubs
 
@@ -32,7 +32,7 @@ readonly reporter: Reporter;
 readonly stubs: readonly BlockRenderStub[];
 ```
 
----
+***
 
 ### workspace
 

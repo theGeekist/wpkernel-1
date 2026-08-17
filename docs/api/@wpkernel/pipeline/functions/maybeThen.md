@@ -1,13 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / maybeThen
+[@wpkernel/pipeline](../index.md) / maybeThen
 
 # Function: maybeThen()
 
 ```ts
-function maybeThen<T, TResult>(value, onFulfilled): MaybePromise<TResult>;
+function maybeThen&lt;T, TResult&gt;(value, onFulfilled): MaybePromise&lt;TResult&gt;;
 ```
 
 Maps a synchronous value or safely inspectable thenable while preserving the
@@ -34,19 +34,19 @@ the boundary described by [isPromiseLike](isPromiseLike.md).
 
 ### value
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
 
 Value or thenable to map.
 
 ### onFulfilled
 
-(`value`) => [`MaybePromise`](../type-aliases/MaybePromise.md)<`TResult`>
+(`value`) =&gt; [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TResult`&gt;
 
 Transformation applied to the fulfilled value.
 
 ## Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TResult`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TResult`&gt;
 
 The callback result directly for synchronous input, or a native chained promise for thenable input.
 
@@ -55,9 +55,9 @@ The callback result directly for synchronous input, or a native chained promise 
 ```ts
 import { isPromiseLike, maybeThen } from '@wpkernel/pipeline';
 
-const immediate = maybeThen(2, (value) => value * 3);
+const immediate = maybeThen(2, (value) =&gt; value * 3);
 isPromiseLike(immediate); // false
 
-const deferred = maybeThen(Promise.resolve(2), (value) => value * 3);
+const deferred = maybeThen(Promise.resolve(2), (value) =&gt; value * 3);
 isPromiseLike(deferred); // true
 ```

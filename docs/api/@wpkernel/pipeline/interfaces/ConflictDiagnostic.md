@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / ConflictDiagnostic
+[@wpkernel/pipeline](../index.md) / ConflictDiagnostic
 
-# Interface: ConflictDiagnostic<TKind>
+# Interface: ConflictDiagnostic&lt;TKind&gt;
 
 Fatal diagnostic emitted when two override helpers claim the same key.
 
@@ -12,7 +12,7 @@ Fatal diagnostic emitted when two override helpers claim the same key.
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Helper-kind union associated with the diagnostic.
 
@@ -26,7 +26,7 @@ readonly helpers: readonly string[];
 
 Origins or keys of the competing registrations.
 
----
+***
 
 ### key
 
@@ -36,7 +36,7 @@ readonly key: string;
 
 Conflicting helper key.
 
----
+***
 
 ### message
 
@@ -46,7 +46,7 @@ readonly message: string;
 
 Human-readable description.
 
----
+***
 
 ### mode
 
@@ -56,7 +56,7 @@ readonly mode: HelperMode;
 
 Registration mode that caused the conflict.
 
----
+***
 
 ### type
 
@@ -66,7 +66,7 @@ readonly type: "conflict";
 
 Discriminant for exhaustive diagnostic handling.
 
----
+***
 
 ### kind?
 

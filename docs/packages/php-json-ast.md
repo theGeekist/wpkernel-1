@@ -24,4 +24,4 @@ and block behavior remain in `@wpkernel/wp-json-ast`.
 
 ## API reference
 
-See the [generated API reference](/api/@wpkernel/php-json-ast/README).
+See the [generated API reference](/api/@wpkernel/php-json-ast/).

@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / AgnosticPipeline
+[@wpkernel/pipeline](../index.md) / AgnosticPipeline
 
-# Interface: AgnosticPipeline<TRunOptions, TRunResult, TContext, TReporter, TKind>
+# Interface: AgnosticPipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TKind&gt;
 
 Executable, non-suspending pipeline instance.
 
@@ -18,12 +18,12 @@ available compensation before they are rethrown or rejected.
 
 ## See
 
-- [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md)
-- [ResumablePipeline](ResumablePipeline.md)
+ - [AgnosticPipelineOptions](../type-aliases/AgnosticPipelineOptions.md)
+ - [ResumablePipeline](ResumablePipeline.md)
 
 ## Extends
 
-- `PipelineBase`<`TRunOptions`, `TContext`, `TReporter`, `AgnosticPipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TKind`>, `TKind`>
+- `PipelineBase`&lt;`TRunOptions`, `TContext`, `TReporter`, `AgnosticPipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TKind`&gt;, `TKind`&gt;
 
 ## Type Parameters
 
@@ -41,19 +41,19 @@ Successful terminal result.
 
 ### TContext
 
-`TContext` _extends_ `object`
+`TContext` *extends* `object`
 
 Per-run context containing the reporter.
 
 ### TReporter
 
-`TReporter` _extends_ [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
+`TReporter` *extends* [`PipelineReporter`](PipelineReporter.md) = [`PipelineReporter`](PipelineReporter.md)
 
 Reporter exposed to helpers and diagnostics.
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Configured helper-kind union accepted by `use`.
 
@@ -70,7 +70,7 @@ Extension registration namespace.
 #### use()
 
 ```ts
-use: (extension) => unknown;
+use: (extension) =&gt; unknown;
 ```
 
 Registers an extension. A run waits until registration reaches
@@ -80,7 +80,7 @@ quiescence, then captures an immutable hook snapshot for that run.
 
 ###### extension
 
-[`PipelineExtension`](PipelineExtension.md)<`AgnosticPipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TKind`>, `TContext`, `TRunOptions`, `unknown`>
+[`PipelineExtension`](PipelineExtension.md)&lt;`AgnosticPipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TKind`&gt;, `TContext`, `TRunOptions`, `unknown`&gt;
 
 ##### Returns
 
@@ -100,15 +100,15 @@ identity.
 #### Inherited from
 
 ```ts
-PipelineBase.extensions;
+PipelineBase.extensions
 ```
 
----
+***
 
 ### run()
 
 ```ts
-run: (options) => MaybePromise<TRunResult>;
+run: (options) =&gt; MaybePromise&lt;TRunResult&gt;;
 ```
 
 Executes one run after pending extension registrations reach quiescence.
@@ -123,17 +123,17 @@ Immutable input used to create context, state and result.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult`&gt;
 
 The configured result directly for a synchronous run, otherwise a
 promise for that result.
 
----
+***
 
 ### use()
 
 ```ts
-use: <TInput, TOutput>(helper) => void;
+use: &lt;TInput, TOutput&gt;(helper) =&gt; void;
 ```
 
 Registers a helper whose kind is one of the kinds configured at
@@ -153,7 +153,7 @@ construction. Registration preserves the helper object's identity.
 
 ##### helper
 
-[`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 #### Returns
 
@@ -172,5 +172,5 @@ accidental registration of helper kinds that the pipeline cannot schedule.
 #### Inherited from
 
 ```ts
-PipelineBase.use;
+PipelineBase.use
 ```

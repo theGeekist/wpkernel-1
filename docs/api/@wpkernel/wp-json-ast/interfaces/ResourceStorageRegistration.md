@@ -1,16 +1,16 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / ResourceStorageRegistration
+[@wpkernel/wp-json-ast](../index.md) / ResourceStorageRegistration
 
-# Interface: ResourceStorageRegistration<TStorageKind>
+# Interface: ResourceStorageRegistration&lt;TStorageKind&gt;
 
 ## Type Parameters
 
 ### TStorageKind
 
-`TStorageKind` _extends_ `string` = `string`
+`TStorageKind` *extends* `string` = `string`
 
 ## Properties
 
@@ -20,7 +20,7 @@
 readonly kind: TStorageKind;
 ```
 
----
+***
 
 ### label
 
@@ -28,12 +28,12 @@ readonly kind: TStorageKind;
 readonly label: string;
 ```
 
----
+***
 
 ### register()
 
 ```ts
-readonly register: (registry) => void;
+readonly register: (registry) =&gt; void;
 ```
 
 #### Parameters

@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineExtensionHookOptions
+[@wpkernel/pipeline](../index.md) / PipelineExtensionHookOptions
 
-# Interface: PipelineExtensionHookOptions<TContext, TOptions, TArtifact>
+# Interface: PipelineExtensionHookOptions&lt;TContext, TOptions, TArtifact&gt;
 
 Immutable invocation data supplied to an extension hook.
 
@@ -38,7 +38,7 @@ readonly artifact: TArtifact;
 
 Artifact after every preceding hook in this lifecycle has completed.
 
----
+***
 
 ### context
 
@@ -48,7 +48,7 @@ readonly context: TContext;
 
 Context shared by all stages, helpers and hooks in the run.
 
----
+***
 
 ### lifecycle
 
@@ -58,7 +58,7 @@ readonly lifecycle: string;
 
 Lifecycle currently being executed.
 
----
+***
 
 ### options
 

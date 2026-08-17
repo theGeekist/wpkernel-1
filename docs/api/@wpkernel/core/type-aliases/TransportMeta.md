@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / TransportMeta
+[@wpkernel/core](../index.md) / TransportMeta
 
 # Type Alias: TransportMeta
 
@@ -18,7 +18,7 @@ type TransportMeta = object;
 optional namespace: string;
 ```
 
----
+***
 
 ### reporter?
 
@@ -26,7 +26,7 @@ optional namespace: string;
 optional reporter: Reporter;
 ```
 
----
+***
 
 ### resourceName?
 

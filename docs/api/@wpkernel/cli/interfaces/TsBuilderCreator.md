@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / TsBuilderCreator
+[@wpkernel/cli](../index.md) / TsBuilderCreator
 
 # Interface: TsBuilderCreator
 
@@ -16,7 +16,7 @@ based on the provided context.
 ### create()
 
 ```ts
-create: (context) => Promise<void>;
+create: (context) =&gt; Promise&lt;void&gt;;
 ```
 
 The function that creates the TypeScript artifact.
@@ -29,9 +29,9 @@ The function that creates the TypeScript artifact.
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
----
+***
 
 ### key
 

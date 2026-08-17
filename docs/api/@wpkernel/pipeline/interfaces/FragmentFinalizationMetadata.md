@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / FragmentFinalizationMetadata
+[@wpkernel/pipeline](../index.md) / FragmentFinalizationMetadata
 
-# Interface: FragmentFinalizationMetadata<TFragmentKind>
+# Interface: FragmentFinalizationMetadata&lt;TFragmentKind&gt;
 
 Execution metadata available when a standard pipeline finalises its draft.
 
@@ -19,14 +19,14 @@ were registered, executed, or excluded because dependencies were missing.
 
 ### TFragmentKind
 
-`TFragmentKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TFragmentKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 ## Properties
 
 ### fragments
 
 ```ts
-readonly fragments: HelperExecutionSnapshot<TFragmentKind>;
+readonly fragments: HelperExecutionSnapshot&lt;TFragmentKind&gt;;
 ```
 
 Snapshot of fragment helper resolution and execution for this run.

@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / BuilderInput
+[@wpkernel/cli](../index.md) / BuilderInput
 
 # Interface: BuilderInput
 
@@ -10,7 +10,7 @@ Input for a builder helper.
 
 ## Extends
 
-- `Omit`<`BaseBuilderInput`, `"options"` \| `"ir"`>
+- `Omit`&lt;`BaseBuilderInput`, `"options"` \| `"ir"`&gt;
 
 ## Properties
 
@@ -22,7 +22,7 @@ readonly ir: IRv1 | null;
 
 The finalized Intermediate Representation (IR).
 
----
+***
 
 ### options
 
@@ -32,7 +32,7 @@ readonly options: BuilderOptions;
 
 Options for builder execution (no raw config).
 
----
+***
 
 ### phase
 
@@ -43,5 +43,5 @@ readonly phase: PipelinePhase;
 #### Inherited from
 
 ```ts
-Omit.phase;
+Omit.phase
 ```

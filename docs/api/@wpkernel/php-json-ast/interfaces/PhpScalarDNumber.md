@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpScalarDNumber
+[@wpkernel/php-json-ast](../index.md) / PhpScalarDNumber
 
 # Interface: PhpScalarDNumber
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpScalarBase`](PhpScalarBase.md).[`attributes`](PhpScalarBase.md#attributes)
 
----
+***
 
 ### nodeType
 
@@ -36,7 +36,7 @@ readonly nodeType: "Scalar_Float";
 
 [`PhpScalarBase`](PhpScalarBase.md).[`nodeType`](PhpScalarBase.md#nodetype)
 
----
+***
 
 ### value
 

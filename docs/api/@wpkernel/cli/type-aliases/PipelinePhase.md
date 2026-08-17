@@ -1,11 +1,11 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / PipelinePhase
+[@wpkernel/cli](../index.md) / PipelinePhase
 
 # Type Alias: PipelinePhase
 
 ```ts
-type PipelinePhase = 'init' | 'generate' | 'apply' | `custom:${string}`;
+type PipelinePhase = "init" | "generate" | "apply" | `custom:${string}`;
 ```

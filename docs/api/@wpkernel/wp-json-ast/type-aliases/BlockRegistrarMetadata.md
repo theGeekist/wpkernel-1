@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / BlockRegistrarMetadata
+[@wpkernel/wp-json-ast](../index.md) / BlockRegistrarMetadata
 
 # Type Alias: BlockRegistrarMetadata
 

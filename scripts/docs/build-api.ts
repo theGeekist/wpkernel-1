@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..', '..');
 const docsDir = path.join(rootDir, 'docs');
 const cacheFile = path.join(docsDir, 'api', '.typedoc-cache.json');
+const apiIndexFile = path.join(docsDir, 'api', 'index.md');
 const typedocConfig = path.join(rootDir, 'typedoc.json');
 const tsconfigDocs = path.join(rootDir, 'tsconfig.docs.json');
 const CACHE_VERSION = 1;
@@ -107,6 +108,42 @@ async function writeCache(signature: string) {
 
 	await fs.mkdir(path.dirname(cacheFile), { recursive: true });
 	await fs.writeFile(cacheFile, JSON.stringify(payload, null, 2), 'utf8');
+}
+
+async function writeApiIndex() {
+	const packageLinks = packages.map(
+		(pkg) => `- [\`@wpkernel/${pkg}\`](./@wpkernel/${pkg}/)`
+	);
+	const content = [
+		'# API reference',
+		'',
+		'Generated reference documentation for the public WPKernel packages.',
+		'',
+		...packageLinks,
+		'',
+	].join('\n');
+
+	await fs.mkdir(path.dirname(apiIndexFile), { recursive: true });
+	await fs.writeFile(apiIndexFile, content, 'utf8');
+}
+
+async function assertGeneratedApiIndexes() {
+	const expected = [
+		apiIndexFile,
+		...packages.map((pkg) =>
+			path.join(docsDir, 'api', '@wpkernel', pkg, 'index.md')
+		),
+	];
+	const existence = await Promise.all(expected.map(pathExists));
+	const missing = expected.filter((_, index) => !existence[index]);
+
+	if (missing.length > 0) {
+		throw new Error(
+			`Generated API routes are missing index files:\n${missing
+				.map((file) => `- ${path.relative(rootDir, file)}`)
+				.join('\n')}`
+		);
+	}
 }
 
 async function pathExists(target: string) {
@@ -236,7 +273,9 @@ async function main() {
 				);
 			}
 		}
+		await writeApiIndex();
 		await runCommand('node', ['scripts/postprocess-typedoc.mjs']);
+		await assertGeneratedApiIndexes();
 		return;
 	}
 
@@ -244,7 +283,7 @@ async function main() {
 		path.join(docsDir, 'api', '@wpkernel', pkg)
 	);
 	const allGeneratedExist = (
-		await Promise.all(generatedDirs.map(pathExists))
+		await Promise.all([...generatedDirs, apiIndexFile].map(pathExists))
 	).every(Boolean);
 	const signature = await computeSignature();
 
@@ -297,7 +336,9 @@ async function main() {
 			);
 		}
 	}
+	await writeApiIndex();
 	await runCommand('node', ['scripts/postprocess-typedoc.mjs']);
+	await assertGeneratedApiIndexes();
 	await writeCache(signature);
 }
 

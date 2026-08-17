@@ -1,8 +1,8 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineRollback
+[@wpkernel/pipeline](../index.md) / PipelineRollback
 
 # Interface: PipelineRollback
 
@@ -26,14 +26,14 @@ are diagnostic metadata and do not affect order or execution.
 
 ```ts
 import {
-	createPipelineRollback,
-	type PipelineRollback,
+  createPipelineRollback,
+  type PipelineRollback,
 } from '@wpkernel/pipeline';
 
 const allocations = new Set(['temporary']);
 const rollback: PipelineRollback = createPipelineRollback(
-	() => allocations.delete('temporary'),
-	{ key: 'allocate', label: 'Release temporary allocation' }
+  () =&gt; allocations.delete('temporary'),
+  { key: 'allocate', label: 'Release temporary allocation' }
 );
 ```
 
@@ -42,7 +42,7 @@ const rollback: PipelineRollback = createPipelineRollback(
 ### run()
 
 ```ts
-readonly run: () => unknown;
+readonly run: () =&gt; unknown;
 ```
 
 Cleanup operation invoked at most once by one rollback traversal.
@@ -51,7 +51,7 @@ Cleanup operation invoked at most once by one rollback traversal.
 
 `unknown`
 
----
+***
 
 ### key?
 
@@ -61,7 +61,7 @@ readonly optional key: string;
 
 Stable machine-readable owner key for diagnostics.
 
----
+***
 
 ### label?
 

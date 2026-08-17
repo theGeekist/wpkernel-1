@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / HelperNext
+[@wpkernel/pipeline](../index.md) / HelperNext
 
-# Interface: HelperNext()<TOutput>
+# Interface: HelperNext()&lt;TOutput&gt;
 
 Explicit continuation for wrapping the remainder of a helper chain.
 
@@ -29,19 +29,19 @@ Value threaded through the helper chain.
 ## Call Signature
 
 ```ts
-HelperNext(): MaybePromise<TOutput>;
+HelperNext(): MaybePromise&lt;TOutput&gt;;
 ```
 
 Continues with the current output.
 
 ### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TOutput`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TOutput`&gt;
 
 ## Call Signature
 
 ```ts
-HelperNext(output): MaybePromise<TOutput>;
+HelperNext(output): MaybePromise&lt;TOutput&gt;;
 ```
 
 Continues with an explicit replacement output.
@@ -56,4 +56,4 @@ Value supplied to the next helper in the chain.
 
 ### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TOutput`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TOutput`&gt;

@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / FragmentInput
+[@wpkernel/cli](../index.md) / FragmentInput
 
 # Interface: FragmentInput
 
@@ -18,7 +18,7 @@ readonly draft: MutableIr;
 
 The mutable Intermediate Representation draft.
 
----
+***
 
 ### options
 

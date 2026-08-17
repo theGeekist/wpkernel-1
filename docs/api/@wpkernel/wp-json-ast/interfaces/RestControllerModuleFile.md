@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / RestControllerModuleFile
+[@wpkernel/wp-json-ast](../index.md) / RestControllerModuleFile
 
 # Interface: RestControllerModuleFile
 
@@ -14,7 +14,7 @@
 readonly docblock: readonly string[];
 ```
 
----
+***
 
 ### fileName
 
@@ -22,7 +22,7 @@ readonly docblock: readonly string[];
 readonly fileName: string;
 ```
 
----
+***
 
 ### metadata
 
@@ -30,7 +30,7 @@ readonly fileName: string;
 readonly metadata: RestControllerModuleMetadata;
 ```
 
----
+***
 
 ### namespace
 
@@ -38,7 +38,7 @@ readonly metadata: RestControllerModuleMetadata;
 readonly namespace: string | null;
 ```
 
----
+***
 
 ### program
 

@@ -1,15 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / createPipelineExtension
+[@wpkernel/pipeline](../index.md) / createPipelineExtension
 
 # Function: createPipelineExtension()
 
 ```ts
-function createPipelineExtension<TPipeline, TContext, TOptions, TArtifact>(
-	options
-): PipelineExtension<TPipeline, TContext, TOptions, TArtifact>;
+function createPipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;(options): PipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;;
 ```
 
 Creates a [PipelineExtension](../interfaces/PipelineExtension.md) descriptor using either dynamic
@@ -59,13 +57,13 @@ original pipeline error stays primary.
 
 ### options
 
-[`CreatePipelineExtensionOptions`](../type-aliases/CreatePipelineExtensionOptions.md)<`TPipeline`, `TContext`, `TOptions`, `TArtifact`>
+[`CreatePipelineExtensionOptions`](../type-aliases/CreatePipelineExtensionOptions.md)&lt;`TPipeline`, `TContext`, `TOptions`, `TArtifact`&gt;
 
 Dynamic registration or static setup and hook configuration.
 
 ## Returns
 
-[`PipelineExtension`](../interfaces/PipelineExtension.md)<`TPipeline`, `TContext`, `TOptions`, `TArtifact`>
+[`PipelineExtension`](../interfaces/PipelineExtension.md)&lt;`TPipeline`, `TContext`, `TOptions`, `TArtifact`&gt;
 
 An extension descriptor ready for `pipeline.extensions.use`.
 
@@ -73,79 +71,75 @@ An extension descriptor ready for `pipeline.extensions.use`.
 
 ```ts
 import {
-	createPipelineExtension,
-	type PipelineReporter,
+  createPipelineExtension,
+  type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type HostPipeline = { helpers: { use(value: unknown): void } };
 type Context = { reporter: PipelineReporter };
 type RunOptions = { normalise: boolean };
 
-const normalise = createPipelineExtension<
-	HostPipeline,
-	Context,
-	RunOptions,
-	string[]
->({
-	key: 'example.normalise',
-	register() {
-		return ({ artifact, options }) =>
-			options.normalise
-				? { artifact: artifact.map((value) => value.trim()) }
-				: undefined;
-	},
+const normalise = createPipelineExtension&lt;
+  HostPipeline,
+  Context,
+  RunOptions,
+  string[]
+&gt;({
+  key: 'example.normalise',
+  register() {
+    return ({ artifact, options }) =&gt;
+      options.normalise
+        ? { artifact: artifact.map((value) =&gt; value.trim()) }
+        : undefined;
+  },
 });
 ```
 
 ```ts
 import {
-	createPipelineExtension,
-	type PipelineReporter,
+  createPipelineExtension,
+  type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type HostPipeline = { helpers: { use(value: unknown): void } };
 type Context = { reporter: PipelineReporter };
-type RunOptions = Record<string, never>;
+type RunOptions = Record&lt;string, never&gt;;
 
-const annotate = createPipelineExtension<
-	HostPipeline,
-	Context,
-	RunOptions,
-	string[]
->({
-	key: 'example.annotate',
-	setup(pipeline) {
-		pipeline.helpers.use({ key: 'annotation-input' });
-	},
-	lifecycle: 'before-builders',
-	hook: ({ artifact }) => ({ artifact: [...artifact, 'annotated'] }),
+const annotate = createPipelineExtension&lt;
+  HostPipeline,
+  Context,
+  RunOptions,
+  string[]
+&gt;({
+  key: 'example.annotate',
+  setup(pipeline) {
+    pipeline.helpers.use({ key: 'annotation-input' });
+  },
+  lifecycle: 'before-builders',
+  hook: ({ artifact }) =&gt; ({ artifact: [...artifact, 'annotated'] }),
 });
 ```
 
 ```ts
 import {
-	createPipelineExtension,
-	type PipelineReporter,
+  createPipelineExtension,
+  type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type Context = { reporter: PipelineReporter };
-const published = new Set<string>();
+const published = new Set&lt;string&gt;();
 
-const publish = createPipelineExtension<
-	unknown,
-	Context,
-	Record<string, never>,
-	string[]
->({
-	key: 'example.publish',
-	hook: ({ artifact }) => ({
-		artifact,
-		commit: () => {
-			published.add(artifact.join(','));
-		},
-		rollback: () => {
-			published.delete(artifact.join(','));
-		},
-	}),
+const publish = createPipelineExtension&lt;
+  unknown,
+  Context,
+  Record&lt;string, never&gt;,
+  string[]
+&gt;({
+  key: 'example.publish',
+  hook: ({ artifact }) =&gt; ({
+    artifact,
+    commit: () =&gt; { published.add(artifact.join(',')); },
+    rollback: () =&gt; { published.delete(artifact.join(',')); },
+  }),
 });
 ```

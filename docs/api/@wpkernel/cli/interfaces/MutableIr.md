@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / MutableIr
+[@wpkernel/cli](../index.md) / MutableIr
 
 # Interface: MutableIr
 
@@ -14,7 +14,7 @@
 artifacts: IRArtifactsPlan | null;
 ```
 
----
+***
 
 ### blocks
 
@@ -22,7 +22,7 @@ artifacts: IRArtifactsPlan | null;
 blocks: IRBlock[];
 ```
 
----
+***
 
 ### bundler
 
@@ -30,7 +30,7 @@ blocks: IRBlock[];
 bundler: IRBundler | null;
 ```
 
----
+***
 
 ### capabilities
 
@@ -38,7 +38,7 @@ bundler: IRBundler | null;
 capabilities: IRCapabilityHint[];
 ```
 
----
+***
 
 ### capabilityMap
 
@@ -46,7 +46,7 @@ capabilities: IRCapabilityHint[];
 capabilityMap: IRCapabilityMap | null;
 ```
 
----
+***
 
 ### config
 
@@ -54,7 +54,7 @@ capabilityMap: IRCapabilityMap | null;
 readonly config: WPKernelConfigV1;
 ```
 
----
+***
 
 ### diagnostics
 
@@ -62,15 +62,15 @@ readonly config: WPKernelConfigV1;
 diagnostics: IRDiagnostic[];
 ```
 
----
+***
 
 ### extensions
 
 ```ts
-extensions: Record<string, unknown>;
+extensions: Record&lt;string, unknown&gt;;
 ```
 
----
+***
 
 ### layout
 
@@ -78,12 +78,12 @@ extensions: Record<string, unknown>;
 layout: IRLayout | null;
 ```
 
----
+***
 
 ### meta
 
 ```ts
-meta:
+meta: 
   | {
   features: string[];
   ids: {
@@ -151,31 +151,31 @@ ids: object;
 ##### ids.algorithm
 
 ```ts
-algorithm: 'sha256';
+algorithm: "sha256";
 ```
 
 ##### ids.blockPrefix
 
 ```ts
-blockPrefix: 'blk:';
+blockPrefix: "blk:";
 ```
 
 ##### ids.capabilityPrefix
 
 ```ts
-capabilityPrefix: 'cap:';
+capabilityPrefix: "cap:";
 ```
 
 ##### ids.resourcePrefix
 
 ```ts
-resourcePrefix: 'res:';
+resourcePrefix: "res:";
 ```
 
 ##### ids.schemaPrefix
 
 ```ts
-schemaPrefix: 'sch:';
+schemaPrefix: "sch:";
 ```
 
 #### limits
@@ -199,7 +199,7 @@ maxSchemaKB: number;
 ##### limits.policy
 
 ```ts
-policy: 'truncate' | 'error';
+policy: "truncate" | "error";
 ```
 
 #### namespace
@@ -248,7 +248,7 @@ version: 1;
 
 `null`
 
----
+***
 
 ### php
 
@@ -256,7 +256,7 @@ version: 1;
 php: IRPhpProject | null;
 ```
 
----
+***
 
 ### references
 
@@ -264,7 +264,7 @@ php: IRPhpProject | null;
 references: IRReferenceSummary | null;
 ```
 
----
+***
 
 ### resources
 
@@ -272,7 +272,7 @@ references: IRReferenceSummary | null;
 resources: IRResource[];
 ```
 
----
+***
 
 ### schemas
 
@@ -280,7 +280,7 @@ resources: IRResource[];
 schemas: IRSchema[];
 ```
 
----
+***
 
 ### ui
 

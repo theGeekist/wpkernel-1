@@ -1,8 +1,8 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / createPipelineRollback
+[@wpkernel/pipeline](../index.md) / createPipelineRollback
 
 # Function: createPipelineRollback()
 
@@ -27,7 +27,7 @@ rollbacks are still attempted, while the original run error remains primary.
 
 ### run
 
-() => `unknown`
+() =&gt; `unknown`
 
 Cleanup to invoke if later pipeline work fails.
 
@@ -57,32 +57,32 @@ A rollback descriptor containing the supplied function and metadata.
 
 ```ts
 import {
-	createHelper,
-	createPipelineRollback,
-	type PipelineReporter,
+  createHelper,
+  createPipelineRollback,
+  type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type Context = {
-	reporter: PipelineReporter;
-	cache: Map<string, string>;
+  reporter: PipelineReporter;
+  cache: Map&lt;string, string&gt;;
 };
 
-const cacheResult = createHelper<Context, void, string>({
-	key: 'cache-result',
-	kind: 'build',
-	apply: ({ context, output }) => {
-		const previous = context.cache.get('result');
-		context.cache.set('result', output);
+const cacheResult = createHelper&lt;Context, void, string&gt;({
+  key: 'cache-result',
+  kind: 'build',
+  apply: ({ context, output }) =&gt; {
+    const previous = context.cache.get('result');
+    context.cache.set('result', output);
 
-		return {
-			rollback: createPipelineRollback(
-				() => {
-					if (previous === undefined) context.cache.delete('result');
-					else context.cache.set('result', previous);
-				},
-				{ key: 'cache-result', label: 'Restore cached result' }
-			),
-		};
-	},
+    return {
+      rollback: createPipelineRollback(
+        () =&gt; {
+          if (previous === undefined) context.cache.delete('result');
+          else context.cache.set('result', previous);
+        },
+        { key: 'cache-result', label: 'Restore cached result' }
+      ),
+    };
+  },
 });
 ```

@@ -1,13 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / MaybePromise
+[@wpkernel/pipeline](../index.md) / MaybePromise
 
-# Type Alias: MaybePromise<T>
+# Type Alias: MaybePromise&lt;T&gt;
 
 ```ts
-type MaybePromise<T> = T | PromiseLike<T>;
+type MaybePromise&lt;T&gt; = T | PromiseLike&lt;T&gt;;
 ```
 
 A value that may be available synchronously or through a promise-compatible

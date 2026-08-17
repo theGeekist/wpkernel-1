@@ -1,15 +1,15 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / isPromiseLike
+[@wpkernel/pipeline](../index.md) / isPromiseLike
 
 # Function: isPromiseLike()
 
 ## Call Signature
 
 ```ts
-function isPromiseLike<T>(value): value is PromiseLike<T>;
+function isPromiseLike&lt;T&gt;(value): value is PromiseLike&lt;T&gt;;
 ```
 
 Tests whether a value exposes an inspectable data-property `then` method.
@@ -36,13 +36,13 @@ ambient execution.
 
 #### value
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
 
 Candidate synchronous value or thenable.
 
 ### Returns
 
-`value is PromiseLike<T>`
+`value is PromiseLike&lt;T&gt;`
 
 `true` only for a safely captured data-property `then` function.
 
@@ -52,9 +52,9 @@ Candidate synchronous value or thenable.
 import { isPromiseLike } from '@wpkernel/pipeline';
 
 const accessorBacked = Object.defineProperty({}, 'then', {
-	get() {
-		throw new Error('must not execute');
-	},
+  get() {
+    throw new Error('must not execute');
+  },
 });
 
 isPromiseLike(Promise.resolve('ready')); // true
@@ -64,7 +64,7 @@ isPromiseLike(accessorBacked); // false, getter was not evaluated
 ## Call Signature
 
 ```ts
-function isPromiseLike(value): value is PromiseLike<unknown>;
+function isPromiseLike(value): value is PromiseLike&lt;unknown&gt;;
 ```
 
 Tests whether a value exposes an inspectable data-property `then` method.
@@ -91,7 +91,7 @@ Candidate synchronous value or thenable.
 
 ### Returns
 
-`value is PromiseLike<unknown>`
+`value is PromiseLike&lt;unknown&gt;`
 
 `true` only for a safely captured data-property `then` function.
 
@@ -101,9 +101,9 @@ Candidate synchronous value or thenable.
 import { isPromiseLike } from '@wpkernel/pipeline';
 
 const accessorBacked = Object.defineProperty({}, 'then', {
-	get() {
-		throw new Error('must not execute');
-	},
+  get() {
+    throw new Error('must not execute');
+  },
 });
 
 isPromiseLike(Promise.resolve('ready')); // true

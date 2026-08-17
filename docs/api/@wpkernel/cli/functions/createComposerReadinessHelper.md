@@ -1,23 +1,21 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / createComposerReadinessHelper
+[@wpkernel/cli](../index.md) / createComposerReadinessHelper
 
 # Function: createComposerReadinessHelper()
 
 ```ts
-function createComposerReadinessHelper(
-	overrides
-): ReadinessHelper<ComposerReadinessState>;
+function createComposerReadinessHelper(overrides): ReadinessHelper&lt;ComposerReadinessState&gt;;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`<[`ComposerHelperDependencies`](../interfaces/ComposerHelperDependencies.md)> = `{}`
+`Partial`&lt;[`ComposerHelperDependencies`](../interfaces/ComposerHelperDependencies.md)&gt; = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`ComposerReadinessState`](../interfaces/ComposerReadinessState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`ComposerReadinessState`](../interfaces/ComposerReadinessState.md)&gt;

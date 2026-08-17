@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / FragmentOutput
+[@wpkernel/cli](../index.md) / FragmentOutput
 
 # Interface: FragmentOutput
 
@@ -13,7 +13,7 @@ Output for a fragment helper.
 ### assign()
 
 ```ts
-assign: (partial) => void;
+assign: (partial) =&gt; void;
 ```
 
 Assigns a partial `MutableIr` to the current draft.
@@ -22,7 +22,7 @@ Assigns a partial `MutableIr` to the current draft.
 
 ##### partial
 
-`Partial`<[`MutableIr`](MutableIr.md)>
+`Partial`&lt;[`MutableIr`](MutableIr.md)&gt;
 
 The partial IR to assign.
 
@@ -30,7 +30,7 @@ The partial IR to assign.
 
 `void`
 
----
+***
 
 ### draft
 

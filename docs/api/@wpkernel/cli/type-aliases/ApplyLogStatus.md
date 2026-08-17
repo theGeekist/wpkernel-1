@@ -1,16 +1,11 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / ApplyLogStatus
+[@wpkernel/cli](../index.md) / ApplyLogStatus
 
 # Type Alias: ApplyLogStatus
 
 ```ts
-type ApplyLogStatus =
-	| 'success'
-	| 'conflict'
-	| 'skipped'
-	| 'cancelled'
-	| 'failed';
+type ApplyLogStatus = "success" | "conflict" | "skipped" | "cancelled" | "failed";
 ```

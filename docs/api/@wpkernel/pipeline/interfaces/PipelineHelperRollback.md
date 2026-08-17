@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineHelperRollback
+[@wpkernel/pipeline](../index.md) / PipelineHelperRollback
 
-# Interface: PipelineHelperRollback<THelper>
+# Interface: PipelineHelperRollback&lt;THelper&gt;
 
 Helper and rollback pair captured after successful execution.
 
@@ -31,7 +31,7 @@ readonly helper: THelper;
 
 Original helper that produced the rollback.
 
----
+***
 
 ### rollback
 

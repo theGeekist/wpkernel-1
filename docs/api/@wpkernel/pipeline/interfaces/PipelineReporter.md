@@ -1,8 +1,8 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineReporter
+[@wpkernel/pipeline](../index.md) / PipelineReporter
 
 # Interface: PipelineReporter
 
@@ -18,7 +18,7 @@ registration, execution, rollback or run settlement.
 ### warn()?
 
 ```ts
-optional warn: (message, context?) => void;
+optional warn: (message, context?) =&gt; void;
 ```
 
 Receives a human-readable warning and optional structured context.

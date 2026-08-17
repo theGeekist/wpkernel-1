@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / BlockRenderStub
+[@wpkernel/wp-json-ast](../index.md) / BlockRenderStub
 
 # Interface: BlockRenderStub
 
@@ -22,7 +22,7 @@ readonly absolutePath: string;
 
 [`BlockRenderTarget`](BlockRenderTarget.md).[`absolutePath`](BlockRenderTarget.md#absolutepath)
 
----
+***
 
 ### program
 
@@ -30,7 +30,7 @@ readonly absolutePath: string;
 readonly program: PhpProgram;
 ```
 
----
+***
 
 ### relativePath
 

@@ -1,8 +1,8 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelinePauseOptions
+[@wpkernel/pipeline](../index.md) / PipelinePauseOptions
 
 # Interface: PipelinePauseOptions
 
@@ -27,7 +27,7 @@ readonly optional pauseKind: string;
 
 Application-defined pause classification.
 
----
+***
 
 ### payload?
 
@@ -37,7 +37,7 @@ readonly optional payload: unknown;
 
 Application-defined data needed to decide how to resume.
 
----
+***
 
 ### token?
 

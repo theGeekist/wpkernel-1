@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelineRegisteredHelper
+[@wpkernel/pipeline](../index.md) / PipelineRegisteredHelper
 
-# Interface: PipelineRegisteredHelper<THelper>
+# Interface: PipelineRegisteredHelper&lt;THelper&gt;
 
 Registration metadata supplied to helper-stage argument factories.
 
@@ -26,7 +26,7 @@ readonly helper: THelper;
 
 Original registered helper object.
 
----
+***
 
 ### id
 
@@ -36,7 +36,7 @@ readonly id: string;
 
 Stable identity combining kind, key and registration index.
 
----
+***
 
 ### index
 

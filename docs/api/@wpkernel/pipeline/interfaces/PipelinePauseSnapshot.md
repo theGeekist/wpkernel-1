@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / PipelinePauseSnapshot
+[@wpkernel/pipeline](../index.md) / PipelinePauseSnapshot
 
-# Interface: PipelinePauseSnapshot<TState>
+# Interface: PipelinePauseSnapshot&lt;TState&gt;
 
 Snapshot captured when a pipeline run pauses.
 
@@ -39,7 +39,7 @@ readonly createdAt: number;
 
 Epoch timestamp in milliseconds when the pause was created.
 
----
+***
 
 ### stageIndex
 
@@ -49,7 +49,7 @@ readonly stageIndex: number;
 
 Index of the stage that requested the pause and will be re-entered.
 
----
+***
 
 ### state
 
@@ -59,7 +59,7 @@ readonly state: TState;
 
 Read-only public projection of the suspended stage state.
 
----
+***
 
 ### pauseKind?
 
@@ -69,7 +69,7 @@ readonly optional pauseKind: string;
 
 Application-defined pause classification.
 
----
+***
 
 ### payload?
 
@@ -79,7 +79,7 @@ readonly optional payload: unknown;
 
 Consumer-owned pause payload.
 
----
+***
 
 ### token?
 

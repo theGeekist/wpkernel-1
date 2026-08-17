@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpScalarMagicConst
+[@wpkernel/php-json-ast](../index.md) / PhpScalarMagicConst
 
 # Interface: PhpScalarMagicConst
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpScalarBase`](PhpScalarBase.md).[`attributes`](PhpScalarBase.md#attributes)
 
----
+***
 
 ### nodeType
 

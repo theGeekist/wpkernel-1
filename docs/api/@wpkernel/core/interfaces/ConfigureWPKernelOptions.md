@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ConfigureWPKernelOptions
+[@wpkernel/core](../index.md) / ConfigureWPKernelOptions
 
 # Interface: ConfigureWPKernelOptions
 
@@ -14,7 +14,7 @@
 optional middleware: ReduxMiddleware[];
 ```
 
----
+***
 
 ### namespace?
 
@@ -22,7 +22,7 @@ optional middleware: ReduxMiddleware[];
 optional namespace: string;
 ```
 
----
+***
 
 ### registry?
 
@@ -30,7 +30,7 @@ optional namespace: string;
 optional registry: any;
 ```
 
----
+***
 
 ### reporter?
 
@@ -38,7 +38,7 @@ optional registry: any;
 optional reporter: Reporter;
 ```
 
----
+***
 
 ### ui?
 

@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpExprVariable
+[@wpkernel/php-json-ast](../index.md) / PhpExprVariable
 
 # Interface: PhpExprVariable
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
----
+***
 
 ### name
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 readonly name: string | PhpExpr;
 ```
 
----
+***
 
 ### nodeType
 

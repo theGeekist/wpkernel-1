@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / PhpCodemodIngestionState
+[@wpkernel/cli](../index.md) / PhpCodemodIngestionState
 
 # Interface: PhpCodemodIngestionState
 
@@ -14,7 +14,7 @@
 readonly canonicalPath: string | null;
 ```
 
----
+***
 
 ### scriptPath
 
@@ -22,7 +22,7 @@ readonly canonicalPath: string | null;
 readonly scriptPath: string;
 ```
 
----
+***
 
 ### workspaceRoot
 

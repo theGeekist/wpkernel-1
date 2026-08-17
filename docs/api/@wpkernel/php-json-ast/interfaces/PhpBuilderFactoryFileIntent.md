@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpBuilderFactoryFileIntent
+[@wpkernel/php-json-ast](../index.md) / PhpBuilderFactoryFileIntent
 
 # Interface: PhpBuilderFactoryFileIntent
 
@@ -14,7 +14,7 @@
 readonly class: PhpBuilderFactoryClassIntent;
 ```
 
----
+***
 
 ### file
 
@@ -22,7 +22,7 @@ readonly class: PhpBuilderFactoryClassIntent;
 readonly file: string;
 ```
 
----
+***
 
 ### namespace
 
@@ -30,7 +30,7 @@ readonly file: string;
 readonly namespace: PhpBuilderFactoryNamespaceIntent;
 ```
 
----
+***
 
 ### uses?
 

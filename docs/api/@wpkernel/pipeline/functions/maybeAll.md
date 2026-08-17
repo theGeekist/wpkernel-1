@@ -1,13 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / maybeAll
+[@wpkernel/pipeline](../index.md) / maybeAll
 
 # Function: maybeAll()
 
 ```ts
-function maybeAll<T>(values): MaybePromise<T[]>;
+function maybeAll&lt;T&gt;(values): MaybePromise&lt;T[]&gt;;
 ```
 
 Resolves an ordered collection of values and safely inspectable thenables.
@@ -30,13 +30,13 @@ Accessor-backed or uninspectable `then` properties remain synchronous data.
 
 ### values
 
-readonly [`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>[]
+readonly [`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;[]
 
 Ordered values to resolve.
 
 ## Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`[]>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`[]&gt;
 
 A new array directly, or a native promise when any entry is asynchronous.
 

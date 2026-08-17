@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / StringIdentityGuardOptions
+[@wpkernel/wp-json-ast](../index.md) / StringIdentityGuardOptions
 
 # Interface: StringIdentityGuardOptions
 
@@ -15,7 +15,7 @@
 ### errorCodeFactory()
 
 ```ts
-readonly errorCodeFactory: (suffix) => string;
+readonly errorCodeFactory: (suffix) =&gt; string;
 ```
 
 #### Parameters
@@ -32,7 +32,7 @@ readonly errorCodeFactory: (suffix) => string;
 
 [`BaseIdentityGuardOptions`](BaseIdentityGuardOptions.md).[`errorCodeFactory`](BaseIdentityGuardOptions.md#errorcodefactory)
 
----
+***
 
 ### identity
 
@@ -40,7 +40,7 @@ readonly errorCodeFactory: (suffix) => string;
 readonly identity: ResolvedStringIdentity;
 ```
 
----
+***
 
 ### pascalName
 

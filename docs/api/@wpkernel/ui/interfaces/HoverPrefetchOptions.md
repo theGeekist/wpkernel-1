@@ -1,8 +1,8 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/ui](../README.md) / HoverPrefetchOptions
+[@wpkernel/ui](../index.md) / HoverPrefetchOptions
 
 # Interface: HoverPrefetchOptions
 
@@ -21,10 +21,10 @@ The delay in milliseconds before the prefetch is triggered.
 #### Default
 
 ```ts
-150;
+150
 ```
 
----
+***
 
 ### once?
 
@@ -37,5 +37,5 @@ If true, the prefetch will only be triggered once.
 #### Default
 
 ```ts
-true;
+true
 ```

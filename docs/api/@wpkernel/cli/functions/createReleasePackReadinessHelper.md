@@ -1,15 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / createReleasePackReadinessHelper
+[@wpkernel/cli](../index.md) / createReleasePackReadinessHelper
 
 # Function: createReleasePackReadinessHelper()
 
 ```ts
-function createReleasePackReadinessHelper(
-	options
-): ReadinessHelper<ReleasePackState>;
+function createReleasePackReadinessHelper(options): ReadinessHelper&lt;ReleasePackState&gt;;
 ```
 
 ## Parameters
@@ -20,4 +18,4 @@ function createReleasePackReadinessHelper(
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`ReleasePackState`](../interfaces/ReleasePackState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`ReleasePackState`](../interfaces/ReleasePackState.md)&gt;

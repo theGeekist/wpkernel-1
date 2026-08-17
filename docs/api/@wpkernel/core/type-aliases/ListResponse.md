@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ListResponse
+[@wpkernel/core](../index.md) / ListResponse
 
-# Type Alias: ListResponse<T>
+# Type Alias: ListResponse&lt;T&gt;
 
 ```ts
-type ListResponse<T> = object;
+type ListResponse&lt;T&gt; = object;
 ```
 
 List response with pagination metadata
@@ -30,7 +30,7 @@ items: T[];
 
 Array of resource entities
 
----
+***
 
 ### hasMore?
 
@@ -40,7 +40,7 @@ optional hasMore: boolean;
 
 Whether there are more pages
 
----
+***
 
 ### nextCursor?
 
@@ -50,7 +50,7 @@ optional nextCursor: string;
 
 Pagination cursor for next page
 
----
+***
 
 ### total?
 

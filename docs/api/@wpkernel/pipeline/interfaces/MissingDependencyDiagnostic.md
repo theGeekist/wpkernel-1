@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / MissingDependencyDiagnostic
+[@wpkernel/pipeline](../index.md) / MissingDependencyDiagnostic
 
-# Interface: MissingDependencyDiagnostic<TKind>
+# Interface: MissingDependencyDiagnostic&lt;TKind&gt;
 
 Fatal diagnostic emitted when a declared dependency cannot be satisfied.
 
@@ -17,7 +17,7 @@ dependencies and therefore do not produce this diagnostic.
 
 ### TKind
 
-`TKind` _extends_ [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
+`TKind` *extends* [`HelperKind`](../type-aliases/HelperKind.md) = [`HelperKind`](../type-aliases/HelperKind.md)
 
 Helper-kind union associated with the diagnostic.
 
@@ -31,7 +31,7 @@ readonly dependency: string;
 
 Missing prerequisite key.
 
----
+***
 
 ### key
 
@@ -41,7 +41,7 @@ readonly key: string;
 
 Key of the helper declaring the dependency.
 
----
+***
 
 ### message
 
@@ -51,7 +51,7 @@ readonly message: string;
 
 Human-readable description.
 
----
+***
 
 ### type
 
@@ -61,7 +61,7 @@ readonly type: "missing-dependency";
 
 Discriminant for exhaustive diagnostic handling.
 
----
+***
 
 ### helper?
 
@@ -71,7 +71,7 @@ readonly optional helper: string;
 
 Origin or key identifying the affected helper.
 
----
+***
 
 ### kind?
 
