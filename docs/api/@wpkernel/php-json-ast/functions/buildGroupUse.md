@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / buildGroupUse
+[@wpkernel/php-json-ast](../index.md) / buildGroupUse
 
 # Function: buildGroupUse()
 
@@ -34,7 +34,7 @@ An array of `PhpStmtUseUse` nodes within the group.
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

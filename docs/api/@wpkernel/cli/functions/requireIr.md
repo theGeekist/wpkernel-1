@@ -1,13 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / requireIr
+[@wpkernel/cli](../index.md) / requireIr
 
 # Function: requireIr()
 
 ```ts
-function requireIr<K>(input, keys?): object & Pick<IRv1, K>;
+function requireIr&lt;K&gt;(input, keys?): object & Pick&lt;IRv1, K&gt;;
 ```
 
 Narrowing helper for builders that require the finalized IR.
@@ -41,4 +41,4 @@ readonly `K`[]
 
 ## Returns
 
-`object` & `Pick`<[`IRv1`](../interfaces/IRv1.md), `K`>
+`object` & `Pick`&lt;[`IRv1`](../interfaces/IRv1.md), `K`&gt;

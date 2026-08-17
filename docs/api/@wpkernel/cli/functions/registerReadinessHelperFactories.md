@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / registerReadinessHelperFactories
+[@wpkernel/cli](../index.md) / registerReadinessHelperFactories
 
 # Function: registerReadinessHelperFactories()
 
@@ -18,7 +18,7 @@ function registerReadinessHelperFactories(registry, factories): void;
 
 ### factories
 
-`Iterable`<[`ReadinessHelperFactory`](../type-aliases/ReadinessHelperFactory.md)>
+`Iterable`&lt;[`ReadinessHelperFactory`](../type-aliases/ReadinessHelperFactory.md)&gt;
 
 ## Returns
 

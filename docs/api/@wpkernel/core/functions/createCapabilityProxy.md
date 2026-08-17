@@ -1,15 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / createCapabilityProxy
+[@wpkernel/core](../index.md) / createCapabilityProxy
 
 # Function: createCapabilityProxy()
 
 ```ts
-function createCapabilityProxy(
-	options
-): Pick<CapabilityHelpers<Record<string, unknown>>, 'assert' | 'can'>;
+function createCapabilityProxy(options): Pick&lt;CapabilityHelpers&lt;Record&lt;string, unknown&gt;&gt;, "assert" | "can"&gt;;
 ```
 
 Create an action-scoped capability proxy for `ctx.capability`.
@@ -29,7 +27,7 @@ Action metadata captured during middleware execution
 
 ## Returns
 
-`Pick`<[`CapabilityHelpers`](../type-aliases/CapabilityHelpers.md)<`Record`<`string`, `unknown`>>, `"assert"` \| `"can"`>
+`Pick`&lt;[`CapabilityHelpers`](../type-aliases/CapabilityHelpers.md)&lt;`Record`&lt;`string`, `unknown`&gt;&gt;, `"assert"` \| `"can"`&gt;
 
 Capability helpers restricted to `assert` and `can`
 

@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / BlockModuleHooks
+[@wpkernel/wp-json-ast](../index.md) / BlockModuleHooks
 
 # Interface: BlockModuleHooks
 
@@ -11,7 +11,7 @@
 ### manifestFile()?
 
 ```ts
-readonly optional manifestFile: (file) => void | BlockManifestFile;
+readonly optional manifestFile: (file) =&gt; void | BlockManifestFile;
 ```
 
 #### Parameters
@@ -29,7 +29,7 @@ readonly optional manifestFile: (file) => void | BlockManifestFile;
 ### registrarFile()?
 
 ```ts
-readonly optional registrarFile: (file) => void | BlockRegistrarFile;
+readonly optional registrarFile: (file) =&gt; void | BlockRegistrarFile;
 ```
 
 #### Parameters
@@ -47,7 +47,7 @@ readonly optional registrarFile: (file) => void | BlockRegistrarFile;
 ### renderStub()?
 
 ```ts
-readonly optional renderStub: (stub, descriptor) => void | BlockRenderStub;
+readonly optional renderStub: (stub, descriptor) =&gt; void | BlockRenderStub;
 ```
 
 #### Parameters

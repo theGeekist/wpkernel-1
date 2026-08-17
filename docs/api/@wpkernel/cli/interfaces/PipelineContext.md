@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / PipelineContext
+[@wpkernel/cli](../index.md) / PipelineContext
 
 # Interface: PipelineContext
 
@@ -10,7 +10,7 @@ Context object passed through the entire pipeline execution.
 
 ## Extends
 
-- `Omit`<`BasePipelineContext`, `"workspace"`>
+- `Omit`&lt;`BasePipelineContext`, `"workspace"`&gt;
 
 ## Properties
 

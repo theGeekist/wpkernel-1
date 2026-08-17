@@ -1,13 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / getPhpAstChannel
+[@wpkernel/php-json-ast](../index.md) / getPhpAstChannel
 
 # Function: getPhpAstChannel()
 
 ```ts
-function getPhpAstChannel<TContext>(context): PhpAstChannel;
+function getPhpAstChannel&lt;TContext&gt;(context): PhpAstChannel;
 ```
 
 ## Type Parameters

@@ -1,10 +1,10 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ReadinessDetection
+[@wpkernel/cli](../index.md) / ReadinessDetection
 
-# Interface: ReadinessDetection<State>
+# Interface: ReadinessDetection&lt;State&gt;
 
 Result produced by the detect phase for a readiness unit.
 

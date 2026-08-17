@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / BuildWpTaxonomyQueryRouteBundleOptions
+[@wpkernel/wp-json-ast](../index.md) / BuildWpTaxonomyQueryRouteBundleOptions
 
 # Interface: BuildWpTaxonomyQueryRouteBundleOptions
 
@@ -11,7 +11,7 @@
 ### errorCodeFactory()
 
 ```ts
-readonly errorCodeFactory: (suffix) => string;
+readonly errorCodeFactory: (suffix) =&gt; string;
 ```
 
 #### Parameters

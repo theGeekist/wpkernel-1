@@ -1,17 +1,16 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / IrFragment
+[@wpkernel/cli](../index.md) / IrFragment
 
 # Type Alias: IrFragment
 
 ```ts
-type IrFragment = Helper<
-	PipelineContext,
+type IrFragment = Helper & lt;
+(PipelineContext,
 	IrFragmentInput,
 	IrFragmentOutput,
 	PipelineContext['reporter'],
-	'fragment'
->;
+	'fragment' & gt);
 ```

@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / createActionMiddleware
+[@wpkernel/core](../index.md) / createActionMiddleware
 
 # Function: createActionMiddleware()
 
 ```ts
-function createActionMiddleware<TState>(): ReduxMiddleware<TState>;
+function createActionMiddleware&lt;TState&gt;(): ReduxMiddleware&lt;TState&gt;;
 ```
 
 Create a Redux-compatible middleware that intercepts and executes WPKernel actions.
@@ -33,7 +33,7 @@ Redux store state type
 
 ## Returns
 
-[`ReduxMiddleware`](../type-aliases/ReduxMiddleware.md)<`TState`>
+[`ReduxMiddleware`](../type-aliases/ReduxMiddleware.md)&lt;`TState`&gt;
 
 Redux middleware function
 
@@ -51,11 +51,11 @@ import { register } from '@wordpress/data';
 
 const actionMiddleware = createActionMiddleware();
 register({
-	reducer: rootReducer,
-	actions: {},
-	selectors: {},
-	controls: {},
-	__experimentalUseMiddleware: () => [actionMiddleware],
+  reducer: rootReducer,
+  actions: {},
+  selectors: {},
+  controls: {},
+  __experimentalUseMiddleware: () =&gt; [actionMiddleware]
 });
 
 // Dispatching actions

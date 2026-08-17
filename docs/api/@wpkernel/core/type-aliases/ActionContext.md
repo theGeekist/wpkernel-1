@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ActionContext
+[@wpkernel/core](../index.md) / ActionContext
 
 # Type Alias: ActionContext
 
@@ -54,7 +54,7 @@ async function CreatePost(ctx: ActionContext, input: CreatePostInput) {
 ### capability
 
 ```ts
-readonly capability: Pick<CapabilityHelpers<Record<string, unknown>>, "assert" | "can">;
+readonly capability: Pick&lt;CapabilityHelpers&lt;Record&lt;string, unknown&gt;&gt;, "assert" | "can"&gt;;
 ```
 
 Capability enforcement helpers.
@@ -64,7 +64,7 @@ Capability enforcement helpers.
 ### emit()
 
 ```ts
-emit: (eventName, payload) => void;
+emit: (eventName, payload) =&gt; void;
 ```
 
 Emit canonical events.
@@ -88,7 +88,7 @@ Emit canonical events.
 ### invalidate()
 
 ```ts
-invalidate: (patterns, options?) => void;
+invalidate: (patterns, options?) =&gt; void;
 ```
 
 Invalidate cache keys.

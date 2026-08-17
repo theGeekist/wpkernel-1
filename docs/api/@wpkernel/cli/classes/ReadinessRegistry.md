@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ReadinessRegistry
+[@wpkernel/cli](../index.md) / ReadinessRegistry
 
 # Class: ReadinessRegistry
 
@@ -47,12 +47,12 @@ readonly [`ReadinessKey`](../type-aliases/ReadinessKey.md)[]
 ### list()
 
 ```ts
-list(): readonly ReadinessHelper<unknown>[];
+list(): readonly ReadinessHelper&lt;unknown&gt;[];
 ```
 
 #### Returns
 
-readonly [`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`unknown`>[]
+readonly [`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;`unknown`&gt;[]
 
 ---
 
@@ -77,7 +77,7 @@ readonly [`ReadinessKey`](../type-aliases/ReadinessKey.md)[]
 ### register()
 
 ```ts
-register<State>(helper): void;
+register&lt;State&gt;(helper): void;
 ```
 
 #### Type Parameters
@@ -90,7 +90,7 @@ register<State>(helper): void;
 
 ##### helper
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<`State`>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;`State`&gt;
 
 #### Returns
 

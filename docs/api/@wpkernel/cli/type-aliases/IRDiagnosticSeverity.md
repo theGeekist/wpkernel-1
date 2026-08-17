@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / IRDiagnosticSeverity
+[@wpkernel/cli](../index.md) / IRDiagnosticSeverity
 
 # Type Alias: IRDiagnosticSeverity
 

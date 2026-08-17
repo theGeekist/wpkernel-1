@@ -1,23 +1,22 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / createTsxRuntimeReadinessHelper
+[@wpkernel/cli](../index.md) / createTsxRuntimeReadinessHelper
 
 # Function: createTsxRuntimeReadinessHelper()
 
 ```ts
-function createTsxRuntimeReadinessHelper(
-	overrides
-): ReadinessHelper<TsxRuntimeState>;
+function createTsxRuntimeReadinessHelper(overrides): ReadinessHelper & lt;
+TsxRuntimeState & gt;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`<[`TsxRuntimeDependencies`](../interfaces/TsxRuntimeDependencies.md)> = `{}`
+`Partial`&lt;[`TsxRuntimeDependencies`](../interfaces/TsxRuntimeDependencies.md)&gt; = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`TsxRuntimeState`](../interfaces/TsxRuntimeState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`TsxRuntimeState`](../interfaces/TsxRuntimeState.md)&gt;

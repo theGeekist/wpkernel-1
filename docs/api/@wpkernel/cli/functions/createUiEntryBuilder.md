@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / createUiEntryBuilder
+[@wpkernel/cli](../index.md) / createUiEntryBuilder
 
 # Function: createUiEntryBuilder()
 

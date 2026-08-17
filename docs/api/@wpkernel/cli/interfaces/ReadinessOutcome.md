@@ -1,10 +1,10 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ReadinessOutcome
+[@wpkernel/cli](../index.md) / ReadinessOutcome
 
-# Interface: ReadinessOutcome<State>
+# Interface: ReadinessOutcome&lt;State&gt;
 
 Aggregated outcome for a readiness unit after orchestrator execution.
 
@@ -35,7 +35,7 @@ readonly status: ReadinessOutcomeStatus;
 ### confirmation?
 
 ```ts
-readonly optional confirmation: ReadinessConfirmation<State>;
+readonly optional confirmation: ReadinessConfirmation&lt;State&gt;;
 ```
 
 ---
@@ -43,7 +43,7 @@ readonly optional confirmation: ReadinessConfirmation<State>;
 ### detection?
 
 ```ts
-readonly optional detection: ReadinessDetection<State>;
+readonly optional detection: ReadinessDetection&lt;State&gt;;
 ```
 
 ---

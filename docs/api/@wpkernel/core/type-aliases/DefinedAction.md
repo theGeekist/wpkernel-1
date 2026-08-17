@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / DefinedAction
+[@wpkernel/core](../index.md) / DefinedAction
 
-# Type Alias: DefinedAction<TArgs, TResult>
+# Type Alias: DefinedAction&lt;TArgs, TResult&gt;
 
 ```ts
-type DefinedAction<TArgs, TResult> = Promise<TResult>;
+type DefinedAction&lt;TArgs, TResult&gt; = Promise&lt;TResult&gt;;
 ```
 
 Callable action returned by `defineAction()`.
@@ -23,10 +23,10 @@ After wrapping with `defineAction()`, actions become callable functions that:
 
 ```typescript
 const CreatePost = defineAction({
-	name: 'CreatePost',
-	handler: async (ctx, input) => {
-		// implementation
-	},
+  name: 'CreatePost',
+  handler: async (ctx, input) =&gt; {
+    // implementation
+  }
 });
 
 // Usage
@@ -52,7 +52,7 @@ Input type (arguments passed to the action)
 Return type (value returned by the action)
 
 ```ts
-type DefinedAction(args): Promise<TResult>;
+type DefinedAction(args): Promise&lt;TResult&gt;;
 ```
 
 Callable action returned by `defineAction()`.
@@ -72,16 +72,16 @@ After wrapping with `defineAction()`, actions become callable functions that:
 
 ## Returns
 
-`Promise`<`TResult`>
+`Promise`&lt;`TResult`&gt;
 
 ## Example
 
 ```typescript
 const CreatePost = defineAction({
-	name: 'CreatePost',
-	handler: async (ctx, input) => {
-		// implementation
-	},
+  name: 'CreatePost',
+  handler: async (ctx, input) =&gt; {
+    // implementation
+  }
 });
 
 // Usage

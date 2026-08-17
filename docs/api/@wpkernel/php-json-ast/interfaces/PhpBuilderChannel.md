@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / PhpBuilderChannel
+[@wpkernel/php-json-ast](../index.md) / PhpBuilderChannel
 
 # Interface: PhpBuilderChannel
 
@@ -11,7 +11,7 @@
 ### drain()
 
 ```ts
-drain: () => readonly PhpProgramAction[];
+drain: () =&gt; readonly PhpProgramAction[];
 ```
 
 #### Returns
@@ -23,7 +23,7 @@ readonly [`PhpProgramAction`](PhpProgramAction.md)[]
 ### pending()
 
 ```ts
-pending: () => readonly PhpProgramAction[];
+pending: () =&gt; readonly PhpProgramAction[];
 ```
 
 #### Returns
@@ -35,7 +35,7 @@ readonly [`PhpProgramAction`](PhpProgramAction.md)[]
 ### queue()
 
 ```ts
-queue: (action) => void;
+queue: (action) =&gt; void;
 ```
 
 #### Parameters
@@ -53,7 +53,7 @@ queue: (action) => void;
 ### reset()
 
 ```ts
-reset: () => void;
+reset: () =&gt; void;
 ```
 
 #### Returns

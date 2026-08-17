@@ -1,10 +1,10 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ReadinessConfirmation
+[@wpkernel/cli](../index.md) / ReadinessConfirmation
 
-# Interface: ReadinessConfirmation<State>
+# Interface: ReadinessConfirmation&lt;State&gt;
 
 Result emitted by the confirm phase.
 

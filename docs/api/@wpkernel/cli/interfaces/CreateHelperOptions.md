@@ -1,10 +1,10 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / CreateHelperOptions
+[@wpkernel/cli](../index.md) / CreateHelperOptions
 
-# Interface: CreateHelperOptions<TContext, TInput, TOutput, TReporter, TKind>
+# Interface: CreateHelperOptions&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
 
 Input accepted by `createHelper`.
 
@@ -50,7 +50,7 @@ Literal helper kind represented by the descriptor.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
+readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 ```
 
 Helper implementation.

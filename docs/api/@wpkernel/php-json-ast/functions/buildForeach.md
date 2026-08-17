@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / buildForeach
+[@wpkernel/php-json-ast](../index.md) / buildForeach
 
 # Function: buildForeach()
 
@@ -42,7 +42,7 @@ Configuration for the `foreach` loop (value variable, optional key variable, by 
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

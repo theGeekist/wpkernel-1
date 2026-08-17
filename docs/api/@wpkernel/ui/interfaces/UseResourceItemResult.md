@@ -1,10 +1,10 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/ui](../README.md) / UseResourceItemResult
+[@wpkernel/ui](../index.md) / UseResourceItemResult
 
-# Interface: UseResourceItemResult<T>
+# Interface: UseResourceItemResult&lt;T&gt;
 
 Result shape for single-item resource hooks
 

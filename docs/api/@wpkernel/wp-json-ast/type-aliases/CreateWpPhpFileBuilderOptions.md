@@ -1,14 +1,13 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / CreateWpPhpFileBuilderOptions
+[@wpkernel/wp-json-ast](../index.md) / CreateWpPhpFileBuilderOptions
 
-# ~~Type Alias: CreateWpPhpFileBuilderOptions<TContext, TInput, TOutput>~~
+# ~~Type Alias: CreateWpPhpFileBuilderOptions&lt;TContext, TInput, TOutput&gt;~~
 
 ```ts
-type CreateWpPhpFileBuilderOptions<TContext, TInput, TOutput> =
-	CreateWpPhpProgramBuilderOptions<TContext, TInput, TOutput>;
+type CreateWpPhpFileBuilderOptions&lt;TContext, TInput, TOutput&gt; = CreateWpPhpProgramBuilderOptions&lt;TContext, TInput, TOutput&gt;;
 ```
 
 Options for creating a WordPress PHP file builder.

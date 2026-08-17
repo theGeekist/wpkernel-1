@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / ResourceControllerRouteMetadata
+[@wpkernel/wp-json-ast](../index.md) / ResourceControllerRouteMetadata
 
 # Interface: ResourceControllerRouteMetadata
 
@@ -57,7 +57,7 @@ Optional cache segments for the route.
 ### tags?
 
 ```ts
-readonly optional tags: Readonly<Record<string, string>>;
+readonly optional tags: Readonly&lt;Record&lt;string, string&gt;&gt;;
 ```
 
 Optional tags for the route.

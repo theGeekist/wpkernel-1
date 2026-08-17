@@ -1,23 +1,22 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / createPhpRuntimeReadinessHelper
+[@wpkernel/cli](../index.md) / createPhpRuntimeReadinessHelper
 
 # Function: createPhpRuntimeReadinessHelper()
 
 ```ts
-function createPhpRuntimeReadinessHelper(
-	overrides
-): ReadinessHelper<PhpRuntimeState>;
+function createPhpRuntimeReadinessHelper(overrides): ReadinessHelper & lt;
+PhpRuntimeState & gt;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`<[`PhpRuntimeDependencies`](../interfaces/PhpRuntimeDependencies.md)> = `{}`
+`Partial`&lt;[`PhpRuntimeDependencies`](../interfaces/PhpRuntimeDependencies.md)&gt; = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`PhpRuntimeState`](../interfaces/PhpRuntimeState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`PhpRuntimeState`](../interfaces/PhpRuntimeState.md)&gt;

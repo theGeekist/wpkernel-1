@@ -1,15 +1,14 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / resourceAccessors
+[@wpkernel/cli](../index.md) / resourceAccessors
 
 # Variable: resourceAccessors
 
 ```ts
-const resourceAccessors: ResourceAccessors<
-	'shared' | 'wpPost' | 'wpOption' | 'transient' | 'wpTaxonomy'
->;
+const resourceAccessors: ResourceAccessors & lt;
+'shared' | 'wpPost' | 'wpOption' | 'transient' | ('wpTaxonomy' & gt);
 ```
 
 WordPress Resource Accessor Registry

@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ActionJobs
+[@wpkernel/core](../index.md) / ActionJobs
 
 # Type Alias: ActionJobs
 
@@ -40,7 +40,7 @@ async function SendWelcomeEmail(ctx, { userId }) {
 ### enqueue()
 
 ```ts
-enqueue: <TPayload>(jobName, payload) => Promise<void>;
+enqueue: &lt;TPayload&gt;(jobName, payload) =&gt; Promise&lt;void&gt;;
 ```
 
 #### Type Parameters
@@ -61,14 +61,14 @@ enqueue: <TPayload>(jobName, payload) => Promise<void>;
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 ---
 
 ### wait()
 
 ```ts
-wait: <TPayload, TResult>(jobName, payload, options?) => Promise<TResult>;
+wait: &lt;TPayload, TResult&gt;(jobName, payload, options?) =&gt; Promise&lt;TResult&gt;;
 ```
 
 #### Type Parameters
@@ -97,4 +97,4 @@ wait: <TPayload, TResult>(jobName, payload, options?) => Promise<TResult>;
 
 #### Returns
 
-`Promise`<`TResult`>
+`Promise`&lt;`TResult`&gt;

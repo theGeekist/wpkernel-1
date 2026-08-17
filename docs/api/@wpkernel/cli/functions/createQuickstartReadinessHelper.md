@@ -1,15 +1,14 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / createQuickstartReadinessHelper
+[@wpkernel/cli](../index.md) / createQuickstartReadinessHelper
 
 # Function: createQuickstartReadinessHelper()
 
 ```ts
-function createQuickstartReadinessHelper(
-	options
-): ReadinessHelper<QuickstartState>;
+function createQuickstartReadinessHelper(options): ReadinessHelper & lt;
+QuickstartState & gt;
 ```
 
 ## Parameters
@@ -20,4 +19,4 @@ function createQuickstartReadinessHelper(
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`QuickstartState`](../interfaces/QuickstartState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`QuickstartState`](../interfaces/QuickstartState.md)&gt;

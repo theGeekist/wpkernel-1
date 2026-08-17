@@ -1,13 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / InitCommandConstructor
+[@wpkernel/cli](../index.md) / InitCommandConstructor
 
 # Type Alias: InitCommandConstructor
 
 ```ts
-type InitCommandConstructor = () => InitCommandInstance;
+type InitCommandConstructor = () =&gt; InitCommandInstance;
 ```
 
 The constructor type for the `init` command.

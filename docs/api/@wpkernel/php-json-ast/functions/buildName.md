@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / buildName
+[@wpkernel/php-json-ast](../index.md) / buildName
 
 # Function: buildName()
 
@@ -22,7 +22,7 @@ An array of strings representing the parts of the name (e.g., ['MyNamespace', 'M
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

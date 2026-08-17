@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / buildThrow
+[@wpkernel/php-json-ast](../index.md) / buildThrow
 
 # Function: buildThrow()
 
@@ -22,7 +22,7 @@ The expression representing the throwable object.
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

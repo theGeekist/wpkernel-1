@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / BuildWpTaxonomyGetRouteStatementsOptions
+[@wpkernel/wp-json-ast](../index.md) / BuildWpTaxonomyGetRouteStatementsOptions
 
 # Interface: BuildWpTaxonomyGetRouteStatementsOptions
 
@@ -19,7 +19,7 @@ readonly cacheSegments: readonly unknown[];
 ### errorCodeFactory()
 
 ```ts
-readonly errorCodeFactory: (suffix) => string;
+readonly errorCodeFactory: (suffix) =&gt; string;
 ```
 
 #### Parameters

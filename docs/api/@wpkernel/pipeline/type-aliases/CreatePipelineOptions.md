@@ -1,60 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / CreatePipelineOptions
+[@wpkernel/pipeline](../index.md) / CreatePipelineOptions
 
-# Type Alias: CreatePipelineOptions<TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper>
+# Type Alias: CreatePipelineOptions&lt;TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt;
 
 ```ts
-type CreatePipelineOptions<
-	TRunOptions,
-	TBuildOptions,
-	TContext,
-	TReporter,
-	TDraft,
-	TArtifact,
-	TDiagnostic,
-	TRunResult,
-	TFragmentInput,
-	TFragmentOutput,
-	TBuilderInput,
-	TBuilderOutput,
-	TFragmentKind,
-	TBuilderKind,
-	TFragmentHelper,
-	TBuilderHelper,
-> = CreatePipelineBaseOptions<
-	TRunOptions,
-	TBuildOptions,
-	TContext,
-	TReporter,
-	TDraft,
-	TArtifact,
-	TDiagnostic,
-	TFragmentInput,
-	TFragmentOutput,
-	TBuilderInput,
-	TBuilderOutput,
-	TFragmentKind,
-	TBuilderKind,
-	TFragmentHelper,
-	TBuilderHelper
-> &
-	RunResultAdapter<
-		PipelineRunState<TArtifact, TDiagnostic>,
-		TRunResult,
-		StandardRunResultFactory<
-			TRunOptions,
-			TBuildOptions,
-			TContext,
-			TArtifact,
-			TDiagnostic,
-			TRunResult,
-			TFragmentKind,
-			TBuilderKind
-		>
-	>;
+type CreatePipelineOptions&lt;TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TRunResult, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt; = CreatePipelineBaseOptions&lt;TRunOptions, TBuildOptions, TContext, TReporter, TDraft, TArtifact, TDiagnostic, TFragmentInput, TFragmentOutput, TBuilderInput, TBuilderOutput, TFragmentKind, TBuilderKind, TFragmentHelper, TBuilderHelper&gt; & RunResultAdapter&lt;PipelineRunState&lt;TArtifact, TDiagnostic&gt;, TRunResult, StandardRunResultFactory&lt;TRunOptions, TBuildOptions, TContext, TArtifact, TDiagnostic, TRunResult, TFragmentKind, TBuilderKind&gt;&gt;;
 ```
 
 Options for creating a standard pipeline.
@@ -102,7 +55,7 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TArtifact`, `TDiagnostic`>
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TArtifact`, `TDiagnostic`&gt;
 
 ### TFragmentInput
 
@@ -130,33 +83,33 @@ fixes the result to [PipelineRunState](../interfaces/PipelineRunState.md).
 
 ### TFragmentHelper
 
-`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`>
+`TFragmentHelper` _extends_ [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TFragmentInput`, `TFragmentOutput`, `TReporter`, `TFragmentKind`&gt;
 
 ### TBuilderHelper
 
-`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`> = [`Helper`](../interfaces/Helper.md)<`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`>
+`TBuilderHelper` _extends_ [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt; = [`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TBuilderInput`, `TBuilderOutput`, `TReporter`, `TBuilderKind`&gt;
 
 ## Example
 
 ```ts
 const pipeline = createPipeline({
-	createBuildOptions: () => ({}),
-	createContext: () => ({ reporter: console }),
-	createFragmentState: () => [] as string[],
-	createFragmentArgs: ({ context, draft }) => ({
-		context,
-		input: undefined,
-		output: draft,
-		reporter: context.reporter,
-	}),
-	adoptFragmentOutput: ({ output }) => output,
-	finalizeFragmentState: ({ draft }) => ({ entries: draft }),
-	createBuilderArgs: ({ context, artifact }) => ({
-		context,
-		input: undefined,
-		output: artifact,
-		reporter: context.reporter,
-	}),
+  createBuildOptions: () =&gt; ({}),
+  createContext: () =&gt; ({ reporter: console }),
+  createFragmentState: () =&gt; [] as string[],
+  createFragmentArgs: ({ context, draft }) =&gt; ({
+    context,
+    input: undefined,
+    output: draft,
+    reporter: context.reporter,
+  }),
+  adoptFragmentOutput: ({ output }) =&gt; output,
+  finalizeFragmentState: ({ draft }) =&gt; ({ entries: draft }),
+  createBuilderArgs: ({ context, artifact }) =&gt; ({
+    context,
+    input: undefined,
+    output: artifact,
+    reporter: context.reporter,
+  }),
 });
 ```
 

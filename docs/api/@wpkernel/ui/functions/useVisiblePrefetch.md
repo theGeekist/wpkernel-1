@@ -1,8 +1,8 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/ui](../README.md) / useVisiblePrefetch
+[@wpkernel/ui](../index.md) / useVisiblePrefetch
 
 # Function: useVisiblePrefetch()
 
@@ -19,13 +19,13 @@ a scroll and resize listener.
 
 ### ref
 
-`RefObject`<`Element`>
+`RefObject`&lt;`Element`&gt;
 
 A React ref to the element to monitor.
 
 ### fn
 
-() => `void`
+() =&gt; `void`
 
 The function to call to trigger the prefetch.
 

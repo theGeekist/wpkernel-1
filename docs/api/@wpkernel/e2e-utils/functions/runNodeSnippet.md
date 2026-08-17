@@ -1,13 +1,14 @@
-[**@wpkernel/e2e-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/e2e-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/e2e-utils](../README.md) / runNodeSnippet
+[@wpkernel/e2e-utils](../index.md) / runNodeSnippet
 
 # Function: runNodeSnippet()
 
 ```ts
-function runNodeSnippet(options): Promise<CliTranscript>;
+function runNodeSnippet(options): Promise & lt;
+CliTranscript & gt;
 ```
 
 Execute a JavaScript snippet using the shared CLI runner harness.
@@ -20,4 +21,4 @@ Execute a JavaScript snippet using the shared CLI runner harness.
 
 ## Returns
 
-`Promise`<[`CliTranscript`](../interfaces/CliTranscript.md)>
+`Promise`&lt;[`CliTranscript`](../interfaces/CliTranscript.md)&gt;

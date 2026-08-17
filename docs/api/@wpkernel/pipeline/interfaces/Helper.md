@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / Helper
+[@wpkernel/pipeline](../index.md) / Helper
 
-# Interface: Helper<TContext, TInput, TOutput, TReporter, TKind>
+# Interface: Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
 
 Executable helper descriptor accepted by pipeline registration.
 
@@ -20,7 +20,7 @@ through registration and execution.
 
 ## Extends
 
-- [`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
+- [`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
 
 ## Type Parameters
 
@@ -59,7 +59,7 @@ Literal helper kind represented by the descriptor.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
+readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 ```
 
 Executes this helper when its dependency position is reached.

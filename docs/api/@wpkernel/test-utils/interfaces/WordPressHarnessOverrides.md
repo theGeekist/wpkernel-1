@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / WordPressHarnessOverrides
+[@wpkernel/test-utils](../index.md) / WordPressHarnessOverrides
 
 # Interface: WordPressHarnessOverrides
 
@@ -23,7 +23,7 @@ A mock `apiFetch` function.
 ### data?
 
 ```ts
-optional data: Partial<WordPressData>;
+optional data: Partial&lt;WordPressData&gt;;
 ```
 
 Partial overrides for `window.wp.data`.
@@ -33,7 +33,7 @@ Partial overrides for `window.wp.data`.
 ### hooks?
 
 ```ts
-optional hooks: Partial<any>;
+optional hooks: Partial&lt;any&gt;;
 ```
 
 Partial overrides for `window.wp.hooks`.

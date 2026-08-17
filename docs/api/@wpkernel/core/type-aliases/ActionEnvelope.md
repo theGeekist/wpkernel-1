@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ActionEnvelope
+[@wpkernel/core](../index.md) / ActionEnvelope
 
-# Type Alias: ActionEnvelope<TArgs, TResult>
+# Type Alias: ActionEnvelope&lt;TArgs, TResult&gt;
 
 ```ts
-type ActionEnvelope<TArgs, TResult> = object;
+type ActionEnvelope&lt;TArgs, TResult&gt; = object;
 ```
 
 Shape of the action envelope dispatched through Redux middleware.
@@ -52,7 +52,8 @@ payload: object;
 #### action
 
 ```ts
-action: DefinedAction<TArgs, TResult>;
+action: DefinedAction & lt;
+(TArgs, TResult & gt);
 ```
 
 #### args
@@ -74,5 +75,5 @@ type: typeof EXECUTE_ACTION_TYPE;
 ### meta?
 
 ```ts
-optional meta: Record<string, unknown>;
+optional meta: Record&lt;string, unknown&gt;;
 ```

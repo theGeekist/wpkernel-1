@@ -1,19 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / BuilderHelper
+[@wpkernel/php-json-ast](../index.md) / BuilderHelper
 
-# Type Alias: BuilderHelper<TContext, TInput, TOutput>
+# Type Alias: BuilderHelper&lt;TContext, TInput, TOutput&gt;
 
 ```ts
-type BuilderHelper<TContext, TInput, TOutput> = Helper<
-	TContext,
-	TInput,
-	TOutput,
-	TContext['reporter'],
-	'builder'
->;
+type BuilderHelper&lt;TContext, TInput, TOutput&gt; = Helper&lt;TContext, TInput, TOutput, TContext["reporter"], "builder"&gt;;
 ```
 
 ## Type Parameters

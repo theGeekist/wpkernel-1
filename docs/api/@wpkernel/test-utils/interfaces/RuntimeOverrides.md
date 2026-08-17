@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / RuntimeOverrides
+[@wpkernel/test-utils](../index.md) / RuntimeOverrides
 
 # Interface: RuntimeOverrides
 

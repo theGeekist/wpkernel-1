@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / WithWordPressDataOptions
+[@wpkernel/test-utils](../index.md) / WithWordPressDataOptions
 
 # Interface: WithWordPressDataOptions
 
@@ -23,7 +23,7 @@ Optional `wp.apiFetch` override. Set to `null` to unset.
 ### data?
 
 ```ts
-optional data: Partial<WordPressData> | null;
+optional data: Partial&lt;WordPressData&gt; | null;
 ```
 
 Optional `wp.data` override. Set to `null` to unset.
@@ -33,7 +33,7 @@ Optional `wp.data` override. Set to `null` to unset.
 ### hooks?
 
 ```ts
-optional hooks: Partial<any> | null;
+optional hooks: Partial&lt;any&gt; | null;
 ```
 
 Optional `wp.hooks` override. Set to `null` to unset.

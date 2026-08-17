@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / ConsumePhpProgramIngestionOptions
+[@wpkernel/php-json-ast](../index.md) / ConsumePhpProgramIngestionOptions
 
 # Interface: ConsumePhpProgramIngestionOptions
 
@@ -43,7 +43,7 @@ readonly optional reporter: Reporter;
 ### resolveFilePath()?
 
 ```ts
-readonly optional resolveFilePath: (message) => string;
+readonly optional resolveFilePath: (message) =&gt; string;
 ```
 
 #### Parameters

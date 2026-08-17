@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / BootstrapperResolutionHelperOptions
+[@wpkernel/cli](../index.md) / BootstrapperResolutionHelperOptions
 
 # Interface: BootstrapperResolutionHelperOptions
 
@@ -11,5 +11,5 @@
 ### dependencies?
 
 ```ts
-readonly optional dependencies: Partial<BootstrapperResolutionDependencies>;
+readonly optional dependencies: Partial&lt;BootstrapperResolutionDependencies&gt;;
 ```

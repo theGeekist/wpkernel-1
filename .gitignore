@@ -106,6 +106,7 @@ information/
 gutenberg/
 gutenberg
 **/AGENTS.md
+!AGENTS.md
 docs/internal/*
 !docs/internal/php-json-ast/
 docs/internal/php-json-ast/*

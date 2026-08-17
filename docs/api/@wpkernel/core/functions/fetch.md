@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / fetch
+[@wpkernel/core](../index.md) / fetch
 
 # Function: fetch()
 
 ```ts
-function fetch<T>(request): Promise<TransportResponse<T>>;
+function fetch&lt;T&gt;(request): Promise&lt;TransportResponse&lt;T&gt;&gt;;
 ```
 
 Fetch data from WordPress REST API
@@ -37,7 +37,7 @@ Request configuration
 
 ## Returns
 
-`Promise`<[`TransportResponse`](../type-aliases/TransportResponse.md)<`T`>>
+`Promise`&lt;[`TransportResponse`](../type-aliases/TransportResponse.md)&lt;`T`&gt;&gt;
 
 Promise resolving to response with data and metadata
 
@@ -50,7 +50,9 @@ WPKernelError on request failure
 ```typescript
 import { fetch } from '@wpkernel/core/http';
 
-const response = await fetch<Thing>({
+const response = (await fetch) & lt;
+Thing & gt;
+({
 	path: '/my-plugin/v1/things/123',
 	method: 'GET',
 });

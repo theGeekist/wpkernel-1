@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ReleasePackDependencies
+[@wpkernel/cli](../index.md) / ReleasePackDependencies
 
 # Interface: ReleasePackDependencies
 
@@ -11,7 +11,7 @@
 ### access()
 
 ```ts
-readonly access: (path, mode?) => Promise<void>;
+readonly access: (path, mode?) =&gt; Promise&lt;void&gt;;
 ```
 
 Tests a user's permissions for the file or directory specified by `path`.
@@ -54,7 +54,7 @@ the error raised if the file is not accessible.
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 Fulfills with `undefined` upon success.
 
@@ -68,30 +68,30 @@ v10.0.0
 
 ```ts
 readonly exec: {
-  (file): PromiseWithChild<{
-}>;
-  (file, args): PromiseWithChild<{
-}>;
-  (file, options): PromiseWithChild<{
-}>;
-  (file, args, options): PromiseWithChild<{
-}>;
-  (file, options): PromiseWithChild<{
-}>;
-  (file, args, options): PromiseWithChild<{
-}>;
-  (file, options): PromiseWithChild<{
-}>;
-  (file, args, options): PromiseWithChild<{
-}>;
+  (file): PromiseWithChild&lt;{
+}&gt;;
+  (file, args): PromiseWithChild&lt;{
+}&gt;;
+  (file, options): PromiseWithChild&lt;{
+}&gt;;
+  (file, args, options): PromiseWithChild&lt;{
+}&gt;;
+  (file, options): PromiseWithChild&lt;{
+}&gt;;
+  (file, args, options): PromiseWithChild&lt;{
+}&gt;;
+  (file, options): PromiseWithChild&lt;{
+}&gt;;
+  (file, args, options): PromiseWithChild&lt;{
+}&gt;;
 };
 ```
 
 #### Call Signature
 
 ```ts
-(file): PromiseWithChild<{
-}>;
+(file): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -102,14 +102,14 @@ readonly exec: {
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
 ```ts
-(file, args): PromiseWithChild<{
-}>;
+(file, args): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -124,14 +124,14 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
 ```ts
-(file, options): PromiseWithChild<{
-}>;
+(file, options): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -146,8 +146,8 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
@@ -155,8 +155,8 @@ readonly `string`[] | `null` | `undefined`
 (
    file,
    args,
-   options): PromiseWithChild<{
-}>;
+   options): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -175,14 +175,14 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
 ```ts
-(file, options): PromiseWithChild<{
-}>;
+(file, options): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -197,8 +197,8 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
@@ -206,8 +206,8 @@ readonly `string`[] | `null` | `undefined`
 (
    file,
    args,
-   options): PromiseWithChild<{
-}>;
+   options): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -226,14 +226,14 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
 ```ts
-(file, options): PromiseWithChild<{
-}>;
+(file, options): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -248,8 +248,8 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;
 
 #### Call Signature
 
@@ -257,8 +257,8 @@ readonly `string`[] | `null` | `undefined`
 (
    file,
    args,
-   options): PromiseWithChild<{
-}>;
+   options): PromiseWithChild&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -277,5 +277,5 @@ readonly `string`[] | `null` | `undefined`
 
 ##### Returns
 
-`PromiseWithChild`<\{
-\}>
+`PromiseWithChild`&lt;\{
+\}&gt;

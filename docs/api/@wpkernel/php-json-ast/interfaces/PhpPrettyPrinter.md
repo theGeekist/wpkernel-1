@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / PhpPrettyPrinter
+[@wpkernel/php-json-ast](../index.md) / PhpPrettyPrinter
 
 # Interface: PhpPrettyPrinter
 
@@ -11,7 +11,7 @@
 ### prettyPrint()
 
 ```ts
-prettyPrint: (payload) => Promise<PhpPrettyPrintResult>;
+prettyPrint: (payload) =&gt; Promise&lt;PhpPrettyPrintResult&gt;;
 ```
 
 #### Parameters
@@ -22,4 +22,4 @@ prettyPrint: (payload) => Promise<PhpPrettyPrintResult>;
 
 #### Returns
 
-`Promise`<[`PhpPrettyPrintResult`](PhpPrettyPrintResult.md)>
+`Promise`&lt;[`PhpPrettyPrintResult`](PhpPrettyPrintResult.md)&gt;

@@ -1,15 +1,13 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / createWpProgramWriterHelper
+[@wpkernel/wp-json-ast](../index.md) / createWpProgramWriterHelper
 
 # Function: createWpProgramWriterHelper()
 
 ```ts
-function createWpProgramWriterHelper<TContext, TInput, TOutput>(
-	options
-): BuilderHelper<TContext, TInput, TOutput>;
+function createWpProgramWriterHelper&lt;TContext, TInput, TOutput&gt;(options): BuilderHelper&lt;TContext, TInput, TOutput&gt;;
 ```
 
 ## Type Parameters
@@ -34,4 +32,4 @@ function createWpProgramWriterHelper<TContext, TInput, TOutput>(
 
 ## Returns
 
-`BuilderHelper`<`TContext`, `TInput`, `TOutput`>
+`BuilderHelper`&lt;`TContext`, `TInput`, `TOutput`&gt;

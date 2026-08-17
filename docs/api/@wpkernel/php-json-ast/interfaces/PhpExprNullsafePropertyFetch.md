@@ -1,12 +1,12 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / PhpExprNullsafePropertyFetch
+[@wpkernel/php-json-ast](../index.md) / PhpExprNullsafePropertyFetch
 
 # Interface: PhpExprNullsafePropertyFetch
 
-Represents a PHP nullsafe property fetch expression (e.g., `$object?->property`).
+Represents a PHP nullsafe property fetch expression (e.g., `$object?-&gt;property`).
 
 ## Extends
 

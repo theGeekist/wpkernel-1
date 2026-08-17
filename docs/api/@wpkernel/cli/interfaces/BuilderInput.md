@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / BuilderInput
+[@wpkernel/cli](../index.md) / BuilderInput
 
 # Interface: BuilderInput
 
@@ -10,7 +10,7 @@ Input for a builder helper.
 
 ## Extends
 
-- `Omit`<`BaseBuilderInput`, `"options"` \| `"ir"`>
+- `Omit`&lt;`BaseBuilderInput`, `"options"` \| `"ir"`&gt;
 
 ## Properties
 

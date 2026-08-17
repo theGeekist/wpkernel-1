@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / Workspace
+[@wpkernel/php-json-ast](../index.md) / Workspace
 
 # Interface: Workspace
 
@@ -11,7 +11,7 @@
 ### cwd()
 
 ```ts
-cwd: () => string;
+cwd: () =&gt; string;
 ```
 
 #### Returns
@@ -23,7 +23,7 @@ cwd: () => string;
 ### exists()
 
 ```ts
-exists: (target) => Promise<boolean>;
+exists: (target) =&gt; Promise&lt;boolean&gt;;
 ```
 
 #### Parameters
@@ -34,14 +34,14 @@ exists: (target) => Promise<boolean>;
 
 #### Returns
 
-`Promise`<`boolean`>
+`Promise`&lt;`boolean`&gt;
 
 ---
 
 ### resolve()
 
 ```ts
-resolve: (...parts) => string;
+resolve: (...parts) =&gt; string;
 ```
 
 #### Parameters
@@ -67,7 +67,7 @@ readonly root: string;
 ### write()
 
 ```ts
-write: (file, contents, options?) => Promise<void>;
+write: (file, contents, options?) =&gt; Promise&lt;void&gt;;
 ```
 
 #### Parameters
@@ -78,7 +78,7 @@ write: (file, contents, options?) => Promise<void>;
 
 ##### contents
 
-`string` | `Buffer`<`ArrayBufferLike`>
+`string` | `Buffer`&lt;`ArrayBufferLike`&gt;
 
 ##### options?
 
@@ -86,4 +86,4 @@ write: (file, contents, options?) => Promise<void>;
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;

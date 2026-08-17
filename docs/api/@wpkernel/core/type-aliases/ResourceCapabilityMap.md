@@ -1,15 +1,15 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ResourceCapabilityMap
+[@wpkernel/core](../index.md) / ResourceCapabilityMap
 
-# Type Alias: ResourceCapabilityMap<TRoutes>
+# Type Alias: ResourceCapabilityMap&lt;TRoutes&gt;
 
 ```ts
-type ResourceCapabilityMap<TRoutes> = Partial<
-	Record<RouteCapabilityKeys<TRoutes>, string | ResourceCapabilityDescriptor>
->;
+type ResourceCapabilityMap&lt;TRoutes&gt; = Partial&lt;Record&lt;RouteCapabilityKeys&lt;TRoutes&gt;,
+  | string
+| ResourceCapabilityDescriptor&gt;&gt;;
 ```
 
 Capability map for a resource.

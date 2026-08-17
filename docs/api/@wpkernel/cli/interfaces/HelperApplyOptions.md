@@ -1,10 +1,10 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / HelperApplyOptions
+[@wpkernel/cli](../index.md) / HelperApplyOptions
 
-# Interface: HelperApplyOptions<TContext, TInput, TOutput, TReporter>
+# Interface: HelperApplyOptions&lt;TContext, TInput, TOutput, TReporter&gt;
 
 Immutable invocation envelope passed to a helper.
 

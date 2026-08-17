@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / WPKernelConfigV1
+[@wpkernel/cli](../index.md) / WPKernelConfigV1
 
 # Interface: WPKernelConfigV1
 
@@ -66,7 +66,7 @@ Ignored by WPKernel at runtime.
 ### adapters?
 
 ```ts
-optional adapters: AdaptersConfig<unknown, unknown>;
+optional adapters: AdaptersConfig&lt;unknown, unknown&gt;;
 ```
 
 ---
@@ -74,7 +74,7 @@ optional adapters: AdaptersConfig<unknown, unknown>;
 ### directories?
 
 ```ts
-optional directories: Record<string, string>;
+optional directories: Record&lt;string, string&gt;;
 ```
 
 Optional mapping of applied artifact identifiers to workspace-relative

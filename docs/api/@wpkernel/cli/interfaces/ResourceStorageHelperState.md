@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ResourceStorageHelperState
+[@wpkernel/cli](../index.md) / ResourceStorageHelperState
 
 # Interface: ResourceStorageHelperState
 
@@ -16,7 +16,7 @@ This state stores the generated artifacts for different storage modes
 ### transient
 
 ```ts
-readonly transient: Map<string, TransientStorageArtifacts>;
+readonly transient: Map&lt;string, TransientStorageArtifacts&gt;;
 ```
 
 A map of resource names to their transient storage artifacts.
@@ -26,7 +26,7 @@ A map of resource names to their transient storage artifacts.
 ### wpOption
 
 ```ts
-readonly wpOption: Map<string, WpOptionStorageHelperArtifacts>;
+readonly wpOption: Map&lt;string, WpOptionStorageHelperArtifacts&gt;;
 ```
 
 A map of resource names to their WP Option storage artifacts.
@@ -36,7 +36,7 @@ A map of resource names to their WP Option storage artifacts.
 ### wpTaxonomy
 
 ```ts
-readonly wpTaxonomy: Map<string, WpTaxonomyStorageHelperArtifacts>;
+readonly wpTaxonomy: Map&lt;string, WpTaxonomyStorageHelperArtifacts&gt;;
 ```
 
 A map of resource names to their WP Taxonomy storage artifacts.

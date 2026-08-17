@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / BuildResourceControllerRouteSetOptions
+[@wpkernel/wp-json-ast](../index.md) / BuildResourceControllerRouteSetOptions
 
 # Interface: BuildResourceControllerRouteSetOptions
 
@@ -11,7 +11,7 @@
 ### plan
 
 ```ts
-readonly plan: Pick<RestControllerRoutePlan, "definition" | "methodName" | "docblockSummary">;
+readonly plan: Pick&lt;RestControllerRoutePlan, "definition" | "methodName" | "docblockSummary"&gt;;
 ```
 
 ---

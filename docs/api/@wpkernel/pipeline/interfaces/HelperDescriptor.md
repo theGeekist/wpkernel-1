@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / HelperDescriptor
+[@wpkernel/pipeline](../index.md) / HelperDescriptor
 
-# Interface: HelperDescriptor<TKind>
+# Interface: HelperDescriptor&lt;TKind&gt;
 
 Stable metadata used to register, order and diagnose a helper.
 

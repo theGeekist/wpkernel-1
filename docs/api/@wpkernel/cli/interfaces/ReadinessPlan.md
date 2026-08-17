@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ReadinessPlan
+[@wpkernel/cli](../index.md) / ReadinessPlan
 
 # Interface: ReadinessPlan
 
@@ -21,7 +21,7 @@ readonly keys: readonly ReadinessKey[];
 ### run()
 
 ```ts
-readonly run: (context) => Promise<ReadinessRunResult>;
+readonly run: (context) =&gt; Promise&lt;ReadinessRunResult&gt;;
 ```
 
 #### Parameters
@@ -32,4 +32,4 @@ readonly run: (context) => Promise<ReadinessRunResult>;
 
 #### Returns
 
-`Promise`<[`ReadinessRunResult`](ReadinessRunResult.md)>
+`Promise`&lt;[`ReadinessRunResult`](ReadinessRunResult.md)&gt;

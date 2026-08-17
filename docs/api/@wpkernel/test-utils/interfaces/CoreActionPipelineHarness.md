@@ -1,10 +1,10 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / CoreActionPipelineHarness
+[@wpkernel/test-utils](../index.md) / CoreActionPipelineHarness
 
-# Interface: CoreActionPipelineHarness<TArgs, TResult>
+# Interface: CoreActionPipelineHarness&lt;TArgs, TResult&gt;
 
 A harness for testing action pipelines.
 
@@ -33,7 +33,7 @@ The namespace of the reporter.
 ### pipeline
 
 ```ts
-readonly pipeline: ActionPipeline<TArgs, TResult>;
+readonly pipeline: ActionPipeline&lt;TArgs, TResult&gt;;
 ```
 
 The action pipeline instance.
@@ -53,7 +53,7 @@ The memory reporter instance.
 ### teardown()
 
 ```ts
-teardown: () => void;
+teardown: () =&gt; void;
 ```
 
 A function to clean up the harness.

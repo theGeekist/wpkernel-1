@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ResourceStore
+[@wpkernel/core](../index.md) / ResourceStore
 
-# Type Alias: ResourceStore<T, TQuery>
+# Type Alias: ResourceStore&lt;T, TQuery&gt;
 
 ```ts
-type ResourceStore<T, TQuery> = object;
+type ResourceStore&lt;T, TQuery&gt; = object;
 ```
 
 Complete store descriptor returned by createStore.
@@ -31,7 +31,8 @@ The query parameter type for list operations
 ### actions
 
 ```ts
-actions: ResourceActions<T>;
+actions: ResourceActions & lt;
+T & gt;
 ```
 
 State actions.
@@ -41,7 +42,8 @@ State actions.
 ### initialState
 
 ```ts
-initialState: ResourceState<T>;
+initialState: ResourceState & lt;
+T & gt;
 ```
 
 Initial state.
@@ -51,7 +53,7 @@ Initial state.
 ### reducer()
 
 ```ts
-reducer: (state, action) => ResourceState<T>;
+reducer: (state, action) =&gt; ResourceState&lt;T&gt;;
 ```
 
 Reducer function for state updates.
@@ -60,7 +62,7 @@ Reducer function for state updates.
 
 ##### state
 
-[`ResourceState`](ResourceState.md)<`T`> | `undefined`
+[`ResourceState`](ResourceState.md)&lt;`T`&gt; | `undefined`
 
 ##### action
 
@@ -68,14 +70,15 @@ Reducer function for state updates.
 
 #### Returns
 
-[`ResourceState`](ResourceState.md)<`T`>
+[`ResourceState`](ResourceState.md)&lt;`T`&gt;
 
 ---
 
 ### resolvers
 
 ```ts
-resolvers: ResourceResolvers<T, TQuery>;
+resolvers: ResourceResolvers & lt;
+(T, TQuery & gt);
 ```
 
 Resolvers for async data fetching.
@@ -85,7 +88,8 @@ Resolvers for async data fetching.
 ### selectors
 
 ```ts
-selectors: ResourceSelectors<T, TQuery>;
+selectors: ResourceSelectors & lt;
+(T, TQuery & gt);
 ```
 
 State selectors.
@@ -105,7 +109,7 @@ Store key for registration with @wordpress/data.
 ### controls?
 
 ```ts
-optional controls: Record<string, (action) => unknown>;
+optional controls: Record&lt;string, (action) =&gt; unknown&gt;;
 ```
 
 Controls for handling async operations in generators.

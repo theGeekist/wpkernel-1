@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / CapabilityHelpers
+[@wpkernel/core](../index.md) / CapabilityHelpers
 
-# Type Alias: CapabilityHelpers<K>
+# Type Alias: CapabilityHelpers&lt;K&gt;
 
 ```ts
-type CapabilityHelpers<K> = object;
+type CapabilityHelpers&lt;K&gt; = object;
 ```
 
 Runtime helpers exposed by `defineCapability()`.
@@ -16,14 +16,14 @@ Runtime helpers exposed by `defineCapability()`.
 
 ### K
 
-`K` _extends_ `Record`<`string`, `unknown`>
+`K` _extends_ `Record`&lt;`string`, `unknown`&gt;
 
 ## Properties
 
 ### assert()
 
 ```ts
-assert: <Key>(key, ...params) => void | Promise<void>;
+assert: &lt;Key&gt;(key, ...params) =&gt; void | Promise&lt;void&gt;;
 ```
 
 #### Type Parameters
@@ -40,11 +40,11 @@ assert: <Key>(key, ...params) => void | Promise<void>;
 
 ##### params
 
-...[`ParamsOf`](ParamsOf.md)<`K`, `Key`>
+...[`ParamsOf`](ParamsOf.md)&lt;`K`, `Key`&gt;
 
 #### Returns
 
-`void` \| `Promise`<`void`>
+`void` \| `Promise`&lt;`void`&gt;
 
 ---
 
@@ -59,7 +59,7 @@ readonly cache: CapabilityCache;
 ### can()
 
 ```ts
-can: <Key>(key, ...params) => boolean | Promise<boolean>;
+can: &lt;Key&gt;(key, ...params) =&gt; boolean | Promise&lt;boolean&gt;;
 ```
 
 #### Type Parameters
@@ -76,25 +76,25 @@ can: <Key>(key, ...params) => boolean | Promise<boolean>;
 
 ##### params
 
-...[`ParamsOf`](ParamsOf.md)<`K`, `Key`>
+...[`ParamsOf`](ParamsOf.md)&lt;`K`, `Key`&gt;
 
 #### Returns
 
-`boolean` \| `Promise`<`boolean`>
+`boolean` \| `Promise`&lt;`boolean`&gt;
 
 ---
 
 ### extend()
 
 ```ts
-extend: (additionalMap) => void;
+extend: (additionalMap) =&gt; void;
 ```
 
 #### Parameters
 
 ##### additionalMap
 
-`Partial`<[`CapabilityMap`](CapabilityMap.md)<`K`>>
+`Partial`&lt;[`CapabilityMap`](CapabilityMap.md)&lt;`K`&gt;&gt;
 
 #### Returns
 
@@ -105,7 +105,7 @@ extend: (additionalMap) => void;
 ### keys()
 
 ```ts
-keys: () => keyof K[];
+keys: () =&gt; keyof K[];
 ```
 
 #### Returns

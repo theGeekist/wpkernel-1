@@ -1,15 +1,13 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / buildPhpChannelHelpers
+[@wpkernel/wp-json-ast](../index.md) / buildPhpChannelHelpers
 
 # Function: buildPhpChannelHelpers()
 
 ```ts
-function buildPhpChannelHelpers<TContext, TInput, TOutput>(
-	options
-): PhpChannelHelpers<TContext, TInput, TOutput>;
+function buildPhpChannelHelpers&lt;TContext, TInput, TOutput&gt;(options): PhpChannelHelpers&lt;TContext, TInput, TOutput&gt;;
 ```
 
 ## Type Parameters
@@ -34,4 +32,4 @@ function buildPhpChannelHelpers<TContext, TInput, TOutput>(
 
 ## Returns
 
-[`PhpChannelHelpers`](../interfaces/PhpChannelHelpers.md)<`TContext`, `TInput`, `TOutput`>
+[`PhpChannelHelpers`](../interfaces/PhpChannelHelpers.md)&lt;`TContext`, `TInput`, `TOutput`&gt;

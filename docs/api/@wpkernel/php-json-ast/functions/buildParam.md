@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / buildParam
+[@wpkernel/php-json-ast](../index.md) / buildParam
 
 # Function: buildParam()
 
@@ -54,7 +54,7 @@ Optional configuration for the parameter (type, by reference, variadic, default 
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

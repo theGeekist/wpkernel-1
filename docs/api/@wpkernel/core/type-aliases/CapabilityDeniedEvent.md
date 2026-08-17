@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / CapabilityDeniedEvent
+[@wpkernel/core](../index.md) / CapabilityDeniedEvent
 
 # Type Alias: CapabilityDeniedEvent
 
@@ -33,7 +33,7 @@ timestamp: number;
 ### context?
 
 ```ts
-optional context: Record<string, unknown>;
+optional context: Record&lt;string, unknown&gt;;
 ```
 
 ---

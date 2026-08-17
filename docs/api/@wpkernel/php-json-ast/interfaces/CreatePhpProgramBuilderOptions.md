@@ -1,14 +1,14 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / CreatePhpProgramBuilderOptions
+[@wpkernel/php-json-ast](../index.md) / CreatePhpProgramBuilderOptions
 
-# Interface: CreatePhpProgramBuilderOptions<TContext, TInput, TOutput>
+# Interface: CreatePhpProgramBuilderOptions&lt;TContext, TInput, TOutput&gt;
 
 ## Extends
 
-- `Pick`<[`CreateHelperOptions`](CreateHelperOptions.md)<`TContext`, `TInput`, `TOutput`>, `"dependsOn"` \| `"mode"` \| `"priority"` \| `"origin"`>
+- `Pick`&lt;[`CreateHelperOptions`](CreateHelperOptions.md)&lt;`TContext`, `TInput`, `TOutput`&gt;, `"dependsOn"` \| `"mode"` \| `"priority"` \| `"origin"`&gt;
 
 ## Type Parameters
 
@@ -29,7 +29,7 @@
 ### build()
 
 ```ts
-readonly build: (builder, entry) => void | Promise<void>;
+readonly build: (builder, entry) =&gt; void | Promise&lt;void&gt;;
 ```
 
 #### Parameters
@@ -44,7 +44,7 @@ readonly build: (builder, entry) => void | Promise<void>;
 
 #### Returns
 
-`void` \| `Promise`<`void`>
+`void` \| `Promise`&lt;`void`&gt;
 
 ---
 

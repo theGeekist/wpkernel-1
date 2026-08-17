@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ActionDefinedEvent
+[@wpkernel/core](../index.md) / ActionDefinedEvent
 
 # Type Alias: ActionDefinedEvent
 
@@ -15,7 +15,8 @@ type ActionDefinedEvent = object;
 ### action
 
 ```ts
-action: DefinedAction<unknown, unknown>;
+action: DefinedAction & lt;
+(unknown, unknown & gt);
 ```
 
 ---

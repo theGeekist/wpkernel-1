@@ -1,13 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / mergeNodeAttributes
+[@wpkernel/php-json-ast](../index.md) / mergeNodeAttributes
 
 # Function: mergeNodeAttributes()
 
 ```ts
-function mergeNodeAttributes<T>(node, attributes?): T;
+function mergeNodeAttributes&lt;T&gt;(node, attributes?): T;
 ```
 
 Merges new attributes into an existing PHP AST node's attributes.
@@ -31,7 +31,7 @@ The original PHP AST node.
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 The attributes to merge into the node.
 

@@ -1,36 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / makeResumablePipeline
+[@wpkernel/pipeline](../index.md) / makeResumablePipeline
 
 # Function: makeResumablePipeline()
 
 ```ts
-function makeResumablePipeline<
-	TRunOptions,
-	TContext,
-	TReporter,
-	TUserState,
-	TDiagnostic,
-	TRunResult,
-	TKind,
->(
-	options
-): ResumablePipeline<
-	TRunOptions,
-	TRunResult,
-	TContext,
-	TReporter,
-	PipelineStageState<
-		TRunOptions,
-		TUserState,
-		TContext,
-		TReporter,
-		TDiagnostic
-	>,
-	TKind
->;
+function makeResumablePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;(options): ResumablePipeline&lt;TRunOptions, TRunResult, TContext, TReporter, PipelineStageState&lt;TRunOptions, TUserState, TContext, TReporter, TDiagnostic&gt;, TKind&gt;;
 ```
 
 Creates a resumable form of [ResumablePipeline](../interfaces/ResumablePipeline.md) for process-local
@@ -87,7 +64,7 @@ participating work becomes asynchronous.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TUserState`, `TDiagnostic`>
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
 
 ### TKind
 
@@ -97,13 +74,13 @@ participating work becomes asynchronous.
 
 ### options
 
-[`AgnosticPipelineOptions`](../type-aliases/AgnosticPipelineOptions.md)<`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`>
+[`AgnosticPipelineOptions`](../type-aliases/AgnosticPipelineOptions.md)&lt;`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`&gt;
 
 Context, state, stages, helper kinds and observer factories.
 
 ## Returns
 
-[`ResumablePipeline`](../interfaces/ResumablePipeline.md)<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, [`PipelineStageState`](../interfaces/PipelineStageState.md)<`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`>, `TKind`>
+[`ResumablePipeline`](../interfaces/ResumablePipeline.md)&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, [`PipelineStageState`](../interfaces/PipelineStageState.md)&lt;`TRunOptions`, `TUserState`, `TContext`, `TReporter`, `TDiagnostic`&gt;, `TKind`&gt;
 
 A configured resumable pipeline instance.
 
@@ -113,24 +90,23 @@ A configured resumable pipeline instance.
 import { makeResumablePipeline } from '@wpkernel/pipeline';
 
 const pipeline = makeResumablePipeline({
-	helperKinds: [] as const,
-	createContext: () => ({ reporter: console }),
-	createState: () => ({ approved: false }),
-	createStages: (stages) => [
-		(state) =>
-			state.resumeInput
-				? { ...state, userState: { approved: true } }
-				: stages.pause!(state, {
-						pauseKind: 'approval',
-						payload: { prompt: 'Approve?' },
-					}),
-		stages.finalizeResult,
-	],
+  helperKinds: [] as const,
+  createContext: () =&gt; ({ reporter: console }),
+  createState: () =&gt; ({ approved: false }),
+  createStages: (stages) =&gt; [
+    (state) =&gt; state.resumeInput
+      ? { ...state, userState: { approved: true } }
+      : stages.pause!(state, {
+          pauseKind: 'approval',
+          payload: { prompt: 'Approve?' },
+        }),
+    stages.finalizeResult,
+  ],
 });
 
 const paused = await pipeline.run({});
 if ('__paused' in paused) {
-	const result = await pipeline.resume(paused.snapshot, { approved: true });
+  const result = await pipeline.resume(paused.snapshot, { approved: true });
 }
 ```
 

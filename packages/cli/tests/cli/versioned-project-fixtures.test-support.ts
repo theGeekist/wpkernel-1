@@ -586,5 +586,44 @@ async function initializeFixtureRepository(
 }
 
 async function execGit(workspaceRoot: string, args: readonly string[]) {
-	return execFileAsync('git', [...args], { cwd: workspaceRoot });
+	return execFileAsync('git', [...args], {
+		cwd: workspaceRoot,
+		env: createIsolatedGitEnvironment(),
+	});
+}
+
+export function createIsolatedGitEnvironment(): NodeJS.ProcessEnv {
+	const env = { ...process.env };
+	const repositoryLocalVariables = [
+		'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+		'GIT_COMMON_DIR',
+		'GIT_CONFIG',
+		'GIT_CONFIG_COUNT',
+		'GIT_CONFIG_PARAMETERS',
+		'GIT_DIR',
+		'GIT_GRAFT_FILE',
+		'GIT_IMPLICIT_WORK_TREE',
+		'GIT_INDEX_FILE',
+		'GIT_INTERNAL_SUPER_PREFIX',
+		'GIT_NO_REPLACE_OBJECTS',
+		'GIT_OBJECT_DIRECTORY',
+		'GIT_PREFIX',
+		'GIT_REPLACE_REF_BASE',
+		'GIT_SHALLOW_FILE',
+		'GIT_WORK_TREE',
+	];
+
+	for (const variable of repositoryLocalVariables) {
+		delete env[variable];
+	}
+	for (const variable of Object.keys(env)) {
+		if (
+			variable.startsWith('GIT_CONFIG_KEY_') ||
+			variable.startsWith('GIT_CONFIG_VALUE_')
+		) {
+			delete env[variable];
+		}
+	}
+
+	return env;
 }

@@ -1,16 +1,16 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelineExtensionRegisterOutput
+[@wpkernel/pipeline](../index.md) / PipelineExtensionRegisterOutput
 
-# Type Alias: PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact>
+# Type Alias: PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt;
 
 ```ts
-type PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact> =
-	| void
-	| PipelineExtensionHook<TContext, TOptions, TArtifact>
-	| PipelineExtensionHookRegistration<TContext, TOptions, TArtifact>;
+type PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt; =
+  | void
+  | PipelineExtensionHook&lt;TContext, TOptions, TArtifact&gt;
+| PipelineExtensionHookRegistration&lt;TContext, TOptions, TArtifact&gt;;
 ```
 
 Value returned by extension registration: no hook, a hook using the default

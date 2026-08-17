@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / WordPressTestHarness
+[@wpkernel/test-utils](../index.md) / WordPressTestHarness
 
 # Interface: WordPressTestHarness
 
@@ -24,7 +24,7 @@ Convenience access to the shared data package to avoid calling
 ### reset()
 
 ```ts
-reset: () => void;
+reset: () =&gt; void;
 ```
 
 Reset namespace state and clear all jest mocks.
@@ -38,7 +38,7 @@ Reset namespace state and clear all jest mocks.
 ### teardown()
 
 ```ts
-teardown: () => void;
+teardown: () =&gt; void;
 ```
 
 Restore the previous global and perform a reset.

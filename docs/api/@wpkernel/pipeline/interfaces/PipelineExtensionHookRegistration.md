@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelineExtensionHookRegistration
+[@wpkernel/pipeline](../index.md) / PipelineExtensionHookRegistration
 
-# Interface: PipelineExtensionHookRegistration<TContext, TOptions, TArtifact>
+# Interface: PipelineExtensionHookRegistration&lt;TContext, TOptions, TArtifact&gt;
 
 Hook registration returned by an extension.
 
@@ -39,7 +39,7 @@ Extension-visible artifact type.
 ### hook
 
 ```ts
-readonly hook: PipelineExtensionHook<TContext, TOptions, TArtifact>;
+readonly hook: PipelineExtensionHook&lt;TContext, TOptions, TArtifact&gt;;
 ```
 
 Hook invoked when the selected lifecycle stage executes.

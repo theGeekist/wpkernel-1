@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / WorkspaceLike
+[@wpkernel/php-json-ast](../index.md) / WorkspaceLike
 
 # Interface: WorkspaceLike
 
@@ -11,7 +11,7 @@
 ### exists()
 
 ```ts
-exists: (target) => Promise<boolean>;
+exists: (target) =&gt; Promise&lt;boolean&gt;;
 ```
 
 #### Parameters
@@ -22,14 +22,14 @@ exists: (target) => Promise<boolean>;
 
 #### Returns
 
-`Promise`<`boolean`>
+`Promise`&lt;`boolean`&gt;
 
 ---
 
 ### resolve()
 
 ```ts
-resolve: (...parts) => string;
+resolve: (...parts) =&gt; string;
 ```
 
 #### Parameters

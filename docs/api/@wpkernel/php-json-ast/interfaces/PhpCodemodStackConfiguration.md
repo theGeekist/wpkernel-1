@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / PhpCodemodStackConfiguration
+[@wpkernel/php-json-ast](../index.md) / PhpCodemodStackConfiguration
 
 # Interface: PhpCodemodStackConfiguration
 
@@ -19,5 +19,5 @@ readonly key: string;
 ### visitors
 
 ```ts
-readonly visitors: readonly PhpCodemodVisitorConfiguration<Record<string, unknown>>[];
+readonly visitors: readonly PhpCodemodVisitorConfiguration&lt;Record&lt;string, unknown&gt;&gt;[];
 ```

@@ -1,15 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / createHelper
+[@wpkernel/php-json-ast](../index.md) / createHelper
 
 # Function: createHelper()
 
 ```ts
-function createHelper<TContext, TInput, TOutput, TReporter, TKind>(
-	options
-): Helper<TContext, TInput, TOutput, TReporter, TKind>;
+function createHelper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;(options): Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;;
 ```
 
 Creates a frozen [Helper](../interfaces/Helper.md) descriptor from declarative registration
@@ -72,73 +70,79 @@ visitation order and later unwound in reverse order. Use
 
 ### options
 
-[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 Helper identity, ordering metadata and apply behaviour.
 
 ## Returns
 
-[`Helper`](../interfaces/Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 A frozen descriptor with a frozen dependency list.
 
 ## Examples
 
 ```ts
-import { createHelper, type PipelineReporter } from '@wpkernel/pipeline';
+import {
+  createHelper,
+  type PipelineReporter,
+} from '@wpkernel/pipeline';
 
 type Context = { reporter: PipelineReporter };
 
-const normalise = createHelper<Context, string[], string[]>({
-	key: 'normalise',
-	kind: 'transform',
-	dependsOn: ['parse'],
-	priority: 20,
-	apply: ({ output }) => ({
-		output: output.map((value) => value.trim()),
-	}),
-});
-```
-
-```ts
-import { createHelper, type PipelineReporter } from '@wpkernel/pipeline';
-
-type Context = { reporter: PipelineReporter };
-
-const bracket = createHelper<Context, string[], string[]>({
-	key: 'bracket',
-	kind: 'transform',
-	apply: async ({ output }, next) => {
-		const downstream = await next?.(['before', ...output]);
-		return { output: [...(downstream ?? output), 'after'] };
-	},
+const normalise = createHelper&lt;Context, string[], string[]&gt;({
+  key: 'normalise',
+  kind: 'transform',
+  dependsOn: ['parse'],
+  priority: 20,
+  apply: ({ output }) =&gt; ({
+    output: output.map((value) =&gt; value.trim()),
+  }),
 });
 ```
 
 ```ts
 import {
-	createHelper,
-	createPipelineRollback,
-	type PipelineReporter,
+  createHelper,
+  type PipelineReporter,
+} from '@wpkernel/pipeline';
+
+type Context = { reporter: PipelineReporter };
+
+const bracket = createHelper&lt;Context, string[], string[]&gt;({
+  key: 'bracket',
+  kind: 'transform',
+  apply: async ({ output }, next) =&gt; {
+    const downstream = await next?.(['before', ...output]);
+    return { output: [...(downstream ?? output), 'after'] };
+  },
+});
+```
+
+```ts
+import {
+  createHelper,
+  createPipelineRollback,
+  type PipelineReporter,
 } from '@wpkernel/pipeline';
 
 type Context = {
-	reporter: PipelineReporter;
-	allocated: Set<string>;
+  reporter: PipelineReporter;
+  allocated: Set&lt;string&gt;;
 };
 
-const allocate = createHelper<Context, void, string[]>({
-	key: 'allocate',
-	kind: 'build',
-	apply: ({ context, output }) => {
-		context.allocated.add('result');
-		return {
-			output: [...output, 'result'],
-			rollback: createPipelineRollback(
-				() => context.allocated.delete('result'),
-				{ key: 'allocate', label: 'Release result allocation' }
-			),
-		};
-	},
+const allocate = createHelper&lt;Context, void, string[]&gt;({
+  key: 'allocate',
+  kind: 'build',
+  apply: ({ context, output }) =&gt; {
+    context.allocated.add('result');
+    return {
+      output: [...output, 'result'],
+      rollback: createPipelineRollback(
+        () =&gt; context.allocated.delete('result'),
+        { key: 'allocate', label: 'Release result allocation' }
+      ),
+    };
+  },
 });
 ```

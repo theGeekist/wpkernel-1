@@ -1,10 +1,10 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / QueueModuleFilesOptions
+[@wpkernel/wp-json-ast](../index.md) / QueueModuleFilesOptions
 
-# Interface: QueueModuleFilesOptions<TFile>
+# Interface: QueueModuleFilesOptions&lt;TFile&gt;
 
 ## Type Parameters
 
@@ -33,7 +33,7 @@ readonly optional docblockPrefix: readonly string[];
 ### filter()?
 
 ```ts
-readonly optional filter: (file) => boolean;
+readonly optional filter: (file) =&gt; boolean;
 ```
 
 #### Parameters

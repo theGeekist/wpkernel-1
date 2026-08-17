@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / RunProcessOptions
+[@wpkernel/test-utils](../index.md) / RunProcessOptions
 
 # Interface: RunProcessOptions
 
@@ -31,7 +31,7 @@ optional env: ProcessEnv;
 ### input?
 
 ```ts
-optional input: string | Buffer<ArrayBufferLike>;
+optional input: string | Buffer&lt;ArrayBufferLike&gt;;
 ```
 
 ---

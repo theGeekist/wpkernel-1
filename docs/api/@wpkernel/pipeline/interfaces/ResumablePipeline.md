@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / ResumablePipeline
+[@wpkernel/pipeline](../index.md) / ResumablePipeline
 
-# Interface: ResumablePipeline<TRunOptions, TRunResult, TContext, TReporter, TState, TKind>
+# Interface: ResumablePipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TState, TKind&gt;
 
 A resumable pipeline instance.
 
@@ -29,7 +29,7 @@ if ('paused' in result) {
 
 ## Extends
 
-- `PipelineBase`<`TRunOptions`, `TContext`, `TReporter`, `ResumablePipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`, `TKind`>, `TKind`>
+- `PipelineBase`&lt;`TRunOptions`, `TContext`, `TReporter`, `ResumablePipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`, `TKind`&gt;, `TKind`&gt;
 
 ## Type Parameters
 
@@ -82,7 +82,7 @@ Extension registration namespace.
 #### use()
 
 ```ts
-use: (extension) => unknown;
+use: (extension) =&gt; unknown;
 ```
 
 Registers an extension. A run waits until registration reaches
@@ -92,7 +92,7 @@ quiescence, then captures an immutable hook snapshot for that run.
 
 ###### extension
 
-[`PipelineExtension`](PipelineExtension.md)<`ResumablePipeline`<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`, `TKind`>, `TContext`, `TRunOptions`, `unknown`>
+[`PipelineExtension`](PipelineExtension.md)&lt;`ResumablePipeline`&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TState`, `TKind`&gt;, `TContext`, `TRunOptions`, `unknown`&gt;
 
 ##### Returns
 
@@ -120,8 +120,7 @@ PipelineBase.extensions;
 ### resume()
 
 ```ts
-resume: (snapshot, resumeInput?) =>
-	MaybePromise<TRunResult | PipelinePaused<TState>>;
+resume: (snapshot, resumeInput?) =&gt; MaybePromise&lt;TRunResult | PipelinePaused&lt;TState&gt;&gt;;
 ```
 
 Continues the suspended run represented by `snapshot`.
@@ -130,7 +129,7 @@ Continues the suspended run represented by `snapshot`.
 
 ##### snapshot
 
-[`PipelinePauseSnapshot`](PipelinePauseSnapshot.md)<`TState`>
+[`PipelinePauseSnapshot`](PipelinePauseSnapshot.md)&lt;`TState`&gt;
 
 Process-local capability returned by a prior pause.
 
@@ -143,7 +142,7 @@ paused stage is re-entered.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)<`TState`>>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)&lt;`TState`&gt;&gt;
 
 #### Remarks
 
@@ -158,7 +157,7 @@ fresh snapshot.
 ### run()
 
 ```ts
-run: (options) => MaybePromise<TRunResult | PipelinePaused<TState>>;
+run: (options) =&gt; MaybePromise&lt;TRunResult | PipelinePaused&lt;TState&gt;&gt;;
 ```
 
 Starts a new run.
@@ -171,7 +170,7 @@ Starts a new run.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)<`TState`>>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`TRunResult` \| [`PipelinePaused`](PipelinePaused.md)&lt;`TState`&gt;&gt;
 
 A successful result, or a paused value containing the single-use
 snapshot needed by [ResumablePipeline.resume](#resume).
@@ -181,7 +180,7 @@ snapshot needed by [ResumablePipeline.resume](#resume).
 ### use()
 
 ```ts
-use: <TInput, TOutput>(helper) => void;
+use: &lt;TInput, TOutput&gt;(helper) =&gt; void;
 ```
 
 Registers a helper whose kind is one of the kinds configured at
@@ -201,7 +200,7 @@ construction. Registration preserves the helper object's identity.
 
 ##### helper
 
-[`Helper`](Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`Helper`](Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 #### Returns
 

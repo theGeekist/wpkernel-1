@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelineExtension
+[@wpkernel/pipeline](../index.md) / PipelineExtension
 
-# Interface: PipelineExtension<TPipeline, TContext, TOptions, TArtifact>
+# Interface: PipelineExtension&lt;TPipeline, TContext, TOptions, TArtifact&gt;
 
 A pipeline extension descriptor.
 
@@ -48,10 +48,7 @@ Artifact type exposed to the registered hook.
 ### register()
 
 ```ts
-register: (pipeline) =>
-	MaybePromise<
-		PipelineExtensionRegisterOutput<TContext, TOptions, TArtifact>
-	>;
+register: (pipeline) =&gt; MaybePromise&lt;PipelineExtensionRegisterOutput&lt;TContext, TOptions, TArtifact&gt;&gt;;
 ```
 
 Registers zero or one lifecycle hook for this extension.
@@ -68,7 +65,7 @@ immutable hook snapshot.
 
 #### Returns
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<[`PipelineExtensionRegisterOutput`](../type-aliases/PipelineExtensionRegisterOutput.md)<`TContext`, `TOptions`, `TArtifact`>>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;[`PipelineExtensionRegisterOutput`](../type-aliases/PipelineExtensionRegisterOutput.md)&lt;`TContext`, `TOptions`, `TArtifact`&gt;&gt;
 
 ---
 

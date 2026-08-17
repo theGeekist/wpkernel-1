@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / HelperExecutionSnapshot
+[@wpkernel/pipeline](../index.md) / HelperExecutionSnapshot
 
-# Interface: HelperExecutionSnapshot<TKind>
+# Interface: HelperExecutionSnapshot&lt;TKind&gt;
 
 Summary of registration and execution for one helper kind.
 

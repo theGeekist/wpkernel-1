@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / UnusedHelperDiagnostic
+[@wpkernel/pipeline](../index.md) / UnusedHelperDiagnostic
 
-# Interface: UnusedHelperDiagnostic<TKind>
+# Interface: UnusedHelperDiagnostic&lt;TKind&gt;
 
 Diagnostic describing a registered helper that did not execute.
 

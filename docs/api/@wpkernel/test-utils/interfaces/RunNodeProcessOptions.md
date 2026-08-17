@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / RunNodeProcessOptions
+[@wpkernel/test-utils](../index.md) / RunNodeProcessOptions
 
 # Interface: RunNodeProcessOptions
 
@@ -47,7 +47,7 @@ optional extras: readonly string[];
 ### input?
 
 ```ts
-optional input: string | Buffer<ArrayBufferLike>;
+optional input: string | Buffer&lt;ArrayBufferLike&gt;;
 ```
 
 #### Inherited from

@@ -1,10 +1,10 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/ui](../README.md) / UseResourceListResult
+[@wpkernel/ui](../index.md) / UseResourceListResult
 
-# Interface: UseResourceListResult<T>
+# Interface: UseResourceListResult&lt;T&gt;
 
 Result shape for list resource hooks
 
@@ -21,7 +21,7 @@ Entity type in the list
 ### data
 
 ```ts
-data: ListResponse<T> | undefined;
+data: ListResponse&lt;T&gt; | undefined;
 ```
 
 The fetched list response with items and metadata, or undefined if not yet loaded

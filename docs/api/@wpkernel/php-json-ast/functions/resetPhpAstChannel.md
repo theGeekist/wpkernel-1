@@ -1,13 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / resetPhpAstChannel
+[@wpkernel/php-json-ast](../index.md) / resetPhpAstChannel
 
 # Function: resetPhpAstChannel()
 
 ```ts
-function resetPhpAstChannel<TContext>(context): void;
+function resetPhpAstChannel&lt;TContext&gt;(context): void;
 ```
 
 ## Type Parameters

@@ -1,8 +1,8 @@
-**@wpkernel/pipeline v1.3.0**
+**@wpkernel/pipeline v1.4.0**
 
 ---
 
-# @wpkernel/pipeline v1.3.0
+# @wpkernel/pipeline v1.4.0
 
 ## Interfaces
 

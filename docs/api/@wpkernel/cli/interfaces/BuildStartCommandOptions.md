@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / BuildStartCommandOptions
+[@wpkernel/cli](../index.md) / BuildStartCommandOptions
 
 # Interface: BuildStartCommandOptions
 
@@ -13,7 +13,7 @@ Options for building the `start` command, allowing for dependency injection.
 ### buildReporter()?
 
 ```ts
-readonly optional buildReporter: (options) => Reporter;
+readonly optional buildReporter: (options) =&gt; Reporter;
 ```
 
 Optional: Custom reporter builder function.
@@ -33,7 +33,7 @@ Optional: Custom reporter builder function.
 ### fileSystem?
 
 ```ts
-readonly optional fileSystem: Partial<FileSystem>;
+readonly optional fileSystem: Partial&lt;FileSystem&gt;;
 ```
 
 Optional: Partial file system utility functions for testing.
@@ -43,14 +43,14 @@ Optional: Partial file system utility functions for testing.
 ### loadWatch()?
 
 ```ts
-readonly optional loadWatch: () => Promise<(paths, options?) => FSWatcher>;
+readonly optional loadWatch: () =&gt; Promise&lt;(paths, options?) =&gt; FSWatcher&gt;;
 ```
 
 Optional: Custom function to load the `chokidar.watch` function.
 
 #### Returns
 
-`Promise`<(`paths`, `options?`) => `FSWatcher`>
+`Promise`&lt;(`paths`, `options?`) =&gt; `FSWatcher`&gt;
 
 ---
 
@@ -67,7 +67,7 @@ Optional: Custom generate runner function.
 ### spawnViteProcess()?
 
 ```ts
-readonly optional spawnViteProcess: (packageManager) => ChildProcessWithoutNullStreams;
+readonly optional spawnViteProcess: (packageManager) =&gt; ChildProcessWithoutNullStreams;
 ```
 
 Optional: Custom function to spawn the Vite development server process.

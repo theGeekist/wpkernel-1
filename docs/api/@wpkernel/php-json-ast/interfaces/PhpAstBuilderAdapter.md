@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/php-json-ast](../README.md) / PhpAstBuilderAdapter
+[@wpkernel/php-json-ast](../index.md) / PhpAstBuilderAdapter
 
 # Interface: PhpAstBuilderAdapter
 
@@ -15,7 +15,7 @@
 ### addUse()
 
 ```ts
-addUse: (statement) => void;
+addUse: (statement) =&gt; void;
 ```
 
 #### Parameters
@@ -37,7 +37,7 @@ addUse: (statement) => void;
 ### appendDocblock()
 
 ```ts
-appendDocblock: (line) => void;
+appendDocblock: (line) =&gt; void;
 ```
 
 #### Parameters
@@ -59,7 +59,7 @@ appendDocblock: (line) => void;
 ### appendProgramStatement()
 
 ```ts
-appendProgramStatement: (statement) => void;
+appendProgramStatement: (statement) =&gt; void;
 ```
 
 #### Parameters
@@ -81,7 +81,7 @@ appendProgramStatement: (statement) => void;
 ### appendStatement()
 
 ```ts
-appendStatement: (statement) => void;
+appendStatement: (statement) =&gt; void;
 ```
 
 #### Parameters
@@ -111,7 +111,7 @@ readonly context: PhpAstContext;
 ### getMetadata()
 
 ```ts
-getMetadata: () => PhpFileMetadata;
+getMetadata: () =&gt; PhpFileMetadata;
 ```
 
 #### Returns
@@ -127,7 +127,7 @@ getMetadata: () => PhpFileMetadata;
 ### getNamespace()
 
 ```ts
-getNamespace: () => string;
+getNamespace: () =&gt; string;
 ```
 
 #### Returns
@@ -143,7 +143,7 @@ getNamespace: () => string;
 ### getProgramAst()
 
 ```ts
-getProgramAst: () => PhpProgram;
+getProgramAst: () =&gt; PhpProgram;
 ```
 
 #### Returns
@@ -159,7 +159,7 @@ getProgramAst: () => PhpProgram;
 ### getStatements()
 
 ```ts
-getStatements: () => readonly string[];
+getStatements: () =&gt; readonly string[];
 ```
 
 #### Returns
@@ -175,7 +175,7 @@ readonly `string`[]
 ### setMetadata()
 
 ```ts
-setMetadata: (metadata) => void;
+setMetadata: (metadata) =&gt; void;
 ```
 
 #### Parameters
@@ -197,7 +197,7 @@ setMetadata: (metadata) => void;
 ### setNamespace()
 
 ```ts
-setNamespace: (namespace) => void;
+setNamespace: (namespace) =&gt; void;
 ```
 
 #### Parameters

@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / WPKernelUIRuntime
+[@wpkernel/core](../index.md) / WPKernelUIRuntime
 
 # Interface: WPKernelUIRuntime
 
@@ -51,7 +51,7 @@ optional dataviews: WPKernelDataViewsRuntime;
 ### invalidate()?
 
 ```ts
-optional invalidate: (patterns, options?) => void;
+optional invalidate: (patterns, options?) =&gt; void;
 ```
 
 #### Parameters

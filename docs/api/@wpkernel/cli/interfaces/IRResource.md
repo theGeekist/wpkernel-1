@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / IRResource
+[@wpkernel/cli](../index.md) / IRResource
 
 # Interface: IRResource
 
@@ -143,7 +143,7 @@ Optional: Generated block configuration (js-only or SSR).
 ### capabilities?
 
 ```ts
-optional capabilities: Partial<Record<string, string | ResourceCapabilityDescriptor>>;
+optional capabilities: Partial&lt;Record&lt;string, string | ResourceCapabilityDescriptor&gt;&gt;;
 ```
 
 Optional: Inline capability mappings for the resource.

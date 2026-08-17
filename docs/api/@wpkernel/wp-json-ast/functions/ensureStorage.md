@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / ensureStorage
+[@wpkernel/wp-json-ast](../index.md) / ensureStorage
 
 # Function: ensureStorage()
 
@@ -31,7 +31,7 @@ mode: 'wp-post';
 ### meta?
 
 ```ts
-optional meta: Record<string, ResourcePostMetaDescriptor>;
+optional meta: Record&lt;string, ResourcePostMetaDescriptor&gt;;
 ```
 
 ### postType?
@@ -55,11 +55,11 @@ optional supports: ("title" | "editor" | "excerpt" | "custom-fields")[];
 ### taxonomies?
 
 ```ts
-optional taxonomies: Record<string, {
+optional taxonomies: Record&lt;string, {
   taxonomy: string;
   hierarchical?: boolean;
   register?: boolean;
-}>;
+}&gt;;
 ```
 
 ## Throws

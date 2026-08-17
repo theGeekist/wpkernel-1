@@ -10,6 +10,7 @@ import {
 	VERSIONED_CLI_FIXTURE_PATHS,
 	VERSIONED_CLI_FIXTURE_SCHEMA_VERSION,
 	VERSIONED_CLI_PROJECT_FIXTURES,
+	createIsolatedGitEnvironment,
 	getVersionedCliProjectFixture,
 	materializeVersionedCliProjectFixture,
 	type VersionedCliFixtureId,
@@ -219,7 +220,7 @@ async function expectRepositoryState(
 	const { stdout } = await execFileAsync(
 		'git',
 		['status', '--porcelain', '--untracked-files=all'],
-		{ cwd: workspaceRoot }
+		{ cwd: workspaceRoot, env: createIsolatedGitEnvironment() }
 	);
 
 	if (expectedState === 'clean') {

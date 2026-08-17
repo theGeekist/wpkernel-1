@@ -1,10 +1,10 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / ResourceAccessorDescriptor
+[@wpkernel/wp-json-ast](../index.md) / ResourceAccessorDescriptor
 
-# Interface: ResourceAccessorDescriptor<TValue>
+# Interface: ResourceAccessorDescriptor&lt;TValue&gt;
 
 ## Type Parameters
 

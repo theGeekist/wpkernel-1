@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelineStep
+[@wpkernel/pipeline](../index.md) / PipelineStep
 
-# Interface: PipelineStep<TKind>
+# Interface: PipelineStep&lt;TKind&gt;
 
 Immutable public record of one executed helper.
 
@@ -15,7 +15,7 @@ executable function.
 
 ## Extends
 
-- [`HelperDescriptor`](HelperDescriptor.md)<`TKind`>
+- [`HelperDescriptor`](HelperDescriptor.md)&lt;`TKind`&gt;
 
 ## Type Parameters
 

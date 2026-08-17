@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ResourceResponseEvent
+[@wpkernel/core](../index.md) / ResourceResponseEvent
 
-# Type Alias: ResourceResponseEvent<T>
+# Type Alias: ResourceResponseEvent&lt;T&gt;
 
 ```ts
-type ResourceResponseEvent<T> = object;
+type ResourceResponseEvent&lt;T&gt; = object;
 ```
 
 Event payload for wpk.resource.response

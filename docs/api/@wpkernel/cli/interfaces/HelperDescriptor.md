@@ -1,10 +1,10 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / HelperDescriptor
+[@wpkernel/cli](../index.md) / HelperDescriptor
 
-# Interface: HelperDescriptor<TKind>
+# Interface: HelperDescriptor&lt;TKind&gt;
 
 Stable metadata used to register, order and diagnose a helper.
 

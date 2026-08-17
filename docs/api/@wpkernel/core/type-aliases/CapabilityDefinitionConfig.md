@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / CapabilityDefinitionConfig
+[@wpkernel/core](../index.md) / CapabilityDefinitionConfig
 
-# Type Alias: CapabilityDefinitionConfig<K>
+# Type Alias: CapabilityDefinitionConfig&lt;K&gt;
 
 ```ts
-type CapabilityDefinitionConfig<K> = object;
+type CapabilityDefinitionConfig&lt;K&gt; = object;
 ```
 
 Configuration object accepted by `defineCapability()`.
@@ -16,14 +16,15 @@ Configuration object accepted by `defineCapability()`.
 
 ### K
 
-`K` _extends_ `Record`<`string`, `unknown`>
+`K` _extends_ `Record`&lt;`string`, `unknown`&gt;
 
 ## Properties
 
 ### map
 
 ```ts
-map: CapabilityMap<K>;
+map: CapabilityMap & lt;
+K & gt;
 ```
 
 ---

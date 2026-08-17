@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / createPipeline
+[@wpkernel/cli](../index.md) / createPipeline
 
 # Function: createPipeline()
 
@@ -24,7 +24,7 @@ allowing for a modular and extensible code generation process.
 
 ### overrides
 
-`Partial`\<`CliPipelineOptions`\> = `{}`
+`Partial`\&lt;`CliPipelineOptions`\&gt; = `{}`
 
 ## Returns
 

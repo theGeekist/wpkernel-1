@@ -1,14 +1,14 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / RestRouteRequestParameter
+[@wpkernel/wp-json-ast](../index.md) / RestRouteRequestParameter
 
 # Interface: RestRouteRequestParameter
 
 ## Extends
 
-- `Omit`<[`RequestParamAssignmentOptions`](RequestParamAssignmentOptions.md), `"requestVariable"`>
+- `Omit`&lt;[`RequestParamAssignmentOptions`](RequestParamAssignmentOptions.md), `"requestVariable"`&gt;
 
 ## Properties
 

@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / TsBuilderCreatorContext
+[@wpkernel/cli](../index.md) / TsBuilderCreatorContext
 
 # Interface: TsBuilderCreatorContext
 
@@ -23,7 +23,7 @@ The resource descriptor for which artifacts are being created.
 ### emit()
 
 ```ts
-readonly emit: (options) => Promise<TsBuilderEmitResult>;
+readonly emit: (options) =&gt; Promise&lt;TsBuilderEmitResult&gt;;
 ```
 
 A function to emit a generated TypeScript file.
@@ -36,7 +36,7 @@ A function to emit a generated TypeScript file.
 
 #### Returns
 
-`Promise`<`TsBuilderEmitResult`>
+`Promise`&lt;`TsBuilderEmitResult`&gt;
 
 ---
 

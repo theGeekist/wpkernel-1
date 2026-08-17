@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / IRRouteTransport
+[@wpkernel/cli](../index.md) / IRRouteTransport
 
 # Type Alias: IRRouteTransport
 

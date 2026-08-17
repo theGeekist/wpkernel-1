@@ -1,13 +1,14 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / createIr
+[@wpkernel/cli](../index.md) / createIr
 
 # Function: createIr()
 
 ```ts
-function createIr(options, environment): Promise<IRv1>;
+function createIr(options, environment): Promise & lt;
+IRv1 & gt;
 ```
 
 Builds the Intermediate Representation (IR) by running only the core IR fragments.
@@ -32,6 +33,6 @@ Optional environment settings for the IR creation process.
 
 ## Returns
 
-`Promise`<[`IRv1`](../interfaces/IRv1.md)>
+`Promise`&lt;[`IRv1`](../interfaces/IRv1.md)&gt;
 
 A promise that resolves to the generated `IRv1` object.

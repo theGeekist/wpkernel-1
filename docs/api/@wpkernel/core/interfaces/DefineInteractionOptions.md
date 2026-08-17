@@ -1,10 +1,10 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / DefineInteractionOptions
+[@wpkernel/core](../index.md) / DefineInteractionOptions
 
-# Interface: DefineInteractionOptions<TEntity, TQuery, TStore, TActions>
+# Interface: DefineInteractionOptions&lt;TEntity, TQuery, TStore, TActions&gt;
 
 Options accepted by `defineInteraction`.
 
@@ -20,7 +20,7 @@ Options accepted by `defineInteraction`.
 
 ### TStore
 
-`TStore` _extends_ `Record`<`string`, `unknown`>
+`TStore` _extends_ `Record`&lt;`string`, `unknown`&gt;
 
 ### TActions
 
@@ -39,7 +39,7 @@ readonly feature: string;
 ### resource
 
 ```ts
-readonly resource: ResourceObject<TEntity, TQuery>;
+readonly resource: ResourceObject&lt;TEntity, TQuery&gt;;
 ```
 
 ---
@@ -63,14 +63,14 @@ readonly optional autoHydrate: boolean;
 ### hydrateServerState()?
 
 ```ts
-readonly optional hydrateServerState: (input) => void;
+readonly optional hydrateServerState: (input) =&gt; void;
 ```
 
 #### Parameters
 
 ##### input
 
-[`HydrateServerStateInput`](HydrateServerStateInput.md)<`TEntity`, `TQuery`>
+[`HydrateServerStateInput`](HydrateServerStateInput.md)&lt;`TEntity`, `TQuery`&gt;
 
 #### Returns
 

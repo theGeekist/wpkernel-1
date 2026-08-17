@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / CreateHelperOptions
+[@wpkernel/pipeline](../index.md) / CreateHelperOptions
 
-# Interface: CreateHelperOptions<TContext, TInput, TOutput, TReporter, TKind>
+# Interface: CreateHelperOptions&lt;TContext, TInput, TOutput, TReporter, TKind&gt;
 
 Input accepted by `createHelper`.
 
@@ -50,7 +50,7 @@ Literal helper kind represented by the descriptor.
 ### apply
 
 ```ts
-readonly apply: HelperApplyFn<TContext, TInput, TOutput, TReporter>;
+readonly apply: HelperApplyFn&lt;TContext, TInput, TOutput, TReporter&gt;;
 ```
 
 Helper implementation.

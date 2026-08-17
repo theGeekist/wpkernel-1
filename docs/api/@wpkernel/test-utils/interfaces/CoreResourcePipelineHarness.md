@@ -1,10 +1,10 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / CoreResourcePipelineHarness
+[@wpkernel/test-utils](../index.md) / CoreResourcePipelineHarness
 
-# Interface: CoreResourcePipelineHarness<T, TQuery>
+# Interface: CoreResourcePipelineHarness&lt;T, TQuery&gt;
 
 A harness for testing resource pipelines.
 
@@ -33,7 +33,7 @@ The namespace of the reporter.
 ### pipeline
 
 ```ts
-readonly pipeline: ResourcePipeline<T, TQuery>;
+readonly pipeline: ResourcePipeline&lt;T, TQuery&gt;;
 ```
 
 The resource pipeline instance.

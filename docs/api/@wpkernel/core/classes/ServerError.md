@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ServerError
+[@wpkernel/core](../index.md) / ServerError
 
 # Class: ServerError
 
@@ -66,7 +66,7 @@ Server error options
 
 ###### serverData?
 
-`Record`<`string`, `unknown`>
+`Record`&lt;`string`, `unknown`&gt;
 
 #### Returns
 
@@ -173,7 +173,7 @@ Additional data about the error
 ### serverData?
 
 ```ts
-readonly optional serverData: Record<string, unknown>;
+readonly optional serverData: Record&lt;string, unknown&gt;;
 ```
 
 Additional server data

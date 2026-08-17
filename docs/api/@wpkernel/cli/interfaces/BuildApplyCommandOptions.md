@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / BuildApplyCommandOptions
+[@wpkernel/cli](../index.md) / BuildApplyCommandOptions
 
 # Interface: BuildApplyCommandOptions
 
@@ -13,7 +13,7 @@
 #### buildReporter()?
 
 ```ts
-readonly optional buildReporter: (options) => Reporter;
+readonly optional buildReporter: (options) =&gt; Reporter;
 ```
 
 Create a WPKernel reporter backed by LogLayer transports.
@@ -40,7 +40,7 @@ Reporter instance with child helpers
 #### createPatcher()?
 
 ```ts
-readonly optional createPatcher: () => BuilderHelper;
+readonly optional createPatcher: () =&gt; BuilderHelper;
 ```
 
 Creates a builder helper for applying patches to the workspace.
@@ -60,7 +60,7 @@ A `BuilderHelper` instance for applying patches.
 #### appendApplyLog()?
 
 ```ts
-readonly optional appendApplyLog: (workspace, entry) => Promise<void>;
+readonly optional appendApplyLog: (workspace, entry) =&gt; Promise&lt;void&gt;;
 ```
 
 ##### Parameters
@@ -75,14 +75,14 @@ readonly optional appendApplyLog: (workspace, entry) => Promise<void>;
 
 ##### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 ---
 
 #### buildBuilderOutput()?
 
 ```ts
-readonly optional buildBuilderOutput: () => BuilderOutput;
+readonly optional buildBuilderOutput: () =&gt; BuilderOutput;
 ```
 
 ##### Returns
@@ -94,7 +94,7 @@ readonly optional buildBuilderOutput: () => BuilderOutput;
 #### buildReadinessRegistry()?
 
 ```ts
-readonly optional buildReadinessRegistry: (options?) => ReadinessRegistry;
+readonly optional buildReadinessRegistry: (options?) =&gt; ReadinessRegistry;
 ```
 
 ##### Parameters
@@ -112,7 +112,7 @@ readonly optional buildReadinessRegistry: (options?) => ReadinessRegistry;
 #### buildWorkspace()?
 
 ```ts
-readonly optional buildWorkspace: (root) => Workspace;
+readonly optional buildWorkspace: (root) =&gt; Workspace;
 ```
 
 ##### Parameters
@@ -130,7 +130,7 @@ readonly optional buildWorkspace: (root) => Workspace;
 #### createBackups()?
 
 ```ts
-readonly optional createBackups: (options) => Promise<void>;
+readonly optional createBackups: (options) =&gt; Promise&lt;void&gt;;
 ```
 
 ##### Parameters
@@ -141,14 +141,14 @@ readonly optional createBackups: (options) => Promise<void>;
 
 ##### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 ---
 
 #### ensureGitRepository()?
 
 ```ts
-readonly optional ensureGitRepository: (workspace) => Promise<void>;
+readonly optional ensureGitRepository: (workspace) =&gt; Promise&lt;void&gt;;
 ```
 
 ##### Parameters
@@ -159,26 +159,26 @@ readonly optional ensureGitRepository: (workspace) => Promise<void>;
 
 ##### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 ---
 
 #### loadWPKernelConfig()?
 
 ```ts
-readonly optional loadWPKernelConfig: () => Promise<LoadedWPKernelConfig>;
+readonly optional loadWPKernelConfig: () =&gt; Promise&lt;LoadedWPKernelConfig&gt;;
 ```
 
 ##### Returns
 
-`Promise`<[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)>
+`Promise`&lt;[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)&gt;
 
 ---
 
 #### promptConfirm()?
 
 ```ts
-readonly optional promptConfirm: (options) => Promise<boolean>;
+readonly optional promptConfirm: (options) =&gt; Promise&lt;boolean&gt;;
 ```
 
 ##### Parameters
@@ -203,14 +203,14 @@ readonly optional promptConfirm: (options) => Promise<boolean>;
 
 ##### Returns
 
-`Promise`<`boolean`>
+`Promise`&lt;`boolean`&gt;
 
 ---
 
 #### readManifest()?
 
 ```ts
-readonly optional readManifest: (workspace) => Promise<PatchManifest | null>;
+readonly optional readManifest: (workspace) =&gt; Promise&lt;PatchManifest | null&gt;;
 ```
 
 ##### Parameters
@@ -221,14 +221,14 @@ readonly optional readManifest: (workspace) => Promise<PatchManifest | null>;
 
 ##### Returns
 
-`Promise`<[`PatchManifest`](PatchManifest.md) \| `null`>
+`Promise`&lt;[`PatchManifest`](PatchManifest.md) \| `null`&gt;
 
 ---
 
 #### resolveWorkspaceRoot()?
 
 ```ts
-readonly optional resolveWorkspaceRoot: (loaded) => string;
+readonly optional resolveWorkspaceRoot: (loaded) =&gt; string;
 ```
 
 ##### Parameters

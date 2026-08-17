@@ -1,13 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / ensureCleanDirectory
+[@wpkernel/cli](../index.md) / ensureCleanDirectory
 
 # Function: ensureCleanDirectory()
 
 ```ts
-function ensureCleanDirectory(options): Promise<void>;
+function ensureCleanDirectory(options): Promise&lt;void&gt;;
 ```
 
 Ensures that a given directory is clean (empty) or creates it if it doesn't exist.
@@ -25,7 +25,7 @@ Options for ensuring the directory is clean.
 
 ## Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 ## Throws
 

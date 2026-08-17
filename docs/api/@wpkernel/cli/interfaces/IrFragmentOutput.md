@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / IrFragmentOutput
+[@wpkernel/cli](../index.md) / IrFragmentOutput
 
 # Interface: IrFragmentOutput
 
@@ -11,14 +11,14 @@
 ### assign()
 
 ```ts
-assign: (partial) => void;
+assign: (partial) =&gt; void;
 ```
 
 #### Parameters
 
 ##### partial
 
-`Partial`<[`MutableIr`](MutableIr.md)>
+`Partial`&lt;[`MutableIr`](MutableIr.md)&gt;
 
 #### Returns
 

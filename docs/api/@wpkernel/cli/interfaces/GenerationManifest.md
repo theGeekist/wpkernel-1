@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / GenerationManifest
+[@wpkernel/cli](../index.md) / GenerationManifest
 
 # Interface: GenerationManifest
 
@@ -13,7 +13,7 @@ Represents the manifest of generated files and resources.
 ### resources
 
 ```ts
-readonly resources: Record<string, GenerationManifestResourceEntry>;
+readonly resources: Record&lt;string, GenerationManifestResourceEntry&gt;;
 ```
 
 ---

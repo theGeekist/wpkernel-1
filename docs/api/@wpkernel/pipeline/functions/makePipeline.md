@@ -1,23 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / makePipeline
+[@wpkernel/pipeline](../index.md) / makePipeline
 
 # Function: makePipeline()
 
 ```ts
-function makePipeline<
-	TRunOptions,
-	TContext,
-	TReporter,
-	TUserState,
-	TDiagnostic,
-	TRunResult,
-	TKind,
->(
-	options
-): AgnosticPipeline<TRunOptions, TRunResult, TContext, TReporter, TKind>;
+function makePipeline&lt;TRunOptions, TContext, TReporter, TUserState, TDiagnostic, TRunResult, TKind&gt;(options): AgnosticPipeline&lt;TRunOptions, TRunResult, TContext, TReporter, TKind&gt;;
 ```
 
 Creates an agnostic pipeline whose helper kinds, state and stage
@@ -75,7 +65,7 @@ commit, rollback or custom stage becomes asynchronous.
 
 ### TRunResult
 
-`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)<`TUserState`, `TDiagnostic`>
+`TRunResult` = [`PipelineRunState`](../interfaces/PipelineRunState.md)&lt;`TUserState`, `TDiagnostic`&gt;
 
 ### TKind
 
@@ -85,13 +75,13 @@ commit, rollback or custom stage becomes asynchronous.
 
 ### options
 
-[`AgnosticPipelineOptions`](../type-aliases/AgnosticPipelineOptions.md)<`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`>
+[`AgnosticPipelineOptions`](../type-aliases/AgnosticPipelineOptions.md)&lt;`TRunOptions`, `TContext`, `TReporter`, `TUserState`, `TDiagnostic`, `TRunResult`, `TKind`&gt;
 
 Context, state, stages, helper kinds and observer factories.
 
 ## Returns
 
-[`AgnosticPipeline`](../interfaces/AgnosticPipeline.md)<`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TKind`>
+[`AgnosticPipeline`](../interfaces/AgnosticPipeline.md)&lt;`TRunOptions`, `TRunResult`, `TContext`, `TReporter`, `TKind`&gt;
 
 A configured agnostic pipeline instance.
 
@@ -101,15 +91,15 @@ A configured agnostic pipeline instance.
 import { makePipeline } from '@wpkernel/pipeline';
 
 const pipeline = makePipeline({
-	helperKinds: ['compile'] as const,
-	createContext: () => ({ reporter: console }),
-	createState: () => ({ output: '' }),
-	extensions: { lifecycles: ['after-compile'] },
-	createStages: (stages) => [
-		stages.makeHelperStage('compile'),
-		stages.makeLifecycleStage('after-compile'),
-		stages.finalizeResult,
-	],
+  helperKinds: ['compile'] as const,
+  createContext: () =&gt; ({ reporter: console }),
+  createState: () =&gt; ({ output: '' }),
+  extensions: { lifecycles: ['after-compile'] },
+  createStages: (stages) =&gt; [
+    stages.makeHelperStage('compile'),
+    stages.makeLifecycleStage('after-compile'),
+    stages.finalizeResult,
+  ],
 });
 
 pipeline.use(compileHelper);

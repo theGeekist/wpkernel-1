@@ -1,8 +1,8 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelineExtensionRollbackErrorMetadata
+[@wpkernel/pipeline](../index.md) / PipelineExtensionRollbackErrorMetadata
 
 # Type Alias: PipelineExtensionRollbackErrorMetadata
 

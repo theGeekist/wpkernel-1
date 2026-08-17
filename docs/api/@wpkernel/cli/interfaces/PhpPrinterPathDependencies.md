@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / PhpPrinterPathDependencies
+[@wpkernel/cli](../index.md) / PhpPrinterPathDependencies
 
 # Interface: PhpPrinterPathDependencies
 
@@ -11,7 +11,7 @@
 ### access()
 
 ```ts
-readonly access: (path, mode?) => Promise<void>;
+readonly access: (path, mode?) =&gt; Promise&lt;void&gt;;
 ```
 
 Tests a user's permissions for the file or directory specified by `path`.
@@ -54,7 +54,7 @@ the error raised if the file is not accessible.
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 Fulfills with `undefined` upon success.
 
@@ -68,16 +68,16 @@ v10.0.0
 
 ```ts
 readonly realpath: {
-  (path, options?): Promise<string>;
-  (path, options): Promise<NonSharedBuffer>;
-  (path, options?): Promise<string | NonSharedBuffer>;
+  (path, options?): Promise&lt;string&gt;;
+  (path, options): Promise&lt;NonSharedBuffer&gt;;
+  (path, options?): Promise&lt;string | NonSharedBuffer&gt;;
 };
 ```
 
 #### Call Signature
 
 ```ts
-(path, options?): Promise<string>;
+(path, options?): Promise&lt;string&gt;;
 ```
 
 Determines the actual location of `path` using the same semantics as the `fs.realpath.native()` function.
@@ -105,7 +105,7 @@ this restriction.
 
 ##### Returns
 
-`Promise`<`string`>
+`Promise`&lt;`string`&gt;
 
 Fulfills with the resolved path upon success.
 
@@ -116,7 +116,7 @@ v10.0.0
 #### Call Signature
 
 ```ts
-(path, options): Promise<NonSharedBuffer>;
+(path, options): Promise&lt;NonSharedBuffer&gt;;
 ```
 
 Asynchronous realpath(3) - return the canonicalized absolute pathname.
@@ -137,12 +137,12 @@ The encoding (or an object specifying the encoding), used as the encoding of the
 
 ##### Returns
 
-`Promise`<`NonSharedBuffer`>
+`Promise`&lt;`NonSharedBuffer`&gt;
 
 #### Call Signature
 
 ```ts
-(path, options?): Promise<string | NonSharedBuffer>;
+(path, options?): Promise&lt;string | NonSharedBuffer&gt;;
 ```
 
 Asynchronous realpath(3) - return the canonicalized absolute pathname.
@@ -163,4 +163,4 @@ The encoding (or an object specifying the encoding), used as the encoding of the
 
 ##### Returns
 
-`Promise`<`string` \| `NonSharedBuffer`>
+`Promise`&lt;`string` \| `NonSharedBuffer`&gt;

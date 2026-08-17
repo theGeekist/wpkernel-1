@@ -1,8 +1,8 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/ui](../README.md) / WPKernelUIProvider
+[@wpkernel/ui](../index.md) / WPKernelUIProvider
 
 # Function: WPKernelUIProvider()
 

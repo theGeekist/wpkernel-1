@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/test-utils](../README.md) / WPKernelUITestHarness
+[@wpkernel/test-utils](../index.md) / WPKernelUITestHarness
 
 # Interface: WPKernelUITestHarness
 
@@ -13,7 +13,7 @@ A harness for testing UI components that interact with the WPKernel UI runtime.
 ### createRuntime()
 
 ```ts
-createRuntime: (overrides?) => WPKernelUIRuntime;
+createRuntime: (overrides?) =&gt; WPKernelUIRuntime;
 ```
 
 Creates a new `WPKernelUIRuntime` instance.
@@ -22,7 +22,7 @@ Creates a new `WPKernelUIRuntime` instance.
 
 ##### overrides?
 
-`Partial`<`WPKernelUIRuntime`>
+`Partial`&lt;`WPKernelUIRuntime`&gt;
 
 #### Returns
 
@@ -33,7 +33,8 @@ Creates a new `WPKernelUIRuntime` instance.
 ### createWrapper()
 
 ```ts
-createWrapper: (runtime?) => (__namedParameters) => ReactElement<{}>;
+createWrapper: (runtime?) =&gt; (__namedParameters) =&gt; ReactElement&lt;{
+}&gt;;
 ```
 
 Creates a React wrapper component for the WPKernel UI runtime.
@@ -47,8 +48,8 @@ Creates a React wrapper component for the WPKernel UI runtime.
 #### Returns
 
 ```ts
-(__namedParameters): ReactElement<{
-}>;
+(__namedParameters): ReactElement&lt;{
+}&gt;;
 ```
 
 ##### Parameters
@@ -61,15 +62,15 @@ Creates a React wrapper component for the WPKernel UI runtime.
 
 ##### Returns
 
-`ReactElement`<\{
-\}>
+`ReactElement`&lt;\{
+\}&gt;
 
 ---
 
 ### resetActionStoreRegistration()
 
 ```ts
-resetActionStoreRegistration: () => void;
+resetActionStoreRegistration: () =&gt; void;
 ```
 
 Resets the action store registration.
@@ -83,7 +84,7 @@ Resets the action store registration.
 ### restoreConsoleError()
 
 ```ts
-restoreConsoleError: () => void;
+restoreConsoleError: () =&gt; void;
 ```
 
 Restores the original console error function.
@@ -97,7 +98,7 @@ Restores the original console error function.
 ### suppressConsoleError()
 
 ```ts
-suppressConsoleError: (predicate) => void;
+suppressConsoleError: (predicate) =&gt; void;
 ```
 
 Suppresses console errors that match a given predicate.
@@ -106,7 +107,7 @@ Suppresses console errors that match a given predicate.
 
 ##### predicate
 
-(`args`) => `boolean`
+(`args`) =&gt; `boolean`
 
 #### Returns
 
@@ -117,7 +118,7 @@ Suppresses console errors that match a given predicate.
 ### teardown()
 
 ```ts
-teardown: () => void;
+teardown: () =&gt; void;
 ```
 
 Tears down the harness, restoring original globals.

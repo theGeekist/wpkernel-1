@@ -1,16 +1,16 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / AdapterExtensionContext
+[@wpkernel/cli](../index.md) / AdapterExtensionContext
 
-# Interface: AdapterExtensionContext<TConfigSurface, TIr>
+# Interface: AdapterExtensionContext&lt;TConfigSurface, TIr&gt;
 
 Execution context provided to adapter extensions.
 
 ## Extends
 
-- [`AdapterContext`](AdapterContext.md)<`TConfigSurface`, `TIr`>
+- [`AdapterContext`](AdapterContext.md)&lt;`TConfigSurface`, `TIr`&gt;
 
 ## Type Parameters
 
@@ -39,7 +39,7 @@ config: TConfigSurface;
 ### formatPhp()
 
 ```ts
-formatPhp: (filePath, contents) => Promise<string>;
+formatPhp: (filePath, contents) =&gt; Promise&lt;string&gt;;
 ```
 
 #### Parameters
@@ -54,14 +54,14 @@ formatPhp: (filePath, contents) => Promise<string>;
 
 #### Returns
 
-`Promise`<`string`>
+`Promise`&lt;`string`&gt;
 
 ---
 
 ### formatTs()
 
 ```ts
-formatTs: (filePath, contents) => Promise<string>;
+formatTs: (filePath, contents) =&gt; Promise&lt;string&gt;;
 ```
 
 #### Parameters
@@ -76,7 +76,7 @@ formatTs: (filePath, contents) => Promise<string>;
 
 #### Returns
 
-`Promise`<`string`>
+`Promise`&lt;`string`&gt;
 
 ---
 
@@ -103,7 +103,7 @@ outputDir: string;
 ### queueFile()
 
 ```ts
-queueFile: (filePath, contents) => Promise<void>;
+queueFile: (filePath, contents) =&gt; Promise&lt;void&gt;;
 ```
 
 #### Parameters
@@ -118,7 +118,7 @@ queueFile: (filePath, contents) => Promise<void>;
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;
 
 ---
 
@@ -145,7 +145,7 @@ tempDir: string;
 ### updateIr()
 
 ```ts
-updateIr: (ir) => void;
+updateIr: (ir) =&gt; void;
 ```
 
 #### Parameters

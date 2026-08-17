@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / WPKernelEventBus
+[@wpkernel/core](../index.md) / WPKernelEventBus
 
 # Class: WPKernelEventBus
 
@@ -30,7 +30,7 @@ new WPKernelEventBus(): WPKernelEventBus;
 ### emit()
 
 ```ts
-emit<K>(event, payload): void;
+emit&lt;K&gt;(event, payload): void;
 ```
 
 Emit the specified event and execute every registered listener. Any
@@ -62,7 +62,7 @@ outside of production.
 ### off()
 
 ```ts
-off<K>(event, listener): void;
+off&lt;K&gt;(event, listener): void;
 ```
 
 Remove a previously registered listener. Calling this method for a
@@ -82,7 +82,7 @@ listener that was never registered is a no-op.
 
 ##### listener
 
-[`Listener`](../type-aliases/Listener.md)<[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]>
+[`Listener`](../type-aliases/Listener.md)&lt;[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]&gt;
 
 #### Returns
 
@@ -93,7 +93,7 @@ listener that was never registered is a no-op.
 ### on()
 
 ```ts
-on<K>(event, listener): () => void;
+on&lt;K&gt;(event, listener): () =&gt; void;
 ```
 
 Register a listener that remains active until the returned teardown
@@ -113,7 +113,7 @@ function is called.
 
 ##### listener
 
-[`Listener`](../type-aliases/Listener.md)<[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]>
+[`Listener`](../type-aliases/Listener.md)&lt;[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]&gt;
 
 #### Returns
 
@@ -130,7 +130,7 @@ function is called.
 ### once()
 
 ```ts
-once<K>(event, listener): () => void;
+once&lt;K&gt;(event, listener): () =&gt; void;
 ```
 
 Register a listener that runs only once for the next occurrence of
@@ -150,7 +150,7 @@ the event and then tears itself down.
 
 ##### listener
 
-[`Listener`](../type-aliases/Listener.md)<[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]>
+[`Listener`](../type-aliases/Listener.md)&lt;[`WPKernelEventMap`](../type-aliases/WPKernelEventMap.md)\[`K`\]&gt;
 
 #### Returns
 

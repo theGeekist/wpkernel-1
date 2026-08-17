@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / InitWorkflowOptions
+[@wpkernel/cli](../index.md) / InitWorkflowOptions
 
 # Interface: InitWorkflowOptions
 
@@ -51,7 +51,7 @@ readonly optional installDependencies: boolean;
 ### installers?
 
 ```ts
-readonly optional installers: Partial<InitWorkflowInstallers>;
+readonly optional installers: Partial&lt;InitWorkflowInstallers&gt;;
 ```
 
 ---

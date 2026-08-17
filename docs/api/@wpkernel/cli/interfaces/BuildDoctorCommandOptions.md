@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/cli](../README.md) / BuildDoctorCommandOptions
+[@wpkernel/cli](../index.md) / BuildDoctorCommandOptions
 
 # Interface: BuildDoctorCommandOptions
 
@@ -13,7 +13,7 @@ Options for building the `doctor` command, allowing for dependency injection.
 ### buildReadinessRegistry()?
 
 ```ts
-readonly optional buildReadinessRegistry: (options) => ReadinessRegistry;
+readonly optional buildReadinessRegistry: (options) =&gt; ReadinessRegistry;
 ```
 
 Optional: Custom readiness registry builder.
@@ -33,7 +33,7 @@ Optional: Custom readiness registry builder.
 ### buildReporter()?
 
 ```ts
-readonly optional buildReporter: (options) => Reporter;
+readonly optional buildReporter: (options) =&gt; Reporter;
 ```
 
 Optional: Custom reporter builder function.
@@ -53,7 +53,7 @@ Optional: Custom reporter builder function.
 ### buildWorkspace()?
 
 ```ts
-readonly optional buildWorkspace: (root) => Workspace;
+readonly optional buildWorkspace: (root) =&gt; Workspace;
 ```
 
 Optional: Custom workspace builder function.
@@ -73,7 +73,7 @@ Optional: Custom workspace builder function.
 ### loadWPKernelConfig()?
 
 ```ts
-readonly optional loadWPKernelConfig: (options?) => Promise<LoadedWPKernelConfig>;
+readonly optional loadWPKernelConfig: (options?) =&gt; Promise&lt;LoadedWPKernelConfig&gt;;
 ```
 
 Optional: Custom function to load the WPKernel configuration.
@@ -94,7 +94,7 @@ canonicalised configuration metadata.
 
 #### Returns
 
-`Promise`<[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)>
+`Promise`&lt;[`LoadedWPKernelConfig`](LoadedWPKernelConfig.md)&gt;
 
 The validated wpk config and associated metadata.
 

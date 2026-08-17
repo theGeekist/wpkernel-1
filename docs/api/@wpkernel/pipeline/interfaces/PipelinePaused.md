@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelinePaused
+[@wpkernel/pipeline](../index.md) / PipelinePaused
 
-# Interface: PipelinePaused<TState>
+# Interface: PipelinePaused&lt;TState&gt;
 
 Discriminated result indicating that a resumable run suspended.
 
@@ -35,7 +35,7 @@ Runtime discriminant.
 ### snapshot
 
 ```ts
-readonly snapshot: PipelinePauseSnapshot<TState>;
+readonly snapshot: PipelinePauseSnapshot&lt;TState&gt;;
 ```
 
 Single-use capability required to resume the run.

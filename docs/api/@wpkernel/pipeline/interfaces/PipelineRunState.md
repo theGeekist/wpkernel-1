@@ -1,10 +1,10 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v1.4.0**](../index.md)
 
 ---
 
-[@wpkernel/pipeline](../README.md) / PipelineRunState
+[@wpkernel/pipeline](../index.md) / PipelineRunState
 
-# Interface: PipelineRunState<TArtifact, TDiagnostic>
+# Interface: PipelineRunState&lt;TArtifact, TDiagnostic&gt;
 
 Default successful result returned by a pipeline.
 
@@ -53,7 +53,7 @@ Diagnostics recorded during registration or this run.
 ### steps
 
 ```ts
-readonly steps: readonly PipelineStep<string>[];
+readonly steps: readonly PipelineStep&lt;string&gt;[];
 ```
 
 Helpers that actually executed, in execution order.

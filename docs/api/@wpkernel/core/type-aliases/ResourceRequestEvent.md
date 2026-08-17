@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / ResourceRequestEvent
+[@wpkernel/core](../index.md) / ResourceRequestEvent
 
 # Type Alias: ResourceRequestEvent
 
@@ -57,7 +57,7 @@ Timestamp when request started
 ### query?
 
 ```ts
-optional query: Record<string, unknown>;
+optional query: Record&lt;string, unknown&gt;;
 ```
 
 Query parameters (if any)

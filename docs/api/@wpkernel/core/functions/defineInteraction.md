@@ -1,15 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / defineInteraction
+[@wpkernel/core](../index.md) / defineInteraction
 
 # Function: defineInteraction()
 
 ```ts
-function defineInteraction<TEntity, TQuery, TStore, TActions>(
-	options
-): DefinedInteraction<InteractivityStoreResult>;
+function defineInteraction&lt;TEntity, TQuery, TStore, TActions&gt;(options): DefinedInteraction&lt;InteractivityStoreResult&gt;;
 ```
 
 Define an interactivity store that bridges a resource and optional actions to
@@ -47,7 +45,7 @@ await TestimonialReview.store.actions.approve({ id: 101 });
 
 ### TStore
 
-`TStore` _extends_ `Record`<`string`, `unknown`> = `Record`<`string`, `unknown`>
+`TStore` _extends_ `Record`&lt;`string`, `unknown`&gt; = `Record`&lt;`string`, `unknown`&gt;
 
 ### TActions
 
@@ -57,8 +55,8 @@ await TestimonialReview.store.actions.approve({ id: 101 });
 
 ### options
 
-[`DefineInteractionOptions`](../interfaces/DefineInteractionOptions.md)<`TEntity`, `TQuery`, `TStore`, `TActions`>
+[`DefineInteractionOptions`](../interfaces/DefineInteractionOptions.md)&lt;`TEntity`, `TQuery`, `TStore`, `TActions`&gt;
 
 ## Returns
 
-[`DefinedInteraction`](../interfaces/DefinedInteraction.md)<[`InteractivityStoreResult`](../type-aliases/InteractivityStoreResult.md)>
+[`DefinedInteraction`](../interfaces/DefinedInteraction.md)&lt;[`InteractivityStoreResult`](../type-aliases/InteractivityStoreResult.md)&gt;

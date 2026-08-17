@@ -1,8 +1,8 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/ui](../README.md) / useHoverPrefetch
+[@wpkernel/ui](../index.md) / useHoverPrefetch
 
 # Function: useHoverPrefetch()
 
@@ -16,13 +16,13 @@ Triggers a prefetch when the user hovers over an element.
 
 ### ref
 
-`RefObject`<`HTMLElement`>
+`RefObject`&lt;`HTMLElement`&gt;
 
 A React ref to the element to monitor.
 
 ### fn
 
-() => `void`
+() =&gt; `void`
 
 The function to call to trigger the prefetch.
 

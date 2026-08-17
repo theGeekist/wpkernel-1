@@ -1,17 +1,15 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/core](../README.md) / defineResource
+[@wpkernel/core](../index.md) / defineResource
 
 # Function: defineResource()
 
 ## Call Signature
 
 ```ts
-function defineResource<T, TQuery, TRoutes>(
-	config
-): ResourceObject<T, TQuery, TRoutes>;
+function defineResource&lt;T, TQuery, TRoutes&gt;(config): ResourceObject&lt;T, TQuery, TRoutes&gt;;
 ```
 
 Define a resource with typed REST client
@@ -47,13 +45,13 @@ Query parameters type for list operations (e.g., { search?: string })
 
 #### config
 
-[`ResourceConfig`](../type-aliases/ResourceConfig.md)<`T`, `TQuery`, `TRoutes`>
+[`ResourceConfig`](../type-aliases/ResourceConfig.md)&lt;`T`, `TQuery`, `TRoutes`&gt;
 
 Resource configuration
 
 ### Returns
 
-[`ResourceObject`](../type-aliases/ResourceObject.md)<`T`, `TQuery`, `TRoutes`>
+[`ResourceObject`](../type-aliases/ResourceObject.md)&lt;`T`, `TQuery`, `TRoutes`&gt;
 
 Resource object with client methods and metadata
 
@@ -64,13 +62,7 @@ DeveloperError if configuration is invalid
 ## Call Signature
 
 ```ts
-function defineResource<Config>(
-	config
-): ResourceObject<
-	InferResourceDefinition<Config>['entity'],
-	InferResourceDefinition<Config>['query'],
-	InferResourceDefinition<Config>['routes']
->;
+function defineResource&lt;Config&gt;(config): ResourceObject&lt;InferResourceDefinition&lt;Config&gt;["entity"], InferResourceDefinition&lt;Config&gt;["query"], InferResourceDefinition&lt;Config&gt;["routes"]&gt;;
 ```
 
 Define a resource with typed REST client
@@ -88,19 +80,19 @@ Creates a resource object with:
 
 #### Config
 
-`Config` _extends_ [`ResourceConfig`](../type-aliases/ResourceConfig.md)<`unknown`, `unknown`, [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)>
+`Config` _extends_ [`ResourceConfig`](../type-aliases/ResourceConfig.md)&lt;`unknown`, `unknown`, [`ResourceRoutes`](../type-aliases/ResourceRoutes.md)&gt;
 
 ### Parameters
 
 #### config
 
-`ConfigWithInferredCapabilities`<`Config`>
+`ConfigWithInferredCapabilities`&lt;`Config`&gt;
 
 Resource configuration
 
 ### Returns
 
-[`ResourceObject`](../type-aliases/ResourceObject.md)<`InferResourceDefinition`<`Config`>\[`"entity"`\], `InferResourceDefinition`<`Config`>\[`"query"`\], `InferResourceDefinition`<`Config`>\[`"routes"`\]>
+[`ResourceObject`](../type-aliases/ResourceObject.md)&lt;`InferResourceDefinition`&lt;`Config`&gt;\[`"entity"`\], `InferResourceDefinition`&lt;`Config`&gt;\[`"query"`\], `InferResourceDefinition`&lt;`Config`&gt;\[`"routes"`\]&gt;
 
 Resource object with client methods and metadata
 

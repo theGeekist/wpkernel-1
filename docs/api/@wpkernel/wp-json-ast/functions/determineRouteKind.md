@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
 ---
 
-[@wpkernel/wp-json-ast](../README.md) / determineRouteKind
+[@wpkernel/wp-json-ast](../index.md) / determineRouteKind
 
 # Function: determineRouteKind()
 
@@ -26,7 +26,7 @@ function determineRouteKind(
 
 ### canonicalBasePaths
 
-`ReadonlySet`<`string`>
+`ReadonlySet`&lt;`string`&gt;
 
 ## Returns
 
