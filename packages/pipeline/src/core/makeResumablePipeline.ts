@@ -1,8 +1,8 @@
-import { createPipelineRuntime } from './pipeline-runtime';
-import { maybeThen } from './async-utils';
-import { initAgnosticResumableRunner } from './runner';
-import { isPaused } from './runner/stage-factories';
-import type { AgnosticState } from './runner/types';
+import { createPipelineRuntime } from './pipeline-runtime.js';
+import { maybeThen } from './async-utils.js';
+import { initAgnosticResumableRunner } from './runner/index.js';
+import { isPaused } from './runner/stage-factories.js';
+import type { AgnosticState } from './runner/types.js';
 import type {
 	AgnosticPipelineOptions,
 	HelperKind,
@@ -13,7 +13,7 @@ import type {
 	PipelinePaused,
 	PipelineStageState,
 	ResumablePipeline,
-} from './types';
+} from './types.js';
 
 /**
  * Creates a resumable form of {@link ResumablePipeline} for process-local

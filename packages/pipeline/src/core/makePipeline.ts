@@ -1,5 +1,5 @@
-import { createPipelineRuntime } from './pipeline-runtime';
-import { initAgnosticRunner } from './runner';
+import { createPipelineRuntime } from './pipeline-runtime.js';
+import { initAgnosticRunner } from './runner/index.js';
 import type {
 	AgnosticPipeline,
 	AgnosticPipelineOptions,
@@ -7,7 +7,7 @@ import type {
 	PipelineDiagnostic,
 	PipelineReporter,
 	PipelineRunState,
-} from './types';
+} from './types.js';
 
 /**
  * Creates an agnostic pipeline whose helper kinds, state and stage

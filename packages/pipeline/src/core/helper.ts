@@ -4,7 +4,7 @@ import type {
 	HelperKind,
 	HelperNext,
 	PipelineReporter,
-} from './types';
+} from './types.js';
 
 /**
  * Creates a frozen {@link Helper} descriptor from declarative registration

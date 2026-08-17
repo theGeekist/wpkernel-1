@@ -4,9 +4,9 @@ import type {
 	PipelineExtensionHookOptions,
 	PipelineExtensionHookResult,
 	PipelineExtensionLifecycle,
-} from '../types';
-import { maybeThen, maybeTry, processSequentially } from '../async-utils';
-import { runRollbackStack } from '../rollback';
+} from '../types.js';
+import { maybeThen, maybeTry, processSequentially } from '../async-utils.js';
+import { runRollbackStack } from '../rollback.js';
 
 /**
  * An extension hook entry with its unique key.

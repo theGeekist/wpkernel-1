@@ -16,6 +16,9 @@
 		"typecheck": {
 			"outputs": ["*.tsbuildinfo"]
 		},
+		"typecheck:tests": {
+			"outputs": []
+		},
 		"clean": {
 			"cache": false
 		},

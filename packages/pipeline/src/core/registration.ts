@@ -5,11 +5,11 @@ import type {
 	PipelineExtensionHookRegistration,
 	PipelineExtensionLifecycle,
 	PipelineReporter,
-} from './types';
-import type { RegisteredHelper } from './dependency-graph';
-import type { ExtensionHookEntry } from './extensions';
-import { createHelperId } from './dependency-graph';
-import type { ErrorFactory } from './error-factory';
+} from './types.js';
+import type { RegisteredHelper } from './dependency-graph.js';
+import type { ExtensionHookEntry } from './extensions/index.js';
+import { createHelperId } from './dependency-graph.js';
+import type { ErrorFactory } from './error-factory.js';
 
 /**
  * Registers a helper by validating its kind and checking for override conflicts.

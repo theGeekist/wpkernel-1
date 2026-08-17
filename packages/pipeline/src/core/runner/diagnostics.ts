@@ -2,7 +2,7 @@ import type {
 	HelperDescriptor,
 	PipelineDiagnostic,
 	PipelineReporter,
-} from '../types';
+} from '../types.js';
 
 /**
  * Agnostic configuration for the diagnostic manager.
