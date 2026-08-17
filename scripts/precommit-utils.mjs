@@ -458,6 +458,7 @@ export function isRepoWideChange(file) {
 	if (
 		f.startsWith('scripts/') ||
 		f.startsWith('.github/') ||
+		f.startsWith('.husky/') ||
 		f.startsWith('.vscode/') ||
 		f.startsWith('.idea/')
 	) {
