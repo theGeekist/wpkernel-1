@@ -1,12 +1,12 @@
 import {
 	createDependencyGraph,
 	type RegisteredHelper,
-} from '../dependency-graph';
+} from '../dependency-graph.js';
 import type {
 	AgnosticRunContext,
 	AgnosticRunnerDependencies,
 	AgnosticState,
-} from './types';
+} from './types.js';
 import type {
 	PipelineReporter,
 	PipelineDiagnostic,
@@ -14,8 +14,8 @@ import type {
 	PipelinePauseSnapshot,
 	PipelineStep,
 	HelperDescriptor,
-} from '../types';
-import { rollbackJournalState } from './state';
+} from '../types.js';
+import { rollbackJournalState } from './state.js';
 
 /**
  * Prepares the pipeline execution context.

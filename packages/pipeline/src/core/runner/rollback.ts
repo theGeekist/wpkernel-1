@@ -1,11 +1,11 @@
-import { maybeThen, maybeTry, processSequentially } from '../async-utils';
-import { createRollbackErrorMetadata, runRollbackStack } from '../rollback';
-import { rollbackExtensionResults } from '../extensions';
+import { maybeThen, maybeTry, processSequentially } from '../async-utils.js';
+import { createRollbackErrorMetadata, runRollbackStack } from '../rollback.js';
+import { rollbackExtensionResults } from '../extensions/index.js';
 import type {
 	MaybePromise,
 	PipelineExtensionRollbackErrorMetadata,
-} from '../types';
-import type { PipelineRollback } from '../rollback';
+} from '../types.js';
+import type { PipelineRollback } from '../rollback.js';
 import type {
 	ExtensionLifecycleState,
 	Halt,
@@ -13,8 +13,8 @@ import type {
 	RollbackContext,
 	RollbackEntry,
 	RollbackJournalEntry,
-} from './types';
-import { markRollbackApplied, rollbackJournalState } from './state';
+} from './types.js';
+import { markRollbackApplied, rollbackJournalState } from './state.js';
 
 const snapshotRollback = (rollback: PipelineRollback): PipelineRollback =>
 	Object.freeze({

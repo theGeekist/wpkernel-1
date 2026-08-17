@@ -1,5 +1,5 @@
-import type { RegisteredHelper } from '../dependency-graph';
-import type { ErrorFactory } from '../error-factory';
+import type { RegisteredHelper } from '../dependency-graph.js';
+import type { ErrorFactory } from '../error-factory.js';
 import type {
 	Helper,
 	HelperApplyResult,
@@ -17,12 +17,15 @@ import type {
 	PipelineExtensionRollbackErrorMetadata,
 	PipelineReporter,
 	PipelineStep,
-} from '../types';
+} from '../types.js';
 
-import type { PipelineRollback } from '../rollback';
-import type { AgnosticDiagnosticManager } from './diagnostics';
-import type { ExtensionHookEntry, ExtensionHookExecution } from '../extensions';
-import type { rollbackJournalState } from './state';
+import type { PipelineRollback } from '../rollback.js';
+import type { AgnosticDiagnosticManager } from './diagnostics.js';
+import type {
+	ExtensionHookEntry,
+	ExtensionHookExecution,
+} from '../extensions/index.js';
+import type { rollbackJournalState } from './state.js';
 
 export interface ExtensionLifecycleState<TContext, TOptions, TUserState> {
 	readonly artifact: TUserState;

@@ -3,12 +3,15 @@
 All notable changes to `@wpkernel/pipeline` are recorded here. The package is
 versioned and released independently from the WPKernel monorepo.
 
-## Unreleased
+## 1.4.1 - 2026-08-18
 
 ### Fixed
 
 - Rejected standard-pipeline configurations where fragment and builder helper
   kinds are identical, preventing ambiguous registration and execution.
+- Emitted explicit `.js` specifiers for relative ESM declaration imports so
+  clean packed consumers typecheck under strict NodeNext resolution, and added
+  NodeNext to packed archive qualification.
 
 ## 1.4.0 — 2026-08-12
 

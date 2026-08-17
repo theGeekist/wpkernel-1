@@ -10,7 +10,7 @@ import type {
 	PipelineStep,
 	PipelineExtension,
 	PipelineExtensionRollbackErrorMetadata,
-} from '../core/types';
+} from '../core/types.js';
 export type {
 	PipelineExtensionRollbackErrorMetadata,
 	PipelineReporter,

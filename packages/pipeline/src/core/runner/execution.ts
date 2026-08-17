@@ -5,21 +5,21 @@ import type {
 	Halt,
 	PipelineStage,
 	PipelineStepResult,
-} from './types';
+} from './types.js';
 import type {
 	PipelineReporter,
 	PipelineDiagnostic,
 	MaybePromise,
 	PipelinePauseSnapshot,
 	PipelinePaused,
-} from '../types';
-import { adoptMaybePromise, maybeThen, maybeTry } from '../async-utils';
-import { createAgnosticStages } from './program';
-import { isHalt, isPaused } from './stage-factories';
-import { prepareResumeContext } from './context';
-import { rollbackStateToHalt as rollbackRunStateToHalt } from './rollback';
-import { commitPendingExtensions } from './commit';
-import { isRollbackApplied } from './state';
+} from '../types.js';
+import { adoptMaybePromise, maybeThen, maybeTry } from '../async-utils.js';
+import { createAgnosticStages } from './program.js';
+import { isHalt, isPaused } from './stage-factories.js';
+import { prepareResumeContext } from './context.js';
+import { rollbackStateToHalt as rollbackRunStateToHalt } from './rollback.js';
+import { commitPendingExtensions } from './commit.js';
+import { isRollbackApplied } from './state.js';
 
 const applyStageIndex = <TState extends { stageIndex?: number }>(
 	state: TState,

@@ -380,6 +380,24 @@ try {
 			2
 		)
 	);
+	writeFileSync(
+		join(fixtureRoot, 'tsconfig.nodenext.json'),
+		JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'NodeNext',
+					moduleResolution: 'NodeNext',
+					noEmit: true,
+					skipLibCheck: false,
+					strict: true,
+					target: 'ES2022',
+				},
+				include: ['src/**/*.ts'],
+			},
+			null,
+			2
+		)
+	);
 	mkdirSync(join(fixtureRoot, 'src'), { recursive: true });
 	writeFileSync(join(fixtureRoot, 'src', 'index.ts'), source);
 
@@ -393,6 +411,14 @@ try {
 	execFileSync(
 		process.execPath,
 		[typescriptBin, '--project', 'tsconfig.json'],
+		{
+			cwd: fixtureRoot,
+			stdio: 'pipe',
+		}
+	);
+	execFileSync(
+		process.execPath,
+		[typescriptBin, '--project', 'tsconfig.nodenext.json'],
 		{
 			cwd: fixtureRoot,
 			stdio: 'pipe',
@@ -418,7 +444,9 @@ try {
 		stdio: 'pipe',
 	});
 
-	console.log(`Packed API qualification passed: ${basename(tarballPath)}`);
+	console.log(
+		`Packed Bundler and NodeNext API qualification passed: ${basename(tarballPath)}`
+	);
 } finally {
 	rmSync(qualificationRoot, { recursive: true, force: true });
 }

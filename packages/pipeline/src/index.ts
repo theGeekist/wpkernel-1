@@ -1,18 +1,18 @@
 // Main API exports
-export { createHelper } from './core/helper';
-export { createPipeline } from './standard-pipeline/createPipeline';
-export { makePipeline } from './core/makePipeline';
-export { makeResumablePipeline } from './core/makeResumablePipeline';
-export { createPipelineExtension } from './core/createExtension';
-export type { CreatePipelineExtensionOptions } from './core/createExtension';
-export type { ErrorFactory } from './core/error-factory';
+export { createHelper } from './core/helper.js';
+export { createPipeline } from './standard-pipeline/createPipeline.js';
+export { makePipeline } from './core/makePipeline.js';
+export { makeResumablePipeline } from './core/makeResumablePipeline.js';
+export { createPipelineExtension } from './core/createExtension.js';
+export type { CreatePipelineExtensionOptions } from './core/createExtension.js';
+export type { ErrorFactory } from './core/error-factory.js';
 
 // Rollback utilities
-export { createPipelineRollback } from './core/rollback';
+export { createPipelineRollback } from './core/rollback.js';
 export type {
 	PipelineRollback,
 	PipelineRollbackErrorMetadata,
-} from './core/rollback';
+} from './core/rollback.js';
 
 // Type exports (all types consumers need)
 export type {
@@ -62,8 +62,8 @@ export type {
 	PipelineHelperRollback,
 	PipelineStageDiagnostics,
 	PipelineHalt,
-} from './core/types';
-import type { PipelineHalt } from './core/types';
+} from './core/types.js';
+import type { PipelineHalt } from './core/types.js';
 
 /**
  * Concise alias for a terminal stage result.
@@ -84,7 +84,7 @@ export type {
 	PipelineExecutionMetadata,
 	FragmentFinalizationMetadata,
 	StandardPipelineExtension,
-} from './standard-pipeline/types';
+} from './standard-pipeline/types.js';
 
 // Re-export async utilities for helper authors
 export {
@@ -92,4 +92,4 @@ export {
 	maybeAll,
 	maybeThen,
 	maybeTry,
-} from './core/async-utils';
+} from './core/async-utils.js';

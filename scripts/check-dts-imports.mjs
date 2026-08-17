@@ -94,17 +94,13 @@ function rewriteImportExport(sourceText) {
 				return ts.visitEachChild(node, visitor, ts.nullTransformationContext);
 			}
 
-			const { specifier, typeOnly } = normalizeModuleSpecifier(moduleSpecifier.text);
-			const isTypeOnly = false;
-			if (
-				specifier !== node.moduleSpecifier.text ||
-				isTypeOnly !== node.isTypeOnly
-			) {
+			const { specifier } = normalizeModuleSpecifier(moduleSpecifier.text);
+			if (specifier !== node.moduleSpecifier.text) {
 				changed = true;
 				return ts.factory.updateExportDeclaration(
 					node,
 					node.modifiers,
-					isTypeOnly,
+					node.isTypeOnly,
 					node.exportClause,
 					ts.factory.createStringLiteral(specifier),
 					node.assertClause

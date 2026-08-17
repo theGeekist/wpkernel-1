@@ -6,9 +6,9 @@ import type {
 	HelperNext,
 	MaybePromise,
 	PipelineReporter,
-} from './types';
-import type { RegisteredHelper } from './dependency-graph';
-import { adoptMaybePromise, maybeThen, maybeTry } from './async-utils';
+} from './types.js';
+import type { RegisteredHelper } from './dependency-graph.js';
+import { adoptMaybePromise, maybeThen, maybeTry } from './async-utils.js';
 
 export interface HelperExecutionResult<TOutput> {
 	readonly visited: Set<string>;

@@ -1,4 +1,4 @@
-import type { HelperDescriptor, HelperKind } from './types';
+import type { HelperDescriptor, HelperKind } from './types.js';
 
 /**
  * A registered helper with its unique identifier and registration index.
