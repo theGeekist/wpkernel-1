@@ -19,6 +19,11 @@ sync process. If that process cannot be identified or is unavailable, stop and
 ask rather than inventing a replacement. Preserve the repository-local Git
 author identity unless an explicit instruction says otherwise.
 
+The canonical operational procedure is
+[`docs/maintainers/repository-publication.md`](docs/maintainers/repository-publication.md).
+Read it before changing remotes, public workflows, Pages configuration, branch
+history, tags, releases, or publication credentials.
+
 ## Generated API documentation
 
 `docs/api` is generated output. Update public source TSDoc, then regenerate with

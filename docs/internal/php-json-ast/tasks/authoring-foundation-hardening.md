@@ -3,7 +3,7 @@ architecture_version: 1
 id: authoring-foundation-hardening
 title: 'Harden generic authoring and codec boundaries'
 stage: authoring
-status: review
+status: done
 priority: critical
 evidence_milestone: null
 replaced_by: []
@@ -41,7 +41,7 @@ required_reading:
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-17
 ---
 
 # authoring-foundation-hardening: Harden generic authoring and codec boundaries
@@ -117,20 +117,28 @@ None recorded.
 
 ### Result
 
-Implementation corrections are present in the working tree and awaiting final review.
+Completed the authoring provenance, accessor-safe collection, codec key and
+node identity corrections. Runtime descriptor brands are now module-private
+`WeakSet` membership rather than discoverable symbol properties.
 
 ### Files changed
 
-See the exact write scope and current Git diff.
+All package source and test paths declared in `write_scope`.
 
 ### Verification evidence
 
-Pending.
+- `pnpm --filter @wpkernel/php-json-ast test -- --runInBand`: 29 suites and
+  187 tests passed in the qualified recovery run.
+- Repository-wide pre-commit coverage and source/test typechecks passed in the
+  primary checkout.
+- `pnpm --filter @wpkernel/php-json-ast typecheck`: passed.
+- `pnpm exec prettier --check 'packages/php-json-ast/src/**/*.ts' docs/internal/php-json-ast/tasks/authoring-foundation-hardening.md`: passed.
+- `git diff --check`: passed.
 
 ### Remaining risks
 
-Pending implementation or review.
+JavaScript `Proxy` traps remain outside the plain-record authoring contract.
 
 ### Recommended next task
 
-Follow the dependency graph in [`../ROADMAP.md`](../ROADMAP.md).
+`authoring-declarations-contract-v1`.

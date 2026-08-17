@@ -3,7 +3,7 @@ architecture_version: 1
 id: wordpress-mutation-hardening
 title: 'Harden WordPress mutation lowering'
 stage: wordpress
-status: review
+status: done
 priority: critical
 evidence_milestone: null
 replaced_by: []
@@ -33,7 +33,7 @@ required_reading:
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-17
 ---
 
 # wordpress-mutation-hardening: Harden WordPress mutation lowering
@@ -109,20 +109,32 @@ None recorded.
 
 ### Result
 
-Implementation corrections are present in the working tree and awaiting final review.
+Completed WordPress mutation lowering so generated meta and taxonomy helpers
+read parameters through `WP_REST_Request::get_param()` instead of emitting the
+non-existent `rest_sanitize_value_from_request()` function.
 
 ### Files changed
 
-See the exact write scope and current Git diff.
+All WordPress source, helper tests and downstream CLI snapshot paths declared
+in `write_scope`.
 
 ### Verification evidence
 
-Pending.
+- `pnpm --filter @wpkernel/wp-json-ast test -- helpers.test.ts --runInBand`:
+  2 suites, 14 tests and 5 snapshots passed.
+- `pnpm --filter @wpkernel/cli test -- resourceController.test.ts --runInBand`:
+  1 suite, 10 tests and 8 snapshots passed.
+- Focused qualification in the primary checkout passed 8 WordPress tests and
+  5 snapshots, plus the repository-wide pre-commit coverage gate.
+- `pnpm --filter @wpkernel/wp-json-ast typecheck`: passed.
+- Focused Prettier check and `git diff --check`: passed.
 
 ### Remaining risks
 
-Pending implementation or review.
+Request sanitisation and validation still depend on normal WordPress REST route
+dispatch applying the declared argument schema before the handler runs.
 
 ### Recommended next task
 
-Follow the dependency graph in [`../ROADMAP.md`](../ROADMAP.md).
+`wordpress-bootstrap-migration-v1` after
+`compiler-public-entrypoints-v1` is done.

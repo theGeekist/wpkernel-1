@@ -2,18 +2,17 @@
 
 Architecture version: 1
 Projection contract: task front matter under [`tasks/`](tasks/)
-Updated: 2026-08-13
+Updated: 2026-08-17
 
-## Current execution
+## Completed recovery work
 
-- `authoring-foundation-hardening`: review, owns the existing generic authoring
-  and codec safety corrections.
-- `wordpress-mutation-hardening`: review, owns the current WP-post mutation
-  correctness corrections.
-- `cli-admin-generation-hardening`: review, owns the current generated admin
-  capability and form corrections.
+- `authoring-foundation-hardening`: done, with package tests and typecheck.
+- `wordpress-mutation-hardening`: done, with WordPress and downstream CLI
+  snapshot qualification.
+- `cli-admin-generation-hardening`: done, with generator tests and CLI
+  typecheck.
 
-These scopes are disjoint. They may coexist in the primary checkout.
+No implementation task currently holds an active write scope.
 
 ## Ready parallel frontier
 

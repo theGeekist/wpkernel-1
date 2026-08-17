@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Fixed
+
+- Generated admin screens and form actions now respect the resource's declared
+  create, item-read, update and delete routes instead of exposing unavailable
+  controls or fabricating an item-fetch URL.
+- Generated WordPress post forms preserve taxonomy alias keys, support configured
+  content and excerpt fields, and submit intentional empty string values.
+
 ### In progress
 
 - **Phase 8 placeholder** - Task 46 will collect incremental diagnostics (starting with the CLI LogLayer reporter) after the plugin bootstrap flow ships.

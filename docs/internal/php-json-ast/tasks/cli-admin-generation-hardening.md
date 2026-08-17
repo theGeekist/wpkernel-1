@@ -3,7 +3,7 @@ architecture_version: 1
 id: cli-admin-generation-hardening
 title: 'Harden generated admin capabilities and form fields'
 stage: cli
-status: review
+status: done
 priority: critical
 evidence_milestone: null
 replaced_by: []
@@ -34,7 +34,7 @@ required_reading:
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-17
 ---
 
 # cli-admin-generation-hardening: Harden generated admin capabilities and form fields
@@ -110,20 +110,28 @@ None recorded.
 
 ### Result
 
-Implementation corrections are present in the working tree and awaiting final review.
+Completed route-aware generated actions, taxonomy alias field identity,
+content and excerpt form support, intentional empty-string payload handling and
+removal of the fabricated item-fetch fallback.
 
 ### Files changed
 
-See the exact write scope and current Git diff.
+All CLI generator source and test paths declared in `write_scope`.
 
 ### Verification evidence
 
-Pending.
+- Focused CLI qualification in the primary checkout passed 4 suites, 28 tests
+  and 8 snapshots.
+- `pnpm --filter @wpkernel/cli typecheck` and `typecheck:tests` passed.
+- Focused Prettier check and `git diff --check`: passed.
 
 ### Remaining risks
 
-Pending implementation or review.
+Route capability inference recognises the declared identity parameter in colon
+or brace form. Custom route templates outside that IR convention remain out of
+scope. Content and excerpt deliberately use the current text-field surface,
+not a rich editor.
 
 ### Recommended next task
 
-Follow the dependency graph in [`../ROADMAP.md`](../ROADMAP.md).
+`cli-migration-contract-v1`, then `cli-codemod-repair-v1`.
