@@ -29,7 +29,7 @@ write_scope:
     - packages/pipeline/README.md
     - docs/packages/pipeline.md
     - docs/packages/pipeline/**
-    - docs/api/@wpkernel/pipeline/**
+    - docs/api/@wpkernel/**
 required_reading:
     - path: docs/internal/pipeline/contracts/v2-public-contract.md
       reason: Document the implemented contract without widening it.
@@ -45,7 +45,7 @@ read_scope:
     - docs/packages/pipeline/**
     - scripts/docs/**
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 ---
 
 # P2-008: Publish the v2 contract through TSDoc and authored documentation
@@ -63,8 +63,11 @@ become the authoring surface.
 - A v1 migration guide names every breaking semantic change.
 - The prose retains Pipeline's voice: direct claims, concrete typed examples,
   explicit limits and no framework theatre.
-- `docs/api` is regenerated, never hand-edited.
-- Site output contains the root and Pipeline package API index routes.
+- Source TSDoc and authored pages are the authoring surfaces. The coordinator
+  regenerates the complete `docs/api/@wpkernel` projection; it is never
+  hand-edited or partially regenerated.
+- Site output contains the authored `/packages/pipeline.html` page and the
+  generated `/api/@wpkernel/pipeline/README.html` package landing page.
 
 ## Verification
 

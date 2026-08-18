@@ -1,11 +1,15 @@
 # @wpkernel/pipeline
 
-`@wpkernel/pipeline` delivers the helper DAG, extension hooks, and rollback guarantees shared by the kernel, CLI, and codemod packages. Use the architecture guide to understand execution phases and the framework contributor guide to extend helpers safely.
+`@wpkernel/pipeline` 1.4.1 provides dependency-validated serial helper
+composition, extension hooks, process-local suspension and rollback guarantees
+shared by the kernel, CLI and codemod packages. It validates a helper graph,
+then executes one ordered transformation chain. It is not a concurrent dataflow
+scheduler.
 
-The [pipeline hardening plan](./pipeline/hardening-plan.md) tracks the
-cross-package contract work, verification state, and independent release gates
-required before downstream systems treat the package as a stable execution
-substrate.
+Use the architecture guide to understand the released execution model and the
+framework contributor guide to extend helpers without relying on private runner
+types. The older [hardening record](./pipeline/hardening-plan.md) is retained as
+release history, not current guidance.
 
 ## Public custom-stage contract
 
@@ -29,8 +33,8 @@ The Phase 6 exported type set is:
 - `PipelineHalt`
 
 These names were introduced in 1.2.0 and pass external packed-artifact
-qualification through the current 1.4 line.
+qualification in the current 1.4.1 release.
 
 - [Architecture Guide](./pipeline/architecture.md)
 - [Framework Contributors](./pipeline/framework-contributors.md)
-- [Hardening Plan](./pipeline/hardening-plan.md)
+- [Historical Hardening Record](./pipeline/hardening-plan.md)

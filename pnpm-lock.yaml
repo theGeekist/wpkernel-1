@@ -36,8 +36,8 @@ importers:
         specifier: ^9.39.1
         version: 9.39.1
       '@geekist/task-graph':
-        specifier: github:theGeekist/task-graph#904ebcb5e326ebbca0382aaee5724b1838af4d75
-        version: https://codeload.github.com/theGeekist/task-graph/tar.gz/904ebcb5e326ebbca0382aaee5724b1838af4d75(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
+        specifier: 0.1.0-beta.2
+        version: 0.1.0-beta.2(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
       '@kucrut/vite-for-wp':
         specifier: ^0.12.0
         version: 0.12.0(rollup-plugin-external-globals@0.13.0(rollup@4.53.2))(vite-plugin-external@6.2.2)(vite@7.2.2(@types/node@24.10.1)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
@@ -1980,9 +1980,8 @@ packages:
   '@formatjs/intl-localematcher@0.6.2':
     resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
 
-  '@geekist/task-graph@https://codeload.github.com/theGeekist/task-graph/tar.gz/904ebcb5e326ebbca0382aaee5724b1838af4d75':
-    resolution: {tarball: https://codeload.github.com/theGeekist/task-graph/tar.gz/904ebcb5e326ebbca0382aaee5724b1838af4d75}
-    version: 0.1.0-beta.1
+  '@geekist/task-graph@0.1.0-beta.2':
+    resolution: {integrity: sha512-IRwNTOiWGP1VmJKe2A+PftHtlKdVmKYP2D8oV4UWsAQgy6AYO0ubHTv/Mt7ORE+79JFIAN2+cksJPuFraRVzIQ==}
     engines: {bun: '>=1.3.14', node: '>=22'}
     hasBin: true
 
@@ -4689,8 +4688,8 @@ packages:
   '@wpkernel/pipeline@0.12.5-beta.0':
     resolution: {integrity: sha512-vQ1/6TDxgwgxVtj+rtpJ8e14SNsqlIc7I2YQdESDX28L6czPv/2Bmh9pTzc0dLRmxmQLf3K0Xot3YFP6YgOllg==}
 
-  '@wpkernel/pipeline@1.2.1':
-    resolution: {integrity: sha512-P9UiyLXlF7hrp/B3dlfO6W+p/qe6HLNhY0DdTvzBhbOY+FttsAm9fGubKO+3mBRFtWSMw3p+Q8BGcIHDhdLgTg==}
+  '@wpkernel/pipeline@1.4.1':
+    resolution: {integrity: sha512-pblJv79K7P6GATfggEWHv2dKaywdhw3wZf617xI+MzmWirRfoOmkBCea6cXl+BgP4aefOLUy8BzqM15FiAZDdA==}
 
   '@wpkernel/ui@0.12.5-beta.0':
     resolution: {integrity: sha512-Bt4MzU++FQRrGMSLq4EP/O4q8lPB/CDfwnxs6cD45yAxeNQcaXXU0R01MmvIP7KjzUyBYSALSEq6pm6Gk/ei1w==}
@@ -13703,10 +13702,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@geekist/task-graph@https://codeload.github.com/theGeekist/task-graph/tar.gz/904ebcb5e326ebbca0382aaee5724b1838af4d75(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)':
+  '@geekist/task-graph@0.1.0-beta.2(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)':
     dependencies:
       '@vitejs/plugin-react': 4.7.0(vite@6.4.3(@types/node@24.10.1)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
-      '@wpkernel/pipeline': 1.2.1
+      '@wpkernel/pipeline': 1.4.1
       '@xyflow/react': 12.11.3(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       elkjs: 0.12.0
       react: 18.3.1
@@ -17508,7 +17507,7 @@ snapshots:
 
   '@wpkernel/pipeline@0.12.5-beta.0': {}
 
-  '@wpkernel/pipeline@1.2.1': {}
+  '@wpkernel/pipeline@1.4.1': {}
 
   '@wpkernel/ui@0.12.5-beta.0(@testing-library/react@16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@wordpress/components@30.8.0(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@wordpress/data@10.35.0(react@18.3.1))(@wordpress/dataviews@9.1.0(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@wordpress/element@6.35.0)(@wpkernel/core@0.12.5-beta.0(@loglayer/shared@3.0.1)(@loglayer/transport-simple-pretty-terminal@2.2.13)(@loglayer/transport@2.3.9)(@wordpress/api-fetch@7.35.0)(@wordpress/data@10.35.0(react@18.3.1))(@wordpress/element@6.35.0)(@wordpress/hooks@4.35.0)(@wordpress/interactivity@6.35.0)(loglayer@6.10.0))(react@18.3.1)':
     dependencies:

@@ -5,17 +5,19 @@ Role: dependency and execution guidance; task front matter owns status
 
 ## Release and consumer lanes
 
-The 1.4.1 patch and v2 are separate release lines:
+The 1.4.1 patch and v2 are separate release lines. The compatibility lane is
+now complete:
 
 ```text
-publish Pipeline 1.4.1
-  -> qualify Task Graph against exact 1.4.1
-  -> release Task Graph
-  -> update WPKernel's exact Task Graph dependency and lockfile
+Pipeline 1.4.1 published from wpkernel/wpkernel
+  -> Task Graph qualified against exact 1.4.1
+  -> Task Graph 0.1.0-beta.2 published
+  -> WPKernel pins exact Task Graph 0.1.0-beta.2
 ```
 
-Do not override Task Graph's published 1.2.1 dependency from this repository.
-Its own repository must qualify and release the corrected dependency first.
+The published Task Graph manifest now owns the exact Pipeline 1.4.1 dependency.
+WPKernel does not override it. Release evidence and the remaining external
+llm-core lane are recorded in [`EXTERNAL-LANES.md`](EXTERNAL-LANES.md).
 
 The llm-core specification compiler has a separate early migration:
 
@@ -56,4 +58,7 @@ shared root exports and therefore integrates those lanes serially.
 Implementation, packed qualification, downstream adoption and publication are
 separate evidence states. V2 is not shipped because its source tests pass. The
 release task must pack once, qualify that exact archive, bind tag and version,
-and publish that same archive through the trusted workflow.
+and publish that same archive through the trusted upstream workflow. Contributors
+push branches to `origin` and merge them through an upstream pull request. The
+approved upstream release authority creates `pipeline-v<version>` at the merged
+commit; neither the helper nor a contributor bypasses the direct-push guard.

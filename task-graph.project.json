@@ -2,8 +2,8 @@
 	"$schema": "https://raw.githubusercontent.com/theGeekist/task-graph/c460305c5ad9a211cbb50613bae854f4a41b59ca/schemas/project-manifest.v1.schema.json",
 	"schemaVersion": 1,
 	"taskSchemaVersion": 1,
-	"id": "wpkernel-ast",
-	"label": "WPKernel AST programme",
+	"id": "wpkernel-programmes",
+	"label": "WPKernel engineering programmes",
 	"workspaceRoot": ".",
 	"authorities": {
 		"php-json-ast": {

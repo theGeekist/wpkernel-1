@@ -1,13 +1,13 @@
-# `@wpkernel/pipeline` Hardening Plan
+# Historical `@wpkernel/pipeline` hardening record
 
-> **Historical v1 record.** This plan describes the hardening work that shipped
-> across Pipeline 1.2 through 1.4. It is not the authority for Pipeline v2.
-> Current v2 decisions and executable tasks live in the internal
-> [Pipeline v2 programme](../../internal/pipeline/README.md).
+> This page preserves the 1.2-era plan and its evidence as release history.
+> Version numbers, consumer pins, phase status and release gaps below describe
+> that work at the time. They are not current release guidance or a public v2
+> roadmap.
 
 ## Purpose
 
-This plan tracks the generic pipeline work required before `llm-core` treats
+This plan tracked the generic pipeline work required before `llm-core` treated
 `@wpkernel/pipeline` as the stable execution substrate for specification
 compilation and runtime orchestration.
 
@@ -18,7 +18,7 @@ The architectural boundary remains:
 - `llm-core` owns specification semantics, LLM-specific state, portable
   checkpoints, plan identity, approvals, and durable runtime envelopes.
 
-## Current baseline
+## Recorded baseline
 
 ### Verification
 
@@ -49,7 +49,7 @@ The architectural boundary remains:
 - The monorepo build, lint wrapper, source typecheck, formatting check, and
   declaration-import validation pass against freshly generated build outputs.
 
-### Versioning and release status
+### Recorded versioning and release status
 
 `@wpkernel/pipeline` is independently versioned:
 

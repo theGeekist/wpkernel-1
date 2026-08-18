@@ -36,7 +36,7 @@ required_reading:
     - path: docs/internal/pipeline/ROADMAP.md
       reason: Preserve release and downstream sequencing.
     - path: instructions/wpkernel-repository-guide.md
-      reason: Push through origin and preserve the trusted workflow.
+      reason: Use origin for contribution and upstream for the trusted release tag.
 read_scope:
     - docs/internal/pipeline/**
     - instructions/wpkernel-repository-guide.md
@@ -46,7 +46,7 @@ read_scope:
     - package.json
     - pnpm-lock.yaml
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 ---
 
 # P2-009: Qualify and release Pipeline 2.0.0
@@ -67,8 +67,16 @@ version workflow.
 - Negative type assertions reject private imports and invalid graph contracts.
 - Tag and manifest version agree.
 - Prereleases publish to `beta`; final 2.0.0 publishes to `latest`.
-- The release helper targets `origin`, runs the real qualification chain and
-  does not instruct a push to `upstream`.
+- Contributors push release branches to `origin` and merge through an upstream
+  pull request.
+- The approved upstream release authority creates `pipeline-v<version>` at the
+  merged upstream commit without bypassing the direct-push guard.
+- Only the trusted upstream workflow packs, qualifies and publishes the archive.
+- The release helper becomes prepare-and-qualify only, or delegates to the
+  approved release authority. It never instructs `git push upstream <tag>` or
+  manual `pnpm publish`.
+- Fork publication remains disabled; the fork documentation workflow has no
+  automatic schedule.
 
 ## Verification
 

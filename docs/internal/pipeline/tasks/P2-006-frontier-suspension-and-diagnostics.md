@@ -28,6 +28,7 @@ write_scope:
     - packages/pipeline/src/v2/suspension/**
     - packages/pipeline/src/v2/diagnostics/**
     - packages/pipeline/src/v2/__tests__/suspension/**
+    - packages/pipeline/src/v2/__tests__/diagnostics/**
 required_reading:
     - path: docs/internal/pipeline/contracts/v2-public-contract.md
       reason: Implement admitted pause, resume and trace semantics.
@@ -41,7 +42,7 @@ read_scope:
     - packages/pipeline/src/core/runner/program.ts
     - packages/pipeline/src/core/runner/diagnostics.ts
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 ---
 
 # P2-006: Define graph-frontier suspension and concurrent diagnostics

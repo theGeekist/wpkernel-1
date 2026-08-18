@@ -27,6 +27,8 @@ write_scope:
     - packages/pipeline/src/v2/middleware/**
     - packages/pipeline/src/v2/observers/**
     - packages/pipeline/src/v2/__tests__/extensions/**
+    - packages/pipeline/src/v2/__tests__/middleware/**
+    - packages/pipeline/src/v2/__tests__/observers/**
 required_reading:
     - path: docs/internal/pipeline/contracts/v2-public-contract.md
       reason: Implement only admitted middleware and extension semantics.
@@ -37,7 +39,7 @@ read_scope:
     - packages/pipeline/src/core/createExtension.ts
     - packages/pipeline/src/core/extensions/**
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 ---
 
 # P2-004: Compile middleware and extensions into explicit roles
