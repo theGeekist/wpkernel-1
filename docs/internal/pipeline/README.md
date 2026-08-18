@@ -14,6 +14,8 @@ chain inside a sequential stage programme. It is not yet a dataflow DAG.
 
 - [`ROADMAP.md`](ROADMAP.md) shows programme dependencies and external release
   lanes. Task front matter owns lifecycle state.
+- [`EXTERNAL-LANES.md`](EXTERNAL-LANES.md) records non-blocking Task Graph and
+  llm-core evidence without pretending this repository owns their state.
 - [`COORDINATION.md`](COORDINATION.md) defines safe parallel execution.
 - [`decisions/`](decisions/) records accepted semantic boundaries.
 - [`contracts/`](contracts/) contains versioned implementation contracts.

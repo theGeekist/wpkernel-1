@@ -22,6 +22,7 @@ conflicts_with: []
 write_scope:
     - docs/internal/pipeline/evidence/delivery-latency/**
     - scripts/benchmark-delivery-gates.mjs
+    - task-graph.project.json
 required_reading:
     - path: docs/internal/pipeline/COORDINATION.md
       reason: Measure the intended ownership and review sequence against actual execution.
@@ -35,7 +36,7 @@ read_scope:
     - packages/*/package.json
     - scripts/**
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 ---
 
 # P2-010: Instrument Pipeline delivery latency
@@ -80,6 +81,9 @@ This task is operational and does not block the Pipeline v2 release chain.
   push, and which can safely run concurrently.
 - Produce a concrete reduction plan with before-and-after timings while
   preserving the packed NodeNext consumer and release contract.
+- Register a non-mutating `pipeline.delivery-latency` Task Graph command with
+  the measured serial and safe-concurrent gate schedules once the benchmark
+  script exists.
 
 ## Verification
 

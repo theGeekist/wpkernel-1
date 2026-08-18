@@ -49,7 +49,7 @@ read_scope:
     - packages/cli/src/runtime/**
     - packages/test-utils/src/core/**
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 ---
 
 # P2-007: Integrate v2, the v1 adapter and consumers
@@ -66,10 +66,6 @@ serial compatibility boundary, and migrate real WPKernel consumers.
   named serial adapter. Mutable compatibility never enters the v2 scheduler.
 - `next(output?)` exists only behind the v1 adapter, if retained at all.
 - Current core, CLI and test-utils consumers compile and pass.
-- llm-core independently removes its non-semantic wrapper while preserving
-  synchronous settlement and its asynchronous authority recheck.
-- Task Graph migration evidence comes from a released package qualified
-  against Pipeline 1.4.1, not an override.
 
 ## Verification
 
