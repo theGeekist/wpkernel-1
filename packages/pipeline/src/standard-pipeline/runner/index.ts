@@ -1,4 +1,4 @@
-import { makePipeline } from '../../core/makePipeline';
+import { makePipeline } from '../../core/makePipeline.js';
 import type {
 	PipelineDiagnostic,
 	PipelineReporter,
@@ -9,12 +9,12 @@ import type {
 	AgnosticPipelineOptions,
 	PipelineStage as PublicPipelineStage,
 	PipelineStageState,
-} from '../../core/types';
+} from '../../core/types.js';
 import type {
 	CreatePipelineOptions,
 	Pipeline,
 	FragmentFinalizationMetadata,
-} from '../types';
+} from '../types.js';
 
 /**
  * Creates an opinionated {@link Pipeline} with fragment and builder helper

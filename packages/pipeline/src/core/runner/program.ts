@@ -1,4 +1,4 @@
-import { maybeThen } from '../async-utils';
+import { maybeThen } from '../async-utils.js';
 import type {
 	AgnosticRunnerDependencies,
 	AgnosticRunContext,
@@ -7,15 +7,15 @@ import type {
 	HelperStageSpec,
 	PipelineStage,
 	RollbackEntry,
-} from './types';
+} from './types.js';
 import {
 	isHalt,
 	isPaused,
 	makeHelperStageFactory,
 	makeGuardedStage,
 	makeCommitStage,
-} from './stage-factories';
-import type { RegisteredHelper } from '../dependency-graph';
+} from './stage-factories.js';
+import type { RegisteredHelper } from '../dependency-graph.js';
 import type {
 	PipelineReporter,
 	PipelineDiagnostic,
@@ -30,16 +30,16 @@ import type {
 	PipelineStageDependencies,
 	PipelineStage as PublicPipelineStage,
 	PipelineStageState,
-} from '../types';
+} from '../types.js';
 import {
 	appendExtensionRollbackSegment,
 	appendHelperRollbackSegment,
 	rollbackStateToHalt,
-} from './rollback';
-import { commitPendingExtensions } from './commit';
-import { runExtensionHooks } from '../extensions';
-import { createRollbackErrorMetadata } from '../rollback';
-import { rollbackJournalState } from './state';
+} from './rollback.js';
+import { commitPendingExtensions } from './commit.js';
+import { runExtensionHooks } from '../extensions/index.js';
+import { createRollbackErrorMetadata } from '../rollback.js';
+import { rollbackJournalState } from './state.js';
 
 const readStageIndex = (state: { stageIndex?: number }): number =>
 	state.stageIndex ?? 0;

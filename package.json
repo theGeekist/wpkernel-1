@@ -26,7 +26,7 @@
 		"build:packages": "turbo run build",
 		"clean": "turbo run clean && rm -rf node_modules",
 		"clean:dist": "turbo run clean",
-		"lint": "pnpm run lint:peers && pnpm run lint:dts-imports && turbo run lint",
+		"lint": "pnpm run lint:peers && pnpm run lint:dts-imports && turbo run lint --",
 		"lint:fix": "eslint --cache --cache-location node_modules/.cache/eslint --cache-strategy=content --fix packages/ examples/",
 		"lint:branching": "eslint --rulesdir ./eslint-rules --rule 'no-else-return:error' packages/ examples/",
 		"lint:peers": "pnpm exec tsx scripts/check-framework-peers.ts",

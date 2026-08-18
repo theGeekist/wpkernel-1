@@ -1,11 +1,11 @@
-import { executeResume, executeRun, executeRunWithPause } from './execution';
-import { prepareContext } from './context';
+import { executeResume, executeRun, executeRunWithPause } from './execution.js';
+import { prepareContext } from './context.js';
 import type {
 	AgnosticResumableRunner,
 	AgnosticRunner,
 	AgnosticRunnerDependencies,
-} from './types';
-import type { PipelineReporter, PipelineDiagnostic } from '../types';
+} from './types.js';
+import type { PipelineReporter, PipelineDiagnostic } from '../types.js';
 
 /**
  * Initializes an agnostic pipeline runner.

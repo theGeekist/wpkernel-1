@@ -1,15 +1,18 @@
-import { adoptMaybePromise, maybeThen, maybeTry } from './async-utils';
-import { type RegisteredHelper } from './dependency-graph';
-import { createDefaultError } from './error-factory';
-import type { ExtensionHookEntry } from './extensions';
-import { handleExtensionRegisterResult, registerHelper } from './registration';
-import { createAgnosticDiagnosticManager } from './runner/diagnostics';
+import { adoptMaybePromise, maybeThen, maybeTry } from './async-utils.js';
+import { type RegisteredHelper } from './dependency-graph.js';
+import { createDefaultError } from './error-factory.js';
+import type { ExtensionHookEntry } from './extensions/index.js';
+import {
+	handleExtensionRegisterResult,
+	registerHelper,
+} from './registration.js';
+import { createAgnosticDiagnosticManager } from './runner/diagnostics.js';
 import type {
 	AgnosticRunnerDependencies,
 	AgnosticState,
 	Halt,
 	PipelineStage,
-} from './runner/types';
+} from './runner/types.js';
 import type {
 	AgnosticPipelineOptions,
 	Helper,
@@ -24,7 +27,7 @@ import type {
 	PipelineStage as PublicPipelineStage,
 	PipelineStageDependencies,
 	PipelineStageState,
-} from './types';
+} from './types.js';
 
 interface PipelineRuntimeOptions {
 	readonly supportsPause?: boolean;

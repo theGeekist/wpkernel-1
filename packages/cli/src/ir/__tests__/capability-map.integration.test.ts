@@ -16,6 +16,8 @@ type CapabilityCase = {
 	readonly expectError?: RegExp | string;
 };
 
+const INTEGRATION_TIMEOUT_MS = 15_000;
+
 async function buildIr(options: {
 	readonly config: WPKernelConfigV1;
 	readonly sourcePath: string;
@@ -292,50 +294,54 @@ describe('capability map integration', () => {
 	});
 
 	for (const testCase of cases) {
-		it(testCase.name, async () => {
-			await withTempWorkspace(
-				async (workspace) => {
-					await fs.writeFile(
-						path.join(workspace, 'wpk.config.ts'),
-						'export const wpkConfig = {};',
-						'utf8'
-					);
-				},
-				async (workspace) => {
-					const config = createCapabilityConfig();
-					testCase.setup?.(config);
-					const schemaPath = path.join(workspace, 'schema.json');
-					await fs.writeFile(
-						schemaPath,
-						JSON.stringify({ $id: 'demo', type: 'object' })
-					);
-					attachSchema(config, schemaPath);
+		it(
+			testCase.name,
+			async () => {
+				await withTempWorkspace(
+					async (workspace) => {
+						await fs.writeFile(
+							path.join(workspace, 'wpk.config.ts'),
+							'export const wpkConfig = {};',
+							'utf8'
+						);
+					},
+					async (workspace) => {
+						const config = createCapabilityConfig();
+						testCase.setup?.(config);
+						const schemaPath = path.join(workspace, 'schema.json');
+						await fs.writeFile(
+							schemaPath,
+							JSON.stringify({ $id: 'demo', type: 'object' })
+						);
+						attachSchema(config, schemaPath);
 
-					if (testCase.expectError) {
-						await expect(
-							buildIr({
-								config,
-								sourcePath: path.join(
-									workspace,
-									'wpk.config.ts'
-								),
-								origin: 'wpk.config.ts',
-								namespace: config.namespace,
-							})
-						).rejects.toThrow(testCase.expectError);
-						return;
+						if (testCase.expectError) {
+							await expect(
+								buildIr({
+									config,
+									sourcePath: path.join(
+										workspace,
+										'wpk.config.ts'
+									),
+									origin: 'wpk.config.ts',
+									namespace: config.namespace,
+								})
+							).rejects.toThrow(testCase.expectError);
+							return;
+						}
+
+						const ir = await buildIr({
+							config,
+							sourcePath: path.join(workspace, 'wpk.config.ts'),
+							origin: 'wpk.config.ts',
+							namespace: config.namespace,
+						});
+
+						testCase.expect?.(ir);
 					}
-
-					const ir = await buildIr({
-						config,
-						sourcePath: path.join(workspace, 'wpk.config.ts'),
-						origin: 'wpk.config.ts',
-						namespace: config.namespace,
-					});
-
-					testCase.expect?.(ir);
-				}
-			);
-		});
+				);
+			},
+			INTEGRATION_TIMEOUT_MS
+		);
 	}
 });

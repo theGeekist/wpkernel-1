@@ -40,4 +40,4 @@
  *
  * @public
  */
-export { createStandardPipeline as createPipeline } from './runner';
+export { createStandardPipeline as createPipeline } from './runner/index.js';

@@ -1,6 +1,6 @@
-import { maybeThen, maybeTry } from '../async-utils';
-import { executeHelpers } from '../execution-utils';
-import type { PipelineRollback } from '../rollback';
+import { maybeThen, maybeTry } from '../async-utils.js';
+import { executeHelpers } from '../execution-utils.js';
+import type { PipelineRollback } from '../rollback.js';
 import type {
 	Helper,
 	HelperApplyResult,
@@ -11,8 +11,8 @@ import type {
 	MaybePromise,
 	PipelinePaused,
 	PipelineReporter,
-} from '../types';
-import type { RegisteredHelper } from '../dependency-graph';
+} from '../types.js';
+import type { RegisteredHelper } from '../dependency-graph.js';
 import type {
 	Halt,
 	HelperInvokeOptions,
@@ -20,8 +20,8 @@ import type {
 	StageEnv,
 	HelperStageSpec,
 	HelperRollbackPlan,
-} from './types';
-import { runRollbackToHalt } from './rollback';
+} from './types.js';
+import { runRollbackToHalt } from './rollback.js';
 
 export function isHalt<TRunResult>(value: unknown): value is Halt<TRunResult> {
 	return Boolean(

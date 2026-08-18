@@ -1,7 +1,7 @@
-import { maybeThen, processSequentially } from '../async-utils';
-import { commitExtensionResults } from '../extensions';
-import type { MaybePromise } from '../types';
-import type { ExtensionLifecycleState } from './types';
+import { maybeThen, processSequentially } from '../async-utils.js';
+import { commitExtensionResults } from '../extensions/index.js';
+import type { MaybePromise } from '../types.js';
+import type { ExtensionLifecycleState } from './types.js';
 
 export type ExtensionCommitState<TContext, TOptions, TArtifact> = {
 	readonly extensionStack: ExtensionLifecycleState<
