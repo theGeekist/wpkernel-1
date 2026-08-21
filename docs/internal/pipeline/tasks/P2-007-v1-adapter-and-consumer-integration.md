@@ -33,6 +33,8 @@ conflicts_with:
     - P2-013
     - P2-015
 write_scope:
+    - packages/pipeline/package.json
+    - packages/pipeline/vite.config.ts
     - packages/pipeline/src/index.ts
     - packages/pipeline/src/standard-pipeline/**
     - packages/core/src/pipeline/**
