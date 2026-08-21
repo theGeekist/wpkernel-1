@@ -116,10 +116,11 @@ const ownEffect = <TEffects extends EffectRegistry>(options: {
 	};
 };
 
-const ownEffects = <TEffects extends EffectRegistry>(options: {
+export const ownEffectRequests = <TEffects extends EffectRegistry>(options: {
 	readonly value: unknown;
 	readonly node: string;
 	readonly nodeOrdinal: number;
+	readonly effectOrdinalStart: number;
 	readonly allowedParticipants: ReadonlySet<string>;
 }):
 	| { readonly ok: true; readonly value: readonly PendingEffect<TEffects>[] }
@@ -143,7 +144,8 @@ const ownEffects = <TEffects extends EffectRegistry>(options: {
 		};
 	}
 	const effects: PendingEffect<TEffects>[] = [];
-	for (const [effectOrdinal, value] of values.entries()) {
+	for (const [index, value] of values.entries()) {
+		const effectOrdinal = options.effectOrdinalStart + index;
 		const effect = ownEffect<TEffects>({
 			value,
 			node: options.node,
@@ -199,6 +201,7 @@ const ownSuccessResult = <TEffects extends EffectRegistry>(options: {
 	readonly node: string;
 	readonly nodeOrdinal: number;
 	readonly effectKeys: readonly string[];
+	readonly effectOrdinalStart: number;
 }): OwnedNodeResult<TEffects> => {
 	if (!options.fields.has('output') || !options.fields.has('effects')) {
 		return {
@@ -212,10 +215,11 @@ const ownSuccessResult = <TEffects extends EffectRegistry>(options: {
 	if (!output.ok) {
 		return { kind: 'contract', error: output.error };
 	}
-	const effects = ownEffects<TEffects>({
+	const effects = ownEffectRequests<TEffects>({
 		value: options.fields.get('effects'),
 		node: options.node,
 		nodeOrdinal: options.nodeOrdinal,
+		effectOrdinalStart: options.effectOrdinalStart,
 		allowedParticipants: new Set(options.effectKeys),
 	});
 	if (!effects.ok) {
@@ -248,6 +252,7 @@ export const ownNodeResult = <TEffects extends EffectRegistry>(options: {
 	readonly node: string;
 	readonly nodeOrdinal: number;
 	readonly effectKeys: readonly string[];
+	readonly effectOrdinalStart: number;
 }): OwnedNodeResult<TEffects> => {
 	const inspected = inspectedFields(
 		options.value,

@@ -1,6 +1,11 @@
 /** A scheduler boundary or node-result contract failure. */
 export class GraphSchedulerError extends Error {
-	readonly code: 'invalid-input' | 'invalid-graph' | 'invalid-node-result';
+	readonly code:
+		| 'invalid-input'
+		| 'invalid-graph'
+		| 'invalid-node-result'
+		| 'invalid-middleware'
+		| 'invalid-observer';
 
 	constructor(options: {
 		readonly code: GraphSchedulerError['code'];

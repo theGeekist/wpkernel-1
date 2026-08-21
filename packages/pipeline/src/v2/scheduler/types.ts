@@ -12,6 +12,11 @@ import type {
 	OutputProjection,
 } from '../graph/types.js';
 import type { GraphSchedulerError } from './errors.js';
+import type {
+	CheckedNodeMiddlewareRegistrations,
+	NodeMiddlewareRegistration,
+} from '../middleware/types.js';
+import type { RunObserver, RunObserverFailure } from '../observers/types.js';
 
 /** One immutable effect request awaiting the P2-005 effect interpreter. */
 export type PendingEffectRequest<TEffects extends EffectRegistry> = {
@@ -98,6 +103,7 @@ interface GraphScheduleProjection<
 	readonly nodes: readonly ScheduledNodeOutcome<TNodes>[];
 	readonly pendingEffects: readonly PendingEffect<TEffects>[];
 	readonly pendingPauses: readonly PendingPause[];
+	readonly observerFailures: readonly RunObserverFailure[];
 }
 
 /** Terminal immutable result of graph scheduling before effect interpretation. */
@@ -134,6 +140,8 @@ export interface ScheduleGraphOptions<
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
+	TMiddleware extends
+		readonly NodeMiddlewareRegistration[] = readonly NodeMiddlewareRegistration[],
 > {
 	readonly graph: Graph<
 		TInputs,
@@ -146,6 +154,16 @@ export interface ScheduleGraphOptions<
 	readonly inputs: TInputs;
 	readonly capabilities: TCapabilities;
 	readonly signal?: AbortSignal;
+	readonly middleware?: TMiddleware &
+		CheckedNodeMiddlewareRegistrations<
+			TInputs,
+			TNodes,
+			TEdges,
+			TEffects,
+			TCapabilities,
+			NoInfer<TMiddleware>
+		>;
+	readonly observers?: readonly RunObserver[];
 }
 
 /** Exact inferred result of {@link scheduleGraph}. */

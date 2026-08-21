@@ -330,4 +330,31 @@ describe('v2 scheduler contract boundaries', () => {
 
 		expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
 	});
+
+	it('contains a synchronous evaluation fault as a thrown node failure', () => {
+		const internal = new Error('evaluation signal');
+		let abortedReads = 0;
+		const signal = {
+			get aborted() {
+				abortedReads += 1;
+				if (abortedReads === 2) {
+					throw internal;
+				}
+				return false;
+			},
+			addEventListener: jest.fn(),
+			removeEventListener: jest.fn(),
+		} as unknown as AbortSignal;
+		const graph = compileTestGraph({
+			nodes: [{ key: 'a', executor: () => success('a') }],
+		});
+
+		const result = runTestGraph({ graph, signal });
+
+		expect(result).toMatchObject({
+			kind: 'failed',
+			primaryFailure: { node: 'a', kind: 'thrown', error: internal },
+		});
+		expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+	});
 });

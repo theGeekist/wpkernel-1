@@ -7,6 +7,9 @@ import type {
 	NodeRegistry,
 	OutputProjection,
 } from '../graph/types.js';
+import { compileNodeMiddleware } from '../middleware/compile.js';
+import type { NodeMiddlewareRegistration } from '../middleware/types.js';
+import { compileRunObservers } from '../observers/dispatcher.js';
 import { driveScheduler, listenForAbort } from './engine.js';
 import { GraphSchedulerError } from './errors.js';
 import { ownGraphInputs } from './ownership.js';
@@ -37,16 +40,25 @@ const createState = <TEffects extends EffectRegistry>(options: {
 	readonly capabilities: unknown;
 	readonly signal: AbortSignal;
 	readonly executors: ReadonlyMap<string, ErasedExecutor>;
+	readonly middleware: SchedulerState<TEffects>['middleware'];
+	readonly observers: SchedulerState<TEffects>['observers'];
 }): SchedulerState<TEffects> => {
-	const status = new Map<string, 'pending'>();
-	const remainingPredecessors = new Map<string, number>();
+	const nodes = new Map<
+		string,
+		Readonly<{ kind: 'pending'; remainingPredecessors: number }>
+	>();
 	const ready = createReadyQueue(options.graph.ordinals);
 	for (const node of Object.values(options.graph.nodes).sort(
 		(left, right) => left.ordinal - right.ordinal
 	)) {
-		status.set(node.key, 'pending');
 		const remaining = options.graph.incoming[node.key]!.length;
-		remainingPredecessors.set(node.key, remaining);
+		nodes.set(
+			node.key,
+			Object.freeze({
+				kind: 'pending',
+				remainingPredecessors: remaining,
+			})
+		);
 		if (remaining === 0) {
 			addReadyNode(ready, node.key);
 		}
@@ -57,14 +69,10 @@ const createState = <TEffects extends EffectRegistry>(options: {
 		capabilities: options.capabilities,
 		signal: options.signal,
 		executors: options.executors,
-		status,
-		remainingPredecessors,
+		middleware: options.middleware,
+		observers: options.observers,
+		nodes,
 		ready,
-		outputs: new Map(),
-		outcomes: new Map(),
-		failures: new Map(),
-		effects: new Map(),
-		pauses: new Map(),
 		active: 0,
 		admissionStopped: false,
 		terminal: false,
@@ -73,7 +81,8 @@ const createState = <TEffects extends EffectRegistry>(options: {
 
 /**
  * Schedules one compiled immutable graph directly from dependency readiness.
- * The return remains synchronous until an executor exposes a callable `then`.
+ * Executor and middleware phase thenables promote node evaluation. Observer
+ * thenables never gate admission and may promote only terminal settlement.
  *
  * @param options - Compiled graph, admitted inputs, capabilities and signal.
  */
@@ -84,6 +93,7 @@ export const scheduleGraph = <
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
+	const TMiddleware extends readonly NodeMiddlewareRegistration[],
 >(
 	options: ScheduleGraphOptions<
 		TInputs,
@@ -91,7 +101,8 @@ export const scheduleGraph = <
 		TEdges,
 		TEffects,
 		TProjection,
-		TCapabilities
+		TCapabilities,
+		TMiddleware
 	>
 ): ScheduleGraphResult<TNodes, TEffects, TProjection> => {
 	const graph = options.graph as ErasedGraph;
@@ -106,6 +117,11 @@ export const scheduleGraph = <
 		capabilities: options.capabilities,
 		signal,
 		executors: executorTable(graph),
+		middleware: compileNodeMiddleware({
+			graph,
+			middleware: options.middleware,
+		}),
+		observers: compileRunObservers({ observers: options.observers }),
 	});
 	listenForAbort(state);
 	const immediate = driveScheduler(state);

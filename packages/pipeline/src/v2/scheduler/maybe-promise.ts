@@ -21,11 +21,10 @@ const adoptCapturedThen = <T>(
 	new Promise<T>((resolve, reject) => {
 		queueMicrotask(() => {
 			try {
-				then.call(
-					value,
+				Reflect.apply(then, value, [
 					resolve as (resolved: unknown) => unknown,
-					reject
-				);
+					reject,
+				]);
 			} catch (error) {
 				reject(error);
 			}
