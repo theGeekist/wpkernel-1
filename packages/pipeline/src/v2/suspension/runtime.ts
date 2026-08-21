@@ -197,7 +197,14 @@ export const executeSchedulerState = <TEffects extends EffectRegistry>(
 /**
  * Consumes and continues one live process-local suspension exactly once.
  *
- * @param options - Live suspension and optional replacement signal.
+ * Claiming happens before continuation, so a failed resume still spends the
+ * capability. Historical observer promises do not permanently promote this
+ * call; only work participating in the resumed segment can do so.
+ *
+ * @param  options - Live suspension and optional replacement signal.
+ * @returns The terminal outcome, or a new suspension if this segment pauses.
+ * @throws {SuspensionError} When the token is foreign, copied or spent.
+ * @public
  */
 export const resume = <
 	TNodes extends NodeRegistry,
@@ -248,7 +255,14 @@ const finishAbandonment = <TEffects extends EffectRegistry>(
 /**
  * Consumes one live suspension and compensates its journal exactly once.
  *
- * @param options - Live suspension to abandon.
+ * Compensation is non-cancellable, runs in reverse logical journal order and
+ * continues after failure. It is process-local remediation, not a durable
+ * rollback guarantee.
+ *
+ * @param  options - Live suspension to abandon.
+ * @returns An abandonment outcome retaining every cleanup failure.
+ * @throws {SuspensionError} When the token is foreign, copied or spent.
+ * @public
  */
 export const abandon = <
 	TNodes extends NodeRegistry,

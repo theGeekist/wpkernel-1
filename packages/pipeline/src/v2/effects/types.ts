@@ -1,5 +1,6 @@
 import type {
 	EffectContract,
+	EffectRequest,
 	EffectRegistry,
 	EffectTypes,
 	GraphValue,
@@ -8,12 +9,24 @@ import type {
 import type { ObserverDispatcher } from '../observers/types.js';
 import type { PendingEffect } from '../scheduler/types.js';
 
-/** Explicit success or declared failure returned by one effect phase. */
+/** Explicit success or declared failure returned by one effect phase. @public */
 export type EffectPhaseResult<TValue, TFailure> =
 	| { readonly kind: 'success'; readonly value: TValue }
 	| { readonly kind: 'failure'; readonly error: TFailure };
 
-/** Process-local participant for one heterogeneous effect contract. */
+/**
+ * Process-local interpreter for one declared effect contract.
+ *
+ * Requests prepare during node evaluation. After graph success, commits run in
+ * canonical node and effect order. Failure compensates in reverse journal
+ * chronology. This is disciplined process-local work, not a transaction or an
+ * exactly-once external-effect claim.
+ *
+ * Each phase preserves synchronous settlement until its own return exposes a
+ * callable `then`.
+ *
+ * @public
+ */
 export interface EffectParticipant<
 	TContract extends EffectContract<GraphValue, unknown, unknown, unknown>,
 > {
@@ -45,7 +58,11 @@ export interface EffectParticipant<
 
 type EmptyEffectParticipants = Readonly<Record<PropertyKey, never>>;
 
-/** Exact literal-keyed runtime authority for a graph's effect contracts. */
+/**
+ * Exact literal-keyed participant table required by a graph's effect contracts.
+ *
+ * @public
+ */
 export type EffectParticipants<TEffects extends EffectRegistry> =
 	keyof TEffects extends never
 		? EmptyEffectParticipants
@@ -53,7 +70,7 @@ export type EffectParticipants<TEffects extends EffectRegistry> =
 				readonly [K in keyof TEffects]: EffectParticipant<TEffects[K]>;
 			};
 
-/** One effect participant phase. */
+/** One effect participant phase. @public */
 export type EffectPhase = 'prepare' | 'commit' | 'compensate';
 
 interface EffectFailureIdentity<K extends string> {
@@ -76,17 +93,28 @@ type EffectFailureFor<
 		| { readonly kind: 'thrown'; readonly error: unknown }
 	);
 
-/** Typed, immutable record of a contained participant failure. */
+/**
+ * Typed, immutable record of a contained participant failure.
+ * Original declared, thrown or rejected errors remain attached to their exact
+ * participant and logical journal position.
+ *
+ * @public
+ */
 export type EffectJournalFailure<TEffects extends EffectRegistry> = {
 	readonly [K in keyof TEffects & string]: EffectFailureFor<TEffects, K>;
 }[keyof TEffects & string];
 
-/** Immutable public projection of one successfully prepared journal entry. */
+/**
+ * Immutable diagnostic projection of one successfully prepared journal entry.
+ * It carries evidence, not authority to settle or replay the effect.
+ *
+ * @public
+ */
 export interface EffectJournalEntry<TEffects extends EffectRegistry> {
 	readonly node: string;
 	readonly nodeOrdinal: number;
 	readonly effectOrdinal: number;
-	readonly request: PendingEffect<TEffects>['request'];
+	readonly request: EffectRequest<TEffects>;
 	readonly commit: 'not-attempted' | 'succeeded' | 'failed';
 	readonly compensation: 'not-attempted' | 'succeeded' | 'failed';
 }

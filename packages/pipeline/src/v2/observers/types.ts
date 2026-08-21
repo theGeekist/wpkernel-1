@@ -1,7 +1,7 @@
 import type { MaybePromise } from '../graph/types.js';
 import type { EffectPhase } from '../effects/types.js';
 
-/** Immutable diagnostic event emitted after one node state transition. */
+/** Immutable diagnostic event emitted after one node state transition. @public */
 export interface NodeRunEvent {
 	readonly kind: 'node-transition';
 	readonly sequence: number;
@@ -10,7 +10,7 @@ export interface NodeRunEvent {
 	readonly state: 'active' | 'succeeded' | 'failed' | 'cancelled';
 }
 
-/** Immutable terminal diagnostic event queued after graph finalisation. */
+/** Immutable terminal diagnostic event queued after run finalisation. @public */
 export interface TerminalRunEvent {
 	readonly kind: 'run-terminal';
 	readonly sequence: number;
@@ -22,7 +22,7 @@ export interface TerminalRunEvent {
 		| 'abandoned';
 }
 
-/** Immutable diagnostic event emitted after one effect phase transition. */
+/** Immutable diagnostic event emitted after one effect phase transition. @public */
 export interface EffectRunEvent {
 	readonly kind: 'effect-transition';
 	readonly sequence: number;
@@ -34,13 +34,21 @@ export interface EffectRunEvent {
 	readonly state: 'succeeded' | 'failed';
 }
 
-/** Read-only event algebra exposed to passive run observers. */
+/** Read-only event algebra exposed to passive run observers. @public */
 export type RunEvent = NodeRunEvent | EffectRunEvent | TerminalRunEvent;
 
-/** Passive diagnostic consumer with no scheduler or graph authority. */
+/**
+ * Passive diagnostic consumer with no scheduler, data or effect authority.
+ *
+ * Events enter one FIFO delivery tail. Observer failures are contained and
+ * retained; an observer thenable may promote terminal settlement, but it cannot
+ * change the run result.
+ *
+ * @public
+ */
 export type RunObserver = (event: RunEvent) => MaybePromise<void>;
 
-/** Contained observer failure retained without changing the run result. */
+/** Contained observer failure retained without changing the run result. @public */
 export interface RunObserverFailure {
 	readonly observerIndex: number;
 	readonly eventSequence: number;

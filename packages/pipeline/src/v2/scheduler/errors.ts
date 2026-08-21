@@ -1,4 +1,10 @@
-/** A scheduler boundary or node-result contract failure. */
+/**
+ * Tagged scheduler-boundary or node-result contract failure.
+ * Factories remain private to the evaluator; public outcomes expose this type
+ * as retained evidence.
+ *
+ * @public
+ */
 export type GraphSchedulerError = Error & {
 	readonly name: 'GraphSchedulerError';
 	readonly code:

@@ -1,128 +1,98 @@
-# @wpkernel/pipeline <-> Architecture Guide
+# Pipeline v2 architecture
 
-## The Philosophy
+Pipeline v2 has one execution authority: the immutable compiled graph owned by
+one `Pipeline` token. A caller creates the token from a declaration and
+creation-time role values; `runPipeline` then starts a fresh process-local run.
+No node, extension, middleware value or observer can start, skip or invoke
+another node.
 
-The pipeline is designed as a **Directed Acyclic Graph (DAG) Execution Engine**. Its primary goal is to take helper descriptors, sort them based on their dependencies, and execute their `apply` methods in a deterministic order.
+> **V2 availability:** This is the reviewed v2 surface. Its public examples
+> use the future `@wpkernel/pipeline` root import, which P2-007 exposes. The
+> current `@wpkernel/pipeline` 1.4.1 release remains the v1 API.
 
-It is **NOT** opinionated about what your helpers do. It does **NOT** enforce a specific "Fragment/Builder" pattern, though that is a common use case.
+## Graph dataflow, not stage order
 
-## Internal Structure
+An edge is a data dependency. It says that the target executor receives the
+source node's whole output under the source key. It does not say merely "run
+this first" and it is not a resource reservation or a middleware selector.
 
-The codebase is organized into two primary modules to separate concerns:
-
-1.  **Core (`src/core/runner`)**: Contains the pure DAG runner, dependency resolution logic (`src/core/dependency-graph.ts`), and extension orchestration (`src/core/extensions`). It knows nothing about "Fragments" or "Builders" - only generic "Helpers" and "Stages".
-2.  **Standard Pipeline (`src/standard-pipeline`)**: Implements the specific "Fragment → Builder" pattern used by WPKernel CLI. It consumes `core` primitives to build the standard execution program (via `createPipeline`).
-
-## Core Concepts
-
-### 1. Helpers & Kinds
-
-A `Helper` is an atomic unit of work identified by a `key`. Every helper belongs to a `kind` (e.g., `'extract'`, `'transform'`, `'render'`).
-helpers declare their dependencies using `dependsOn`. The runner builds a separate dependency graph for _each_ kind.
-
-```mermaid
-graph TD
-    A[Extract User] --> B[Extract Posts]
-    B --> C[Extract Comments]
+```text
+parse ─┐
+       ├─> render ─> publish
+theme ─┘
 ```
 
-### 2. Stages
+`render` is the join. Its executor declares how `parse` and `theme` become its
+own output. The scheduler never merges parent objects, spreads values or picks
+the last value to settle. If a relationship has no value to pass, it is not an
+edge in the v2 graph.
 
-A `Stage` defines _when_ a set of helpers executes. You define the sequence of stages in your pipeline.
-For example, an ETL pipeline might have three stages corresponding to three helper kinds:
+Nodes receive a frozen snapshot of their declared external inputs and direct
+predecessor outputs. Each returns an independent replacement value. There is
+no shared draft, current output, helper chain, stage programme or `next`.
 
-```mermaid
-graph LR
-    S1[Stage: Extract] --> S2[Stage: Transform] --> S3[Stage: Load]
-```
+## Canonical order and timing
 
-- **Independent execution**: Each stage executes its registered helpers topologically.
-- **Shared Context**: Stages share a mutable `context` and can pass data via "Drafts" or "Artifacts".
-- **Output composition**: A helper can return a replacement output for the next helper. Advanced helpers can call `next(output?)` to wrap the remaining chain and post-process its returned output.
+Canonical order provides reproducible admission and diagnostics:
 
-#### Public custom-stage boundary
+1. ascending topological rank;
+2. descending finite node priority;
+3. ascending raw UTF-16 node key;
+4. ascending registration order.
 
-`makePipeline` supplies `createStages` with the root-exported
-`PipelineStageDependencies` facade. It deliberately exposes only stable,
-domain-neutral capabilities: typed helper/lifecycle/finalization stages,
-explicit commit, halt/pause, diagnostic recording, and lifecycle metadata.
+The scheduler admits ready nodes in that order until the concurrency policy is
+full. It does not wait for an unrelated branch before admitting a dependent
+whose own predecessors have succeeded. Once nodes are running, their
+settlement timing does not choose values, joins, primary failures, journal
+chronology or commit order.
 
-`PipelineStageState` carries typed run options, context, reporter, user state,
-diagnostics, steps, and helper execution snapshots. A custom stage replaces
-user state immutably by returning `{ ...state, userState: replacement }`.
-`PipelineStageResult` restricts returns to the next state, a process-local
-pause, or `PipelineHalt`.
+Priority ranks already-ready work. It does not create a dependency, change the
+graph value, or permit a node to overtake an unmet predecessor.
 
-Helper stages use `PipelineHelperStageOptions`, whose `makeArgs`,
-`writeOutput`, registration metadata, rollback entries, and final output retain
-their consumer-declared types. The internal `AgnosticStageDeps` and mutable
-runner state are not public extension points.
+## Owned values and live capabilities
 
-The package root exports every supported custom-stage type. External
-declarations should therefore reference `@wpkernel/pipeline`, never
-`@wpkernel/pipeline/core/runner/*`.
+Graph values are the closed algebra of primitive values, arrays and
+string-keyed plain records. At input admission, node output and effect-request
+boundaries, Pipeline validates, deep-copies and recursively freezes the value.
+The stored value is Pipeline-owned: later mutation through the caller's alias
+cannot change a graph run.
 
-#### Diagnostic ownership
+Capabilities are different. They are live, process-local services passed to
+nodes and effect participants, such as a database client or credential broker.
+They are not copied, frozen or made deterministic by Pipeline. A capability
+provider must make concurrent access safe and must not allow access timing to
+change graph meaning.
 
-Registration diagnostics belong to the configured pipeline instance. At the
-start of each invocation, pipeline copies them into a new run-owned diagnostic
-collection; runtime diagnostics and the reporter then remain isolated to that
-invocation. The same collection travels with a process-local pause snapshot
-and resume, so a paused result includes both registration and runtime
-diagnostics without sharing mutable diagnostic state with concurrent runs.
+That distinction excludes a common awkward shortcut: putting a client, promise
+or `Map` inside a graph input or extension configuration. Put static data in
+the owned value; put the live service in capabilities.
 
-#### Process-local suspension boundary
+## Admission versus diagnostics
 
-The public API retains `pause` and `resume`. A `PipelinePauseSnapshot` is a
-single-use, process-local capability owned by its creating pipeline instance.
-The visible state is a public projection; authoritative runner objects,
-transaction records and settlement coordinators remain private. The snapshot
-is not a serializable or portable checkpoint.
+Pipeline captures creation-time extensions before any contribution callback
+runs. It copies and freezes each extension configuration, then invokes valid
+contributions once in tuple order. Each run drains the captured generation and
+collects extension failures, graph diagnostics and role configuration issues
+before it calls an executable scheduler role.
 
-Consumers own durable checkpoint concerns such as serialization, storage,
-transport, version binding, plan identity, approval state, and migrations.
-`llm-core`, for example, must translate its own durable representation into a
-new pipeline invocation rather than persist pipeline suspension state.
+Configuration failure is therefore an algebraic result, not partially admitted
+graph work. The primary issue is canonical: lowest extension registration
+failure first, otherwise the first canonical graph diagnostic, then role
+configuration failures. The result retains the rest for diagnosis.
 
-### 3. Extensions & Lifecycles
+Run events are different. Observers receive immutable events after scheduler
+state transitions. Event delivery can reflect real settlement timing and is
+diagnostic only. It never decides node admission, graph values or primary
+failure.
 
-Extensions wrap the execution flow. Custom pipelines can attach hooks to
-arbitrary lifecycle names. The standard pipeline begins extension execution
-after fragment finalisation so every hook receives the declared artifact type.
-This allows for cross-cutting concerns:
+## Host boundary
 
-- **Transactions**: Prepare resources during extension registration, then
-  commit or roll them back through lifecycle hook results.
-- **Logging**: Log start/end times.
-- **Resource Management**: Connect/Disconnect databases.
+Pipeline owns graph compilation, readiness scheduling, run-local diagnostics,
+cancellation, live suspension and its in-memory effect journal. The host owns
+durable admission, idempotency keys, leases, retry policy, portable
+checkpoints, process supervision and external-effect authority.
 
-## The "Standard" Model (WPKernel CLI)
-
-While generic, WPKernel's main use case (code generation) uses a specific configuration:
-
-1.  **Phase 1: Fragments (`kind: 'fragment'`)**
-    - Helpers generate partial ASTs or code snippets.
-    - They write to a shared "Draft" (e.g., a list of PHP blocks).
-    - Executed by a helper stage created with `makeHelperStage`.
-
-2.  **Phase 2: Builders (`kind: 'builder'`)**
-    - Helpers take the finalized "Artifact" (merged fragments) and write files to disk.
-    - Executed by a helper stage created with `makeHelperStage`.
-
-3.  **Extensions**
-    - Manage file system writes (committing files only if generation succeeds).
-
-## Building Custom Architectures
-
-You can build entirely different architectures using `makePipeline`:
-
-- **Serial Pipelines**: A single stage with one helper kind.
-- **Micro-Frontends**: Resolution stages for different UI widgets.
-- **Data Migrations**: Versioned migration helpers with rollback guarantees.
-
-The generic runner ensures:
-
-- **Cycle Detection**: `A -> B -> A` halts execution (fails fast).
-- **Missing Dependencies**: `A` depends on `C` (which doesn't exist) throws an error.
-- **Best-Effort Rollback**: If _any_ stage throws, the pipeline halts and executes the rollback chain for all extensions and helpers.
-    > **Note**: Rollbacks attempt to revert completed steps but are not guaranteed to be fully atomic (e.g. if a network call in a rollback fails). They may leave partial effects. Design compensating actions to be idempotent.
+A process can suspend a run after admitted work drains, then resume its live
+`Suspension` once. It cannot write that value to a queue and expect another
+process to resume it after a deployment. The host records durable intent and
+constructs a new invocation when that is required.

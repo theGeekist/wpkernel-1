@@ -3,9 +3,9 @@ architecture_version: 1
 id: P2-013
 title: Author v2 TSDoc and public documentation
 stage: source
-status: in_progress
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'Curated v2 surface, source TSDoc and authored public documentation independently reviewed clean'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex

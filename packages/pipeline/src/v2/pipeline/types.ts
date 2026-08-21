@@ -47,7 +47,15 @@ interface PipelineTypeWitness<
 	readonly capabilities: InvariantTypeCell<TCapabilities>;
 }
 
-/** Immutable nominal token for one configured process-local evaluator. */
+/**
+ * Immutable nominal authority for one configured process-local evaluator.
+ *
+ * Pipeline is deliberately data, not a method facade. Only {@link runPipeline}
+ * can start a fresh run, and the token is meaningful only in the process that
+ * created it. It is not a durable plan or a portable checkpoint.
+ *
+ * @public
+ */
 export interface Pipeline<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -67,7 +75,62 @@ export interface Pipeline<
 	readonly kind: 'pipeline';
 }
 
-/** Complete immutable configuration captured by createPipeline. */
+/**
+ * Complete configuration captured by {@link createPipeline}.
+ *
+ * Registration is a one-shot immutable tuple. Extension configuration is
+ * copied and frozen before contribution begins; capabilities remain run-local.
+ *
+ * @example One node, one named output
+ * ```ts
+ * import {
+ *   createPipeline,
+ *   runPipeline,
+ *   type GraphDeclaration,
+ *   type NodeContract,
+ * } from '@wpkernel/pipeline';
+ *
+ * type Inputs = Readonly<{ source: string }>;
+ * type Nodes = Readonly<{
+ *   uppercase: NodeContract<'source', string, never>;
+ * }>;
+ * type Outputs = Readonly<{ result: 'uppercase' }>;
+ *
+ * const declaration: GraphDeclaration<
+ *   Inputs,
+ *   Nodes,
+ *   readonly [],
+ *   Readonly<Record<never, never>>,
+ *   Outputs,
+ *   Readonly<{ locale: string }>
+ * > = {
+ *   inputKeys: ['source'],
+ *   nodes: {
+ *     uppercase: { externalInputs: ['source'], effectKeys: [], priority: 0 },
+ *   },
+ *   edges: [],
+ *   effects: {},
+ *   outputs: { result: 'uppercase' },
+ *   policy: { maxConcurrency: 1 },
+ *   executors: {
+ *     uppercase: ({ input }) => ({
+ *       kind: 'success',
+ *       output: input.external.source.toUpperCase(),
+ *       effects: [],
+ *     }),
+ *   },
+ * };
+ *
+ * const pipeline = createPipeline({ declaration, participants: {} });
+ * const outcome = runPipeline({
+ *   pipeline,
+ *   inputs: { source: 'honest dataflow' },
+ *   capabilities: { locale: 'en-SG' },
+ * });
+ * ```
+ *
+ * @public
+ */
 export interface CreatePipelineOptions<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -111,7 +174,11 @@ export interface CreatePipelineOptions<
 		Readonly<Record<Exclude<keyof TParticipants, keyof TEffects>, never>>;
 }
 
-/** One configuration failure emitted by the public evaluator. */
+/**
+ * One retained extension, graph or role issue found before node admission.
+ *
+ * @public
+ */
 export type PipelineConfigurationIssue =
 	| {
 			readonly kind: 'extension';
@@ -126,7 +193,14 @@ export type PipelineConfigurationIssue =
 			readonly error: GraphSchedulerError;
 	  };
 
-/** Algebraic failure before any graph work is admitted. */
+/**
+ * Complete algebraic configuration failure before any graph work is admitted.
+ *
+ * Extension failures precede graph diagnostics, which precede role failures.
+ * The corresponding arrays retain every knowable issue in canonical order.
+ *
+ * @public
+ */
 export interface PipelineConfigurationFailure {
 	readonly kind: 'configuration-failed';
 	readonly primaryFailure: PipelineConfigurationIssue;
@@ -139,7 +213,11 @@ export interface PipelineConfigurationFailure {
 	>[];
 }
 
-/** Algebraic rejection of one caller-owned run-admission field. */
+/**
+ * Algebraic rejection of one caller-owned run-admission field.
+ *
+ * @public
+ */
 export interface PipelineAdmissionFailure {
 	readonly kind: 'admission-failed';
 	readonly field:
@@ -151,7 +229,14 @@ export interface PipelineAdmissionFailure {
 	readonly error: GraphSchedulerError;
 }
 
-/** Complete input for one fresh run over a configured Pipeline token. */
+/**
+ * Complete input for one fresh run over a configured {@link Pipeline} token.
+ *
+ * Inputs are validated, copied and frozen. Capabilities are opaque process-local
+ * services whose provider owns concurrency safety.
+ *
+ * @public
+ */
 export interface RunPipelineOptions<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -173,7 +258,14 @@ export interface RunPipelineOptions<
 	readonly signal?: AbortSignal;
 }
 
-/** Exact algebraic result of configuration, compilation and evaluation. */
+/**
+ * Exact algebraic result of configuration, compilation and evaluation.
+ *
+ * The result stays synchronous until a participant return exposes a callable
+ * `then`; that return is then adopted through normal promise resolution.
+ *
+ * @public
+ */
 export type RunPipelineResult<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry,
@@ -184,13 +276,13 @@ export type RunPipelineResult<
 	| RunOutcome<TNodes, GraphOutputs<TNodes, TProjection>, TEffects>
 >;
 
-/** Final node registry inferred from a creation-time extension tuple. */
+/** Final node registry inferred from a creation-time extension tuple. @public */
 export type PipelineNodes<
 	TNodes extends NodeRegistry,
 	TExtensions extends readonly GraphExtensionRegistrationShape[],
 > = ExtensionNodes<TNodes, TExtensions>;
 
-/** Final edge tuple inferred from a creation-time extension tuple. */
+/** Final edge tuple inferred from a creation-time extension tuple. @public */
 export type PipelineEdges<
 	TEdges extends readonly Edge[],
 	TExtensions extends readonly GraphExtensionRegistrationShape[],
@@ -204,7 +296,7 @@ type ClosedOutputProjection<TProjection> = Readonly<{
 		: never]: TProjection[K];
 }>;
 
-/** Final output projection inferred from a creation-time extension tuple. */
+/** Final output projection inferred from a creation-time extension tuple. @public */
 export type PipelineProjection<
 	TNodes extends NodeRegistry,
 	TProjection,
