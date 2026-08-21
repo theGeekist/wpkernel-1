@@ -448,5 +448,5 @@ export const buildGraph = <
 		) as TProjection,
 		anchors: frozenSortedRecord(Object.entries(options.anchors)),
 		policy: Object.freeze({ ...options.policy }),
-	});
+	}) as Graph<TInputs, TNodes, TEdges, TEffects, TProjection, TCapabilities>;
 };
