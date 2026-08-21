@@ -3,19 +3,19 @@ architecture_version: 1
 id: P2-003
 title: Implement the immutable concurrent scheduler
 stage: source
-status: proposed
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'Concurrent scheduler qualified at scale and independently reviewed clean'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
+owner: /root/p2_003_scheduler
 owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+lease_started_at: 2026-08-21T05:00:22Z
+lease_expires_at: 2026-08-21T07:00:22Z
+base_sha: d716fd8edd6cd9f2be0ed17dad32b1f7f1d3798a
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - P2-002
 decision_dependencies:
@@ -35,7 +35,7 @@ read_scope:
     - packages/pipeline/src/core/execution-utils.ts
     - packages/pipeline/src/core/runner/execution.ts
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-21
 ---
 
 # P2-003: Implement the immutable concurrent scheduler
