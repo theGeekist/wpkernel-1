@@ -49,8 +49,8 @@ P2-005 + P2-006
             -> P2-013 source TSDoc and authored public docs
                  -> P2-015 bounded staged Markdown normalisation
                       -> P2-007 v1 adapter and consumer integration
-                      -> P2-008 generated API and site projection
-                           -> P2-009 packed qualification and 2.0.0 release
+                           -> P2-008 generated API and site projection
+                                -> P2-009 packed qualification and 2.0.0 release
 ```
 
 P2-002 and P2-004 may run concurrently after P2-001. P2-005 and P2-006 may
