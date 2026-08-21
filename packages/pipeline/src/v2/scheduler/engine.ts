@@ -58,6 +58,25 @@ const failureRecord = <TEffects extends EffectRegistry>(options: {
 		error: options.failure.error,
 	}) as GraphNodeFailure<NodeRegistry, TEffects>;
 
+const admittedSequence = <TEffects extends EffectRegistry>(options: {
+	readonly state: SchedulerState<TEffects>;
+	readonly node: string;
+}): number => {
+	const runtime = options.state.nodes.get(options.node)! as Exclude<
+		NodeRuntimeState<TEffects>,
+		{ readonly kind: 'pending' }
+	>;
+	return runtime.admissionSequence;
+};
+
+const takeSettlementSequence = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>
+): number => {
+	const sequence = state.nextSettlementSequence;
+	state.nextSettlementSequence += 1;
+	return sequence;
+};
+
 const settleFailure = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
@@ -84,6 +103,8 @@ const settleFailure = <TEffects extends EffectRegistry>(options: {
 		options.node,
 		Object.freeze({
 			kind: 'failed',
+			admissionSequence: admittedSequence(options),
+			settlementSequence: takeSettlementSequence(options.state),
 			failureClass: options.failureClass ?? 'graph',
 			failure,
 			secondaryFailures,
@@ -130,6 +151,8 @@ const settleSuccess = <TEffects extends EffectRegistry>(options: {
 		options.node,
 		Object.freeze({
 			kind: 'succeeded',
+			admissionSequence: admittedSequence(options),
+			settlementSequence: takeSettlementSequence(options.state),
 			output: options.result.output,
 			effects: options.result.effects,
 			...(options.result.pause ? { pause: options.result.pause } : {}),
@@ -170,6 +193,8 @@ const settleEvaluation = <TEffects extends EffectRegistry>(options: {
 		options.node,
 		Object.freeze({
 			kind: 'cancelled',
+			admissionSequence: admittedSequence(options),
+			settlementSequence: takeSettlementSequence(options.state),
 			effects: options.evaluation.effects,
 			...(Object.prototype.hasOwnProperty.call(
 				options.evaluation,
@@ -261,7 +286,12 @@ const selectAdmission = <TEffects extends EffectRegistry>(
 	}
 	const selected = takeReadyNodes(state.ready, capacity);
 	for (const node of selected) {
-		state.nodes.set(node, Object.freeze({ kind: 'active' }));
+		const admissionSequence = state.nextAdmissionSequence;
+		state.nextAdmissionSequence += 1;
+		state.nodes.set(
+			node,
+			Object.freeze({ kind: 'active', admissionSequence })
+		);
 		state.active += 1;
 		state.observers.publishNode({
 			node,

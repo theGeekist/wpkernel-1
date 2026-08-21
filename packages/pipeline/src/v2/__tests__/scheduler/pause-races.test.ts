@@ -45,7 +45,7 @@ describe('v2 scheduler pause handoff and races', () => {
 		const result = runTestGraph({ graph });
 
 		expect(result).toMatchObject({
-			kind: 'pause-requested',
+			kind: 'suspended',
 			primaryPause: {
 				node: 'pause',
 				request: { reason: 'review' },
@@ -57,9 +57,10 @@ describe('v2 scheduler pause handoff and races', () => {
 			],
 		});
 		expect(later).not.toHaveBeenCalled();
-		if (result instanceof Promise) {
+		if (result instanceof Promise || result.kind !== 'suspended') {
 			throw new Error('Expected synchronous pause.');
 		}
+		expect(result.suspension.pause).toBe(result.primaryPause);
 		expect(Object.isFrozen(result.pendingPauses)).toBe(true);
 		expect(Object.isFrozen(result.pendingPauses[0]!.request)).toBe(true);
 	});
