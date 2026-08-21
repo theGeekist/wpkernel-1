@@ -3,19 +3,19 @@ architecture_version: 1
 id: P2-013
 title: Author v2 TSDoc and public documentation
 stage: source
-status: proposed
+status: in_progress
 priority: critical
 evidence_milestone: null
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
+owner: /root/p2_013_tsdoc
 owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+lease_started_at: 2026-08-21T19:10:19Z
+lease_expires_at: 2026-08-21T23:10:19Z
+base_sha: d202c1ce
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - P2-014
 decision_dependencies:
