@@ -3,19 +3,19 @@ architecture_version: 1
 id: P2-001
 title: Freeze v2 semantics and public vocabulary
 stage: contract
-status: ready
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'Accepted contract and clean independent review'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
+owner: /root/p2_001_contract
 owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+lease_started_at: 2026-08-21T02:36:04Z
+lease_expires_at: 2026-08-21T04:36:04Z
+base_sha: 46011d577a13839875d289bfeac9cc5edec1ac8c
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on: []
 decision_dependencies:
     - ADR-001
@@ -39,7 +39,7 @@ read_scope:
     - packages/pipeline/src/index.ts
     - packages/pipeline/src/core/types.ts
 review_owner: coordinator
-updated_at: 2026-08-18
+updated_at: 2026-08-21
 ---
 
 # P2-001: Freeze v2 semantics and public vocabulary
