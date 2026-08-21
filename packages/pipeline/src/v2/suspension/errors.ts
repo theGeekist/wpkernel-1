@@ -1,4 +1,9 @@
-/** Frozen tagged native error for a rejected suspension operation. */
+/**
+ * Frozen tagged native error for a rejected suspension operation.
+ * Resume and abandon throw this error when authority is absent or already spent.
+ *
+ * @public
+ */
 export type SuspensionError = Error & {
 	readonly name: 'SuspensionError';
 	readonly code: 'invalid-suspension' | 'already-consumed';

@@ -140,7 +140,16 @@ const createToken = (authority: PipelineAuthority): object => {
 /**
  * Creates one immutable configured evaluator without a method facade.
  *
+ * Extension callbacks are captured before any is invoked. Their configuration
+ * is owned first, and each callback runs exactly once in tuple order. Creating
+ * a different configuration means creating a different Pipeline token.
+ *
+ * This function performs no graph work and claims no durable or cross-process
+ * authority.
+ *
  * @param options - Complete evaluator configuration to capture.
+ * @returns A frozen process-local Pipeline token.
+ * @public
  */
 export const createPipeline = <
 	TInputs extends Readonly<Record<string, GraphValue>>,
@@ -419,11 +428,22 @@ const invalidRunSignal = (value: unknown): GraphSchedulerError | undefined => {
 /**
  * Compiles and evaluates one fresh run through the sole public lifecycle operation.
  *
+ * Every configuration issue is collected before executable role compilers run.
+ * On success, ready nodes are admitted by canonical graph order; timing does
+ * not choose outputs, the primary failure or effect commit order. The return is
+ * synchronous unless a participating return exposes a callable `then`.
+ *
+ * Pipeline owns only this process-local evaluation. Durable admission, leases,
+ * crash recovery, portable checkpoints and exactly-once external effects are
+ * host responsibilities.
+ *
  * @param options              - Pipeline token and run-local admission values.
  * @param options.pipeline     - Live process-local evaluator authority.
  * @param options.inputs       - Complete caller-owned external input record.
  * @param options.capabilities - Run-local capabilities passed to every node.
  * @param options.signal       - Optional cancellation signal for this run.
+ * @returns Configuration evidence, admission evidence or a terminal run outcome.
+ * @public
  */
 export const runPipeline = <const TPipeline>(options: {
 	readonly pipeline: TPipeline extends PipelineShape ? TPipeline : never;

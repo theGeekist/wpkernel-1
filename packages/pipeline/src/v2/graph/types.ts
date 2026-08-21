@@ -1,25 +1,41 @@
 import type { compiledGraphBrand } from './brand.js';
 
 /**
- * The closed value algebra admitted at graph ownership boundaries.
+ * Scalar leaf values in the {@link GraphValue} algebra.
  *
  * @public
  */
 export type GraphScalar = null | undefined | boolean | number | bigint | string;
 
-/** @public */
+/**
+ * The closed, acyclic value algebra admitted at graph ownership boundaries.
+ *
+ * Graph values contain only scalar leaves, plain recursive arrays and plain
+ * string-keyed records. At every ownership boundary Pipeline validates the
+ * complete value, deep-copies it and recursively freezes the scheduler-owned
+ * copy. Caller aliases are never retained as graph data.
+ *
+ * @public
+ */
 export type GraphValue =
 	| GraphScalar
 	| readonly GraphValue[]
 	| { readonly [key: string]: GraphValue };
 
-/** @public */
+/**
+ * A value that settles now unless its return exposes a callable `then`.
+ *
+ * All structurally valid thenables are adopted; no eager Promise wrapping is
+ * implied by this type.
+ *
+ * @public
+ */
 export type MaybePromise<T> = T | PromiseLike<T>;
 
-/** @public */
+/** Stable identity of one independently scheduled node. @public */
 export type NodeKey = string;
 
-/** @public */
+/** Stable identity of one declared effect participant. @public */
 export type EffectKey = string;
 
 declare const nodeType: unique symbol;
@@ -80,12 +96,12 @@ export interface NodeContract<
 	};
 }
 
-/** @public */
+/** Literal-keyed registry retaining each node's distinct contract. @public */
 export type NodeRegistry = Readonly<
 	Record<NodeKey, NodeContract<string, GraphValue, unknown, EffectKey>>
 >;
 
-/** @public */
+/** A directed data dependency from one node output to another node input. @public */
 export interface Edge<
 	TFrom extends NodeKey = NodeKey,
 	TTo extends NodeKey = NodeKey,
@@ -94,7 +110,7 @@ export interface Edge<
 	readonly to: TTo;
 }
 
-/** @public */
+/** Static payload, prepared-state, receipt and failure types for one effect. @public */
 export interface EffectContract<
 	TPayload extends GraphValue,
 	TPrepared,
@@ -109,12 +125,12 @@ export interface EffectContract<
 	};
 }
 
-/** @public */
+/** Literal-keyed registry retaining each participant's distinct types. @public */
 export type EffectRegistry = Readonly<
 	Record<EffectKey, EffectContract<GraphValue, unknown, unknown, unknown>>
 >;
 
-/** @public */
+/** Extracts the four member-specific type families from a node contract. @public */
 export type NodeTypes<T> =
 	T extends NodeContract<
 		infer TInput,
@@ -130,22 +146,22 @@ export type NodeTypes<T> =
 			}
 		: never;
 
-/** @public */
+/** Extracts a node contract's output type. @public */
 export type OutputOf<T> = NodeTypes<T>['output'];
-/** @public */
+/** Extracts a node contract's declared failure type. @public */
 export type FailureOf<T> = NodeTypes<T>['failure'];
-/** @public */
+/** Extracts a node contract's external-input key union. @public */
 export type ExternalKeysOf<T> = NodeTypes<T>['input'];
-/** @public */
+/** Extracts a node contract's admitted effect-key union. @public */
 export type EffectKeysOf<T> = NodeTypes<T>['effects'];
 
-/** @public */
+/** Source keys of edges whose target is `K`. @public */
 export type Predecessors<
 	TEdges extends readonly Edge[],
 	K extends NodeKey,
 > = Extract<TEdges[number], { readonly to: K }>['from'];
 
-/** @public */
+/** Direct predecessor outputs keyed by their node identities. @public */
 export type DependencyOutputs<
 	TNodes extends NodeRegistry,
 	TEdges extends readonly Edge[],
@@ -154,18 +170,18 @@ export type DependencyOutputs<
 	readonly [P in Predecessors<TEdges, K> & keyof TNodes]: OutputOf<TNodes[P]>;
 };
 
-/** @public */
+/** Named graph outputs mapped to existing node identities. @public */
 export type OutputProjection<TNodes extends NodeRegistry> = Readonly<
 	Record<string, keyof TNodes & NodeKey>
 >;
 
-/** @public */
+/** Resolves a projection to its exact named output value types. @public */
 export type GraphOutputs<
 	TNodes extends NodeRegistry,
 	TProjection extends OutputProjection<TNodes>,
 > = { readonly [K in keyof TProjection]: OutputOf<TNodes[TProjection[K]]> };
 
-/** @public */
+/** Extracts the four member-specific type families from an effect contract. @public */
 export type EffectTypes<T> =
 	T extends EffectContract<
 		infer TPayload,
@@ -181,7 +197,7 @@ export type EffectTypes<T> =
 			}
 		: never;
 
-/** @public */
+/** One payload request for the literal participant `K`. @public */
 export type EffectRequestFor<
 	TEffects extends EffectRegistry,
 	K extends keyof TEffects,
@@ -190,23 +206,27 @@ export type EffectRequestFor<
 	readonly payload: EffectTypes<TEffects[K]>['payload'];
 };
 
-/** @public */
+/** Union of requests admitted for a node's declared participant keys. @public */
 export type EffectRequestsFor<
 	TEffects extends EffectRegistry,
 	K extends keyof TEffects,
 > = { readonly [P in K]: EffectRequestFor<TEffects, P> }[K];
 
-/** Immutable effect request union for one literal participant registry. */
+/** Immutable effect request union for one literal participant registry. @public */
 export type EffectRequest<TEffects extends EffectRegistry> = {
 	readonly [K in keyof TEffects]: EffectRequestFor<TEffects, K>;
 }[keyof TEffects];
 
-/** A successful node's request to stop admission after admitted work drains. */
+/**
+ * A successful node's request to stop new admission after admitted work drains.
+ * Concurrent pause requests fail the run; this is not a durable checkpoint.
+ * @public
+ */
 export interface PauseRequest {
 	readonly reason?: string;
 }
 
-/** @public */
+/** Algebraic node settlement: success, declared failure or cancellation. @public */
 export type NodeResult<TOutput extends GraphValue, TFailure, TRequest> =
 	| {
 			readonly kind: 'success';
@@ -217,12 +237,12 @@ export type NodeResult<TOutput extends GraphValue, TFailure, TRequest> =
 	| { readonly kind: 'failure'; readonly error: TFailure }
 	| { readonly kind: 'cancelled'; readonly reason?: unknown };
 
-/** @public */
+/** Required graph admission policy; concurrency is positive-safe or unbounded. @public */
 export interface ExecutionPolicy {
 	readonly maxConcurrency: number | 'unbounded';
 }
 
-/** @public */
+/** Immutable data, capabilities and cooperative signal supplied to one node. @public */
 export interface NodeInvocation<TExternal, TDependencies, TCapabilities> {
 	readonly input: {
 		readonly external: TExternal;
@@ -232,7 +252,7 @@ export interface NodeInvocation<TExternal, TDependencies, TCapabilities> {
 	readonly signal: AbortSignal;
 }
 
-/** @public */
+/** Exact literal-keyed executor table derived from nodes, edges and effects. @public */
 export type NodeExecutors<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -288,7 +308,11 @@ export interface GraphDeclaration<
 	readonly anchors?: Readonly<Record<string, keyof TNodes & NodeKey>>;
 }
 
-/** Immutable graph authoring fragment returned by one extension callback. */
+/**
+ * Immutable graph authoring fragment returned by one extension callback.
+ * Anchors are inert references; they carry no scheduling authority.
+ * @public
+ */
 export interface GraphContribution<
 	TNodes extends NodeRegistry = NodeRegistry,
 	TEdges extends readonly Edge[] = readonly Edge[],
@@ -345,7 +369,7 @@ export type ErasedCompileGraphResult =
 	| { readonly ok: true; readonly graph: ErasedGraph }
 	| { readonly ok: false; readonly diagnostics: readonly GraphDiagnostic[] };
 
-/** @public */
+/** @internal */
 export interface CompileGraphOptions<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -364,7 +388,7 @@ export interface CompileGraphOptions<
 	>;
 }
 
-/** @public */
+/** @internal */
 export interface CompiledGraphNode<TKey extends NodeKey = NodeKey> {
 	readonly key: TKey;
 	readonly externalInputs: readonly string[];
@@ -375,7 +399,7 @@ export interface CompiledGraphNode<TKey extends NodeKey = NodeKey> {
 	readonly ordinal: number;
 }
 
-/** @public */
+/** Scheduler-owned compiled graph authority. @internal */
 export interface Graph<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -407,7 +431,7 @@ export interface Graph<
 	readonly policy: Readonly<ExecutionPolicy>;
 }
 
-/** @public */
+/** Stable category of one canonical graph compilation diagnostic. @public */
 export type GraphDiagnosticCode =
 	| 'duplicate-node'
 	| 'missing-node'
@@ -422,14 +446,14 @@ export type GraphDiagnosticCode =
 	| 'invalid-contribution'
 	| 'reentrant-contribution';
 
-/** @public */
+/** Immutable graph compilation issue with a stable code and structural path. @public */
 export interface GraphDiagnostic {
 	readonly code: GraphDiagnosticCode;
 	readonly message: string;
 	readonly path: readonly string[];
 }
 
-/** @public */
+/** @internal */
 export type CompileGraphResult<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,

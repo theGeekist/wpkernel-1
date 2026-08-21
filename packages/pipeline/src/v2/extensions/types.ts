@@ -34,7 +34,15 @@ type ImmutableGraphValue<TValue extends GraphValue> = TValue extends
 			? { readonly [K in keyof TValue]: ImmutableGraphValue<TValue[K]> }
 			: never;
 
-/** Configuration-time role that contributes declarations but cannot see runs. */
+/**
+ * Configuration-time role that contributes declarations but cannot see runs.
+ *
+ * Configuration is validated, copied and recursively frozen before invocation.
+ * The callback runs exactly once in registration order and cannot register more
+ * work re-entrantly.
+ *
+ * @public
+ */
 export interface GraphExtension<
 	TConfiguration extends GraphValue,
 	TContribution extends GraphContribution = GraphContribution,
@@ -44,7 +52,11 @@ export interface GraphExtension<
 	}) => MaybePromise<TContribution>;
 }
 
-/** One immutable extension registration in a Pipeline configuration. */
+/**
+ * One immutable extension registration in a Pipeline configuration.
+ *
+ * @public
+ */
 export interface GraphExtensionRegistration<
 	TConfiguration extends GraphValue = GraphValue,
 	TContribution extends GraphContribution = GraphContribution,
@@ -173,7 +185,7 @@ type CheckedGraphExtensionRegistration<
 	>;
 };
 
-/** Exact sequential validation for a heterogeneous extension tuple. */
+/** Exact sequential validation for a heterogeneous extension tuple. @internal */
 export type CheckedGraphExtensionRegistrations<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -205,7 +217,7 @@ export type CheckedGraphExtensionRegistrations<
 		]
 	: readonly [];
 
-/** Final node registry after applying one extension tuple in order. */
+/** Final node registry after applying one extension tuple in order. @internal */
 export type ExtensionNodes<
 	TNodes extends NodeRegistry,
 	TRegistrations extends readonly GraphExtensionRegistrationShape[],
@@ -216,7 +228,7 @@ export type ExtensionNodes<
 	? ExtensionNodes<AccumulatedNodes<TNodes, ContributionOf<TFirst>>, TRest>
 	: TNodes;
 
-/** Final edge tuple after applying one extension tuple in order. */
+/** Final edge tuple after applying one extension tuple in order. @internal */
 export type ExtensionEdges<
 	TEdges extends readonly Edge[],
 	TRegistrations extends readonly GraphExtensionRegistrationShape[],
@@ -227,7 +239,7 @@ export type ExtensionEdges<
 	? ExtensionEdges<AccumulatedEdges<TEdges, ContributionOf<TFirst>>, TRest>
 	: TEdges;
 
-/** Final output projection after applying one extension tuple in order. */
+/** Final output projection after applying one extension tuple in order. @internal */
 export type ExtensionProjection<
 	TProjection,
 	TRegistrations extends readonly GraphExtensionRegistrationShape[],
@@ -241,7 +253,12 @@ export type ExtensionProjection<
 		>
 	: TProjection;
 
-/** Original contribution callback failure retained by registration order. */
+/**
+ * Original contribution callback failure retained by registration order.
+ * The error is evidence, not replaced by a compiler wrapper.
+ *
+ * @public
+ */
 export interface GraphExtensionFailure {
 	readonly registrationOrder: number;
 	readonly error: unknown;

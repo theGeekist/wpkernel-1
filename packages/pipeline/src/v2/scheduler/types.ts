@@ -34,7 +34,12 @@ export interface PendingEffect<TEffects extends EffectRegistry> {
 	readonly request: EffectRequest<TEffects>;
 }
 
-/** Located record of one admitted PauseRequest. */
+/**
+ * Located diagnostic record of one admitted {@link PauseRequest}.
+ * It contains no continuation authority.
+ *
+ * @public
+ */
 export interface PauseRecord {
 	readonly node: string;
 	readonly nodeOrdinal: number;
@@ -43,7 +48,13 @@ export interface PauseRecord {
 
 type NodeKeyOf<TNodes extends NodeRegistry> = keyof TNodes & string;
 
-/** A retained graph failure keyed to its exact declared node failure type. */
+/**
+ * A retained graph failure keyed to its exact declared node failure type.
+ * The primary graph failure is selected by canonical node order, never by
+ * settlement timing.
+ *
+ * @public
+ */
 export type GraphNodeFailure<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry = EffectRegistry,
@@ -75,7 +86,11 @@ export type GraphNodeFailure<
 		  };
 }[NodeKeyOf<TNodes>];
 
-/** Canonical terminal projection for one graph node. */
+/**
+ * Canonical terminal projection for one graph node.
+ *
+ * @public
+ */
 export type NodeOutcome<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry = EffectRegistry,
@@ -115,6 +130,7 @@ interface GraphScheduleProjection<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry,
 > {
+	/** Node outcomes in compiled canonical graph order. */
 	readonly nodes: readonly NodeOutcome<TNodes, TEffects>[];
 	readonly pendingEffects: readonly PendingEffect<TEffects>[];
 	readonly pendingPauses: readonly PauseRecord[];
@@ -197,7 +213,7 @@ export type ScheduleGraphResult<
 	RunOutcome<TNodes, GraphOutputs<TNodes, TProjection>, TEffects>
 >;
 
-/** One failure retained by the complete graph and effect interpreter. */
+/** One failure retained by the complete graph and effect interpreter. @public */
 export type RunFailure<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry,
@@ -214,7 +230,24 @@ interface RunProjection<
 	readonly diagnostics: RunDiagnostics;
 }
 
-/** Complete immutable process-local run outcome after effect settlement. */
+/**
+ * Complete immutable process-local run outcome after graph scheduling and the
+ * effect work appropriate to its variant.
+ *
+ * `nodes` is always in compiled canonical graph order. Successful runs commit
+ * their prepared journal; failed and cancelled runs perform the applicable
+ * reverse-journal compensation. A suspended run instead retains its prepared
+ * entries for later resume or abandon: commit and compensation have not been
+ * attempted for that suspension.
+ *
+ * Node failures are primary by canonical node order. Effect preparation or
+ * commit failures retain their logical journal order; compensation and observer
+ * failures are contained as evidence and do not replace the triggering error.
+ * A suspended outcome carries a live single-use process-local capability, not
+ * a serialisable checkpoint.
+ *
+ * @public
+ */
 export type RunOutcome<
 	TNodes extends NodeRegistry,
 	TOutputs extends Readonly<Record<string, GraphValue>>,

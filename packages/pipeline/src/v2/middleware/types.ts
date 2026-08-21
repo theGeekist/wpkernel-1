@@ -13,25 +13,38 @@ import type {
 	OutputOf,
 } from '../graph/types.js';
 
-/** Explicit state and effect requests returned by one middleware before phase. */
+/**
+ * Explicit run-local state and declared effect requests from a `before` phase.
+ *
+ * @public
+ */
 export interface MiddlewareResult<TState, TRequest> {
 	readonly state: TState;
 	readonly effects: readonly TRequest[];
 }
 
-/** Immutable input shared by every phase of one middleware declaration. */
+/** Immutable node identity and invocation shared by middleware phases. @public */
 export interface MiddlewareInvocationOptions<TKey, TInvocation> {
 	readonly node: TKey;
 	readonly invocation: TInvocation;
 }
 
-/** Input for phases whose before phase completed. */
+/** Input for phases whose `before` phase completed, including its state. @public */
 export interface MiddlewareEnteredOptions<TKey, TInvocation, TState>
 	extends MiddlewareInvocationOptions<TKey, TInvocation> {
 	readonly state: TState;
 }
 
-/** Ordered phases around exactly one node invocation. */
+/**
+ * Ordered phases around exactly one node invocation.
+ *
+ * Middleware has no continuation and cannot admit or suppress other nodes.
+ * `before` phases enter in registration order; `after`, `error` and `cancel`
+ * unwind entered middleware in reverse order. Each phase remains synchronous
+ * until that phase's return exposes a callable `then`.
+ *
+ * @public
+ */
 export interface NodeMiddleware<
 	TKey extends NodeKey,
 	TInvocation,
@@ -60,7 +73,7 @@ export interface NodeMiddleware<
 	) => MaybePromise<void>;
 }
 
-/** Exact single-node middleware type derived from graph registries and edges. */
+/** Exact single-node middleware type derived from graph registries and edges. @public */
 export type NodeMiddlewareFor<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
@@ -113,7 +126,7 @@ type CheckedNodeMiddleware<
 		: never
 	: never;
 
-/** Exact tuple validation used by the heterogeneous scheduler boundary. */
+/** Exact tuple validation used by the heterogeneous scheduler boundary. @internal */
 export type CheckedNodeMiddlewareRegistrations<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,

@@ -1,11 +1,16 @@
-# @wpkernel/pipeline for Framework Contributors (Standard Pipeline)
+# Historical v1 `@wpkernel/pipeline` framework contributor guide
+
+> This page describes the v1 Standard Pipeline, not Pipeline v2. V2 uses an
+> immutable graph, explicit joins and separate extension, middleware, observer
+> and effect roles. See the [v2 migration guide](./migrating-to-v2.md) before
+> treating any helper, stage, lifecycle or pause terminology below as current.
 
 ## Overview
 
 > **Note**: This guide focuses on the **Standard Pipeline** implementation
 > (Fragments & Builders) used by WPKernel CLI. Custom architectures use
-> `makePipeline` with the root-exported `PipelineStageDependencies` facade; see
-> the [Architecture Guide](./architecture.md). Do not import private
+> `makePipeline` with the root-exported `PipelineStageDependencies` facade. This
+> page is the historical v1 reference for that surface. Do not import private
 > `core/runner` types.
 
 Framework contributors extend the pipeline along the **standard WPK model**:
