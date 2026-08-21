@@ -1,9 +1,6 @@
-export { createGraphExtensionRegistry } from './registry.js';
 export type {
-	CompileGraphExtensionsResult,
 	GraphExtension,
-	GraphExtensionContribution,
+	GraphExtensionRegistration,
+	GraphContribution,
 	GraphExtensionFailure,
-	GraphExtensionRegistry,
-	GraphExtensionUseOptions,
 } from './types.js';

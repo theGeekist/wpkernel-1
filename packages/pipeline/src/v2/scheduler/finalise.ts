@@ -5,9 +5,9 @@ import type {
 } from '../graph/types.js';
 import type {
 	GraphNodeFailure,
+	NodeOutcome,
+	PauseRecord,
 	PendingEffect,
-	PendingPause,
-	ScheduledNodeOutcome,
 } from './types.js';
 import type {
 	ErasedScheduleOutcome,
@@ -26,7 +26,7 @@ const stateEffects = <TEffects extends EffectRegistry>(
 
 const canonicalPauses = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
-): readonly PendingPause[] => {
+): readonly PauseRecord[] => {
 	const pauses = [...state.nodes.values()].flatMap((runtime) =>
 		runtime.kind === 'succeeded' && runtime.pause ? [runtime.pause] : []
 	);
@@ -37,7 +37,7 @@ const blockedOutcome = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
 	readonly nodeOrdinal: number;
-}): ScheduledNodeOutcome<NodeRegistry, TEffects> => {
+}): NodeOutcome<NodeRegistry, TEffects> => {
 	const blockedBy = options.state.graph.incoming[options.node]!.filter(
 		(predecessor) =>
 			options.state.nodes.get(predecessor)?.kind !== 'succeeded'
@@ -48,13 +48,13 @@ const blockedOutcome = <TEffects extends EffectRegistry>(options: {
 		nodeOrdinal: options.nodeOrdinal,
 		reason: blockedBy.length > 0 ? 'dependency' : 'admission-stopped',
 		blockedBy: Object.freeze([...blockedBy]),
-	}) as ScheduledNodeOutcome<NodeRegistry, TEffects>;
+	}) as NodeOutcome<NodeRegistry, TEffects>;
 };
 
 const projectNodeOutcome = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
-}): ScheduledNodeOutcome<NodeRegistry, TEffects> => {
+}): NodeOutcome<NodeRegistry, TEffects> => {
 	const runtime = options.state.nodes.get(options.node)!;
 	const nodeOrdinal = options.state.graph.ordinals[options.node]!;
 	if (runtime.kind === 'pending') {
@@ -70,7 +70,7 @@ const projectNodeOutcome = <TEffects extends EffectRegistry>(options: {
 			node: options.node,
 			nodeOrdinal,
 			output: settled.output,
-		}) as ScheduledNodeOutcome<NodeRegistry, TEffects>;
+		}) as NodeOutcome<NodeRegistry, TEffects>;
 	}
 	if (settled.kind === 'failed') {
 		return Object.freeze({
@@ -78,7 +78,7 @@ const projectNodeOutcome = <TEffects extends EffectRegistry>(options: {
 			node: options.node,
 			nodeOrdinal,
 			failure: settled.failure,
-		}) as ScheduledNodeOutcome<NodeRegistry, TEffects>;
+		}) as NodeOutcome<NodeRegistry, TEffects>;
 	}
 	return Object.freeze({
 		kind: 'cancelled',
@@ -87,7 +87,7 @@ const projectNodeOutcome = <TEffects extends EffectRegistry>(options: {
 		...(Object.prototype.hasOwnProperty.call(settled, 'reason')
 			? { reason: settled.reason }
 			: {}),
-	}) as ScheduledNodeOutcome<NodeRegistry, TEffects>;
+	}) as NodeOutcome<NodeRegistry, TEffects>;
 };
 
 const orderedNodes = <TEffects extends EffectRegistry>(
@@ -99,7 +99,7 @@ const orderedNodes = <TEffects extends EffectRegistry>(
 
 const canonicalNodeOutcomes = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
-): readonly ScheduledNodeOutcome<NodeRegistry, TEffects>[] =>
+): readonly NodeOutcome<NodeRegistry, TEffects>[] =>
 	Object.freeze(
 		orderedNodes(state).map((node) =>
 			projectNodeOutcome({ state, node: node.key })

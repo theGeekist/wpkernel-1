@@ -1,7 +1,7 @@
 import type {
 	Edge,
 	EffectRegistry,
-	EffectRequestFor,
+	EffectRequest,
 	Graph,
 	GraphOutputs,
 	GraphValue,
@@ -10,6 +10,7 @@ import type {
 	NodeRegistry,
 	OutputOf,
 	OutputProjection,
+	PauseRequest,
 } from '../graph/types.js';
 import type { GraphSchedulerError } from './errors.js';
 import type {
@@ -25,24 +26,19 @@ import type {
 import type { RunDiagnostics } from '../diagnostics/types.js';
 import type { Suspension } from '../suspension/types.js';
 
-/** One immutable effect request awaiting the P2-005 effect interpreter. */
-export type PendingEffectRequest<TEffects extends EffectRegistry> = {
-	readonly [K in keyof TEffects]: EffectRequestFor<TEffects, K>;
-}[keyof TEffects];
-
 /** Scheduler-owned effect request in deterministic logical order. */
 export interface PendingEffect<TEffects extends EffectRegistry> {
 	readonly node: string;
 	readonly nodeOrdinal: number;
 	readonly effectOrdinal: number;
-	readonly request: PendingEffectRequest<TEffects>;
+	readonly request: EffectRequest<TEffects>;
 }
 
-/** A clean node pause request awaiting the P2-006 suspension interpreter. */
-export interface PendingPause {
+/** Located record of one admitted PauseRequest. */
+export interface PauseRecord {
 	readonly node: string;
 	readonly nodeOrdinal: number;
-	readonly request: Readonly<{ readonly reason?: string }>;
+	readonly request: PauseRequest;
 }
 
 type NodeKeyOf<TNodes extends NodeRegistry> = keyof TNodes & string;
@@ -80,7 +76,7 @@ export type GraphNodeFailure<
 }[NodeKeyOf<TNodes>];
 
 /** Canonical terminal projection for one graph node. */
-export type ScheduledNodeOutcome<
+export type NodeOutcome<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry = EffectRegistry,
 > = {
@@ -119,9 +115,9 @@ interface GraphScheduleProjection<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry,
 > {
-	readonly nodes: readonly ScheduledNodeOutcome<TNodes, TEffects>[];
+	readonly nodes: readonly NodeOutcome<TNodes, TEffects>[];
 	readonly pendingEffects: readonly PendingEffect<TEffects>[];
-	readonly pendingPauses: readonly PendingPause[];
+	readonly pendingPauses: readonly PauseRecord[];
 	readonly observerFailures: readonly RunObserverFailure[];
 }
 
@@ -150,7 +146,7 @@ export type GraphScheduleOutcome<
 		  }
 		| {
 				readonly kind: 'pause-requested';
-				readonly primaryPause: PendingPause;
+				readonly primaryPause: PauseRecord;
 		  }
 	);
 
@@ -210,7 +206,9 @@ export type RunFailure<
 interface RunProjection<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry,
-> extends GraphScheduleProjection<TNodes, TEffects> {
+> {
+	readonly nodes: readonly NodeOutcome<TNodes, TEffects>[];
+	readonly observerFailures: readonly RunObserverFailure[];
 	readonly effectJournal: readonly EffectJournalEntry<TEffects>[];
 	readonly effectFailures: readonly EffectJournalFailure<TEffects>[];
 	readonly diagnostics: RunDiagnostics;
@@ -232,7 +230,7 @@ export type RunOutcome<
 		| { readonly kind: 'cancelled'; readonly reason?: unknown }
 		| {
 				readonly kind: 'suspended';
-				readonly primaryPause: PendingPause;
+				readonly primaryPause: PauseRecord;
 				readonly suspension: Suspension<TNodes, TOutputs, TEffects>;
 		  }
 	);

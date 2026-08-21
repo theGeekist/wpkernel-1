@@ -9,6 +9,7 @@ export type {
 	DependencyOutputs,
 	Edge,
 	EffectContract,
+	EffectRequest,
 	EffectRequestFor,
 	EffectRequestsFor,
 	EffectTypes,
@@ -19,6 +20,7 @@ export type {
 	ExternalKeysOf,
 	FailureOf,
 	Graph,
+	GraphContribution,
 	GraphDeclaration,
 	GraphDiagnostic,
 	GraphDiagnosticCode,
@@ -35,6 +37,7 @@ export type {
 	NodeTypes,
 	OutputOf,
 	OutputProjection,
+	PauseRequest,
 	Predecessors,
 } from './types.js';
 export { copyGraphValue } from './values.js';

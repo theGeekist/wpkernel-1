@@ -4,15 +4,16 @@ Status: Accepted
 Owner task: P2-001
 Governing decisions: ADR-001, ADR-002, ADR-003
 
-This document fixes the semantics and generic relationships that v2 public
-types must preserve. Exact builder method names remain open only where stated.
+This document fixes the semantics, public operations and generic relationships
+that v2 public types must preserve.
 
 ## 1. Boundary and authority
 
 Pipeline v2 evaluates one immutable compiled dataflow graph per process-local
-run.
+run. A `Pipeline` token is the sole public authority for starting that work.
 
-- The compiled `Graph` is the sole execution authority. Nodes and extension
+- The compiled `Graph` is the scheduler's internal execution authority. It is
+  reachable publicly only through its owning `Pipeline`. Nodes and extension
   roles cannot admit, suppress or invoke other nodes.
 - An `Edge` is a data dependency, not generic precedence, a resource claim or
   middleware ordering.
@@ -31,17 +32,9 @@ There is no native stage programme, helper chain or callable continuation.
 
 ## 2. Value and asynchronous algebras
 
-Graph data is the following closed, acyclic algebra:
-
-```ts
-type GraphScalar = null | undefined | boolean | number | bigint | string;
-type GraphValue =
-	| GraphScalar
-	| readonly GraphValue[]
-	| { readonly [key: string]: GraphValue };
-
-type MaybePromise<T> = T | PromiseLike<T>;
-```
+Graph data is the closed, acyclic `GraphValue` algebra of null, undefined,
+booleans, numbers, bigints, strings, recursive arrays and string-keyed records.
+`MaybePromise<T>` is exactly `T | PromiseLike<T>`.
 
 Arrays must have exactly `Array.prototype`. Objects must have exactly
 `Object.prototype` or `null` as their prototype and own enumerable
@@ -247,9 +240,9 @@ the original error.
 TCapabilities>` contains keyed contracts and executors, the literal edge tuple,
 effect contracts, `TProjection extends OutputProjection<TNodes>` and a required
 policy. Its output is exactly `GraphOutputs<TNodes, TProjection>`, never a free
-generic. The public compiled `Graph` preserves these arguments plus immutable
-adjacency and ranks. Compiler-private erased call tables cannot escape public
-declarations.
+generic. The compiled `Graph` preserves these arguments plus immutable
+adjacency and ranks. Compiler-private erased call tables cannot escape the
+Pipeline boundary.
 
 One edge exposes its source node's whole output under that node key. A join is
 an ordinary node with every source edge declared and an explicit reducer in its
@@ -260,22 +253,45 @@ require distinct future types.
 
 ## 4. Compilation, registration and canonical order
 
-Each `GraphExtension.contribute(options)` callback returns one complete
-immutable `MaybePromise<GraphContribution>`. Synchronous re-entrant
-registration from inside that callback is a configuration error. Capture closes
-one immutable registration generation: registration attempted later, including
-from an asynchronous callback continuation, belongs to the next generation and
-cannot alter the captured compile. The runtime does not claim to distinguish an
-arbitrary asynchronous closure from a genuinely independent caller through
-host-specific async context.
+`createPipeline(options)` owns the base declaration and one dense, immutable
+extension-registration tuple in two phases. It first inspects the complete
+tuple and captures every callback identity plus every owned configuration,
+retaining indexed ownership failures while continuing. Only after that frozen
+capture exists does it invoke each valid `GraphExtension.contribute(options)`
+callback exactly once, synchronously in tuple order. An earlier callback cannot
+rewrite a later callback or configuration before capture. There is no public
+registry, `use` method, mutable registration queue or compile operation. A new
+configuration requires a new `createPipeline` call.
 
-Each independent extension registration reserves one monotonic sequence in the
-ordered queue. At `run(options)` invocation the runtime atomically captures the
-queue tail and owned base declaration, awaits and drains exactly prior callbacks
-despite failure, retains every failure and selects the lowest registration
-sequence as primary. Successful contributions apply in that order. Registrations
-after capture are excluded even if they settle first. With no pending captured
-callback this boundary stays synchronous.
+Every `TConfiguration` extends `GraphValue`. Before contribution begins, the
+runtime validates, deep-copies and recursively freezes the configuration and
+passes only that owned copy to the callback. Opaque services belong in run
+capabilities, never extension configuration. Mutation of the caller's original
+configuration after creation cannot change a pending contribution's meaning.
+
+Each callback returns one complete immutable
+`MaybePromise<GraphContribution>`. `GraphContribution` is the sole public name
+for that authoring fragment. It may contain nodes, edges, anchors and output
+projections, and it carries the executors for its contributed nodes. Nested
+contribution programmes and re-entrant registration do not exist.
+
+Registration order is the one-based tuple position. `runPipeline(options)`
+drains every captured callback despite failure, then compiles every successful
+contribution in registration order. It retains every extension failure and
+every graph diagnostic produced by the successful subset. If any extension
+failed, the lowest registration-order extension failure is primary. Otherwise
+the first canonical graph diagnostic is primary. Role-configuration failures
+follow extension and graph issues and become primary only when neither exists.
+Structural role issues are retained in capture order. Once the final node and
+effect identities are knowable, graph-dependent middleware issues follow in
+registration order, then extra and missing participant keys in raw UTF-16 key
+order. Every knowable issue is collected before any executable role compiler is
+called. No graph work is admitted after any configuration failure.
+
+Pending settlement is shared safely by repeated and concurrent runs, while
+compiled scheduler state remains run-local. Once the captured generation is
+quiescent, a wholly synchronous compile, run and terminal observer path returns
+synchronously.
 
 Canonical topological rank is `0` for a source and otherwise one plus the
 maximum predecessor rank. Compilation assigns a total canonical node ordinal
@@ -299,9 +315,21 @@ and invokes the complete selected set in that order. A synchronous failure does
 not suppress selected siblings. A dependant becomes ready as soon as its own
 predecessors succeed; unrelated branches create no wave barrier.
 
-`RunOptions` accepts `signal?: AbortSignal`. Omission creates one internal,
-never-aborted signal; the same signal is the only cancellation primitive seen by
-nodes, middleware, effect prepare/commit and the scheduler.
+`runPipeline({ pipeline, inputs, capabilities, signal? })` accepts the sole
+optional `AbortSignal`. Omission creates one internal, never-aborted signal;
+the same signal is the only cancellation primitive seen by nodes, middleware,
+effect prepare/commit and the scheduler.
+
+Run admission reads each option field once. It validates, deep-copies and
+recursively freezes the complete input record synchronously before observing a
+pending extension generation; later exact-key validation uses that owned
+snapshot without recopying or retaining a caller alias. Capabilities remain a
+provider-owned alias. Invalid options, token authority, inputs or signal produce
+the exact algebraic `{ kind: 'admission-failed', field, error }` result. A
+synchronous generation returns that algebra synchronously. A genuinely pending
+generation may promote exact-key validation, but its promise resolves to the
+same algebra and does not reject for the caller fault. Throwing run-field
+accessors are read once and contained as admission failure.
 
 - If already aborted at invocation, no node, prepare or commit is admitted.
 - During graph work or preparation, abort stops new nodes and later forward
@@ -333,70 +361,11 @@ Observer failures are retained and never alter that outcome or primary failure.
 
 ## 6. Middleware
 
-Eligibility is compiled from static node keys or tags into an ordered list per
-node. Middleware cannot change eligibility at run time. For eligible middleware
-`M1..Mn` in registration order:
-
-```ts
-interface NodeMiddleware<
-	TKey extends NodeKey,
-	TInvocation,
-	TOutput,
-	TState,
-	TRequest,
-> {
-	readonly node: TKey;
-	readonly before?: (
-		options: MiddlewareInvocationOptions<TKey, TInvocation>
-	) => MaybePromise<MiddlewareResult<TState, TRequest>>;
-	readonly after?: (
-		options: MiddlewareEnteredOptions<TKey, TInvocation, TState> & {
-			readonly output: TOutput;
-		}
-	) => MaybePromise<readonly TRequest[]>;
-	readonly error?: (
-		options: MiddlewareEnteredOptions<TKey, TInvocation, TState> & {
-			readonly error: unknown;
-		}
-	) => MaybePromise<void>;
-	readonly cancel?: (
-		options: MiddlewareEnteredOptions<TKey, TInvocation, TState> & {
-			readonly reason: unknown;
-		}
-	) => MaybePromise<void>;
-}
-interface MiddlewareInvocationOptions<TKey, TInvocation> {
-	readonly node: TKey;
-	readonly invocation: TInvocation;
-}
-interface MiddlewareEnteredOptions<TKey, TInvocation, TState>
-	extends MiddlewareInvocationOptions<TKey, TInvocation> {
-	readonly state: TState;
-}
-interface MiddlewareResult<TState, TRequest> {
-	readonly state: TState;
-	readonly effects: readonly TRequest[];
-}
-type NodeMiddlewareFor<
-	TInputs extends Readonly<Record<string, GraphValue>>,
-	TNodes extends NodeRegistry,
-	TEdges extends readonly Edge[],
-	TEffects extends EffectRegistry,
-	TCapabilities,
-	K extends keyof TNodes & NodeKey,
-	TState,
-> = NodeMiddleware<
-	K,
-	NodeInvocation<
-		Readonly<Pick<TInputs, ExternalKeysOf<TNodes[K]> & keyof TInputs>>,
-		DependencyOutputs<TNodes, TEdges, K>,
-		TCapabilities
-	>,
-	OutputOf<TNodes[K]>,
-	TState,
-	EffectRequestsFor<TEffects, EffectKeysOf<TNodes[K]> & keyof TEffects>
->;
-```
+Eligibility is compiled only from the exact static node key named by each
+registration. V2 defines no public node-tag system. Middleware cannot change
+eligibility at run time. For eligible middleware `M1..Mn` in registration
+order. `NodeMiddlewareFor` derives invocation, output and allowed effect-request
+types from that exact node, its incoming edges and the effect registry.
 
 Each middleware declaration and registration names exactly one `node`. Reuse
 comes from a pure factory returning separately typed `NodeMiddlewareFor` values,
@@ -432,41 +401,9 @@ the unified journal below.
 
 ## 7. Unified effects and journal chronology
 
-`EffectParticipants<TEffects>` is a literal-keyed mapped registry:
-
-```ts
-type EffectPhaseResult<TValue, TFailure> =
-	| { readonly kind: 'success'; readonly value: TValue }
-	| { readonly kind: 'failure'; readonly error: TFailure };
-type ParticipantFailure<TFailure> =
-	| { readonly kind: 'declared'; readonly error: TFailure }
-	| { readonly kind: 'thrown'; readonly error: unknown };
-
-interface EffectParticipant<
-	TContract extends EffectContract<GraphValue, unknown, unknown, unknown>,
-> {
-	readonly prepare: (options: {
-		readonly payload: EffectPayload<TContract>;
-		readonly signal: AbortSignal;
-	}) => MaybePromise<
-		EffectPhaseResult<EffectPrepared<TContract>, EffectFailure<TContract>>
-	>;
-	readonly commit: (options: {
-		readonly prepared: EffectPrepared<TContract>;
-		readonly signal: AbortSignal;
-	}) => MaybePromise<
-		EffectPhaseResult<EffectReceipt<TContract>, EffectFailure<TContract>>
-	>;
-	readonly compensate: (options: {
-		readonly prepared: EffectPrepared<TContract>;
-		readonly receipt?: EffectReceipt<TContract>;
-	}) => MaybePromise<EffectPhaseResult<void, EffectFailure<TContract>>>;
-}
-
-type EffectParticipants<TEffects extends EffectRegistry> = {
-	readonly [K in keyof TEffects]: EffectParticipant<TEffects[K]>;
-};
-```
+`EffectParticipants<TEffects>` is an exact literal-keyed mapped registry. Each
+participant's `prepare`, `commit` and `compensate` types derive payload,
+prepared, receipt and declared-failure values from its `EffectContract`.
 
 Compensation deliberately receives no signal because it is non-cancellable.
 Declared failures become `ParticipantFailure` records with `kind: 'declared'`.
@@ -497,10 +434,12 @@ guarantee. The journal is process-local evidence, not durable effect authority.
 ## 8. Outcomes, suspension and abandonment
 
 Every node projects exactly one `succeeded`, `failed`, `blocked` or
-cooperatively `cancelled` outcome. `RunOutcome<TOutputs>` is `succeeded`,
+cooperatively `cancelled` `NodeOutcome`. `RunOutcome<TOutputs>` is `succeeded`,
 `failed`, `cancelled` or `suspended`; every variant includes canonically ordered
-node outcomes, diagnostics, observer failures and an effect-journal projection.
-A failed outcome retains every failure.
+`NodeOutcome` values, diagnostics, observer failures and an effect-journal
+projection. A failed outcome retains every failure. Scheduler-only
+`pendingEffects` and `pendingPauses` are internal handoff state and never appear
+on terminal `RunOutcome` values.
 
 On graph failure, admission stops and admitted work drains. The primary graph
 failure is the first failed node by canonical ordinal; failures within that node
@@ -508,9 +447,11 @@ use section 6 order. Timing never selects it. If graph evaluation succeeds but
 commit fails, the first failure in commit order is primary and later commits are
 not admitted.
 
-A successful node may return one `PauseRequest`. The first request stops new
-admission and drains admitted work; a concurrent second request is a graph
-failure. Failure outranks cancellation, which outranks pause.
+A successful node may return one unlocated `PauseRequest`. On admission the
+scheduler creates a `PauseRecord` containing the canonical node identity,
+ordinal and request. The first request stops new admission and drains admitted
+work; a concurrent second request is a graph failure. Failure outranks
+cancellation, which outranks pause.
 
 A clean pause yields a private, single-use `Suspension` containing the same
 compiled graph, configuration, frontier, outputs and prepared journal. It is
@@ -535,13 +476,40 @@ uncapturable rollback is unsupported and no second rollback authority remains.
 
 Public callbacks exist only for named interpreter-owned lifetimes: node
 execution, middleware phases, observer delivery, effect phases and graph
-contribution. Factories return immutable declarations or evaluators. Run,
-middleware and prepared state are explicit values, not mutable closure cells.
-No callback captures the remaining graph.
+contribution. Factories return immutable declarations or data tokens. Run,
+middleware, extension settlement and prepared state are explicit
+interpreter-owned values, not method closures. No callback captures the
+remaining graph.
 
-## 10. Unresolved names and policies
+`createPipeline(options)` returns a frozen, null-prototype nominal data token
+with only enumerable `kind: 'pipeline'` data plus a real non-enumerable private
+type witness. Module-private weak storage binds that exact token to process-local
+authority. Spread, clone, proxy, serialised or reflected-brand copies are not
+live Pipeline values and `runPipeline` rejects them algebraically as a Pipeline
+admission failure. `Pipeline` has no `run`, `use` or `compile` method.
 
-Builder names, diagnostic shapes, anchor ownership and future scheduling or
-host policies remain open. They cannot introduce mutable graph data, stage
-authority, hidden continuations, implicit joins, timing-dependent meaning or
-durability claims.
+The hand-curated `v2/pipeline` module is the public orchestration surface. It
+exports `createPipeline`, `runPipeline`, suspension consumption operations and
+the authoring, role, outcome and diagnostic types needed to configure them.
+`scheduleGraph`, graph and role compilers, extension generation, journals and
+scheduler state remain internal seams.
+
+## 10. Diagnostics, anchors and future policies
+
+Compile-time `GraphDiagnostic` is exactly immutable `{ code, message, path }`,
+where `path` is a string array. Runtime `RunDiagnostics` is exactly immutable
+`{ nodes, events }`. Each `NodeDiagnostic` contains `node`, `nodeOrdinal`,
+diagnostic `state`, and the applicable readiness, blocker, admission
+sequence and settlement sequence fields. `RunEvent` remains the closed
+`node-transition`, `effect-transition` and `run-terminal` algebra defined in
+section 5. These are diagnostic projections without execution authority.
+
+An anchor is an optional immutable authoring reference from an anchor name to
+an existing node key. Contributions may add or replace anchors in registration
+order. Compilation validates and owns them, but the scheduler does not read
+anchors for readiness, precedence, middleware eligibility, admission or
+effects. They are inert references for authoring adapters only.
+
+Future scheduling or host policies remain open. They cannot reinterpret
+anchors, introduce mutable graph data, stage authority, hidden continuations,
+implicit joins, timing-dependent meaning or durability claims.

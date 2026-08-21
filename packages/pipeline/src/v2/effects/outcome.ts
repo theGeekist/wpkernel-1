@@ -13,7 +13,7 @@ import {
 	compensateEffectJournal,
 	type JournalSettlement,
 } from './settlement.js';
-import { projectEffectJournal, projectPreparedEffects } from './runtime.js';
+import { projectEffectJournal } from './runtime.js';
 import type { EffectJournalFailure, EffectJournalRuntime } from './types.js';
 
 const directEffectFailures = <TEffects extends EffectRegistry>(
@@ -33,8 +33,6 @@ const projection = <
 	>
 ) => ({
 	nodes: graph.nodes,
-	pendingEffects: projectPreparedEffects(runtime),
-	pendingPauses: graph.pendingPauses,
 	observerFailures: Object.freeze([]),
 	effectJournal: projectEffectJournal(runtime),
 	effectFailures: Object.freeze([...runtime.failures]),

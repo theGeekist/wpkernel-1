@@ -2,7 +2,7 @@ import { compileErasedGraph } from './compiler.js';
 import type {
 	ErasedCompileGraphResult,
 	ErasedGraphDeclaration,
-	GraphContribution,
+	RegisteredGraphContribution,
 } from './types.js';
 
 /**
@@ -18,7 +18,7 @@ import type {
  */
 export const compileGraphWithContributions = (options: {
 	readonly declaration: ErasedGraphDeclaration;
-	readonly contributions: readonly GraphContribution[];
+	readonly contributions: readonly RegisteredGraphContribution[];
 }): ErasedCompileGraphResult =>
 	compileErasedGraph({
 		declaration: options.declaration,

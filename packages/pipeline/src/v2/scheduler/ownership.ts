@@ -3,14 +3,14 @@ import type { EffectRegistry, GraphValue } from '../graph/types.js';
 import { copyGraphValue } from '../graph/values.js';
 import { createGraphSchedulerError } from './errors.js';
 import type { GraphSchedulerError } from './errors.js';
-import type { PendingEffect, PendingPause } from './types.js';
+import type { PauseRecord, PendingEffect } from './types.js';
 
 export type OwnedNodeResult<TEffects extends EffectRegistry> =
 	| {
 			readonly kind: 'success';
 			readonly output: GraphValue;
 			readonly effects: readonly PendingEffect<TEffects>[];
-			readonly pause?: PendingPause;
+			readonly pause?: PauseRecord;
 	  }
 	| { readonly kind: 'failure'; readonly error: unknown }
 	| { readonly kind: 'cancelled'; readonly reason?: unknown }
@@ -167,7 +167,7 @@ const ownPause = (options: {
 	readonly node: string;
 	readonly nodeOrdinal: number;
 }):
-	| { readonly ok: true; readonly value: PendingPause }
+	| { readonly ok: true; readonly value: PauseRecord }
 	| { readonly ok: false; readonly error: GraphSchedulerError } => {
 	const inspected = inspectedFields(
 		options.value,
@@ -193,7 +193,7 @@ const ownPause = (options: {
 			request: Object.freeze(
 				inspected.fields.has('reason') ? { reason } : {}
 			),
-		}) as PendingPause,
+		}) as PauseRecord,
 	};
 };
 
@@ -282,10 +282,22 @@ export const ownNodeResult = <TEffects extends EffectRegistry>(options: {
 	};
 };
 
-export const ownGraphInputs = (options: {
+export type GraphInputSnapshotResult =
+	| {
+			readonly ok: true;
+			readonly value: Readonly<Record<string, GraphValue>>;
+	  }
+	| { readonly ok: false; readonly error: GraphSchedulerError };
+
+/**
+ * Owns one complete graph-input record before graph generation is observed.
+ *
+ * @param options       - Caller-owned graph input candidate.
+ * @param options.value - Value to copy into the graph-value algebra.
+ */
+export const ownGraphInputSnapshot = (options: {
 	readonly value: unknown;
-	readonly inputKeys: readonly string[];
-}): Readonly<Record<string, GraphValue>> => {
+}): GraphInputSnapshotResult => {
 	const copied = copyGraphValue({ value: options.value });
 	if (
 		!copied.ok ||
@@ -293,23 +305,61 @@ export const ownGraphInputs = (options: {
 		typeof copied.value !== 'object' ||
 		Array.isArray(copied.value)
 	) {
-		throw createGraphSchedulerError({
-			code: 'invalid-input',
-			message: copied.ok
-				? 'Graph inputs must be a plain record.'
-				: `Invalid graph inputs: ${copied.reason}`,
-		});
+		return {
+			ok: false,
+			error: createGraphSchedulerError({
+				code: 'invalid-input',
+				message: copied.ok
+					? 'Graph inputs must be a plain record.'
+					: `Invalid graph inputs: ${copied.reason}`,
+			}),
+		};
 	}
-	const keys = Object.keys(copied.value);
+	return {
+		ok: true,
+		value: copied.value as Readonly<Record<string, GraphValue>>,
+	};
+};
+
+/**
+ * Validates exact keys on an already-owned graph-input snapshot.
+ *
+ * @param options           - Owned inputs and compiled input identities.
+ * @param options.value     - Previously owned graph-input record.
+ * @param options.inputKeys - Exact keys required by the compiled graph.
+ */
+export const validateOwnedGraphInputs = (options: {
+	readonly value: Readonly<Record<string, GraphValue>>;
+	readonly inputKeys: readonly string[];
+}): GraphSchedulerError | undefined => {
+	const keys = Object.keys(options.value);
 	const keySet = new Set(keys);
 	if (
 		keys.length !== options.inputKeys.length ||
 		options.inputKeys.some((key) => !keySet.has(key))
 	) {
-		throw createGraphSchedulerError({
+		return createGraphSchedulerError({
 			code: 'invalid-input',
 			message: 'Graph inputs must exactly cover the compiled input keys.',
 		});
 	}
-	return copied.value as Readonly<Record<string, GraphValue>>;
+	return undefined;
+};
+
+export const ownGraphInputs = (options: {
+	readonly value: unknown;
+	readonly inputKeys: readonly string[];
+}): Readonly<Record<string, GraphValue>> => {
+	const owned = ownGraphInputSnapshot({ value: options.value });
+	if (!owned.ok) {
+		throw owned.error;
+	}
+	const invalid = validateOwnedGraphInputs({
+		value: owned.value,
+		inputKeys: options.inputKeys,
+	});
+	if (invalid) {
+		throw invalid;
+	}
+	return owned.value;
 };

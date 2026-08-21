@@ -291,7 +291,7 @@ describe('v2 scheduler ownership and exact thenable settlement', () => {
 		expect(owned[inputKeys[count - 1]!]).toBe(count - 1);
 	});
 
-	it('retains copied effect requests as deterministic pending handoff', () => {
+	it('retains copied effect requests in the deterministic journal', () => {
 		const payload = { mutable: ['before'] };
 		const graph = compileTestGraph({
 			effectKeys: ['write'],
@@ -313,7 +313,7 @@ describe('v2 scheduler ownership and exact thenable settlement', () => {
 
 		expect(result).toMatchObject({
 			kind: 'succeeded',
-			pendingEffects: [
+			effectJournal: [
 				{
 					node: 'a',
 					nodeOrdinal: 0,
@@ -328,7 +328,7 @@ describe('v2 scheduler ownership and exact thenable settlement', () => {
 		if (result instanceof Promise) {
 			throw new Error('Expected synchronous result.');
 		}
-		expect(Object.isFrozen(result.pendingEffects[0]!.request.payload)).toBe(
+		expect(Object.isFrozen(result.effectJournal[0]!.request.payload)).toBe(
 			true
 		);
 	});

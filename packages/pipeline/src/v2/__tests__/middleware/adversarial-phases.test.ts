@@ -145,7 +145,7 @@ describe('v2 middleware adversarial phase boundaries', () => {
 
 		expect(result).toMatchObject({
 			kind: 'cancelled',
-			pendingEffects: [],
+			effectJournal: [],
 		});
 	});
 

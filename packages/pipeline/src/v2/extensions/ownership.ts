@@ -1,7 +1,7 @@
 import { inspectRecord } from '../graph/inspection.js';
 import type {
 	ErasedGraphDeclaration,
-	GraphContribution,
+	RegisteredGraphContribution,
 } from '../graph/types.js';
 import { copyGraphValue } from '../graph/values.js';
 
@@ -81,7 +81,7 @@ export const ownGraphExtensionDeclaration = (
 export const ownGraphContribution = (options: {
 	readonly value: unknown;
 	readonly registrationOrder: number;
-}): GraphContribution => {
+}): RegisteredGraphContribution => {
 	let fields: ReadonlyMap<string, unknown> = new Map();
 	try {
 		const inspected = inspectRecord(options.value);
@@ -109,5 +109,5 @@ export const ownGraphContribution = (options: {
 			: {}),
 		executors: executorField(fields.get('executors')),
 		...(fields.has('contributions') ? { contributions: [] } : {}),
-	}) as GraphContribution;
+	}) as RegisteredGraphContribution;
 };

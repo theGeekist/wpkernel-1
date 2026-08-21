@@ -3,7 +3,6 @@ import type { RunDiagnostics } from '../diagnostics/types.js';
 import {
 	compensateEffectJournal,
 	projectEffectJournal,
-	projectPreparedEffects,
 } from '../effects/index.js';
 import { settleGraphEffects } from '../effects/outcome.js';
 import type {
@@ -17,7 +16,7 @@ import type {
 	ErasedScheduleOutcome,
 	SchedulerState,
 } from '../scheduler/state.js';
-import type { PendingPause, RunOutcome } from '../scheduler/types.js';
+import type { PauseRecord, RunOutcome } from '../scheduler/types.js';
 import {
 	captureSuspensionAuthority,
 	restoreSuspendedState,
@@ -43,7 +42,7 @@ type StoredSuspension =
 const suspensionRecords = new WeakMap<object, StoredSuspension>();
 
 const createSuspension = <TEffects extends EffectRegistry>(options: {
-	readonly pause: PendingPause;
+	readonly pause: PauseRecord;
 	readonly snapshot: RunDiagnostics;
 	readonly authority: ReturnType<typeof captureSuspensionAuthority<TEffects>>;
 }): ErasedSuspension<TEffects> => {
@@ -137,8 +136,6 @@ const suspendedOutcome = <TEffects extends EffectRegistry>(options: {
 		primaryPause: options.scheduled.primaryPause,
 		suspension,
 		nodes: options.scheduled.nodes,
-		pendingEffects: projectPreparedEffects(options.state.journal),
-		pendingPauses: options.scheduled.pendingPauses,
 		observerFailures: options.state.observers.failures(),
 		effectJournal: projectEffectJournal(options.state.journal),
 		effectFailures: Object.freeze([...options.state.journal.failures]),

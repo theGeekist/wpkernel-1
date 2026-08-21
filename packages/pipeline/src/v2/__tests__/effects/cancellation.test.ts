@@ -161,7 +161,7 @@ describe('v2 effect cancellation and abandonment boundary', () => {
 
 		expect(result).toMatchObject({
 			kind: 'cancelled',
-			pendingEffects: [{ request: { payload: 'node' } }],
+			effectJournal: [{ request: { payload: 'node' } }],
 		});
 		expect(calls).toEqual(['prepare:node', 'compensate:node']);
 	});

@@ -82,7 +82,7 @@ describe('v2 single-node middleware interpretation', () => {
 		expect(result).toMatchObject({
 			kind: 'succeeded',
 			outputs: { result: { owned: ['node'] } },
-			pendingEffects: [
+			effectJournal: [
 				{ effectOrdinal: 0, request: { payload: 'before-1' } },
 				{ effectOrdinal: 1, request: { payload: 'before-2' } },
 				{ effectOrdinal: 2, request: { payload: 'node' } },
@@ -140,7 +140,7 @@ describe('v2 single-node middleware interpretation', () => {
 		expect(result).toMatchObject({
 			kind: 'failed',
 			primaryFailure: { kind: 'thrown', error: original },
-			pendingEffects: [{ request: { payload: 'retained' } }],
+			effectJournal: [{ request: { payload: 'retained' } }],
 		});
 		expect(calls).toEqual(['before-2', 'error-1']);
 		expect(executor).not.toHaveBeenCalled();
@@ -382,7 +382,7 @@ describe('v2 single-node middleware interpretation', () => {
 		expect(result).toMatchObject({
 			kind: 'failed',
 			primaryFailure: { kind: 'contract', nodeOrdinal: 0 },
-			pendingEffects: [],
+			effectJournal: [],
 		});
 	});
 

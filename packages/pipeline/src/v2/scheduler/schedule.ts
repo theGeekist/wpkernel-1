@@ -16,7 +16,7 @@ import {
 } from '../effects/index.js';
 import { executeSchedulerState } from '../suspension/runtime.js';
 import { createGraphSchedulerError } from './errors.js';
-import { ownGraphInputs } from './ownership.js';
+import { ownGraphInputs, validateOwnedGraphInputs } from './ownership.js';
 import { addReadyNode, createReadyQueue } from './ready-queue.js';
 import type { ErasedExecutor, SchedulerState } from './state.js';
 import type { ScheduleGraphOptions, ScheduleGraphResult } from './types.js';
@@ -121,21 +121,37 @@ export const scheduleGraph = <
 		value: options.inputs,
 		inputKeys: graph.inputKeys,
 	});
+	return executeOwnedGraph({ ...options, graph, inputs });
+};
+
+const executeOwnedGraph = <
+	TNodes extends NodeRegistry,
+	TEffects extends EffectRegistry,
+	TProjection extends OutputProjection<TNodes>,
+>(options: {
+	readonly graph: ErasedGraph;
+	readonly inputs: Readonly<Record<string, GraphValue>>;
+	readonly capabilities: unknown;
+	readonly participants: unknown;
+	readonly signal?: AbortSignal;
+	readonly middleware?: readonly NodeMiddlewareRegistration[];
+	readonly observers?: Parameters<typeof compileRunObservers>[0]['observers'];
+}): ScheduleGraphResult<TNodes, TEffects, TProjection> => {
 	const signal = options.signal ?? new AbortController().signal;
 	const observers = compileRunObservers({ observers: options.observers });
-	const executors = executorTable(graph);
+	const executors = executorTable(options.graph);
 	const participants = compileEffectParticipants({
-		graph,
+		graph: options.graph,
 		participants: options.participants,
 	});
 	const state = createState<TEffects>({
-		graph,
-		inputs,
+		graph: options.graph,
+		inputs: options.inputs,
 		capabilities: options.capabilities,
 		signal,
 		executors,
 		middleware: compileNodeMiddleware({
-			graph,
+			graph: options.graph,
 			middleware: options.middleware,
 		}),
 		observers,
@@ -143,4 +159,29 @@ export const scheduleGraph = <
 	});
 	const complete = executeSchedulerState(state);
 	return complete as ScheduleGraphResult<TNodes, TEffects, TProjection>;
+};
+
+/**
+ * Scheduler entry for an already-owned Pipeline input snapshot.
+ *
+ * @param options - Complete scheduler input with an owned graph-input record.
+ * @internal
+ */
+export const scheduleOwnedGraph = <
+	TNodes extends NodeRegistry,
+	TEffects extends EffectRegistry,
+	TProjection extends OutputProjection<TNodes>,
+>(
+	options: Parameters<
+		typeof executeOwnedGraph<TNodes, TEffects, TProjection>
+	>[0]
+): ScheduleGraphResult<TNodes, TEffects, TProjection> => {
+	const invalid = validateOwnedGraphInputs({
+		value: options.inputs,
+		inputKeys: options.graph.inputKeys,
+	});
+	if (invalid) {
+		throw invalid;
+	}
+	return executeOwnedGraph(options);
 };
