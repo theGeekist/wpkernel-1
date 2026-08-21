@@ -11,8 +11,8 @@ import type { EffectJournalRuntime } from '../effects/types.js';
 import type {
 	GraphNodeFailure,
 	GraphScheduleOutcome,
+	PauseRecord,
 	PendingEffect,
-	PendingPause,
 	RunOutcome,
 } from './types.js';
 import type { OrdinalReadyQueue } from './ready-queue.js';
@@ -40,7 +40,7 @@ export type NodeRuntimeState<TEffects extends EffectRegistry> =
 			readonly settlementSequence: number;
 			readonly output: GraphValue;
 			readonly effects: readonly PendingEffect<TEffects>[];
-			readonly pause?: PendingPause;
+			readonly pause?: PauseRecord;
 	  }
 	| {
 			readonly kind: 'failed';

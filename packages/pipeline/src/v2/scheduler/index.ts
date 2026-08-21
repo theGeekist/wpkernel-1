@@ -4,12 +4,11 @@ export { scheduleGraph } from './schedule.js';
 export type {
 	GraphNodeFailure,
 	GraphScheduleOutcome,
+	NodeOutcome,
 	PendingEffect,
-	PendingEffectRequest,
-	PendingPause,
+	PauseRecord,
 	RunFailure,
 	RunOutcome,
-	ScheduledNodeOutcome,
 	ScheduleGraphOptions,
 	ScheduleGraphResult,
 } from './types.js';

@@ -1,7 +1,8 @@
 import type {
 	Edge,
 	EffectRegistry,
-	Graph,
+	ErasedGraph,
+	ErasedGraphDeclaration,
 	GraphContribution,
 	GraphDiagnostic,
 	GraphValue,
@@ -10,54 +11,73 @@ import type {
 	NodeKey,
 	NodeRegistry,
 	OutputProjection,
+	RegisteredGraphContribution,
 } from '../graph/types.js';
 
-/** Immutable declaration fragment returned by one graph extension callback. */
-export interface GraphExtensionContribution<
-	TNodes extends NodeRegistry = NodeRegistry,
-	TEdges extends readonly Edge[] = readonly Edge[],
-	TOutputs extends Readonly<Record<string, NodeKey>> = Readonly<
-		Record<string, NodeKey>
-	>,
-> extends Omit<
-		GraphContribution,
-		| 'registrationOrder'
-		| 'contributions'
-		| 'nodes'
-		| 'edges'
-		| 'outputs'
-		| 'executors'
-	> {
-	readonly nodes?: TNodes;
-	readonly edges?: TEdges;
-	readonly outputs?: TOutputs;
-	readonly executors: Readonly<Record<keyof TNodes & NodeKey, unknown>>;
-}
+export type { GraphContribution } from '../graph/types.js';
+
+type ImmutableGraphValue<TValue extends GraphValue> = TValue extends
+	| null
+	| undefined
+	| boolean
+	| number
+	| bigint
+	| string
+	? TValue
+	: TValue extends readonly GraphValue[]
+		? {
+				readonly [TKey in keyof TValue]: TValue[TKey] extends GraphValue
+					? ImmutableGraphValue<TValue[TKey]>
+					: never;
+			}
+		: TValue extends Readonly<Record<string, GraphValue>>
+			? { readonly [K in keyof TValue]: ImmutableGraphValue<TValue[K]> }
+			: never;
 
 /** Configuration-time role that contributes declarations but cannot see runs. */
 export interface GraphExtension<
-	TConfiguration,
-	TContribution extends
-		GraphExtensionContribution = GraphExtensionContribution,
+	TConfiguration extends GraphValue,
+	TContribution extends GraphContribution = GraphContribution,
 > {
 	readonly contribute: (options: {
-		readonly configuration: TConfiguration;
+		readonly configuration: ImmutableGraphValue<TConfiguration>;
 	}) => MaybePromise<TContribution>;
 }
 
-/** One independent extension registration. */
-export interface GraphExtensionUseOptions<
-	TConfiguration,
-	TContribution extends
-		GraphExtensionContribution = GraphExtensionContribution,
+/** One immutable extension registration in a Pipeline configuration. */
+export interface GraphExtensionRegistration<
+	TConfiguration extends GraphValue = GraphValue,
+	TContribution extends GraphContribution = GraphContribution,
 > {
 	readonly extension: GraphExtension<TConfiguration, TContribution>;
 	readonly configuration: TConfiguration;
 }
 
+/** Structural tuple constraint; exact extension types are checked separately. @internal */
+export interface GraphExtensionRegistrationShape {
+	readonly extension: Readonly<Record<'contribute', unknown>>;
+	readonly configuration: GraphValue;
+}
+
 type EmptyNodes = Readonly<Record<never, never>>;
 type EmptyEdges = readonly [];
 type EmptyProjection = Readonly<Record<never, never>>;
+
+type ContributionOf<TRegistration> = TRegistration extends {
+	readonly extension: {
+		readonly contribute: (options: infer _TOptions) => infer TResult;
+	};
+}
+	? Awaited<TResult> extends GraphContribution
+		? Awaited<TResult>
+		: never
+	: never;
+
+type ConfigurationOf<TRegistration> = TRegistration extends {
+	readonly configuration: infer TConfiguration extends GraphValue;
+}
+	? TConfiguration
+	: never;
 
 type ContributionNodes<TContribution> = TContribution extends {
 	readonly nodes: infer TNodes extends NodeRegistry;
@@ -108,13 +128,13 @@ type ContributionExecutors<
 	>[TKey];
 }>;
 
-type CheckedGraphExtensionContribution<
+type CheckedGraphContribution<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
 	TEdges extends readonly Edge[],
 	TEffects extends EffectRegistry,
 	TCapabilities,
-	TContribution extends GraphExtensionContribution,
+	TContribution extends GraphContribution,
 > = TContribution & {
 	readonly outputs?: ContributionOutputs<TContribution> &
 		OutputProjection<AccumulatedNodes<TNodes, TContribution>>;
@@ -131,100 +151,140 @@ type CheckedGraphExtensionContribution<
 	>;
 };
 
+type CheckedGraphExtensionRegistration<
+	TInputs extends Readonly<Record<string, GraphValue>>,
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	TEffects extends EffectRegistry,
+	TCapabilities,
+	TRegistration extends GraphExtensionRegistrationShape,
+> = TRegistration & {
+	readonly extension: GraphExtension<
+		ConfigurationOf<TRegistration>,
+		ContributionOf<TRegistration> &
+			CheckedGraphContribution<
+				TInputs,
+				TNodes,
+				TEdges,
+				TEffects,
+				TCapabilities,
+				ContributionOf<TRegistration>
+			>
+	>;
+};
+
+/** Exact sequential validation for a heterogeneous extension tuple. */
+export type CheckedGraphExtensionRegistrations<
+	TInputs extends Readonly<Record<string, GraphValue>>,
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	TEffects extends EffectRegistry,
+	TCapabilities,
+	TRegistrations extends readonly GraphExtensionRegistrationShape[],
+> = TRegistrations extends readonly [
+	infer TFirst extends GraphExtensionRegistrationShape,
+	...infer TRest extends readonly GraphExtensionRegistrationShape[],
+]
+	? readonly [
+			CheckedGraphExtensionRegistration<
+				TInputs,
+				TNodes,
+				TEdges,
+				TEffects,
+				TCapabilities,
+				TFirst
+			>,
+			...CheckedGraphExtensionRegistrations<
+				TInputs,
+				AccumulatedNodes<TNodes, ContributionOf<TFirst>>,
+				AccumulatedEdges<TEdges, ContributionOf<TFirst>>,
+				TEffects,
+				TCapabilities,
+				TRest
+			>,
+		]
+	: readonly [];
+
+/** Final node registry after applying one extension tuple in order. */
+export type ExtensionNodes<
+	TNodes extends NodeRegistry,
+	TRegistrations extends readonly GraphExtensionRegistrationShape[],
+> = TRegistrations extends readonly [
+	infer TFirst extends GraphExtensionRegistrationShape,
+	...infer TRest extends readonly GraphExtensionRegistrationShape[],
+]
+	? ExtensionNodes<AccumulatedNodes<TNodes, ContributionOf<TFirst>>, TRest>
+	: TNodes;
+
+/** Final edge tuple after applying one extension tuple in order. */
+export type ExtensionEdges<
+	TEdges extends readonly Edge[],
+	TRegistrations extends readonly GraphExtensionRegistrationShape[],
+> = TRegistrations extends readonly [
+	infer TFirst extends GraphExtensionRegistrationShape,
+	...infer TRest extends readonly GraphExtensionRegistrationShape[],
+]
+	? ExtensionEdges<AccumulatedEdges<TEdges, ContributionOf<TFirst>>, TRest>
+	: TEdges;
+
+/** Final output projection after applying one extension tuple in order. */
+export type ExtensionProjection<
+	TProjection,
+	TRegistrations extends readonly GraphExtensionRegistrationShape[],
+> = TRegistrations extends readonly [
+	infer TFirst extends GraphExtensionRegistrationShape,
+	...infer TRest extends readonly GraphExtensionRegistrationShape[],
+]
+	? ExtensionProjection<
+			AccumulatedProjection<TProjection, ContributionOf<TFirst>>,
+			TRest
+		>
+	: TProjection;
+
 /** Original contribution callback failure retained by registration order. */
 export interface GraphExtensionFailure {
 	readonly registrationOrder: number;
 	readonly error: unknown;
 }
 
-/** Algebraic result after captured contributions drain and graph compilation runs. */
-export type CompileGraphExtensionsResult<
-	TInputs extends Readonly<Record<string, GraphValue>> = Readonly<
-		Record<string, GraphValue>
-	>,
-	TNodes extends NodeRegistry = NodeRegistry,
-	TEdges extends readonly Edge[] = readonly Edge[],
-	TEffects extends EffectRegistry = EffectRegistry,
-	TProjection extends OutputProjection<TNodes> = OutputProjection<TNodes>,
-	TCapabilities = unknown,
-> =
+/** @internal */
+export type ExtensionSettlement =
 	| {
-			readonly ok: true;
-			readonly graph: Graph<
-				TInputs,
-				TNodes,
-				TEdges,
-				TEffects,
-				TProjection,
-				TCapabilities
-			>;
+			readonly kind: 'succeeded';
+			readonly contribution: RegisteredGraphContribution;
 	  }
-	| {
-			readonly ok: false;
-			readonly kind: 'extension-failed';
-			readonly primaryFailure: GraphExtensionFailure;
-			readonly failures: readonly GraphExtensionFailure[];
-	  }
-	| {
-			readonly ok: false;
-			readonly kind: 'graph-invalid';
-			readonly diagnostics: readonly GraphDiagnostic[];
-	  };
+	| { readonly kind: 'failed'; readonly failure: GraphExtensionFailure };
 
-/** Ordered configuration queue whose compile call captures one stable tail. */
-export interface GraphExtensionRegistry<
-	TInputs extends Readonly<Record<string, GraphValue>> = Readonly<
-		Record<string, GraphValue>
-	>,
-	TNodes extends NodeRegistry = NodeRegistry,
-	TEdges extends readonly Edge[] = readonly Edge[],
-	TEffects extends EffectRegistry = EffectRegistry,
-	TProjection extends OutputProjection<TNodes> = OutputProjection<TNodes>,
-	TCapabilities = unknown,
-> {
-	readonly use: <
-		TConfiguration,
-		const TContribution extends GraphExtensionContribution,
-	>(options: {
-		readonly extension: GraphExtension<
-			TConfiguration,
-			TContribution &
-				CheckedGraphExtensionContribution<
-					TInputs,
-					TNodes,
-					TEdges,
-					TEffects,
-					TCapabilities,
-					NoInfer<TContribution>
-				>
-		>;
-		readonly configuration: TConfiguration;
-	}) => GraphExtensionRegistry<
-		TInputs,
-		AccumulatedNodes<TNodes, TContribution>,
-		AccumulatedEdges<TEdges, TContribution>,
-		TEffects,
-		AccumulatedProjection<TProjection, TContribution> &
-			OutputProjection<AccumulatedNodes<TNodes, TContribution>>,
-		TCapabilities
-	>;
-	readonly compile: () =>
-		| CompileGraphExtensionsResult<
-				TInputs,
-				TNodes,
-				TEdges,
-				TEffects,
-				TProjection,
-				TCapabilities
-		  >
-		| Promise<
-				CompileGraphExtensionsResult<
-					TInputs,
-					TNodes,
-					TEdges,
-					TEffects,
-					TProjection,
-					TCapabilities
-				>
-		  >;
+/** Explicit interpreter-owned settlement cell. @internal */
+export interface ExtensionSettlementCell {
+	settlement: ExtensionSettlement | Promise<ExtensionSettlement>;
 }
+
+/** Static graph identities recoverable before complete graph validation. @internal */
+export interface GraphConfigurationSurface {
+	readonly nodeKeys: readonly string[];
+	readonly effectKeys: readonly string[];
+}
+
+/** Immutable captured extension generation used by Pipeline. @internal */
+export interface GraphExtensionGeneration {
+	readonly declaration: ErasedGraphDeclaration;
+	readonly settlements: readonly ExtensionSettlementCell[];
+}
+
+/** Complete internal compilation evidence for one captured generation. */
+export type GraphExtensionCompilation =
+	| {
+			readonly kind: 'compiled';
+			readonly extensionFailures: readonly GraphExtensionFailure[];
+			readonly graphDiagnostics: readonly [];
+			readonly configurationSurface: GraphConfigurationSurface;
+			readonly graph: ErasedGraph;
+	  }
+	| {
+			readonly kind: 'invalid';
+			readonly extensionFailures: readonly GraphExtensionFailure[];
+			readonly graphDiagnostics: readonly GraphDiagnostic[];
+			readonly configurationSurface: GraphConfigurationSurface;
+			readonly graph?: never;
+	  };

@@ -50,7 +50,6 @@ describe('v2 scheduler pause handoff and races', () => {
 				node: 'pause',
 				request: { reason: 'review' },
 			},
-			pendingPauses: [{ node: 'pause' }],
 			nodes: [
 				{ node: 'pause', kind: 'succeeded' },
 				{ node: 'later', kind: 'blocked' },
@@ -61,8 +60,8 @@ describe('v2 scheduler pause handoff and races', () => {
 			throw new Error('Expected synchronous pause.');
 		}
 		expect(result.suspension.pause).toBe(result.primaryPause);
-		expect(Object.isFrozen(result.pendingPauses)).toBe(true);
-		expect(Object.isFrozen(result.pendingPauses[0]!.request)).toBe(true);
+		expect(Object.isFrozen(result.primaryPause)).toBe(true);
+		expect(Object.isFrozen(result.primaryPause.request)).toBe(true);
 	});
 
 	it('classifies every concurrent additional pause canonically as failure', async () => {
@@ -87,9 +86,6 @@ describe('v2 scheduler pause handoff and races', () => {
 		await expect(result).resolves.toMatchObject({
 			kind: 'failed',
 			primaryFailure: { node: 'b', kind: 'contract' },
-			pendingPauses: [
-				{ node: 'a', request: { reason: 'canonical-first' } },
-			],
 			nodes: [
 				{ node: 'a', kind: 'succeeded' },
 				{ node: 'b', kind: 'failed' },
@@ -119,7 +115,6 @@ describe('v2 scheduler pause handoff and races', () => {
 			})
 		).toMatchObject({
 			kind: 'cancelled',
-			pendingPauses: [{ node: 'a' }],
 		});
 
 		const failureController = new AbortController();

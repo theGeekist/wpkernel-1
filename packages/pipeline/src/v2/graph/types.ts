@@ -196,13 +196,23 @@ export type EffectRequestsFor<
 	K extends keyof TEffects,
 > = { readonly [P in K]: EffectRequestFor<TEffects, P> }[K];
 
+/** Immutable effect request union for one literal participant registry. */
+export type EffectRequest<TEffects extends EffectRegistry> = {
+	readonly [K in keyof TEffects]: EffectRequestFor<TEffects, K>;
+}[keyof TEffects];
+
+/** A successful node's request to stop admission after admitted work drains. */
+export interface PauseRequest {
+	readonly reason?: string;
+}
+
 /** @public */
 export type NodeResult<TOutput extends GraphValue, TFailure, TRequest> =
 	| {
 			readonly kind: 'success';
 			readonly output: TOutput;
 			readonly effects: readonly TRequest[];
-			readonly pause?: { readonly reason?: string };
+			readonly pause?: PauseRequest;
 	  }
 	| { readonly kind: 'failure'; readonly error: TFailure }
 	| { readonly kind: 'cancelled'; readonly reason?: unknown };
@@ -278,12 +288,23 @@ export interface GraphDeclaration<
 	readonly anchors?: Readonly<Record<string, keyof TNodes & NodeKey>>;
 }
 
-/**
- * Erased extension input until P2-004 provides typed composition.
- *
- * @internal
- */
-export interface GraphContribution {
+/** Immutable graph authoring fragment returned by one extension callback. */
+export interface GraphContribution<
+	TNodes extends NodeRegistry = NodeRegistry,
+	TEdges extends readonly Edge[] = readonly Edge[],
+	TOutputs extends Readonly<Record<string, NodeKey>> = Readonly<
+		Record<string, NodeKey>
+	>,
+> {
+	readonly nodes?: TNodes;
+	readonly edges?: TEdges;
+	readonly anchors?: Readonly<Record<string, NodeKey>>;
+	readonly outputs?: TOutputs;
+	readonly executors: Readonly<Record<keyof TNodes & NodeKey, unknown>>;
+}
+
+/** Scheduler-independent owned contribution with canonical registration order. */
+export interface RegisteredGraphContribution {
 	readonly registrationOrder: number;
 	readonly nodes?: Readonly<
 		Record<NodeKey, NodeContract<string, GraphValue, unknown, EffectKey>>

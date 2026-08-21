@@ -9,7 +9,7 @@ import type {
 	EffectJournalRuntime,
 } from '../effects/types.js';
 import type { ErasedExecutor } from './state.js';
-import type { PendingEffect, PendingPause } from './types.js';
+import type { PauseRecord, PendingEffect } from './types.js';
 
 export type NodeEvaluationFailure =
 	| { readonly kind: 'declared'; readonly error: unknown }
@@ -28,7 +28,7 @@ export type NodeEvaluation<TEffects extends EffectRegistry> =
 	| (EvaluationProjection<TEffects> & {
 			readonly kind: 'success';
 			readonly output: GraphValue;
-			readonly pause?: PendingPause;
+			readonly pause?: PauseRecord;
 	  })
 	| (EvaluationProjection<TEffects> & {
 			readonly kind: 'failure';
@@ -75,7 +75,7 @@ export type CleanCancellation =
 export interface NodeEvaluationSuccess {
 	readonly kind: 'success';
 	readonly output: GraphValue;
-	readonly pause?: PendingPause;
+	readonly pause?: PauseRecord;
 }
 
 export type EvaluationPhase<TEffects extends EffectRegistry = EffectRegistry> =
@@ -92,7 +92,7 @@ export type EvaluationPhase<TEffects extends EffectRegistry = EffectRegistry> =
 			kind: 'after';
 			cursor: number;
 			readonly output: GraphValue;
-			readonly pause?: PendingPause;
+			readonly pause?: PauseRecord;
 			readonly failures: NodeEvaluationFailure[];
 	  }
 	| {

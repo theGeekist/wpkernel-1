@@ -3,9 +3,9 @@ architecture_version: 1
 id: P2-014
 title: Implement and freeze the v2 public evaluator surface
 stage: source
-status: in_progress
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'Functional Pipeline evaluator and exact public outcome surface qualified and independently reviewed clean'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex

@@ -147,8 +147,8 @@ describe('v2 wide synchronous middleware traversal', () => {
 		if (result instanceof Promise) {
 			throw new Error('Expected synchronous effect handoff.');
 		}
-		expect(result.pendingEffects).toHaveLength(effectCount);
-		expect(result.pendingEffects.at(-1)).toMatchObject({
+		expect(result.effectJournal).toHaveLength(effectCount);
+		expect(result.effectJournal.at(-1)).toMatchObject({
 			effectOrdinal: effectCount - 1,
 			request: { payload: effectCount - 1 },
 		});

@@ -12,8 +12,8 @@ import type {
 import { scheduleGraph } from '../../scheduler/index.js';
 import type {
 	GraphScheduleOutcome,
+	NodeOutcome,
 	ScheduleGraphResult,
-	ScheduledNodeOutcome,
 } from '../../scheduler/types.js';
 
 interface FailureA {
@@ -313,9 +313,7 @@ const assertDeclaredFailureNarrowing = (outcome: Outcome): void => {
 	}
 };
 
-const assertNodeOutcomeNarrowing = (
-	outcome: ScheduledNodeOutcome<Nodes>
-): void => {
+const assertNodeOutcomeNarrowing = (outcome: NodeOutcome<Nodes>): void => {
 	if (outcome.kind === 'succeeded' && outcome.node === 'a') {
 		const exact: 'a-output' = outcome.output;
 		// @ts-expect-error node a cannot expose node b's output.

@@ -11,7 +11,7 @@ import type {
 	NodeTypes,
 } from '../graph/types.js';
 import type { RunObserverFailure } from '../observers/types.js';
-import type { PendingPause, RunOutcome } from '../scheduler/types.js';
+import type { PauseRecord, RunOutcome } from '../scheduler/types.js';
 import type { suspensionBrand } from './brand.js';
 
 interface SuspensionTypeWitness<
@@ -43,7 +43,7 @@ export type Suspension<
 		TOutputs,
 		TEffects
 	>;
-	readonly pause: PendingPause;
+	readonly pause: PauseRecord;
 	readonly snapshot: RunDiagnostics;
 };
 

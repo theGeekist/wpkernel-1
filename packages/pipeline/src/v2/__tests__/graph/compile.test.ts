@@ -12,9 +12,9 @@ import type {
 	Edge,
 	EffectContract,
 	ErasedGraphDeclaration,
-	GraphContribution,
 	GraphDeclaration,
 	NodeContract,
+	RegisteredGraphContribution,
 } from '../../graph/types.js';
 
 type Inputs = Readonly<{ source: string; flag: boolean }>;
@@ -53,7 +53,7 @@ const effectContribution = {
 	executors: {
 		emit: () => ({ kind: 'success', output: null, effects: [] }),
 	},
-} satisfies GraphContribution;
+} satisfies RegisteredGraphContribution;
 
 const declaration = (): GraphDeclaration<
 	Inputs,
