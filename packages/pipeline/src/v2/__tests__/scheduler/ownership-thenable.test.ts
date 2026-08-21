@@ -39,6 +39,60 @@ describe('v2 scheduler ownership and exact thenable settlement', () => {
 		expect(calls).toBe(1);
 	});
 
+	it('invokes a captured then through trusted function application', async () => {
+		let calls = 0;
+		const then = Object.defineProperty(
+			(resolve: (value: unknown) => void) => {
+				calls += 1;
+				resolve(success('trusted'));
+			},
+			'call',
+			{
+				get() {
+					throw new Error('poisoned call');
+				},
+			}
+		);
+		const graph = compileTestGraph({
+			outputs: { result: 'a' },
+			nodes: [{ key: 'a', executor: () => ({ then }) }],
+		});
+
+		await expect(runTestGraph({ graph })).resolves.toMatchObject({
+			kind: 'succeeded',
+			outputs: { result: 'trusted' },
+		});
+		expect(calls).toBe(1);
+	});
+
+	it('recursively adopts nested thenable settlement', async () => {
+		let outerCalls = 0;
+		let innerCalls = 0;
+		const inner = {
+			then(resolve: (value: unknown) => void) {
+				innerCalls += 1;
+				resolve(success('nested'));
+			},
+		};
+		const outer = {
+			then(resolve: (value: unknown) => void) {
+				outerCalls += 1;
+				resolve(inner);
+			},
+		};
+		const graph = compileTestGraph({
+			outputs: { result: 'a' },
+			nodes: [{ key: 'a', executor: () => outer }],
+		});
+
+		await expect(runTestGraph({ graph })).resolves.toMatchObject({
+			kind: 'succeeded',
+			outputs: { result: 'nested' },
+		});
+		expect(outerCalls).toBe(1);
+		expect(innerCalls).toBe(1);
+	});
+
 	it('keeps a non-callable then synchronous', () => {
 		const graph = compileTestGraph({
 			outputs: { result: 'a' },

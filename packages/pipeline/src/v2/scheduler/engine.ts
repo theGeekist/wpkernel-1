@@ -3,12 +3,16 @@ import type {
 	GraphValue,
 	NodeRegistry,
 } from '../graph/types.js';
+import { evaluateNode } from './evaluation.js';
+import type { NodeEvaluation, NodeEvaluationFailure } from './evaluation.js';
 import { GraphSchedulerError } from './errors.js';
 import { finaliseSchedule } from './finalise.js';
-import { observeParticipant } from './maybe-promise.js';
-import { ownNodeResult } from './ownership.js';
 import { addReadyNode, readyNodeCount, takeReadyNodes } from './ready-queue.js';
-import type { ErasedScheduleOutcome, SchedulerState } from './state.js';
+import type {
+	ErasedScheduleOutcome,
+	NodeRuntimeState,
+	SchedulerState,
+} from './state.js';
 import { createCompletion } from './state.js';
 import type { GraphNodeFailure } from './types.js';
 
@@ -26,7 +30,11 @@ const makeInvocation = <TEffects extends EffectRegistry>(options: {
 	}
 	const dependencies = nullRecord();
 	for (const key of options.state.graph.incoming[node.key]!) {
-		dependencies[key] = options.state.outputs.get(key)!;
+		const dependency = options.state.nodes.get(key)! as Extract<
+			NodeRuntimeState<TEffects>,
+			{ readonly kind: 'succeeded' }
+		>;
+		dependencies[key] = dependency.output;
 	}
 	return Object.freeze({
 		input: Object.freeze({
@@ -41,49 +49,53 @@ const makeInvocation = <TEffects extends EffectRegistry>(options: {
 const failureRecord = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
-	readonly kind: GraphNodeFailure<NodeRegistry>['kind'];
-	readonly error: unknown;
-}): GraphNodeFailure<NodeRegistry> => {
-	const nodeOrdinal = options.state.graph.ordinals[options.node]!;
-	return Object.freeze({
-		kind: options.kind,
+	readonly failure: NodeEvaluationFailure;
+}): GraphNodeFailure<NodeRegistry> =>
+	Object.freeze({
+		kind: options.failure.kind,
 		node: options.node,
-		nodeOrdinal,
-		error: options.error,
+		nodeOrdinal: options.state.graph.ordinals[options.node]!,
+		error: options.failure.error,
 	}) as GraphNodeFailure<NodeRegistry>;
-};
 
 const settleFailure = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
-	readonly kind: GraphNodeFailure<NodeRegistry>['kind'];
-	readonly error: unknown;
+	readonly primary: NodeEvaluationFailure;
+	readonly failureClass?: 'graph' | 'cancel';
+	readonly secondary?: readonly NodeEvaluationFailure[];
+	readonly effects?: NodeEvaluation<TEffects>['effects'];
 }): void => {
 	const failure = failureRecord({
 		state: options.state,
 		node: options.node,
-		kind: options.kind,
-		error: options.error,
+		failure: options.primary,
 	});
-	options.state.status.set(options.node, 'failed');
-	options.state.failures.set(options.node, failure);
-	options.state.admissionStopped = true;
-	options.state.outcomes.set(
+	const secondaryFailures = Object.freeze(
+		(options.secondary ?? []).map((secondary) =>
+			failureRecord({
+				state: options.state,
+				node: options.node,
+				failure: secondary,
+			})
+		)
+	);
+	options.state.nodes.set(
 		options.node,
 		Object.freeze({
 			kind: 'failed',
-			node: options.node,
-			nodeOrdinal: failure.nodeOrdinal,
+			failureClass: options.failureClass ?? 'graph',
 			failure,
+			secondaryFailures,
+			effects: options.effects ?? Object.freeze([]),
 		})
 	);
-};
-
-const addReady = <TEffects extends EffectRegistry>(
-	state: SchedulerState<TEffects>,
-	node: string
-): void => {
-	addReadyNode(state.ready, node);
+	options.state.admissionStopped = true;
+	options.state.observers.publishNode({
+		node: options.node,
+		nodeOrdinal: failure.nodeOrdinal,
+		state: 'failed',
+	});
 };
 
 const unlockDependants = <TEffects extends EffectRegistry>(options: {
@@ -91,11 +103,17 @@ const unlockDependants = <TEffects extends EffectRegistry>(options: {
 	readonly node: string;
 }): void => {
 	for (const dependant of options.state.graph.outgoing[options.node]!) {
-		const remaining =
-			options.state.remainingPredecessors.get(dependant)! - 1;
-		options.state.remainingPredecessors.set(dependant, remaining);
-		if (remaining === 0) {
-			addReady(options.state, dependant);
+		const runtime = options.state.nodes.get(dependant)! as Extract<
+			NodeRuntimeState<TEffects>,
+			{ readonly kind: 'pending' }
+		>;
+		const remainingPredecessors = runtime.remainingPredecessors - 1;
+		options.state.nodes.set(
+			dependant,
+			Object.freeze({ kind: 'pending', remainingPredecessors })
+		);
+		if (remainingPredecessors === 0) {
+			addReadyNode(options.state.ready, dependant);
 		}
 	}
 };
@@ -104,79 +122,69 @@ const settleSuccess = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
 	readonly result: Extract<
-		ReturnType<typeof ownNodeResult<TEffects>>,
+		NodeEvaluation<TEffects>,
 		{ readonly kind: 'success' }
 	>;
 }): void => {
-	const nodeOrdinal = options.state.graph.ordinals[options.node]!;
-	options.state.status.set(options.node, 'succeeded');
-	options.state.outputs.set(options.node, options.result.output);
-	options.state.effects.set(options.node, options.result.effects);
-	if (options.result.pause) {
-		options.state.pauses.set(options.node, options.result.pause);
-		options.state.admissionStopped = true;
-	}
-	options.state.outcomes.set(
+	options.state.nodes.set(
 		options.node,
 		Object.freeze({
 			kind: 'succeeded',
-			node: options.node,
-			nodeOrdinal,
 			output: options.result.output,
+			effects: options.result.effects,
+			...(options.result.pause ? { pause: options.result.pause } : {}),
 		})
 	);
+	if (options.result.pause) {
+		options.state.admissionStopped = true;
+	}
+	options.state.observers.publishNode({
+		node: options.node,
+		nodeOrdinal: options.state.graph.ordinals[options.node]!,
+		state: 'succeeded',
+	});
 	unlockDependants(options);
 };
 
-const settleValue = <TEffects extends EffectRegistry>(options: {
+const settleEvaluation = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
-	readonly value: unknown;
+	readonly evaluation: NodeEvaluation<TEffects>;
 }): void => {
 	options.state.active -= 1;
-	const compiledNode = options.state.graph.nodes[options.node]!;
-	const result = ownNodeResult<TEffects>({
-		value: options.value,
-		node: options.node,
-		nodeOrdinal: compiledNode.ordinal,
-		effectKeys: compiledNode.effectKeys,
-	});
-	if (result.kind === 'success') {
-		settleSuccess({ ...options, result });
+	if (options.evaluation.kind === 'success') {
+		settleSuccess({ ...options, result: options.evaluation });
 		return;
 	}
-	if (result.kind === 'failure') {
-		settleFailure({ ...options, kind: 'declared', error: result.error });
-		return;
-	}
-	if (result.kind === 'contract') {
-		settleFailure({ ...options, kind: 'contract', error: result.error });
-		return;
-	}
-	if (!options.state.signal.aborted) {
+	if (options.evaluation.kind === 'failure') {
 		settleFailure({
 			...options,
-			kind: 'contract',
-			error: new GraphSchedulerError({
-				code: 'invalid-node-result',
-				message: `Node "${options.node}" returned cancelled before its signal was aborted.`,
-			}),
+			primary: options.evaluation.primaryFailure,
+			failureClass: options.evaluation.failureClass,
+			secondary: options.evaluation.secondaryFailures,
+			effects: options.evaluation.effects,
 		});
 		return;
 	}
-	options.state.status.set(options.node, 'cancelled');
-	options.state.admissionStopped = true;
-	options.state.outcomes.set(
+	options.state.nodes.set(
 		options.node,
 		Object.freeze({
 			kind: 'cancelled',
-			node: options.node,
-			nodeOrdinal: compiledNode.ordinal,
-			...(Object.prototype.hasOwnProperty.call(result, 'reason')
-				? { reason: result.reason }
+			effects: options.evaluation.effects,
+			...(Object.prototype.hasOwnProperty.call(
+				options.evaluation,
+				'reason'
+			)
+				? { reason: options.evaluation.reason }
 				: {}),
 		})
 	);
+	options.state.admissionStopped = true;
+	options.state.observers.publishNode({
+		node: options.node,
+		nodeOrdinal: options.state.graph.ordinals[options.node]!,
+		state: 'cancelled',
+	});
 };
 
 const settleThrown = <TEffects extends EffectRegistry>(options: {
@@ -185,7 +193,40 @@ const settleThrown = <TEffects extends EffectRegistry>(options: {
 	readonly error: unknown;
 }): void => {
 	options.state.active -= 1;
-	settleFailure({ ...options, kind: 'thrown' });
+	settleFailure({
+		...options,
+		primary: Object.freeze({ kind: 'thrown', error: options.error }),
+	});
+};
+
+const normalisePauseConflicts = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>
+): void => {
+	const pauses = [...state.nodes.entries()]
+		.flatMap(([node, runtime]) =>
+			runtime.kind === 'succeeded' && runtime.pause
+				? [{ node, nodeOrdinal: runtime.pause.nodeOrdinal }]
+				: []
+		)
+		.sort((left, right) => left.nodeOrdinal - right.nodeOrdinal);
+	for (const { node } of pauses.slice(1)) {
+		const runtime = state.nodes.get(node)! as Extract<
+			NodeRuntimeState<TEffects>,
+			{ readonly kind: 'succeeded' }
+		>;
+		settleFailure({
+			state,
+			node,
+			primary: Object.freeze({
+				kind: 'contract',
+				error: new GraphSchedulerError({
+					code: 'invalid-node-result',
+					message: `Node "${node}" returned a concurrent second pause request.`,
+				}),
+			}),
+			effects: runtime.effects,
+		});
+	}
 };
 
 const stopListening = <TEffects extends EffectRegistry>(
@@ -195,12 +236,28 @@ const stopListening = <TEffects extends EffectRegistry>(
 	state.abortListener = undefined;
 };
 
+const withObserverFailures = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>,
+	outcome: ErasedScheduleOutcome<TEffects>
+): ErasedScheduleOutcome<TEffects> =>
+	Object.freeze({
+		...outcome,
+		observerFailures: state.observers.failures(),
+	});
+
 const finish = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
-): ErasedScheduleOutcome<TEffects> => {
+):
+	| ErasedScheduleOutcome<TEffects>
+	| Promise<ErasedScheduleOutcome<TEffects>> => {
 	state.terminal = true;
 	stopListening(state);
-	return finaliseSchedule(state);
+	normalisePauseConflicts(state);
+	const outcome = finaliseSchedule(state);
+	const delivery = state.observers.publishTerminal(outcome.kind);
+	return delivery
+		? delivery.then(() => withObserverFailures(state, outcome))
+		: withObserverFailures(state, outcome);
 };
 
 const selectAdmission = <TEffects extends EffectRegistry>(
@@ -219,8 +276,13 @@ const selectAdmission = <TEffects extends EffectRegistry>(
 	}
 	const selected = takeReadyNodes(state.ready, capacity);
 	for (const node of selected) {
-		state.status.set(node, 'active');
+		state.nodes.set(node, Object.freeze({ kind: 'active' }));
 		state.active += 1;
+		state.observers.publishNode({
+			node,
+			nodeOrdinal: state.graph.ordinals[node]!,
+			state: 'active',
+		});
 	}
 	return selected;
 };
@@ -235,7 +297,12 @@ const continueAsync = <TEffects extends EffectRegistry>(options: {
 	try {
 		options.settle();
 		const outcome = driveScheduler(options.state);
-		if (outcome) {
+		if (outcome instanceof Promise) {
+			void outcome.then(
+				options.state.completion!.resolve,
+				options.state.completion!.reject
+			);
+		} else if (outcome) {
 			options.state.completion!.resolve(outcome);
 		}
 	} catch (error) {
@@ -249,30 +316,37 @@ const invokeNode = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
 }): void => {
-	let returned: unknown;
+	const compiledNode = options.state.graph.nodes[options.node]!;
+	let evaluated:
+		| NodeEvaluation<TEffects>
+		| PromiseLike<NodeEvaluation<TEffects>>;
 	try {
-		returned = options.state.executors.get(options.node)!(
-			makeInvocation(options)
-		);
+		evaluated = evaluateNode<TEffects>({
+			node: options.node,
+			nodeOrdinal: compiledNode.ordinal,
+			effectKeys: compiledNode.effectKeys,
+			executor: options.state.executors.get(options.node)!,
+			invocation: makeInvocation(options),
+			middleware: options.state.middleware.get(options.node) ?? [],
+			signal: options.state.signal,
+		});
 	} catch (error) {
 		settleThrown({ ...options, error });
 		return;
 	}
-	const observed = observeParticipant(returned);
-	if (observed.kind === 'synchronous') {
-		settleValue({ ...options, value: observed.value });
-		return;
-	}
-	if (observed.kind === 'failed') {
-		settleThrown({ ...options, error: observed.error });
+	if (!(evaluated instanceof Promise)) {
+		settleEvaluation({
+			...options,
+			evaluation: evaluated as NodeEvaluation<TEffects>,
+		});
 		return;
 	}
 	options.state.completion ??= createCompletion<TEffects>();
-	void observed.promise.then(
-		(value) =>
+	void evaluated.then(
+		(evaluation) =>
 			continueAsync({
 				state: options.state,
-				settle: () => settleValue({ ...options, value }),
+				settle: () => settleEvaluation({ ...options, evaluation }),
 			}),
 		(error: unknown) =>
 			continueAsync({
@@ -284,7 +358,10 @@ const invokeNode = <TEffects extends EffectRegistry>(options: {
 
 export const driveScheduler = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
-): ErasedScheduleOutcome<TEffects> | undefined => {
+):
+	| ErasedScheduleOutcome<TEffects>
+	| Promise<ErasedScheduleOutcome<TEffects>>
+	| undefined => {
 	while (true) {
 		if (state.signal.aborted) {
 			state.admissionStopped = true;

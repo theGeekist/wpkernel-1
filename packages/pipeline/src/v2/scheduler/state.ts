@@ -5,12 +5,13 @@ import type {
 	NodeInvocation,
 	NodeRegistry,
 } from '../graph/types.js';
+import type { CompiledNodeMiddleware } from '../middleware/types.js';
+import type { ObserverDispatcher } from '../observers/types.js';
 import type {
 	GraphNodeFailure,
 	GraphScheduleOutcome,
 	PendingEffect,
 	PendingPause,
-	ScheduledNodeOutcome,
 } from './types.js';
 import type { OrdinalReadyQueue } from './ready-queue.js';
 
@@ -22,12 +23,30 @@ export type ErasedExecutor = (
 	>
 ) => unknown;
 
-export type NodeStatus =
-	| 'pending'
-	| 'active'
-	| 'succeeded'
-	| 'failed'
-	| 'cancelled';
+export type NodeRuntimeState<TEffects extends EffectRegistry> =
+	| {
+			readonly kind: 'pending';
+			readonly remainingPredecessors: number;
+	  }
+	| { readonly kind: 'active' }
+	| {
+			readonly kind: 'succeeded';
+			readonly output: GraphValue;
+			readonly effects: readonly PendingEffect<TEffects>[];
+			readonly pause?: PendingPause;
+	  }
+	| {
+			readonly kind: 'failed';
+			readonly failureClass: 'graph' | 'cancel';
+			readonly failure: GraphNodeFailure<NodeRegistry>;
+			readonly secondaryFailures: readonly GraphNodeFailure<NodeRegistry>[];
+			readonly effects: readonly PendingEffect<TEffects>[];
+	  }
+	| {
+			readonly kind: 'cancelled';
+			readonly reason?: unknown;
+			readonly effects: readonly PendingEffect<TEffects>[];
+	  };
 
 export type ErasedScheduleOutcome<TEffects extends EffectRegistry> =
 	GraphScheduleOutcome<
@@ -48,14 +67,10 @@ export interface SchedulerState<TEffects extends EffectRegistry> {
 	readonly capabilities: unknown;
 	readonly signal: AbortSignal;
 	readonly executors: ReadonlyMap<string, ErasedExecutor>;
-	readonly status: Map<string, NodeStatus>;
-	readonly remainingPredecessors: Map<string, number>;
+	readonly middleware: CompiledNodeMiddleware;
+	readonly observers: ObserverDispatcher;
+	readonly nodes: Map<string, NodeRuntimeState<TEffects>>;
 	readonly ready: OrdinalReadyQueue;
-	readonly outputs: Map<string, GraphValue>;
-	readonly outcomes: Map<string, ScheduledNodeOutcome<NodeRegistry>>;
-	readonly failures: Map<string, GraphNodeFailure<NodeRegistry>>;
-	readonly effects: Map<string, readonly PendingEffect<TEffects>[]>;
-	readonly pauses: Map<string, PendingPause>;
 	active: number;
 	admissionStopped: boolean;
 	terminal: boolean;

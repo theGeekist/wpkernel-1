@@ -261,15 +261,21 @@ require distinct future types.
 ## 4. Compilation, registration and canonical order
 
 Each `GraphExtension.contribute(options)` callback returns one complete
-immutable `MaybePromise<GraphContribution>`. It cannot call registration APIs
-or enqueue descendants; re-entrant or nested registration is a configuration
-error. Each independent extension registration reserves one monotonic sequence
-in the ordered queue. At `run(options)` invocation the runtime atomically
-captures the queue tail, awaits and drains exactly prior callbacks despite
-failure, retains every failure and selects the lowest registration sequence as
-primary. Successful contributions apply in that order. Genuinely independent
-registrations after capture are excluded even if they settle first. With no
-pending captured callback this boundary stays synchronous.
+immutable `MaybePromise<GraphContribution>`. Synchronous re-entrant
+registration from inside that callback is a configuration error. Capture closes
+one immutable registration generation: registration attempted later, including
+from an asynchronous callback continuation, belongs to the next generation and
+cannot alter the captured compile. The runtime does not claim to distinguish an
+arbitrary asynchronous closure from a genuinely independent caller through
+host-specific async context.
+
+Each independent extension registration reserves one monotonic sequence in the
+ordered queue. At `run(options)` invocation the runtime atomically captures the
+queue tail and owned base declaration, awaits and drains exactly prior callbacks
+despite failure, retains every failure and selects the lowest registration
+sequence as primary. Successful contributions apply in that order. Registrations
+after capture are excluded even if they settle first. With no pending captured
+callback this boundary stays synchronous.
 
 Canonical topological rank is `0` for a source and otherwise one plus the
 maximum predecessor rank. Compilation assigns a total canonical node ordinal

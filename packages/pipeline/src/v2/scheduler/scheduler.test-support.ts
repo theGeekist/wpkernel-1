@@ -8,6 +8,8 @@ import type {
 } from '../graph/types.js';
 import { scheduleGraph } from './schedule.js';
 import type { ErasedScheduleOutcome } from './state.js';
+import type { NodeMiddlewareRegistration } from '../middleware/types.js';
+import type { RunObserver } from '../observers/types.js';
 
 export interface TestInvocation {
 	readonly input: {
@@ -91,6 +93,8 @@ export const runTestGraph = (options: {
 	readonly inputs?: Readonly<Record<string, GraphValue>>;
 	readonly capabilities?: unknown;
 	readonly signal?: AbortSignal;
+	readonly middleware?: readonly NodeMiddlewareRegistration[];
+	readonly observers?: readonly RunObserver[];
 }):
 	| ErasedScheduleOutcome<EffectRegistry>
 	| Promise<ErasedScheduleOutcome<EffectRegistry>> =>
@@ -99,6 +103,10 @@ export const runTestGraph = (options: {
 		inputs: options.inputs ?? {},
 		capabilities: options.capabilities,
 		...(options.signal ? { signal: options.signal } : {}),
+		...(options.middleware
+			? { middleware: options.middleware as never }
+			: {}),
+		...(options.observers ? { observers: options.observers } : {}),
 	}) as
 		| ErasedScheduleOutcome<EffectRegistry>
 		| Promise<ErasedScheduleOutcome<EffectRegistry>>;

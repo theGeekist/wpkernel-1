@@ -3,97 +3,131 @@ import type {
 	GraphValue,
 	NodeRegistry,
 } from '../graph/types.js';
-import { GraphSchedulerError } from './errors.js';
 import type {
 	GraphNodeFailure,
 	PendingEffect,
 	PendingPause,
 	ScheduledNodeOutcome,
 } from './types.js';
-import type { ErasedScheduleOutcome, SchedulerState } from './state.js';
+import type {
+	ErasedScheduleOutcome,
+	NodeRuntimeState,
+	SchedulerState,
+} from './state.js';
 
-const byNodeOrdinal = (
-	left: { readonly nodeOrdinal: number },
-	right: { readonly nodeOrdinal: number }
-): number => left.nodeOrdinal - right.nodeOrdinal;
+const stateEffects = <TEffects extends EffectRegistry>(
+	runtime: NodeRuntimeState<TEffects>
+): readonly PendingEffect<TEffects>[] =>
+	runtime.kind === 'succeeded' ||
+	runtime.kind === 'failed' ||
+	runtime.kind === 'cancelled'
+		? runtime.effects
+		: [];
 
-const pauseConflict = (pause: PendingPause): GraphNodeFailure<NodeRegistry> => {
-	const error = new GraphSchedulerError({
-		code: 'invalid-node-result',
-		message: `Node "${pause.node}" returned a concurrent second pause request.`,
-	});
-	return Object.freeze({
-		kind: 'contract',
-		node: pause.node,
-		nodeOrdinal: pause.nodeOrdinal,
-		error,
-	});
-};
-
-const normalisePauses = <TEffects extends EffectRegistry>(
+const canonicalPauses = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
 ): readonly PendingPause[] => {
-	const pauses = [...state.pauses.values()].sort(byNodeOrdinal);
-	for (const pause of pauses.slice(1)) {
-		const failure = pauseConflict(pause);
-		state.failures.set(pause.node, failure);
-		state.status.set(pause.node, 'failed');
-		state.outputs.delete(pause.node);
-		state.effects.delete(pause.node);
-		state.pauses.delete(pause.node);
-		state.outcomes.set(
-			pause.node,
-			Object.freeze({
-				kind: 'failed',
-				node: pause.node,
-				nodeOrdinal: pause.nodeOrdinal,
-				failure,
-			})
-		);
-	}
-	return Object.freeze(pauses.length === 0 ? [] : [pauses[0]!]);
+	const pauses = [...state.nodes.values()].flatMap((runtime) =>
+		runtime.kind === 'succeeded' && runtime.pause ? [runtime.pause] : []
+	);
+	return Object.freeze(pauses);
 };
 
-const blockPendingNodes = <TEffects extends EffectRegistry>(
-	state: SchedulerState<TEffects>
-): void => {
-	for (const node of Object.values(state.graph.nodes)) {
-		if (state.status.get(node.key) !== 'pending') {
-			continue;
-		}
-		const blockedBy = state.graph.incoming[node.key]!.filter(
-			(predecessor) => state.status.get(predecessor) !== 'succeeded'
-		);
-		state.outcomes.set(
-			node.key,
-			Object.freeze({
-				kind: 'blocked',
-				node: node.key,
-				nodeOrdinal: node.ordinal,
-				reason:
-					blockedBy.length > 0 ? 'dependency' : 'admission-stopped',
-				blockedBy: Object.freeze([...blockedBy]),
-			})
-		);
-	}
+const blockedOutcome = <TEffects extends EffectRegistry>(options: {
+	readonly state: SchedulerState<TEffects>;
+	readonly node: string;
+	readonly nodeOrdinal: number;
+}): ScheduledNodeOutcome<NodeRegistry> => {
+	const blockedBy = options.state.graph.incoming[options.node]!.filter(
+		(predecessor) =>
+			options.state.nodes.get(predecessor)?.kind !== 'succeeded'
+	);
+	return Object.freeze({
+		kind: 'blocked',
+		node: options.node,
+		nodeOrdinal: options.nodeOrdinal,
+		reason: blockedBy.length > 0 ? 'dependency' : 'admission-stopped',
+		blockedBy: Object.freeze([...blockedBy]),
+	}) as ScheduledNodeOutcome<NodeRegistry>;
 };
+
+const projectNodeOutcome = <TEffects extends EffectRegistry>(options: {
+	readonly state: SchedulerState<TEffects>;
+	readonly node: string;
+}): ScheduledNodeOutcome<NodeRegistry> => {
+	const runtime = options.state.nodes.get(options.node)!;
+	const nodeOrdinal = options.state.graph.ordinals[options.node]!;
+	if (runtime.kind === 'pending') {
+		return blockedOutcome({ ...options, nodeOrdinal });
+	}
+	const settled = runtime as Exclude<
+		NodeRuntimeState<TEffects>,
+		{ readonly kind: 'pending' } | { readonly kind: 'active' }
+	>;
+	if (settled.kind === 'succeeded') {
+		return Object.freeze({
+			kind: 'succeeded',
+			node: options.node,
+			nodeOrdinal,
+			output: settled.output,
+		}) as ScheduledNodeOutcome<NodeRegistry>;
+	}
+	if (settled.kind === 'failed') {
+		return Object.freeze({
+			kind: 'failed',
+			node: options.node,
+			nodeOrdinal,
+			failure: settled.failure,
+		}) as ScheduledNodeOutcome<NodeRegistry>;
+	}
+	return Object.freeze({
+		kind: 'cancelled',
+		node: options.node,
+		nodeOrdinal,
+		...(Object.prototype.hasOwnProperty.call(settled, 'reason')
+			? { reason: settled.reason }
+			: {}),
+	}) as ScheduledNodeOutcome<NodeRegistry>;
+};
+
+const orderedNodes = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>
+) =>
+	Object.values(state.graph.nodes).sort(
+		(left, right) => left.ordinal - right.ordinal
+	);
 
 const canonicalNodeOutcomes = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
 ): readonly ScheduledNodeOutcome<NodeRegistry>[] =>
 	Object.freeze(
-		Object.values(state.graph.nodes)
-			.sort((left, right) => left.ordinal - right.ordinal)
-			.map((node) => state.outcomes.get(node.key)!)
+		orderedNodes(state).map((node) =>
+			projectNodeOutcome({ state, node: node.key })
+		)
 	);
 
 const canonicalEffects = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
 ): readonly PendingEffect<TEffects>[] =>
 	Object.freeze(
-		Object.values(state.graph.nodes)
-			.sort((left, right) => left.ordinal - right.ordinal)
-			.flatMap((node) => state.effects.get(node.key) ?? [])
+		orderedNodes(state).flatMap((node) =>
+			stateEffects(state.nodes.get(node.key)!)
+		)
+	);
+
+const canonicalFailures = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>
+): readonly GraphNodeFailure<NodeRegistry>[] =>
+	Object.freeze(
+		(['graph', 'cancel'] as const).flatMap((failureClass) =>
+			orderedNodes(state).flatMap((node) => {
+				const runtime = state.nodes.get(node.key)!;
+				return runtime.kind === 'failed' &&
+					runtime.failureClass === failureClass
+					? [runtime.failure, ...runtime.secondaryFailures]
+					: [];
+			})
+		)
 	);
 
 const projectOutputs = <TEffects extends EffectRegistry>(
@@ -104,7 +138,11 @@ const projectOutputs = <TEffects extends EffectRegistry>(
 		GraphValue
 	>;
 	for (const [projection, node] of Object.entries(state.graph.outputs)) {
-		outputs[projection] = state.outputs.get(node)!;
+		const runtime = state.nodes.get(node)! as Extract<
+			NodeRuntimeState<TEffects>,
+			{ readonly kind: 'succeeded' }
+		>;
+		outputs[projection] = runtime.output;
 	}
 	return Object.freeze(outputs);
 };
@@ -112,14 +150,16 @@ const projectOutputs = <TEffects extends EffectRegistry>(
 export const finaliseSchedule = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
 ): ErasedScheduleOutcome<TEffects> => {
-	const pendingPauses = normalisePauses(state);
-	blockPendingNodes(state);
+	const pendingPauses = canonicalPauses(state);
 	const nodes = canonicalNodeOutcomes(state);
 	const pendingEffects = canonicalEffects(state);
-	const failures = Object.freeze(
-		[...state.failures.values()].sort(byNodeOrdinal)
-	);
-	const projection = { nodes, pendingEffects, pendingPauses };
+	const failures = canonicalFailures(state);
+	const projection = {
+		nodes,
+		pendingEffects,
+		pendingPauses,
+		observerFailures: Object.freeze([]),
+	};
 
 	if (failures.length > 0) {
 		return Object.freeze({
