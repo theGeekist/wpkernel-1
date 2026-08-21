@@ -20,6 +20,7 @@ depends_on:
     - P2-005
     - P2-006
     - P2-013
+    - P2-015
 decision_dependencies:
     - ADR-001
     - ADR-002
@@ -30,6 +31,7 @@ conflicts_with:
     - P2-005
     - P2-006
     - P2-013
+    - P2-015
 write_scope:
     - packages/pipeline/src/index.ts
     - packages/pipeline/src/standard-pipeline/**
