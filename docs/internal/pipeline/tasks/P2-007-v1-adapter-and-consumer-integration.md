@@ -31,7 +31,6 @@ conflicts_with:
     - P2-006
     - P2-013
 write_scope:
-    - packages/pipeline/src/v2/index.ts
     - packages/pipeline/src/index.ts
     - packages/pipeline/src/standard-pipeline/**
     - packages/core/src/pipeline/**
@@ -63,7 +62,8 @@ serial compatibility boundary, and migrate real WPKernel consumers.
 
 ## Acceptance criteria
 
-- V2 root exports contain no private runner types.
+- The reviewed P2-013 v2 surface is exposed from the package root without
+  private runner types.
 - Standard fragment and builder semantics are either explicit graph nodes or a
   named serial adapter. Mutable compatibility never enters the v2 scheduler.
 - `next(output?)` exists only behind the v1 adapter, if retained at all.
