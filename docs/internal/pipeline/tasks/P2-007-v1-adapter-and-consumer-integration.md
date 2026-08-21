@@ -19,6 +19,7 @@ worktree: null
 depends_on:
     - P2-005
     - P2-006
+    - P2-013
 decision_dependencies:
     - ADR-001
     - ADR-002
@@ -28,6 +29,7 @@ conflicts_with:
     - P2-004
     - P2-005
     - P2-006
+    - P2-013
 write_scope:
     - packages/pipeline/src/v2/index.ts
     - packages/pipeline/src/index.ts
