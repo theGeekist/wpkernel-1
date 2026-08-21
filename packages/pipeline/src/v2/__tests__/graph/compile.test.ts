@@ -171,7 +171,10 @@ describe('v2 graph compiler', () => {
 		);
 		expect(serializeGraph({ graph: first })).toBe(
 			serializeGraph({
-				graph: { ...result.graph, anchors: first.anchors },
+				graph: {
+					...result.graph,
+					anchors: first.anchors,
+				} as typeof result.graph,
 			})
 		);
 		expect(
@@ -179,7 +182,7 @@ describe('v2 graph compiler', () => {
 				graph: {
 					...result.graph,
 					outputs: { z: 'join', a: 'parse' } as unknown as Outputs,
-				},
+				} as typeof result.graph,
 			})
 		).toContain('"outputs":{"a":"parse","z":"join"}');
 	});

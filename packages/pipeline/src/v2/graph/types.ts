@@ -24,6 +24,17 @@ declare const nodeType: unique symbol;
 declare const effectType: unique symbol;
 
 /**
+ * Compile-time-only identity inherited by compiled graphs.
+ *
+ * The private member makes `Graph` nominal without putting a public brand,
+ * constructor, or serialisable authority onto its runtime value. Only this
+ * module's compiler can return the asserted compiled representation.
+ */
+declare class CompiledGraphAuthority {
+	private readonly compiledGraphAuthority: undefined;
+}
+
+/**
  * The static, literal-keyed contract of a graph node.
  *
  * `effectKeys` is required runtime metadata. It permits the compiler to verify
@@ -328,7 +339,7 @@ export interface Graph<
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
-> {
+> extends CompiledGraphAuthority {
 	readonly kind: 'graph';
 	readonly inputKeys: readonly (keyof TInputs & string)[];
 	readonly nodes: Readonly<{
