@@ -50,13 +50,13 @@ const failureRecord = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
 	readonly node: string;
 	readonly failure: NodeEvaluationFailure;
-}): GraphNodeFailure<NodeRegistry> =>
+}): GraphNodeFailure<NodeRegistry, TEffects> =>
 	Object.freeze({
 		kind: options.failure.kind,
 		node: options.node,
 		nodeOrdinal: options.state.graph.ordinals[options.node]!,
 		error: options.failure.error,
-	}) as GraphNodeFailure<NodeRegistry>;
+	}) as GraphNodeFailure<NodeRegistry, TEffects>;
 
 const settleFailure = <TEffects extends EffectRegistry>(options: {
 	readonly state: SchedulerState<TEffects>;
@@ -236,28 +236,13 @@ const stopListening = <TEffects extends EffectRegistry>(
 	state.abortListener = undefined;
 };
 
-const withObserverFailures = <TEffects extends EffectRegistry>(
-	state: SchedulerState<TEffects>,
-	outcome: ErasedScheduleOutcome<TEffects>
-): ErasedScheduleOutcome<TEffects> =>
-	Object.freeze({
-		...outcome,
-		observerFailures: state.observers.failures(),
-	});
-
 const finish = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
-):
-	| ErasedScheduleOutcome<TEffects>
-	| Promise<ErasedScheduleOutcome<TEffects>> => {
+): ErasedScheduleOutcome<TEffects> => {
 	state.terminal = true;
 	stopListening(state);
 	normalisePauseConflicts(state);
-	const outcome = finaliseSchedule(state);
-	const delivery = state.observers.publishTerminal(outcome.kind);
-	return delivery
-		? delivery.then(() => withObserverFailures(state, outcome))
-		: withObserverFailures(state, outcome);
+	return finaliseSchedule(state);
 };
 
 const selectAdmission = <TEffects extends EffectRegistry>(
@@ -297,12 +282,7 @@ const continueAsync = <TEffects extends EffectRegistry>(options: {
 	try {
 		options.settle();
 		const outcome = driveScheduler(options.state);
-		if (outcome instanceof Promise) {
-			void outcome.then(
-				options.state.completion!.resolve,
-				options.state.completion!.reject
-			);
-		} else if (outcome) {
+		if (outcome) {
 			options.state.completion!.resolve(outcome);
 		}
 	} catch (error) {
@@ -329,6 +309,7 @@ const invokeNode = <TEffects extends EffectRegistry>(options: {
 			invocation: makeInvocation(options),
 			middleware: options.state.middleware.get(options.node) ?? [],
 			signal: options.state.signal,
+			journal: options.state.journal,
 		});
 	} catch (error) {
 		settleThrown({ ...options, error });
@@ -358,10 +339,7 @@ const invokeNode = <TEffects extends EffectRegistry>(options: {
 
 export const driveScheduler = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
-):
-	| ErasedScheduleOutcome<TEffects>
-	| Promise<ErasedScheduleOutcome<TEffects>>
-	| undefined => {
+): ErasedScheduleOutcome<TEffects> | undefined => {
 	while (true) {
 		if (state.signal.aborted) {
 			state.admissionStopped = true;

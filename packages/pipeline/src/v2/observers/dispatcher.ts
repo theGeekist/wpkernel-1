@@ -2,6 +2,7 @@ import { inspectDenseArray } from '../graph/inspection.js';
 import { GraphSchedulerError } from '../scheduler/errors.js';
 import { observeParticipant } from '../scheduler/maybe-promise.js';
 import type {
+	EffectRunEvent,
 	NodeRunEvent,
 	ObserverDispatcher,
 	RunEvent,
@@ -142,6 +143,24 @@ export const compileRunObservers = (options: {
 					nodeOrdinal,
 					state,
 				})
+			);
+		},
+		publishEffect({
+			effect,
+			phase,
+			state,
+		}: Parameters<ObserverDispatcher['publishEffect']>[0]) {
+			enqueue(
+				Object.freeze({
+					kind: 'effect-transition',
+					sequence: sequence(),
+					node: effect.node,
+					nodeOrdinal: effect.nodeOrdinal,
+					effectOrdinal: effect.effectOrdinal,
+					participant: String(effect.request.participant),
+					phase,
+					state,
+				}) as EffectRunEvent
 			);
 		},
 		publishTerminal(outcomeKind: TerminalRunEvent['outcomeKind']) {

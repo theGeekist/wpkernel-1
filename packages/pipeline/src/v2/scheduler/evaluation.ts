@@ -1,5 +1,6 @@
 import type { EffectRegistry, MaybePromise } from '../graph/types.js';
 import type { ErasedNodeMiddleware } from '../middleware/types.js';
+import type { EffectJournalRuntime } from '../effects/types.js';
 import { driveEvaluation } from './evaluation-machine.js';
 import type { EvaluationContext, NodeEvaluation } from './evaluation-types.js';
 import { freezeArray } from './evaluation-support.js';
@@ -22,6 +23,7 @@ export type {
  * @param options.invocation  - Immutable node invocation snapshot.
  * @param options.middleware  - Statically compiled middleware for the node.
  * @param options.signal      - Run cancellation signal.
+ * @param options.journal     - Process-local effect journal runtime.
  */
 export const evaluateNode = <TEffects extends EffectRegistry>(options: {
 	readonly node: string;
@@ -31,6 +33,7 @@ export const evaluateNode = <TEffects extends EffectRegistry>(options: {
 	readonly invocation: EvaluationContext['invocation'];
 	readonly middleware: readonly ErasedNodeMiddleware[];
 	readonly signal: AbortSignal;
+	readonly journal: EffectJournalRuntime<TEffects>;
 }): MaybePromise<NodeEvaluation<TEffects>> =>
 	driveEvaluation({
 		context: Object.freeze({
@@ -40,5 +43,6 @@ export const evaluateNode = <TEffects extends EffectRegistry>(options: {
 		}),
 		entered: [],
 		effects: [],
+		nextEffectOrdinal: 0,
 		phase: { kind: 'before', cursor: 0 },
 	});

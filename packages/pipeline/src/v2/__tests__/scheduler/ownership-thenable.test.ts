@@ -344,7 +344,21 @@ describe('v2 scheduler ownership and exact thenable settlement', () => {
 			],
 		});
 
-		expect(runTestGraph({ graph })).toMatchObject({
+		expect(
+			runTestGraph({
+				graph,
+				participants: {
+					write: {
+						prepare: () => ({ kind: 'success', value: undefined }),
+						commit: () => ({ kind: 'success', value: undefined }),
+						compensate: () => ({
+							kind: 'success',
+							value: undefined,
+						}),
+					},
+				},
+			})
+		).toMatchObject({
 			kind: 'failed',
 			primaryFailure: { kind: 'contract' },
 		});

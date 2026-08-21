@@ -17,6 +17,11 @@ import type {
 	NodeMiddlewareRegistration,
 } from '../middleware/types.js';
 import type { RunObserver, RunObserverFailure } from '../observers/types.js';
+import type {
+	EffectJournalEntry,
+	EffectJournalFailure,
+	EffectParticipants,
+} from '../effects/types.js';
 
 /** One immutable effect request awaiting the P2-005 effect interpreter. */
 export type PendingEffectRequest<TEffects extends EffectRegistry> = {
@@ -41,7 +46,10 @@ export interface PendingPause {
 type NodeKeyOf<TNodes extends NodeRegistry> = keyof TNodes & string;
 
 /** A retained graph failure keyed to its exact declared node failure type. */
-export type GraphNodeFailure<TNodes extends NodeRegistry> = {
+export type GraphNodeFailure<
+	TNodes extends NodeRegistry,
+	TEffects extends EffectRegistry = EffectRegistry,
+> = {
 	readonly [K in NodeKeyOf<TNodes>]:
 		| {
 				readonly kind: 'declared';
@@ -60,11 +68,20 @@ export type GraphNodeFailure<TNodes extends NodeRegistry> = {
 				readonly node: K;
 				readonly nodeOrdinal: number;
 				readonly error: GraphSchedulerError;
+		  }
+		| {
+				readonly kind: 'effect';
+				readonly node: K;
+				readonly nodeOrdinal: number;
+				readonly error: EffectJournalFailure<TEffects>;
 		  };
 }[NodeKeyOf<TNodes>];
 
 /** Canonical terminal projection for one graph node. */
-export type ScheduledNodeOutcome<TNodes extends NodeRegistry> = {
+export type ScheduledNodeOutcome<
+	TNodes extends NodeRegistry,
+	TEffects extends EffectRegistry = EffectRegistry,
+> = {
 	readonly [K in NodeKeyOf<TNodes>]:
 		| {
 				readonly kind: 'succeeded';
@@ -77,7 +94,7 @@ export type ScheduledNodeOutcome<TNodes extends NodeRegistry> = {
 				readonly node: K;
 				readonly nodeOrdinal: number;
 				readonly failure: Extract<
-					GraphNodeFailure<TNodes>,
+					GraphNodeFailure<TNodes, TEffects>,
 					{ readonly node: K }
 				>;
 		  }
@@ -100,7 +117,7 @@ interface GraphScheduleProjection<
 	TNodes extends NodeRegistry,
 	TEffects extends EffectRegistry,
 > {
-	readonly nodes: readonly ScheduledNodeOutcome<TNodes>[];
+	readonly nodes: readonly ScheduledNodeOutcome<TNodes, TEffects>[];
 	readonly pendingEffects: readonly PendingEffect<TEffects>[];
 	readonly pendingPauses: readonly PendingPause[];
 	readonly observerFailures: readonly RunObserverFailure[];
@@ -119,8 +136,11 @@ export type GraphScheduleOutcome<
 		  }
 		| {
 				readonly kind: 'failed';
-				readonly primaryFailure: GraphNodeFailure<TNodes>;
-				readonly failures: readonly GraphNodeFailure<TNodes>[];
+				readonly primaryFailure: GraphNodeFailure<TNodes, TEffects>;
+				readonly failures: readonly GraphNodeFailure<
+					TNodes,
+					TEffects
+				>[];
 		  }
 		| {
 				readonly kind: 'cancelled';
@@ -140,6 +160,7 @@ export interface ScheduleGraphOptions<
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
+	TParticipants extends Readonly<Record<PropertyKey, unknown>>,
 	TMiddleware extends
 		readonly NodeMiddlewareRegistration[] = readonly NodeMiddlewareRegistration[],
 > {
@@ -153,6 +174,9 @@ export interface ScheduleGraphOptions<
 	>;
 	readonly inputs: TInputs;
 	readonly capabilities: TCapabilities;
+	readonly participants: TParticipants &
+		EffectParticipants<TEffects> &
+		Readonly<Record<Exclude<keyof TParticipants, keyof TEffects>, never>>;
 	readonly signal?: AbortSignal;
 	readonly middleware?: TMiddleware &
 		CheckedNodeMiddlewareRegistrations<
@@ -172,5 +196,39 @@ export type ScheduleGraphResult<
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 > = MaybePromise<
-	GraphScheduleOutcome<TNodes, GraphOutputs<TNodes, TProjection>, TEffects>
+	RunOutcome<TNodes, GraphOutputs<TNodes, TProjection>, TEffects>
 >;
+
+/** One failure retained by the complete graph and effect interpreter. */
+export type RunFailure<
+	TNodes extends NodeRegistry,
+	TEffects extends EffectRegistry,
+> = GraphNodeFailure<TNodes, TEffects> | EffectJournalFailure<TEffects>;
+
+interface RunProjection<
+	TNodes extends NodeRegistry,
+	TEffects extends EffectRegistry,
+> extends GraphScheduleProjection<TNodes, TEffects> {
+	readonly effectJournal: readonly EffectJournalEntry<TEffects>[];
+	readonly effectFailures: readonly EffectJournalFailure<TEffects>[];
+}
+
+/** Complete immutable process-local run outcome after effect settlement. */
+export type RunOutcome<
+	TNodes extends NodeRegistry,
+	TOutputs extends Readonly<Record<string, GraphValue>>,
+	TEffects extends EffectRegistry,
+> = RunProjection<TNodes, TEffects> &
+	(
+		| { readonly kind: 'succeeded'; readonly outputs: TOutputs }
+		| {
+				readonly kind: 'failed';
+				readonly primaryFailure: RunFailure<TNodes, TEffects>;
+				readonly failures: readonly RunFailure<TNodes, TEffects>[];
+		  }
+		| { readonly kind: 'cancelled'; readonly reason?: unknown }
+		| {
+				readonly kind: 'pause-requested';
+				readonly primaryPause: PendingPause;
+		  }
+	);

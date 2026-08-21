@@ -7,7 +7,7 @@ import type {
 	GraphValue,
 } from '../graph/types.js';
 import { scheduleGraph } from './schedule.js';
-import type { ErasedScheduleOutcome } from './state.js';
+import type { ErasedRunOutcome } from './state.js';
 import type { NodeMiddlewareRegistration } from '../middleware/types.js';
 import type { RunObserver } from '../observers/types.js';
 
@@ -88,6 +88,34 @@ export const compileTestGraph = (options: {
 	return compileGraphOrThrow({ declaration });
 };
 
+const defaultParticipants = (
+	graph: ErasedGraph
+): Readonly<Record<string, unknown>> => {
+	const participants: Record<string, unknown> = Object.create(null) as Record<
+		string,
+		unknown
+	>;
+	for (const key of new Set(
+		Object.values(graph.nodes).flatMap((node) => node.effectKeys)
+	)) {
+		participants[key] = Object.freeze({
+			prepare: ({ payload }: { readonly payload: GraphValue }) => ({
+				kind: 'success' as const,
+				value: payload,
+			}),
+			commit: ({ prepared }: { readonly prepared: unknown }) => ({
+				kind: 'success' as const,
+				value: prepared,
+			}),
+			compensate: () => ({
+				kind: 'success' as const,
+				value: undefined,
+			}),
+		});
+	}
+	return participants;
+};
+
 export const runTestGraph = (options: {
 	readonly graph: ErasedGraph;
 	readonly inputs?: Readonly<Record<string, GraphValue>>;
@@ -95,21 +123,24 @@ export const runTestGraph = (options: {
 	readonly signal?: AbortSignal;
 	readonly middleware?: readonly NodeMiddlewareRegistration[];
 	readonly observers?: readonly RunObserver[];
+	readonly participants?: Readonly<Record<string, unknown>>;
 }):
-	| ErasedScheduleOutcome<EffectRegistry>
-	| Promise<ErasedScheduleOutcome<EffectRegistry>> =>
+	| ErasedRunOutcome<EffectRegistry>
+	| Promise<ErasedRunOutcome<EffectRegistry>> =>
 	scheduleGraph({
 		graph: options.graph,
 		inputs: options.inputs ?? {},
 		capabilities: options.capabilities,
+		participants: (options.participants ??
+			defaultParticipants(options.graph)) as never,
 		...(options.signal ? { signal: options.signal } : {}),
 		...(options.middleware
 			? { middleware: options.middleware as never }
 			: {}),
 		...(options.observers ? { observers: options.observers } : {}),
 	}) as
-		| ErasedScheduleOutcome<EffectRegistry>
-		| Promise<ErasedScheduleOutcome<EffectRegistry>>;
+		| ErasedRunOutcome<EffectRegistry>
+		| Promise<ErasedRunOutcome<EffectRegistry>>;
 
 export interface Controlled<T> {
 	readonly promise: Promise<T>;

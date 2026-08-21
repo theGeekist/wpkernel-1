@@ -7,11 +7,13 @@ import type {
 } from '../graph/types.js';
 import type { CompiledNodeMiddleware } from '../middleware/types.js';
 import type { ObserverDispatcher } from '../observers/types.js';
+import type { EffectJournalRuntime } from '../effects/types.js';
 import type {
 	GraphNodeFailure,
 	GraphScheduleOutcome,
 	PendingEffect,
 	PendingPause,
+	RunOutcome,
 } from './types.js';
 import type { OrdinalReadyQueue } from './ready-queue.js';
 
@@ -38,8 +40,11 @@ export type NodeRuntimeState<TEffects extends EffectRegistry> =
 	| {
 			readonly kind: 'failed';
 			readonly failureClass: 'graph' | 'cancel';
-			readonly failure: GraphNodeFailure<NodeRegistry>;
-			readonly secondaryFailures: readonly GraphNodeFailure<NodeRegistry>[];
+			readonly failure: GraphNodeFailure<NodeRegistry, TEffects>;
+			readonly secondaryFailures: readonly GraphNodeFailure<
+				NodeRegistry,
+				TEffects
+			>[];
 			readonly effects: readonly PendingEffect<TEffects>[];
 	  }
 	| {
@@ -55,6 +60,12 @@ export type ErasedScheduleOutcome<TEffects extends EffectRegistry> =
 		TEffects
 	>;
 
+export type ErasedRunOutcome<TEffects extends EffectRegistry> = RunOutcome<
+	NodeRegistry,
+	Readonly<Record<string, GraphValue>>,
+	TEffects
+>;
+
 export interface SchedulerCompletion<TEffects extends EffectRegistry> {
 	readonly promise: Promise<ErasedScheduleOutcome<TEffects>>;
 	readonly resolve: (outcome: ErasedScheduleOutcome<TEffects>) => void;
@@ -69,6 +80,7 @@ export interface SchedulerState<TEffects extends EffectRegistry> {
 	readonly executors: ReadonlyMap<string, ErasedExecutor>;
 	readonly middleware: CompiledNodeMiddleware;
 	readonly observers: ObserverDispatcher;
+	readonly journal: EffectJournalRuntime<TEffects>;
 	readonly nodes: Map<string, NodeRuntimeState<TEffects>>;
 	readonly ready: OrdinalReadyQueue;
 	active: number;

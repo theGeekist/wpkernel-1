@@ -76,6 +76,7 @@ const validScheduleResult = scheduleGraph({
 	graph: compiledAuthorityGraph,
 	inputs: { source: 'source' },
 	capabilities: { token: 'capability' },
+	participants: {},
 });
 
 type InferredScheduleOutcome = Awaited<typeof validScheduleResult>;
@@ -143,12 +144,14 @@ const assertDirectScheduleArguments = (): void => {
 		// @ts-expect-error source is the exact graph input value, not any string.
 		inputs: { source: 'other' },
 		capabilities: { token: 'capability' } as const,
+		participants: {},
 	});
 	scheduleGraph({
 		graph: compiledAuthorityGraph,
 		inputs: { source: 'source' } as const,
 		// @ts-expect-error capabilities must match the compiled graph contract.
 		capabilities: { token: 'other' } as const,
+		participants: {},
 	});
 };
 

@@ -6,6 +6,8 @@ export type {
 	PendingEffect,
 	PendingEffectRequest,
 	PendingPause,
+	RunFailure,
+	RunOutcome,
 	ScheduledNodeOutcome,
 	ScheduleGraphOptions,
 	ScheduleGraphResult,
