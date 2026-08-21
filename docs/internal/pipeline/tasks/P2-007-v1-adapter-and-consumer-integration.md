@@ -3,19 +3,19 @@ architecture_version: 1
 id: P2-007
 title: Integrate v2, the v1 adapter and consumers
 stage: integration
-status: proposed
+status: in_progress
 priority: critical
 evidence_milestone: null
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+owner: codex-root
+owner_kind: codex
+lease_started_at: 2026-08-22T04:30:00+08:00
+lease_expires_at: 2026-08-22T12:30:00+08:00
+base_sha: 618f9d22
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - P2-005
     - P2-006
@@ -70,6 +70,12 @@ serial compatibility boundary, and migrate real WPKernel consumers.
   named serial adapter. Mutable compatibility never enters the v2 scheduler.
 - `next(output?)` exists only behind the v1 adapter, if retained at all.
 - Current core, CLI and test-utils consumers compile and pass.
+- Compatibility and consumer composition preserve synchronous settlement until
+  real asynchronous work appears; no unconditional `async` wrapper is admitted.
+- Runtime implementation files remain class-free and are split at roughly 500
+  lines where a coherent seam exists.
+- Focused and repository coverage do not regress, and each migration lane is
+  independently reviewed before integration.
 
 ## Verification
 
