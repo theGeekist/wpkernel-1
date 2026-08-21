@@ -1,18 +1,530 @@
-# Pipeline v2 public contract
+# Pipeline v2 public semantic contract
 
-Status: Draft
+Status: Accepted
 Owner task: P2-001
+Governing decisions: ADR-001, ADR-002, ADR-003
 
-This contract will define the public graph, node, run, middleware, effect,
-suspension and diagnostic semantics admitted for implementation. Until P2-001
-is done, the accepted ADRs govern and unresolved API shapes remain open.
+This document fixes the semantics and generic relationships that v2 public
+types must preserve. Exact builder method names remain open only where stated.
 
-## Required decisions
+## 1. Boundary and authority
 
-- Public graph and node declaration shape.
-- Keyed dependency input and output typing.
-- Concurrency options and cancellation.
-- Synchronous `MaybePromise` settlement.
-- Failure aggregation and node outcome projection.
-- Middleware, observer and effect participation.
-- Process-local suspension and v1 compatibility boundary.
+Pipeline v2 evaluates one immutable compiled dataflow graph per process-local
+run.
+
+- The compiled `Graph` is the sole execution authority. Nodes and extension
+  roles cannot admit, suppress or invoke other nodes.
+- An `Edge` is a data dependency, not generic precedence, a resource claim or
+  middleware ordering.
+- Nodes receive immutable external inputs and direct predecessor outputs and
+  produce independent replacement values. There is no shared draft or threaded
+  current output.
+- Independent ready nodes may execute concurrently. Timing cannot determine
+  values, joins, primary failure, journal order or commit order.
+- Pipeline owns evaluation, process-local effects, diagnostics, cancellation
+  and suspension. The host owns durable admission and idempotency keys, leases,
+  retries, process supervision, portable checkpoints and exactly-once
+  external-effect claims.
+- Pipeline claims no durability, crash recovery or distributed coordination.
+
+There is no native stage programme, helper chain or callable continuation.
+
+## 2. Value and asynchronous algebras
+
+Graph data is the following closed, acyclic algebra:
+
+```ts
+type GraphScalar = null | undefined | boolean | number | bigint | string;
+type GraphValue =
+	| GraphScalar
+	| readonly GraphValue[]
+	| { readonly [key: string]: GraphValue };
+
+type MaybePromise<T> = T | PromiseLike<T>;
+```
+
+Objects must be plain objects with `Object.prototype` or `null` prototype and
+own enumerable string-keyed data properties. Accessors, symbol keys, cycles,
+functions, promises, errors, dates, class instances, proxies, maps, sets,
+weak collections, typed arrays and mutable buffers are not graph values.
+
+At run admission, after each node returns and for every effect-request payload,
+the runtime validates, deep-copies and recursively freezes the value before
+storing or sharing it. The copy is scheduler-owned; aliases to the caller's
+original cannot mutate it.
+Capabilities, middleware state and prepared effect state are not graph data.
+Capabilities may be shared across concurrent nodes, so their provider owns
+thread safety and must not make graph meaning depend on access timing.
+
+`MaybePromise` is exact: the runtime gets `then` once from every participant
+return. A non-callable or absent `then` remains synchronous; a callable `then`
+is adopted by the ECMAScript promise-resolution procedure. A throwing getter is
+a synchronous participant failure. All structurally valid thenables are
+accepted, and first settlement wins. The run promotes to a promise only when a
+callable `then` is observed.
+
+## 3. Heterogeneous graph and effect types
+
+Node and effect registries retain literal keys and member-specific types through
+public compilation. Erasure is permitted only inside compiler and scheduler
+implementation details.
+
+```ts
+type NodeKey = string;
+type EffectKey = string;
+declare const nodeType: unique symbol;
+declare const effectType: unique symbol;
+
+interface NodeContract<
+	TExternalKeys extends string,
+	TOutput extends GraphValue,
+	TFailure = unknown,
+	TEffectKeys extends EffectKey = never,
+> {
+	readonly externalInputs: readonly TExternalKeys[];
+	readonly priority: number;
+	readonly [nodeType]?: () => {
+		readonly output: TOutput;
+		readonly failure: TFailure;
+		readonly effectKeys: TEffectKeys;
+	};
+}
+
+type NodeRegistry = Readonly<
+	Record<NodeKey, NodeContract<string, GraphValue, unknown, EffectKey>>
+>;
+
+interface Edge<TFrom extends NodeKey = NodeKey, TTo extends NodeKey = NodeKey> {
+	readonly from: TFrom;
+	readonly to: TTo;
+}
+
+interface EffectContract<
+	TPayload extends GraphValue,
+	TPrepared,
+	TReceipt,
+	TFailure,
+> {
+	readonly [effectType]?: () => {
+		readonly payload: TPayload;
+		readonly prepared: TPrepared;
+		readonly receipt: TReceipt;
+		readonly failure: TFailure;
+	};
+}
+
+type EffectRegistry = Readonly<
+	Record<EffectKey, EffectContract<GraphValue, unknown, unknown, unknown>>
+>;
+
+type EffectTypes<T> =
+	T extends EffectContract<infer P, infer S, infer R, infer F>
+		? { payload: P; prepared: S; receipt: R; failure: F }
+		: never;
+type EffectPayload<T> = EffectTypes<T>['payload'];
+type EffectPrepared<T> = EffectTypes<T>['prepared'];
+type EffectReceipt<T> = EffectTypes<T>['receipt'];
+type EffectFailure<T> = EffectTypes<T>['failure'];
+```
+
+The inaccessible optional unique-symbol members are compile-time phantoms, not
+readable runtime properties. Consumers construct contracts without assertions,
+including the `never` effect-key case; emitted values contain only real fields.
+
+For `TNodes`, edge tuple `TEdges` and node key `K`, invocation dependencies are
+derived only from edges whose `to` is `K`:
+
+```ts
+type NodeTypes<T> =
+	T extends NodeContract<infer I, infer O, infer F, infer E>
+		? { input: I; output: O; failure: F; effects: E }
+		: never;
+type OutputOf<T> = NodeTypes<T>['output'];
+type FailureOf<T> = NodeTypes<T>['failure'];
+type ExternalKeysOf<T> = NodeTypes<T>['input'];
+type EffectKeysOf<T> = NodeTypes<T>['effects'];
+type Predecessors<TEdges extends readonly Edge[], K extends NodeKey> = Extract<
+	TEdges[number],
+	{ readonly to: K }
+>['from'];
+type DependencyOutputs<
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	K extends keyof TNodes & NodeKey,
+> = {
+	readonly [P in Predecessors<TEdges, K> & keyof TNodes]: OutputOf<TNodes[P]>;
+};
+
+type EffectRequestFor<
+	TEffects extends EffectRegistry,
+	K extends keyof TEffects,
+> = K extends keyof TEffects
+	? {
+			readonly participant: K;
+			readonly payload: EffectPayload<TEffects[K]>;
+		}
+	: never;
+
+type EffectRequestsFor<
+	TEffects extends EffectRegistry,
+	K extends keyof TEffects,
+> = { [P in K]: EffectRequestFor<TEffects, P> }[K];
+
+type OutputProjection<TNodes extends NodeRegistry> = Readonly<
+	Record<string, keyof TNodes & NodeKey>
+>;
+type GraphOutputs<
+	TNodes extends NodeRegistry,
+	TProjection extends OutputProjection<TNodes>,
+> = { readonly [K in keyof TProjection]: OutputOf<TNodes[TProjection[K]]> };
+```
+
+`NodeExecutors` is a keyed mapped type whose dependencies come only from the
+canonical edge tuple:
+
+```ts
+interface NodeInvocation<TExternal, TDependencies, TCapabilities> {
+	readonly input: {
+		readonly external: TExternal;
+		readonly dependencies: TDependencies;
+	};
+	readonly capabilities: TCapabilities;
+	readonly signal: AbortSignal;
+}
+
+type NodeExecutors<
+	TInputs extends Readonly<Record<string, GraphValue>>,
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	TEffects extends EffectRegistry,
+	TCapabilities,
+> = {
+	readonly [K in keyof TNodes & NodeKey]: (
+		options: NodeInvocation<
+			Readonly<Pick<TInputs, ExternalKeysOf<TNodes[K]> & keyof TInputs>>,
+			DependencyOutputs<TNodes, TEdges, K>,
+			TCapabilities
+		>
+	) => MaybePromise<
+		NodeResult<
+			OutputOf<TNodes[K]>,
+			FailureOf<TNodes[K]>,
+			EffectRequestsFor<
+				TEffects,
+				EffectKeysOf<TNodes[K]> & keyof TEffects
+			>
+		>
+	>;
+};
+
+type NodeResult<TOutput extends GraphValue, TFailure, TRequest> =
+	| {
+			readonly kind: 'success';
+			readonly output: TOutput;
+			readonly effects: readonly TRequest[];
+			readonly pause?: PauseRequest;
+	  }
+	| { readonly kind: 'failure'; readonly error: TFailure }
+	| { readonly kind: 'cancelled'; readonly reason?: unknown };
+```
+
+A `cancelled` result is valid only after `signal.aborted`; otherwise it is a
+node contract failure. Throws and rejections become failures without replacing
+the original error.
+
+`GraphDeclaration<TInputs, TNodes, TEdges, TEffects, TProjection,
+TCapabilities>` contains keyed contracts and executors, the literal edge tuple,
+effect contracts, `TProjection extends OutputProjection<TNodes>` and a required
+policy. Its output is exactly `GraphOutputs<TNodes, TProjection>`, never a free
+generic. The public compiled `Graph` preserves these arguments plus immutable
+adjacency and ranks. Compiler-private erased call tables cannot escape public
+declarations.
+
+One edge exposes its source node's whole output under that node key. A join is
+an ordinary node with every source edge declared and an explicit reducer in its
+executor. Compilation rejects duplicate keys, missing references, cycles,
+invalid projections, effect-key mismatches and invalid policy. The scheduler
+never merges or spreads parent values. Ordering-only and resource relations
+require distinct future types.
+
+## 4. Compilation, registration and canonical order
+
+Each `GraphExtension.contribute(options)` callback returns one complete
+immutable `MaybePromise<GraphContribution>`. It cannot call registration APIs
+or enqueue descendants; re-entrant or nested registration is a configuration
+error. Each independent extension registration reserves one monotonic sequence
+in the ordered queue. At `run(options)` invocation the runtime atomically
+captures the queue tail, awaits and drains exactly prior callbacks despite
+failure, retains every failure and selects the lowest registration sequence as
+primary. Successful contributions apply in that order. Genuinely independent
+registrations after capture are excluded even if they settle first. With no
+pending captured callback this boundary stays synchronous.
+
+Canonical topological rank is `0` for a source and otherwise one plus the
+maximum predecessor rank. Compilation assigns a total canonical node ordinal
+by ascending rank, descending finite numeric priority, ascending key, then
+ascending registration order, exactly matching ADR-001. Key comparison is raw
+UTF-16 code-unit order:
+compare the first unequal code unit numerically, with a shorter prefix first.
+It never uses locale, normalisation or settlement order. Base declarations
+share registration order `0`. Registration order is the final deterministic
+tie-break used while reporting duplicate-key compilation failures; valid graph
+keys are unique.
+
+The ready comparator is canonical node ordinal. `ExecutionPolicy` requires
+`maxConcurrency: PositiveSafeInteger | 'unbounded'`; omission, zero, fractions
+and non-finite numbers are invalid. The baseline supplies no implicit default.
+
+## 5. Scheduling, cancellation and observation
+
+The scheduler selects ready nodes in canonical order up to available capacity
+and invokes the complete selected set in that order. A synchronous failure does
+not suppress selected siblings. A dependant becomes ready as soon as its own
+predecessors succeed; unrelated branches create no wave barrier.
+
+`RunOptions` accepts `signal?: AbortSignal`. Omission creates one internal,
+never-aborted signal; the same signal is the only cancellation primitive seen by
+nodes, middleware, effect prepare/commit and the scheduler.
+
+- If already aborted at invocation, no node, prepare or commit is admitted.
+- During graph work or preparation, abort stops new nodes and later forward
+  phases or requests within admitted nodes. The active callback or prepare
+  drains, each node performs the section 6 cancel unwind, then successful
+  prepares are compensated.
+- After graph success but before commit, abort admits no commit and compensates.
+- During the serial commit queue, abort drains the active commit, admits no
+  later commit and then compensates all prepared entries.
+- Compensation is non-cancellable. Abort never skips or interrupts an admitted
+  compensation, including abandonment cleanup.
+
+Cancellation is cooperative and cannot terminate user code or a process. Every
+failure outranks cancellation. An existing graph or commit primary remains
+authoritative over compensation failures; absent one, the first compensation
+failure makes the run failed.
+After admitted work drains, any graph failure outranks every cancel-phase
+failure. Without a graph failure, the first cancel failure by canonical node
+order then reverse middleware order becomes primary and the run is failed;
+later cancel failures are secondary.
+
+The scheduler publishes immutable `RunEvent` values to a FIFO observer-delivery
+queue after state transitions. It never awaits observer delivery before node
+admission, prepare, commit or compensation. For each event, observers run in
+registration order; event order may reflect settlement timing and is diagnostic
+only. Terminal settlement waits for delivery through the terminal event, so an
+observer promise may delay or promote only the returned terminal outcome.
+Observer failures are retained and never alter that outcome or primary failure.
+
+## 6. Middleware
+
+Eligibility is compiled from static node keys or tags into an ordered list per
+node. Middleware cannot change eligibility at run time. For eligible middleware
+`M1..Mn` in registration order:
+
+```ts
+interface NodeMiddleware<
+	TKey extends NodeKey,
+	TInvocation,
+	TOutput,
+	TState,
+	TRequest,
+> {
+	readonly node: TKey;
+	readonly before?: (
+		options: MiddlewareInvocationOptions<TKey, TInvocation>
+	) => MaybePromise<MiddlewareResult<TState, TRequest>>;
+	readonly after?: (
+		options: MiddlewareEnteredOptions<TKey, TInvocation, TState> & {
+			readonly output: TOutput;
+		}
+	) => MaybePromise<readonly TRequest[]>;
+	readonly error?: (
+		options: MiddlewareEnteredOptions<TKey, TInvocation, TState> & {
+			readonly error: unknown;
+		}
+	) => MaybePromise<void>;
+	readonly cancel?: (
+		options: MiddlewareEnteredOptions<TKey, TInvocation, TState> & {
+			readonly reason: unknown;
+		}
+	) => MaybePromise<void>;
+}
+interface MiddlewareInvocationOptions<TKey, TInvocation> {
+	readonly node: TKey;
+	readonly invocation: TInvocation;
+}
+interface MiddlewareEnteredOptions<TKey, TInvocation, TState>
+	extends MiddlewareInvocationOptions<TKey, TInvocation> {
+	readonly state: TState;
+}
+interface MiddlewareResult<TState, TRequest> {
+	readonly state: TState;
+	readonly effects: readonly TRequest[];
+}
+type NodeMiddlewareFor<
+	TInputs extends Readonly<Record<string, GraphValue>>,
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	TEffects extends EffectRegistry,
+	TCapabilities,
+	K extends keyof TNodes & NodeKey,
+	TState,
+> = NodeMiddleware<
+	K,
+	NodeInvocation<
+		Readonly<Pick<TInputs, ExternalKeysOf<TNodes[K]> & keyof TInputs>>,
+		DependencyOutputs<TNodes, TEdges, K>,
+		TCapabilities
+	>,
+	OutputOf<TNodes[K]>,
+	TState,
+	EffectRequestsFor<TEffects, EffectKeysOf<TNodes[K]> & keyof TEffects>
+>;
+```
+
+Each middleware declaration and registration names exactly one `node`. Reuse
+comes from a pure factory returning separately typed `NodeMiddlewareFor` values,
+never one callback spanning heterogeneous nodes.
+
+1. `before` runs serially `M1..Mn`. Each successful result yields immutable
+   invocation-local state and typed effect requests; its requests prepare
+   serially before the next `before`.
+2. If all before phases succeed, the node runs once. Its returned output is
+   isolated under the graph-value rule before middleware may observe it.
+3. On node success, every entered `after` runs serially `Mn..M1`, even after an
+   earlier after failure. Successful results may emit typed effect requests,
+   prepared before the next after. Output remains hidden until all after work
+   succeeds.
+4. A before failure skips later before, the node and all after phases. A node
+   failure skips after. Any before, node, after or phase-prepare failure invokes
+   `error` serially in reverse order for middleware whose before completed.
+   Every error phase runs despite errors and returns only `void`.
+5. Cancellation without a graph failure invokes a named `cancel` phase serially
+   in reverse order for every middleware whose before completed, regardless of
+   which later phase was active. Every cancel phase runs despite errors and
+   returns only `void`. A local failure plus abort uses only error unwind; a
+   later sibling graph failure still supersedes this node's cancel failures.
+
+The first failure in the defined before, node or after invocation order is the
+node's failure. Further after and error failures are secondary. Cancel failures
+are secondary when a graph failure exists; otherwise the first follows section
+5 and becomes primary. Error and cancel phases cannot emit effect requests
+because the run cannot commit them. Middleware cannot replace inputs or
+outputs, recover failure, admit nodes or access the scheduler. It has no `next`.
+Before and after requests use the node's allowed `EffectRequestFor` union and
+the unified journal below.
+
+## 7. Unified effects and journal chronology
+
+`EffectParticipants<TEffects>` is a literal-keyed mapped registry:
+
+```ts
+type EffectPhaseResult<TValue, TFailure> =
+	| { readonly kind: 'success'; readonly value: TValue }
+	| { readonly kind: 'failure'; readonly error: TFailure };
+type ParticipantFailure<TFailure> =
+	| { readonly kind: 'declared'; readonly error: TFailure }
+	| { readonly kind: 'thrown'; readonly error: unknown };
+
+interface EffectParticipant<
+	TContract extends EffectContract<GraphValue, unknown, unknown, unknown>,
+> {
+	readonly prepare: (options: {
+		readonly payload: EffectPayload<TContract>;
+		readonly signal: AbortSignal;
+	}) => MaybePromise<
+		EffectPhaseResult<EffectPrepared<TContract>, EffectFailure<TContract>>
+	>;
+	readonly commit: (options: {
+		readonly prepared: EffectPrepared<TContract>;
+		readonly signal: AbortSignal;
+	}) => MaybePromise<
+		EffectPhaseResult<EffectReceipt<TContract>, EffectFailure<TContract>>
+	>;
+	readonly compensate: (options: {
+		readonly prepared: EffectPrepared<TContract>;
+		readonly receipt?: EffectReceipt<TContract>;
+	}) => MaybePromise<EffectPhaseResult<void, EffectFailure<TContract>>>;
+}
+
+type EffectParticipants<TEffects extends EffectRegistry> = {
+	readonly [K in keyof TEffects]: EffectParticipant<TEffects[K]>;
+};
+```
+
+Compensation deliberately receives no signal because it is non-cancellable.
+Declared failures become `ParticipantFailure` records with `kind: 'declared'`.
+Throws, rejected thenables and invalid phase results are retained with
+`kind: 'thrown'` and `unknown` error. The registry therefore links every typed
+participant failure without pretending JavaScript throws are typed.
+
+Effect requests from middleware and nodes prepare within their admitted node
+invocation. Requests are serial within that invocation but may prepare
+concurrently across nodes. Each request receives a logical journal sequence
+`(canonicalNodeOrdinal, perNodeEffectOrdinal)`. The second component increments
+across before, node and after requests in section 6; cleanup emits none. Successful preparation
+fills that sequence slot; settlement order never reorders it. This sorted
+logical sequence is the deterministic journal chronology required by ADR-002.
+
+A node settles successfully only after its requests prepare. Commit starts only
+after graph success and admitted work drains, and runs serially in ascending
+logical journal sequence. Graph, prepare, commit, cancellation or abandonment
+failure compensates every successfully prepared entry exactly once per
+process-local run state, serially in reverse logical journal chronology.
+Compensation continues after failures and retains them all. Prepared values and
+receipts are journal-owned process-local state and participants must treat them
+as immutable.
+
+Direct external mutation by a node, middleware or observer is outside this
+guarantee. The journal is process-local evidence, not durable effect authority.
+
+## 8. Outcomes, suspension and abandonment
+
+Every node projects exactly one `succeeded`, `failed`, `blocked` or
+cooperatively `cancelled` outcome. `RunOutcome<TOutputs>` is `succeeded`,
+`failed`, `cancelled` or `suspended`; every variant includes canonically ordered
+node outcomes, diagnostics, observer failures and an effect-journal projection.
+A failed outcome retains every failure.
+
+On graph failure, admission stops and admitted work drains. The primary graph
+failure is the first failed node by canonical ordinal; failures within that node
+use section 6 order. Timing never selects it. If graph evaluation succeeds but
+commit fails, the first failure in commit order is primary and later commits are
+not admitted.
+
+A successful node may return one `PauseRequest`. The first request stops new
+admission and drains admitted work; a concurrent second request is a graph
+failure. Failure outranks cancellation, which outranks pause.
+
+A clean pause yields a private, single-use `Suspension` containing the same
+compiled graph, configuration, frontier, outputs and prepared journal. It is
+not serialisable, portable or valid after process death. `resume({ suspension,
+signal? })` consumes it and continues that run. `abandon({ suspension })`
+instead consumes it, performs non-cancellable reverse-journal compensation and
+returns a typed abandonment outcome retaining cleanup failures. Neither
+operation may be repeated. Dropping a suspension without either operation has
+no cleanup guarantee; the host must retain and explicitly consume it.
+Resume reuses the captured signal unless a supplied signal becomes the sole
+signal for the resumed segment.
+
+`Frontier` is runtime-private. `Snapshot` means only an immutable diagnostic
+projection and grants no resume authority.
+
+## 9. Compatibility and closure rules
+
+A v1 adapter is one serial native node. It may use `next` internally but cannot
+affect native readiness. It maps the complete v1 journal, halt and pause
+semantics exactly as specified in the vocabulary compatibility boundary; an
+uncapturable rollback is unsupported and no second rollback authority remains.
+
+Public callbacks exist only for named interpreter-owned lifetimes: node
+execution, middleware phases, observer delivery, effect phases and graph
+contribution. Factories return immutable declarations or evaluators. Run,
+middleware and prepared state are explicit values, not mutable closure cells.
+No callback captures the remaining graph.
+
+## 10. Unresolved names and policies
+
+Builder names, diagnostic shapes, anchor ownership and future scheduling or
+host policies remain open. They cannot introduce mutable graph data, stage
+authority, hidden continuations, implicit joins, timing-dependent meaning or
+durability claims.
