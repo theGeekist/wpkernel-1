@@ -43,10 +43,16 @@ type GraphValue =
 type MaybePromise<T> = T | PromiseLike<T>;
 ```
 
-Objects must be plain objects with `Object.prototype` or `null` prototype and
-own enumerable string-keyed data properties. Accessors, symbol keys, cycles,
-functions, promises, errors, dates, class instances, proxies, maps, sets,
-weak collections, typed arrays and mutable buffers are not graph values.
+Arrays must have exactly `Array.prototype`. Objects must have exactly
+`Object.prototype` or `null` as their prototype and own enumerable
+string-keyed data properties. Accessors, symbol keys, cycles, functions,
+promises, errors, dates, class instances, maps, sets, weak collections, typed
+arrays and mutable buffers are not graph values. JavaScript exposes no general
+test for transparent proxies, so admission is deliberately observational: every
+prototype, own-key and descriptor inspection must succeed and the observed
+shape must satisfy this closed algebra. Throwing or exotic proxy behaviour is
+rejected; a transparent proxy with an indistinguishable valid shape is admitted
+and copied into scheduler-owned data.
 
 At run admission, after each node returns and for every effect-request payload,
 the runtime validates, deep-copies and recursively freezes the value before
@@ -82,11 +88,11 @@ interface NodeContract<
 	TEffectKeys extends EffectKey = never,
 > {
 	readonly externalInputs: readonly TExternalKeys[];
+	readonly effectKeys: readonly TEffectKeys[];
 	readonly priority: number;
 	readonly [nodeType]?: () => {
 		readonly output: TOutput;
 		readonly failure: TFailure;
-		readonly effectKeys: TEffectKeys;
 	};
 }
 
@@ -126,6 +132,11 @@ type EffectPrepared<T> = EffectTypes<T>['prepared'];
 type EffectReceipt<T> = EffectTypes<T>['receipt'];
 type EffectFailure<T> = EffectTypes<T>['failure'];
 ```
+
+`effectKeys` is required runtime declaration data as well as a literal typed
+set. The phantom member carries output and failure types that have no runtime
+representation; compilation validates every declared effect key against the
+participant registry.
 
 The inaccessible optional unique-symbol members are compile-time phantoms, not
 readable runtime properties. Consumers construct contracts without assertions,
