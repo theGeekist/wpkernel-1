@@ -1,9 +1,10 @@
 import {
 	compileGraph,
 	compileGraphOrThrow,
-	GraphCompilationError,
+	createGraphCompilationError,
 	serializeGraph,
 } from '../../graph/index.js';
+import type { GraphCompilationError } from '../../graph/index.js';
 import { compileGraphWithContributions } from '../../graph/contributions.js';
 import { getGraphExecutor } from '../../graph/executors.js';
 import type {
@@ -120,6 +121,9 @@ describe('v2 graph compiler', () => {
 		expect(Object.isFrozen(graph)).toBe(true);
 		expect(Object.getPrototypeOf(graph.nodes)).toBeNull();
 		expect(Object.getPrototypeOf(graph.incoming)).toBeNull();
+		expect(serializeGraph({ graph })).not.toContain(
+			'WPKernel compiled graph'
+		);
 	});
 
 	it('uses raw UTF-16 key order and returns zero for equal serialisation keys', () => {
@@ -405,7 +409,7 @@ describe('v2 graph compiler', () => {
 		}
 	});
 
-	it('provides an exception adapter without losing diagnostics', () => {
+	it('provides a frozen native exception adapter without losing diagnostics', () => {
 		try {
 			compileGraphOrThrow({
 				declaration: {
@@ -415,11 +419,40 @@ describe('v2 graph compiler', () => {
 			});
 			throw new Error('Expected compilation to fail.');
 		} catch (error) {
-			expect(error).toBeInstanceOf(GraphCompilationError);
-			expect((error as GraphCompilationError).diagnostics).toHaveLength(
-				1
-			);
+			expect(error).toBeInstanceOf(Error);
+			expect(Object.getPrototypeOf(error)).toBe(Error.prototype);
+			expect(Object.isFrozen(error)).toBe(true);
+			expect(error).toMatchObject({
+				name: 'GraphCompilationError',
+				diagnostics: [{ code: 'invalid-policy' }],
+			});
+			expect(
+				Object.isFrozen((error as GraphCompilationError).diagnostics)
+			).toBe(true);
 		}
+	});
+
+	it('retains compilation error cause and immutable own metadata', () => {
+		const cause = new Error('inspection');
+		const error = createGraphCompilationError({
+			diagnostics: [
+				{ code: 'invalid-node', message: 'Invalid node.', path: [] },
+			],
+			cause,
+		});
+
+		expect(error).toBeInstanceOf(Error);
+		expect(Object.getPrototypeOf(error)).toBe(Error.prototype);
+		expect(Object.isFrozen(error)).toBe(true);
+		expect(error).toMatchObject({
+			name: 'GraphCompilationError',
+			message: 'Invalid node.',
+			cause,
+		});
+		expect(Object.hasOwn(error, 'name')).toBe(true);
+		expect(Object.hasOwn(error, 'diagnostics')).toBe(true);
+		expect(Object.isFrozen(error.diagnostics[0])).toBe(true);
+		expect(Object.isFrozen(error.diagnostics[0]!.path)).toBe(true);
 	});
 
 	it('rejects unknown inputs, effects, references and executor coverage', () => {

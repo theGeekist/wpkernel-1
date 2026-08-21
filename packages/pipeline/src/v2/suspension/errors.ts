@@ -1,8 +1,8 @@
 /** Frozen tagged native error for a rejected suspension operation. */
-export interface SuspensionError extends Error {
+export type SuspensionError = Error & {
 	readonly name: 'SuspensionError';
 	readonly code: 'invalid-suspension' | 'already-consumed';
-}
+};
 
 /**
  * Creates one tagged native suspension error without a runtime class.

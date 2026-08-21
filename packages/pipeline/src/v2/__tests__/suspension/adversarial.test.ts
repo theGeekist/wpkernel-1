@@ -1,3 +1,4 @@
+import { deserialize, serialize } from 'node:v8';
 import fc from 'fast-check';
 import { settleGraphEffects } from '../../effects/outcome.js';
 import {
@@ -95,18 +96,45 @@ describe('v2 Suspension adversarial authority', () => {
 		).toThrow('must be captured as a Suspension');
 	});
 
-	it('exposes no constructor, prototype token or state-bearing callable', () => {
+	it('exposes no constructor or state-bearing witness value', () => {
 		const suspension = suspendedRun({});
+		const symbols = Object.getOwnPropertySymbols(suspension);
+		const descriptor = Object.getOwnPropertyDescriptor(
+			suspension,
+			symbols[0]!
+		);
+		const witness = Reflect.get(suspension, symbols[0]!);
 
 		expect(Object.getPrototypeOf(suspension)).toBeNull();
-		expect(Object.getOwnPropertySymbols(suspension)).toEqual([]);
-		expect(Reflect.ownKeys(suspension)).toEqual(['pause', 'snapshot']);
+		expect(symbols).toHaveLength(1);
+		expect(Reflect.ownKeys(suspension)).toEqual([
+			'pause',
+			'snapshot',
+			symbols[0],
+		]);
+		expect(descriptor).toMatchObject({
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		});
+		expect(Object.isFrozen(witness)).toBe(true);
+		expect(witness).toEqual({
+			nodes: { value: undefined },
+			outputs: { value: undefined },
+			effects: { value: undefined },
+		});
+		expect(
+			Object.values(witness as Record<string, unknown>).every((cell) =>
+				Object.isFrozen(cell)
+			)
+		).toBe(true);
 		expect(Reflect.get(suspension, 'constructor')).toBeUndefined();
 		expect(
-			Reflect.ownKeys(suspension).map(
+			Object.keys(suspension).map(
 				(key) => typeof Reflect.get(suspension, key)
 			)
 		).toEqual(['object', 'object']);
+		expect(JSON.stringify(suspension)).not.toContain('WPKernel suspension');
 
 		const reflectedForgery = Object.freeze(
 			Object.assign(Object.create(null) as object, {
@@ -125,13 +153,21 @@ describe('v2 Suspension adversarial authority', () => {
 		expect(abandon({ suspension })).toMatchObject({ kind: 'abandoned' });
 	});
 
-	it('rejects spread, deserialised, prototype and proxy forgeries', () => {
+	it('rejects spread, cloned, deserialised, reflected and proxy forgeries', () => {
 		const suspension = suspendedRun({});
+		const reflected = Object.freeze(
+			Object.defineProperties(
+				Object.create(null) as object,
+				Object.getOwnPropertyDescriptors(suspension)
+			)
+		);
 		const candidates = [
 			{ ...suspension },
+			deserialize(serialize(suspension)),
 			JSON.parse(JSON.stringify(suspension)),
 			Object.create(Object.getPrototypeOf(suspension)),
 			new Proxy(suspension, {}),
+			reflected,
 		];
 
 		for (const candidate of candidates) {
@@ -154,6 +190,19 @@ describe('v2 Suspension adversarial authority', () => {
 		}
 
 		expect(abandon({ suspension })).toMatchObject({ kind: 'abandoned' });
+	});
+
+	it('rejects a compiled graph as cross-capability authority', () => {
+		const graph = compileTestGraph({
+			nodes: [{ key: 'a', executor: () => success('a') }],
+		});
+
+		expect(
+			rejectedSuspension(() => resume({ suspension: graph as never }))
+		).toMatchObject({
+			name: 'SuspensionError',
+			code: 'invalid-suspension',
+		});
 	});
 
 	it('rejects primitive, null and callable suspension tokens', () => {

@@ -1,5 +1,6 @@
 export { compileGraph, compileGraphOrThrow } from './compile.js';
-export { GraphCompilationError } from './errors.js';
+export { createGraphCompilationError } from './errors.js';
+export type { GraphCompilationError } from './errors.js';
 export { serializeGraph } from './serialize.js';
 export type {
 	CompileGraphOptions,

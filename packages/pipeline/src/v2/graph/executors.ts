@@ -1,5 +1,3 @@
-import type { ErasedGraph } from './types.js';
-
 interface GraphRuntimeAuthority {
 	readonly executors: Readonly<Record<string, unknown>>;
 	readonly effectKeys: readonly string[];
@@ -46,7 +44,7 @@ export const retainExecutors = (options: {
  * @param options.key   - Canonical node key.
  */
 export const getGraphExecutor = (options: {
-	readonly graph: ErasedGraph;
+	readonly graph: object;
 	readonly key: string;
 }): unknown => authorities.get(options.graph)?.executors[options.key];
 
@@ -58,5 +56,5 @@ export const getGraphExecutor = (options: {
  * @param options.graph - Compiled graph authority.
  */
 export const getGraphEffectKeys = (options: {
-	readonly graph: ErasedGraph;
+	readonly graph: object;
 }): readonly string[] | undefined => authorities.get(options.graph)?.effectKeys;

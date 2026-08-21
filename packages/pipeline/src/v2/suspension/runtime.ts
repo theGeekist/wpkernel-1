@@ -22,6 +22,7 @@ import {
 	captureSuspensionAuthority,
 	restoreSuspendedState,
 } from './authority.js';
+import { attachSuspensionBrand } from './brand.js';
 import { createSuspensionError } from './errors.js';
 import type {
 	AbandonmentOutcome,
@@ -45,18 +46,21 @@ const createSuspension = <TEffects extends EffectRegistry>(options: {
 	readonly pause: PendingPause;
 	readonly snapshot: RunDiagnostics;
 	readonly authority: ReturnType<typeof captureSuspensionAuthority<TEffects>>;
-}): Suspension<never, never, TEffects> => {
-	const projection = Object.freeze(
-		Object.assign(Object.create(null) as Record<PropertyKey, unknown>, {
+}): ErasedSuspension<TEffects> => {
+	const projection = Object.assign(
+		Object.create(null) as Record<PropertyKey, unknown>,
+		{
 			pause: options.pause,
 			snapshot: options.snapshot,
-		})
+		}
 	);
+	attachSuspensionBrand(projection);
+	Object.freeze(projection);
 	suspensionRecords.set(projection, {
 		kind: 'available',
 		authority: options.authority,
 	});
-	return projection as unknown as Suspension<never, never, TEffects>;
+	return projection as unknown as ErasedSuspension<TEffects>;
 };
 
 const consumeSuspension = <TEffects extends EffectRegistry>(options: {

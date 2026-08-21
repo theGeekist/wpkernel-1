@@ -1,5 +1,6 @@
 import { inspectRecord } from '../graph/inspection.js';
-import { GraphSchedulerError } from '../scheduler/errors.js';
+import { createGraphSchedulerError } from '../scheduler/errors.js';
+import type { GraphSchedulerError } from '../scheduler/errors.js';
 
 export type OwnedEffectPhaseResult =
 	| { readonly kind: 'success'; readonly value: unknown }
@@ -13,7 +14,7 @@ const contractFailure = (options: {
 	readonly cause?: unknown;
 }): OwnedEffectPhaseResult => ({
 	kind: 'contract',
-	error: new GraphSchedulerError({
+	error: createGraphSchedulerError({
 		code: 'invalid-effect-result',
 		message: `Effect participant "${options.participant}" ${options.phase} phase ${options.message}`,
 		...(options.cause === undefined ? {} : { cause: options.cause }),

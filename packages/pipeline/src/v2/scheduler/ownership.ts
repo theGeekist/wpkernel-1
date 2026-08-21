@@ -1,7 +1,8 @@
 import { inspectDenseArray, inspectRecord } from '../graph/inspection.js';
 import type { EffectRegistry, GraphValue } from '../graph/types.js';
 import { copyGraphValue } from '../graph/values.js';
-import { GraphSchedulerError } from './errors.js';
+import { createGraphSchedulerError } from './errors.js';
+import type { GraphSchedulerError } from './errors.js';
 import type { PendingEffect, PendingPause } from './types.js';
 
 export type OwnedNodeResult<TEffects extends EffectRegistry> =
@@ -19,7 +20,7 @@ const schedulerError = (
 	message: string,
 	cause?: unknown
 ): GraphSchedulerError =>
-	new GraphSchedulerError({
+	createGraphSchedulerError({
 		code: 'invalid-node-result',
 		message,
 		...(cause === undefined ? {} : { cause }),
@@ -292,7 +293,7 @@ export const ownGraphInputs = (options: {
 		typeof copied.value !== 'object' ||
 		Array.isArray(copied.value)
 	) {
-		throw new GraphSchedulerError({
+		throw createGraphSchedulerError({
 			code: 'invalid-input',
 			message: copied.ok
 				? 'Graph inputs must be a plain record.'
@@ -305,7 +306,7 @@ export const ownGraphInputs = (options: {
 		keys.length !== options.inputKeys.length ||
 		options.inputKeys.some((key) => !keySet.has(key))
 	) {
-		throw new GraphSchedulerError({
+		throw createGraphSchedulerError({
 			code: 'invalid-input',
 			message: 'Graph inputs must exactly cover the compiled input keys.',
 		});

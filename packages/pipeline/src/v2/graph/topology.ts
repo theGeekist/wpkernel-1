@@ -8,6 +8,7 @@ import type {
 	NodeRegistry,
 	OutputProjection,
 } from './types.js';
+import { attachCompiledGraphBrand } from './brand.js';
 import {
 	frozenSortedRecord,
 	nullRecord,
@@ -427,7 +428,7 @@ export const buildGraph = <
 		});
 	}
 	const adjacency = freezeAdjacency({ nodes: ordered, edges, ordinals });
-	return Object.freeze({
+	const graph = {
 		kind: 'graph' as const,
 		inputKeys: Object.freeze([...options.inputKeys].sort(rawKeyCompare)),
 		nodes: Object.freeze(compiledNodes) as Graph<
@@ -448,5 +449,14 @@ export const buildGraph = <
 		) as TProjection,
 		anchors: frozenSortedRecord(Object.entries(options.anchors)),
 		policy: Object.freeze({ ...options.policy }),
-	}) as Graph<TInputs, TNodes, TEdges, TEffects, TProjection, TCapabilities>;
+	};
+	attachCompiledGraphBrand(graph);
+	return Object.freeze(graph) as Graph<
+		TInputs,
+		TNodes,
+		TEdges,
+		TEffects,
+		TProjection,
+		TCapabilities
+	>;
 };

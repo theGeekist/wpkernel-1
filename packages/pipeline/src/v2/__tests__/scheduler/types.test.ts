@@ -1,5 +1,7 @@
 import { compileGraphOrThrow } from '../../graph/index.js';
 import type {
+	Edge,
+	EffectContract,
 	EffectRegistry,
 	Graph,
 	GraphDeclaration,
@@ -36,10 +38,12 @@ type Outcome = GraphScheduleOutcome<
 
 type AuthorityInputs = Readonly<{ source: 'source' }>;
 type AuthorityNodes = Readonly<{
-	task: NodeContract<'source', 'complete', FailureA>;
+	task: NodeContract<'source', 'complete', FailureA, 'audit'>;
 }>;
 type AuthorityEdges = readonly [];
-type AuthorityEffects = Readonly<Record<never, never>>;
+type AuthorityEffects = Readonly<{
+	audit: EffectContract<'payload', 'prepared', 'receipt', FailureB>;
+}>;
 type AuthorityProjection = Readonly<{ result: 'task' }>;
 type AuthorityCapabilities = Readonly<{ token: 'capability' }>;
 
@@ -53,10 +57,14 @@ const authorityDeclaration: GraphDeclaration<
 > = {
 	inputKeys: ['source'],
 	nodes: {
-		task: { externalInputs: ['source'], effectKeys: [], priority: 0 },
+		task: {
+			externalInputs: ['source'],
+			effectKeys: ['audit'],
+			priority: 0,
+		},
 	},
 	edges: [],
-	effects: {},
+	effects: { audit: {} },
 	outputs: { result: 'task' },
 	policy: { maxConcurrency: 1 },
 	executors: {
@@ -71,15 +79,36 @@ const authorityDeclaration: GraphDeclaration<
 const compiledAuthorityGraph = compileGraphOrThrow({
 	declaration: authorityDeclaration,
 });
+const authorityParticipants = {
+	audit: {
+		prepare: () => ({
+			kind: 'success' as const,
+			value: 'prepared' as const,
+		}),
+		commit: () => ({ kind: 'success' as const, value: 'receipt' as const }),
+		compensate: () => ({ kind: 'success' as const, value: undefined }),
+	},
+};
 
 const validScheduleResult = scheduleGraph({
 	graph: compiledAuthorityGraph,
 	inputs: { source: 'source' },
 	capabilities: { token: 'capability' },
-	participants: {},
+	participants: authorityParticipants,
 });
 
 type InferredScheduleOutcome = Awaited<typeof validScheduleResult>;
+
+type WidenedInputs = Readonly<{ source: string }>;
+type WidenedNodes = Readonly<{
+	task: NodeContract<string, GraphValue, unknown, string>;
+}>;
+type WidenedEdges = readonly Edge[];
+type WidenedEffects = Readonly<{
+	audit: EffectContract<string, unknown, unknown, unknown>;
+}>;
+type WidenedProjection = Readonly<Record<string, 'task'>>;
+type WidenedCapabilities = Readonly<{ token: string }>;
 
 const assertGraphAuthority = (): void => {
 	const exact: Graph<
@@ -116,8 +145,12 @@ const assertGraphAuthority = (): void => {
 	// @ts-expect-error only compilation can produce Graph authority.
 	const fromLiteral: typeof exact = literal;
 	const spread = { ...compiledAuthorityGraph };
-	// @ts-expect-error spreading drops the private compiled Graph authority.
+	// TypeScript preserves symbol properties through spread because its object
+	// model cannot express that the real witness is non-enumerable. Runtime
+	// WeakMap authority still rejects this copy.
 	const fromSpread: typeof exact = spread;
+	const cloned: typeof exact = structuredClone(compiledAuthorityGraph);
+	const proxied: typeof exact = new Proxy(compiledAuthorityGraph, {});
 	const reconstructed = JSON.parse(
 		JSON.stringify(compiledAuthorityGraph)
 	) as typeof literal;
@@ -126,7 +159,80 @@ const assertGraphAuthority = (): void => {
 	void exact;
 	void fromLiteral;
 	void fromSpread;
+	void cloned;
+	void proxied;
 	void fromReconstructed;
+};
+
+const assertInvariantGraphAuthority = (): void => {
+	const exact: Graph<
+		AuthorityInputs,
+		AuthorityNodes,
+		AuthorityEdges,
+		AuthorityEffects,
+		AuthorityProjection,
+		AuthorityCapabilities
+	> = compiledAuthorityGraph;
+	// @ts-expect-error compiled input values cannot widen before scheduling.
+	const widenedInputs: Graph<
+		WidenedInputs,
+		AuthorityNodes,
+		AuthorityEdges,
+		AuthorityEffects,
+		AuthorityProjection,
+		AuthorityCapabilities
+	> = exact;
+	// @ts-expect-error node outputs and failures are invariant authority data.
+	const widenedNodes: Graph<
+		AuthorityInputs,
+		WidenedNodes,
+		AuthorityEdges,
+		AuthorityEffects,
+		AuthorityProjection,
+		AuthorityCapabilities
+	> = exact;
+	// @ts-expect-error compiled edge relationships cannot widen.
+	const widenedEdges: Graph<
+		AuthorityInputs,
+		AuthorityNodes,
+		WidenedEdges,
+		AuthorityEffects,
+		AuthorityProjection,
+		AuthorityCapabilities
+	> = exact;
+	// @ts-expect-error effect payload and settlement types cannot widen.
+	const widenedEffects: Graph<
+		AuthorityInputs,
+		AuthorityNodes,
+		AuthorityEdges,
+		WidenedEffects,
+		AuthorityProjection,
+		AuthorityCapabilities
+	> = exact;
+	// @ts-expect-error output projection identity cannot widen.
+	const widenedProjection: Graph<
+		AuthorityInputs,
+		AuthorityNodes,
+		AuthorityEdges,
+		AuthorityEffects,
+		WidenedProjection,
+		AuthorityCapabilities
+	> = exact;
+	// @ts-expect-error runtime capability contracts cannot widen.
+	const widenedCapabilities: Graph<
+		AuthorityInputs,
+		AuthorityNodes,
+		AuthorityEdges,
+		AuthorityEffects,
+		AuthorityProjection,
+		WidenedCapabilities
+	> = exact;
+	void widenedInputs;
+	void widenedNodes;
+	void widenedEdges;
+	void widenedEffects;
+	void widenedProjection;
+	void widenedCapabilities;
 };
 
 const assertScheduleInference = (): void => {
@@ -144,14 +250,14 @@ const assertDirectScheduleArguments = (): void => {
 		// @ts-expect-error source is the exact graph input value, not any string.
 		inputs: { source: 'other' },
 		capabilities: { token: 'capability' } as const,
-		participants: {},
+		participants: authorityParticipants,
 	});
 	scheduleGraph({
 		graph: compiledAuthorityGraph,
 		inputs: { source: 'source' } as const,
 		// @ts-expect-error capabilities must match the compiled graph contract.
 		capabilities: { token: 'other' } as const,
-		participants: {},
+		participants: authorityParticipants,
 	});
 };
 
@@ -177,6 +283,7 @@ const assertDirectScheduleOutcome = (
 	if (
 		outcome.kind === 'failed' &&
 		outcome.primaryFailure.kind === 'declared' &&
+		!('participant' in outcome.primaryFailure) &&
 		outcome.primaryFailure.node === 'task'
 	) {
 		const failure: FailureA = outcome.primaryFailure.error;
@@ -231,6 +338,7 @@ describe('v2 scheduler public result types', () => {
 		expect(assertDeclaredFailureNarrowing).toEqual(expect.any(Function));
 		expect(assertNodeOutcomeNarrowing).toEqual(expect.any(Function));
 		expect(assertGraphAuthority).toEqual(expect.any(Function));
+		expect(assertInvariantGraphAuthority).toEqual(expect.any(Function));
 		expect(assertScheduleInference).toEqual(expect.any(Function));
 		expect(assertDirectScheduleArguments).toEqual(expect.any(Function));
 		expect(assertDirectScheduleOutcome).toEqual(expect.any(Function));

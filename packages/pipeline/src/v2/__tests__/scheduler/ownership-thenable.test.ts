@@ -1,4 +1,3 @@
-import { GraphSchedulerError } from '../../scheduler/errors.js';
 import { ownGraphInputs } from '../../scheduler/ownership.js';
 import {
 	compileTestGraph,
@@ -264,7 +263,12 @@ describe('v2 scheduler ownership and exact thenable settlement', () => {
 
 		expect(() =>
 			runTestGraph({ graph, inputs: accessor as never })
-		).toThrow(GraphSchedulerError);
+		).toThrow(
+			expect.objectContaining({
+				name: 'GraphSchedulerError',
+				code: 'invalid-input',
+			})
+		);
 		expect(() =>
 			runTestGraph({ graph, inputs: { required: 'yes', extra: 'no' } })
 		).toThrow('exactly cover');

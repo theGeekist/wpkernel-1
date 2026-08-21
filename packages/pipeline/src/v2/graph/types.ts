@@ -1,3 +1,5 @@
+import type { compiledGraphBrand } from './brand.js';
+
 /**
  * The closed value algebra admitted at graph ownership boundaries.
  *
@@ -24,15 +26,36 @@ declare const nodeType: unique symbol;
 declare const effectType: unique symbol;
 
 /**
- * Compile-time-only identity inherited by compiled graphs.
+ * Static provenance installed on compiled graphs.
  *
- * The private member makes `Graph` nominal without putting a public brand,
- * constructor, or serialisable authority onto its runtime value. Only this
- * module's compiler can return the asserted compiled representation.
+ * The private symbol names a real non-enumerable, data-only witness. It keeps
+ * literals out of the public type and carries erased generic relationships
+ * without a callable phantom. Runtime authority remains in module-owned weak
+ * storage and is neither serialised nor recoverable from this witness.
  */
-declare class CompiledGraphAuthority {
-	private readonly compiledGraphAuthority: undefined;
+interface CompiledGraphTypeWitness<
+	TInputs,
+	TNodes,
+	TEdges,
+	TEffects,
+	TProjection,
+	TCapabilities,
+> {
+	readonly inputs: InvariantTypeCell<TInputs>;
+	readonly nodes: InvariantTypeCell<NodeRegistryTypeWitness<TNodes>>;
+	readonly edges: InvariantTypeCell<TEdges>;
+	readonly effects: InvariantTypeCell<TEffects>;
+	readonly outputs: InvariantTypeCell<TProjection>;
+	readonly capabilities: InvariantTypeCell<TCapabilities>;
 }
+
+interface InvariantTypeCell<in out T> {
+	readonly value: T | undefined;
+}
+
+type NodeRegistryTypeWitness<TNodes> = {
+	readonly [K in keyof TNodes]: NodeTypes<TNodes[K]>;
+};
 
 /**
  * The static, literal-keyed contract of a graph node.
@@ -339,7 +362,15 @@ export interface Graph<
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
-> extends CompiledGraphAuthority {
+> {
+	readonly [compiledGraphBrand]: CompiledGraphTypeWitness<
+		TInputs,
+		TNodes,
+		TEdges,
+		TEffects,
+		TProjection,
+		TCapabilities
+	>;
 	readonly kind: 'graph';
 	readonly inputKeys: readonly (keyof TInputs & string)[];
 	readonly nodes: Readonly<{
@@ -353,12 +384,6 @@ export interface Graph<
 	readonly outputs: TProjection;
 	readonly anchors: Readonly<Record<string, NodeKey>>;
 	readonly policy: Readonly<ExecutionPolicy>;
-	readonly _types?: () => {
-		readonly edges: TEdges;
-		readonly effects: TEffects;
-		readonly capabilities: TCapabilities;
-		readonly outputs: GraphOutputs<TNodes, TProjection>;
-	};
 }
 
 /** @public */

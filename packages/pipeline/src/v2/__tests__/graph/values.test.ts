@@ -112,7 +112,9 @@ describe('graph value ownership', () => {
 	});
 
 	it('requires exact Array.prototype while admitting transparent proxies', () => {
-		class ArraySubclass extends Array<string> {}
+		const inheritedArrayPrototype = Object.create(Array.prototype);
+		const inheritedArray = ['x'];
+		Object.setPrototypeOf(inheritedArray, inheritedArrayPrototype);
 		const transparentArray = new Proxy(['x', { nested: true }], {});
 		const transparentRecord = new Proxy({ nested: ['x'] }, {});
 		const exoticPrototype = new Proxy(['x'], {
@@ -124,11 +126,9 @@ describe('graph value ownership', () => {
 			},
 		});
 
-		expect(copyGraphValue({ value: new ArraySubclass('x') })).toMatchObject(
-			{
-				ok: false,
-			}
-		);
+		expect(copyGraphValue({ value: inheritedArray })).toMatchObject({
+			ok: false,
+		});
 		expect(copyGraphValue({ value: transparentArray })).toMatchObject({
 			ok: true,
 			value: ['x', { nested: true }],

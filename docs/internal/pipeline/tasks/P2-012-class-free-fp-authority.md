@@ -3,9 +3,9 @@ architecture_version: 1
 id: P2-012
 title: Remove class syntax from the v2 functional core
 stage: source
-status: in_progress
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'Class-free invariant Graph and Suspension authority qualified and independently reviewed clean'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
@@ -25,6 +25,7 @@ conflicts_with:
     - P2-007
     - P2-008
     - P2-013
+    - P2-014
 write_scope:
     - packages/pipeline/src/v2/graph/**
     - packages/pipeline/src/v2/scheduler/**

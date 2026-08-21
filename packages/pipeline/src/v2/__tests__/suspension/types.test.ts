@@ -25,6 +25,14 @@ type Effects = Readonly<{
 type Projection = Readonly<{ result: 'complete' }>;
 type Outputs = GraphOutputs<Nodes, Projection>;
 type Capabilities = Readonly<Record<never, never>>;
+type WidenedNodes = Readonly<{
+	pause: NodeContract<never, string, unknown, 'write'>;
+	complete: NodeContract<never, string, unknown>;
+}>;
+type WidenedOutputs = Readonly<{ result: string }>;
+type WidenedEffects = Readonly<{
+	write: EffectContract<string, unknown, unknown, unknown>;
+}>;
 
 const declaration: GraphDeclaration<
 	Inputs,
@@ -113,15 +121,38 @@ const assertNominalBoundary = (
 	suspension: Suspension<Nodes, Outputs, Effects>
 ) => {
 	const spread = { ...suspension };
-	// @ts-expect-error spreading loses the private nominal suspension authority.
+	// TypeScript retains symbol properties across spread even though the real
+	// witness is non-enumerable. Runtime WeakMap authority rejects this copy.
 	const copied: Suspension<Nodes, Outputs, Effects> = spread;
+	const cloned: Suspension<Nodes, Outputs, Effects> =
+		structuredClone(suspension);
+	const proxied: Suspension<Nodes, Outputs, Effects> = new Proxy(
+		suspension,
+		{}
+	);
 	// @ts-expect-error public diagnostic data cannot fabricate resume authority.
 	const literal: Suspension<Nodes, Outputs, Effects> = {
 		pause: suspension.pause,
 		snapshot: suspension.snapshot,
 	};
+	// @ts-expect-error Graph and Suspension use distinct private witnesses.
+	const crossCapability: Suspension<Nodes, Outputs, Effects> = graph;
+	// @ts-expect-error continuation node outcomes cannot widen.
+	const widenedNodes: Suspension<WidenedNodes, Outputs, Effects> = suspension;
+	// @ts-expect-error continuation output values cannot widen.
+	const widenedOutputs: Suspension<Nodes, WidenedOutputs, Effects> =
+		suspension;
+	// @ts-expect-error continuation effect types cannot widen.
+	const widenedEffects: Suspension<Nodes, Outputs, WidenedEffects> =
+		suspension;
 	void copied;
+	void cloned;
+	void proxied;
 	void literal;
+	void crossCapability;
+	void widenedNodes;
+	void widenedOutputs;
+	void widenedEffects;
 };
 
 const assertCleanupFailure = (outcome: AbandonmentOutcome<Effects>): void => {

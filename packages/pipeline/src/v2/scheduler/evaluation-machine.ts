@@ -5,7 +5,7 @@ import {
 	ownMiddlewareBeforeResult,
 } from '../middleware/ownership.js';
 import type { ErasedNodeMiddleware } from '../middleware/types.js';
-import { GraphSchedulerError } from './errors.js';
+import { createGraphSchedulerError } from './errors.js';
 import type {
 	EvaluationPhase,
 	EvaluationRuntime,
@@ -130,7 +130,7 @@ const processDeclaredCancellation = <TEffects extends EffectRegistry>(
 			runtime,
 			failure(
 				'contract',
-				new GraphSchedulerError({
+				createGraphSchedulerError({
 					code: 'invalid-node-result',
 					message: `Node "${runtime.context.node}" returned cancelled before its signal was aborted.`,
 				})
