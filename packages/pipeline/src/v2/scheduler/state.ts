@@ -30,15 +30,22 @@ export type NodeRuntimeState<TEffects extends EffectRegistry> =
 			readonly kind: 'pending';
 			readonly remainingPredecessors: number;
 	  }
-	| { readonly kind: 'active' }
+	| {
+			readonly kind: 'active';
+			readonly admissionSequence: number;
+	  }
 	| {
 			readonly kind: 'succeeded';
+			readonly admissionSequence: number;
+			readonly settlementSequence: number;
 			readonly output: GraphValue;
 			readonly effects: readonly PendingEffect<TEffects>[];
 			readonly pause?: PendingPause;
 	  }
 	| {
 			readonly kind: 'failed';
+			readonly admissionSequence: number;
+			readonly settlementSequence: number;
 			readonly failureClass: 'graph' | 'cancel';
 			readonly failure: GraphNodeFailure<NodeRegistry, TEffects>;
 			readonly secondaryFailures: readonly GraphNodeFailure<
@@ -49,6 +56,8 @@ export type NodeRuntimeState<TEffects extends EffectRegistry> =
 	  }
 	| {
 			readonly kind: 'cancelled';
+			readonly admissionSequence: number;
+			readonly settlementSequence: number;
 			readonly reason?: unknown;
 			readonly effects: readonly PendingEffect<TEffects>[];
 	  };
@@ -84,6 +93,8 @@ export interface SchedulerState<TEffects extends EffectRegistry> {
 	readonly nodes: Map<string, NodeRuntimeState<TEffects>>;
 	readonly ready: OrdinalReadyQueue;
 	active: number;
+	nextAdmissionSequence: number;
+	nextSettlementSequence: number;
 	admissionStopped: boolean;
 	terminal: boolean;
 	completion?: SchedulerCompletion<TEffects>;

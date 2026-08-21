@@ -48,6 +48,7 @@ export const compileRunObservers = (options: {
 }): ObserverDispatcher => {
 	const observers = observerSnapshot(options.observers);
 	const retainedFailures: RunObserverFailure[] = [];
+	const retainedEvents: RunEvent[] = [];
 	let tail: Promise<void> | undefined;
 	let nextSequence = 0;
 
@@ -57,6 +58,16 @@ export const compileRunObservers = (options: {
 		readonly error: unknown;
 	}): void => {
 		retainedFailures.push(Object.freeze(failure));
+	};
+
+	const retainTail = (pending: Promise<void>): void => {
+		tail = pending;
+		const clearIfCurrent = (): void => {
+			if (tail === pending) {
+				tail = undefined;
+			}
+		};
+		void pending.then(clearIfCurrent, clearIfCurrent);
 	};
 
 	const deliverFrom = (
@@ -109,13 +120,14 @@ export const compileRunObservers = (options: {
 	};
 
 	const enqueue = (event: RunEvent): void => {
+		retainedEvents.push(event);
 		if (tail) {
-			tail = tail.then(() => deliverFrom(event, 0));
+			retainTail(tail.then(() => deliverFrom(event, 0)));
 			return;
 		}
 		const delivered = deliverFrom(event, 0);
 		if (delivered instanceof Promise) {
-			tail = delivered;
+			retainTail(delivered);
 		}
 	};
 
@@ -174,5 +186,6 @@ export const compileRunObservers = (options: {
 			return tail;
 		},
 		failures: () => Object.freeze([...retainedFailures]),
+		events: () => Object.freeze([...retainedEvents]),
 	});
 };

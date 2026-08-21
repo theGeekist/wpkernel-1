@@ -379,6 +379,7 @@ describe('v2 effect settlement boundaries', () => {
 				},
 				publishTerminal: () => undefined,
 				failures: () => Object.freeze([]),
+				events: () => Object.freeze([]),
 			}
 		);
 		let nested!: Promise<unknown>;
@@ -421,6 +422,7 @@ describe('v2 effect settlement boundaries', () => {
 				},
 				publishTerminal: () => undefined,
 				failures: () => Object.freeze([]),
+				events: () => Object.freeze([]),
 			}
 		);
 		const runtime = createPreparedRuntime({

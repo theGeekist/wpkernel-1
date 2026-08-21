@@ -22,6 +22,8 @@ import type {
 	EffectJournalFailure,
 	EffectParticipants,
 } from '../effects/types.js';
+import type { RunDiagnostics } from '../diagnostics/types.js';
+import type { Suspension } from '../suspension/types.js';
 
 /** One immutable effect request awaiting the P2-005 effect interpreter. */
 export type PendingEffectRequest<TEffects extends EffectRegistry> = {
@@ -211,6 +213,7 @@ interface RunProjection<
 > extends GraphScheduleProjection<TNodes, TEffects> {
 	readonly effectJournal: readonly EffectJournalEntry<TEffects>[];
 	readonly effectFailures: readonly EffectJournalFailure<TEffects>[];
+	readonly diagnostics: RunDiagnostics;
 }
 
 /** Complete immutable process-local run outcome after effect settlement. */
@@ -228,7 +231,8 @@ export type RunOutcome<
 		  }
 		| { readonly kind: 'cancelled'; readonly reason?: unknown }
 		| {
-				readonly kind: 'pause-requested';
+				readonly kind: 'suspended';
 				readonly primaryPause: PendingPause;
+				readonly suspension: Suspension<TNodes, TOutputs, TEffects>;
 		  }
 	);

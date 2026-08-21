@@ -427,7 +427,7 @@ describe('v2 effect cancellation and abandonment boundary', () => {
 		]);
 	});
 
-	it('cleans prepared state at the honest pre-Suspension pause boundary', () => {
+	it('retains prepared state without cleanup at a Suspension boundary', () => {
 		const compensate = jest.fn(() => phaseSuccess(undefined));
 		const graph = compileTestGraph({
 			effectKeys: ['write'],
@@ -455,9 +455,9 @@ describe('v2 effect cancellation and abandonment boundary', () => {
 		});
 
 		expect(result).toMatchObject({
-			kind: 'pause-requested',
-			effectJournal: [{ compensation: 'succeeded' }],
+			kind: 'suspended',
+			effectJournal: [{ compensation: 'not-attempted' }],
 		});
-		expect(compensate).toHaveBeenCalledTimes(1);
+		expect(compensate).not.toHaveBeenCalled();
 	});
 });

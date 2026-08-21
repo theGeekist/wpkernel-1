@@ -14,21 +14,12 @@ import {
 	compileEffectParticipants,
 	createEffectJournalRuntime,
 } from '../effects/index.js';
-import { settleGraphEffects } from '../effects/outcome.js';
-import { driveScheduler, listenForAbort } from './engine.js';
+import { executeSchedulerState } from '../suspension/runtime.js';
 import { GraphSchedulerError } from './errors.js';
 import { ownGraphInputs } from './ownership.js';
 import { addReadyNode, createReadyQueue } from './ready-queue.js';
-import type {
-	ErasedExecutor,
-	ErasedScheduleOutcome,
-	SchedulerState,
-} from './state.js';
-import type {
-	RunOutcome,
-	ScheduleGraphOptions,
-	ScheduleGraphResult,
-} from './types.js';
+import type { ErasedExecutor, SchedulerState } from './state.js';
+import type { ScheduleGraphOptions, ScheduleGraphResult } from './types.js';
 
 const executorTable = (
 	graph: ErasedGraph
@@ -89,66 +80,11 @@ const createState = <TEffects extends EffectRegistry>(options: {
 		nodes,
 		ready,
 		active: 0,
+		nextAdmissionSequence: 0,
+		nextSettlementSequence: 0,
 		admissionStopped: false,
 		terminal: false,
 	};
-};
-
-const withObserverFailures = <TEffects extends EffectRegistry>(
-	state: SchedulerState<TEffects>,
-	outcome: RunOutcome<
-		NodeRegistry,
-		Readonly<Record<string, GraphValue>>,
-		TEffects
-	>
-): RunOutcome<NodeRegistry, Readonly<Record<string, GraphValue>>, TEffects> =>
-	Object.freeze({
-		...outcome,
-		observerFailures: state.observers.failures(),
-	});
-
-const finishRun = <TEffects extends EffectRegistry>(
-	state: SchedulerState<TEffects>,
-	outcome: RunOutcome<
-		NodeRegistry,
-		Readonly<Record<string, GraphValue>>,
-		TEffects
-	>
-):
-	| RunOutcome<NodeRegistry, Readonly<Record<string, GraphValue>>, TEffects>
-	| Promise<
-			RunOutcome<
-				NodeRegistry,
-				Readonly<Record<string, GraphValue>>,
-				TEffects
-			>
-	  > => {
-	const delivery = state.observers.publishTerminal(outcome.kind);
-	return delivery
-		? delivery.then(() => withObserverFailures(state, outcome))
-		: withObserverFailures(state, outcome);
-};
-
-const settleScheduled = <TEffects extends EffectRegistry>(
-	state: SchedulerState<TEffects>,
-	outcome: ErasedScheduleOutcome<TEffects>
-):
-	| RunOutcome<NodeRegistry, Readonly<Record<string, GraphValue>>, TEffects>
-	| Promise<
-			RunOutcome<
-				NodeRegistry,
-				Readonly<Record<string, GraphValue>>,
-				TEffects
-			>
-	  > => {
-	const settled = settleGraphEffects({
-		runtime: state.journal,
-		graph: outcome,
-		signal: state.signal,
-	});
-	return settled instanceof Promise
-		? settled.then((result) => finishRun(state, result))
-		: finishRun(state, settled);
 };
 
 /**
@@ -205,12 +141,6 @@ export const scheduleGraph = <
 		observers,
 		journal: createEffectJournalRuntime({ participants, observers }),
 	});
-	listenForAbort(state);
-	const immediate = driveScheduler(state);
-	const complete = immediate
-		? settleScheduled(state, immediate)
-		: state.completion!.promise.then((outcome) =>
-				settleScheduled(state, outcome)
-			);
+	const complete = executeSchedulerState(state);
 	return complete as ScheduleGraphResult<TNodes, TEffects, TProjection>;
 };

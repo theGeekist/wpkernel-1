@@ -38,6 +38,10 @@ const projection = <
 	observerFailures: Object.freeze([]),
 	effectJournal: projectEffectJournal(runtime),
 	effectFailures: Object.freeze([...runtime.failures]),
+	diagnostics: Object.freeze({
+		nodes: Object.freeze([]),
+		events: Object.freeze([]),
+	}),
 });
 
 const failureOutcome = <
@@ -163,13 +167,6 @@ const projectSettlement = <
 			outputs: options.graph.outputs,
 		});
 	}
-	if (options.graph.kind === 'pause-requested') {
-		return Object.freeze({
-			...projected,
-			kind: 'pause-requested',
-			primaryPause: options.graph.primaryPause,
-		});
-	}
 	return Object.freeze({
 		...projected,
 		kind: 'cancelled',
@@ -183,12 +180,9 @@ const compensationTrigger = (
 		Readonly<Record<string, GraphValue>>,
 		EffectRegistry
 	>['kind']
-): 'graph' | 'cancel' | 'abandon' => {
+): 'graph' | 'cancel' => {
 	if (kind === 'cancelled') {
 		return 'cancel';
-	}
-	if (kind === 'pause-requested') {
-		return 'abandon';
 	}
 	return 'graph';
 };
@@ -217,6 +211,9 @@ export const settleGraphEffects = <
 	| Promise<
 			RunOutcome<TNodes, Readonly<Record<string, GraphValue>>, TEffects>
 	  > => {
+	if (options.graph.kind === 'pause-requested') {
+		throw new Error('A clean pause must be captured as a Suspension.');
+	}
 	let settlement:
 		| JournalSettlement<TEffects>
 		| Promise<JournalSettlement<TEffects>>;

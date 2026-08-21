@@ -18,7 +18,8 @@ export interface TerminalRunEvent {
 		| 'succeeded'
 		| 'failed'
 		| 'cancelled'
-		| 'pause-requested';
+		| 'suspended'
+		| 'abandoned';
 }
 
 /** Immutable diagnostic event emitted after one effect phase transition. */
@@ -67,4 +68,5 @@ export interface ObserverDispatcher {
 		outcomeKind: TerminalRunEvent['outcomeKind']
 	) => undefined | Promise<void>;
 	readonly failures: () => readonly RunObserverFailure[];
+	readonly events: () => readonly RunEvent[];
 }

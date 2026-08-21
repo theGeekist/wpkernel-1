@@ -97,6 +97,40 @@ describe('v2 read-only run observers', () => {
 		]);
 	});
 
+	it('retains a newer tail while prior observer delivery is still pending', async () => {
+		const first = controlled<void>();
+		const second = controlled<void>();
+		const delivered: number[] = [];
+		const dispatcher = compileRunObservers({
+			observers: [
+				(event) => {
+					delivered.push(event.sequence);
+					if (event.sequence === 0) {
+						return first.promise;
+					}
+					return event.sequence === 1 ? second.promise : undefined;
+				},
+			],
+		});
+		dispatcher.publishNode({
+			node: 'node',
+			nodeOrdinal: 0,
+			state: 'active',
+		});
+		const prior = dispatcher.publishTerminal('suspended');
+
+		first.resolve();
+		await flushMicrotasks();
+		expect(delivered).toEqual([0, 1]);
+		const next = dispatcher.publishTerminal('abandoned');
+		expect(next).toBeInstanceOf(Promise);
+		expect(delivered).toEqual([0, 1]);
+
+		second.resolve();
+		await Promise.all([prior, next]);
+		expect(delivered).toEqual([0, 1, 2]);
+	});
+
 	it('contains rejected observer thenables and continues later observers', async () => {
 		const original = new Error('rejected');
 		const later: RunEvent[] = [];

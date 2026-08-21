@@ -181,7 +181,7 @@ describe('v2 scheduler contract boundaries', () => {
 		});
 
 		expect(runTestGraph({ graph })).toMatchObject({
-			kind: 'pause-requested',
+			kind: 'suspended',
 			primaryPause: { request: {} },
 		});
 	});
