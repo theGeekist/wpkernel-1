@@ -407,6 +407,7 @@ describe('v2 graph extension registration', () => {
 			graph: compiled.graph,
 			inputs: {},
 			capabilities: undefined,
+			participants: {},
 		});
 
 		expect(extensionThis).toEqual([undefined]);

@@ -69,6 +69,19 @@ const declaration: GraphDeclaration<
 
 const graph = compileGraphOrThrow({ declaration });
 
+const participants = {
+	email: {
+		prepare: () => ({ kind: 'success' as const, value: undefined }),
+		commit: () => ({ kind: 'success' as const, value: undefined }),
+		compensate: () => ({ kind: 'success' as const, value: undefined }),
+	},
+	write: {
+		prepare: () => ({ kind: 'success' as const, value: undefined }),
+		commit: () => ({ kind: 'success' as const, value: undefined }),
+		compensate: () => ({ kind: 'success' as const, value: undefined }),
+	},
+} as const;
+
 const middleware: NodeMiddlewareFor<
 	Inputs,
 	Nodes,
@@ -143,6 +156,7 @@ const assertScheduleRegistration = (): void => {
 		graph,
 		inputs: { source: 'source' },
 		capabilities: { token: 'capability' },
+		participants,
 		middleware: [middleware],
 	});
 };
@@ -187,6 +201,7 @@ const assertDirectScheduleValidation = (): void => {
 		graph,
 		inputs: { source: 'source' },
 		capabilities: { token: 'capability' },
+		participants,
 		// @ts-expect-error direct registration cannot emit an undeclared effect.
 		middleware: invalidDirectEffect,
 	});
@@ -194,6 +209,7 @@ const assertDirectScheduleValidation = (): void => {
 		graph,
 		inputs: { source: 'source' },
 		capabilities: { token: 'capability' },
+		participants,
 		// @ts-expect-error direct after output must match the selected node.
 		middleware: invalidDirectOutput,
 	});
@@ -201,6 +217,7 @@ const assertDirectScheduleValidation = (): void => {
 		graph,
 		inputs: { source: 'source' },
 		capabilities: { token: 'capability' },
+		participants,
 		// @ts-expect-error direct phase state must match its before result.
 		middleware: invalidDirectState,
 	});

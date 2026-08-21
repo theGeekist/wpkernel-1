@@ -10,12 +10,25 @@ import type {
 import { compileNodeMiddleware } from '../middleware/compile.js';
 import type { NodeMiddlewareRegistration } from '../middleware/types.js';
 import { compileRunObservers } from '../observers/dispatcher.js';
+import {
+	compileEffectParticipants,
+	createEffectJournalRuntime,
+} from '../effects/index.js';
+import { settleGraphEffects } from '../effects/outcome.js';
 import { driveScheduler, listenForAbort } from './engine.js';
 import { GraphSchedulerError } from './errors.js';
 import { ownGraphInputs } from './ownership.js';
 import { addReadyNode, createReadyQueue } from './ready-queue.js';
-import type { ErasedExecutor, SchedulerState } from './state.js';
-import type { ScheduleGraphOptions, ScheduleGraphResult } from './types.js';
+import type {
+	ErasedExecutor,
+	ErasedScheduleOutcome,
+	SchedulerState,
+} from './state.js';
+import type {
+	RunOutcome,
+	ScheduleGraphOptions,
+	ScheduleGraphResult,
+} from './types.js';
 
 const executorTable = (
 	graph: ErasedGraph
@@ -42,6 +55,7 @@ const createState = <TEffects extends EffectRegistry>(options: {
 	readonly executors: ReadonlyMap<string, ErasedExecutor>;
 	readonly middleware: SchedulerState<TEffects>['middleware'];
 	readonly observers: SchedulerState<TEffects>['observers'];
+	readonly journal: SchedulerState<TEffects>['journal'];
 }): SchedulerState<TEffects> => {
 	const nodes = new Map<
 		string,
@@ -71,6 +85,7 @@ const createState = <TEffects extends EffectRegistry>(options: {
 		executors: options.executors,
 		middleware: options.middleware,
 		observers: options.observers,
+		journal: options.journal,
 		nodes,
 		ready,
 		active: 0,
@@ -79,10 +94,68 @@ const createState = <TEffects extends EffectRegistry>(options: {
 	};
 };
 
+const withObserverFailures = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>,
+	outcome: RunOutcome<
+		NodeRegistry,
+		Readonly<Record<string, GraphValue>>,
+		TEffects
+	>
+): RunOutcome<NodeRegistry, Readonly<Record<string, GraphValue>>, TEffects> =>
+	Object.freeze({
+		...outcome,
+		observerFailures: state.observers.failures(),
+	});
+
+const finishRun = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>,
+	outcome: RunOutcome<
+		NodeRegistry,
+		Readonly<Record<string, GraphValue>>,
+		TEffects
+	>
+):
+	| RunOutcome<NodeRegistry, Readonly<Record<string, GraphValue>>, TEffects>
+	| Promise<
+			RunOutcome<
+				NodeRegistry,
+				Readonly<Record<string, GraphValue>>,
+				TEffects
+			>
+	  > => {
+	const delivery = state.observers.publishTerminal(outcome.kind);
+	return delivery
+		? delivery.then(() => withObserverFailures(state, outcome))
+		: withObserverFailures(state, outcome);
+};
+
+const settleScheduled = <TEffects extends EffectRegistry>(
+	state: SchedulerState<TEffects>,
+	outcome: ErasedScheduleOutcome<TEffects>
+):
+	| RunOutcome<NodeRegistry, Readonly<Record<string, GraphValue>>, TEffects>
+	| Promise<
+			RunOutcome<
+				NodeRegistry,
+				Readonly<Record<string, GraphValue>>,
+				TEffects
+			>
+	  > => {
+	const settled = settleGraphEffects({
+		runtime: state.journal,
+		graph: outcome,
+		signal: state.signal,
+	});
+	return settled instanceof Promise
+		? settled.then((result) => finishRun(state, result))
+		: finishRun(state, settled);
+};
+
 /**
  * Schedules one compiled immutable graph directly from dependency readiness.
- * Executor and middleware phase thenables promote node evaluation. Observer
- * thenables never gate admission and may promote only terminal settlement.
+ * Executor, middleware and prepare thenables promote node evaluation. Commit
+ * and compensation thenables promote journal settlement. Observer thenables
+ * never gate work and may promote only terminal delivery.
  *
  * @param options - Compiled graph, admitted inputs, capabilities and signal.
  */
@@ -93,6 +166,7 @@ export const scheduleGraph = <
 	TEffects extends EffectRegistry,
 	TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
+	const TParticipants extends Readonly<Record<PropertyKey, unknown>>,
 	const TMiddleware extends readonly NodeMiddlewareRegistration[],
 >(
 	options: ScheduleGraphOptions<
@@ -102,6 +176,7 @@ export const scheduleGraph = <
 		TEffects,
 		TProjection,
 		TCapabilities,
+		TParticipants,
 		TMiddleware
 	>
 ): ScheduleGraphResult<TNodes, TEffects, TProjection> => {
@@ -111,23 +186,31 @@ export const scheduleGraph = <
 		inputKeys: graph.inputKeys,
 	});
 	const signal = options.signal ?? new AbortController().signal;
+	const observers = compileRunObservers({ observers: options.observers });
+	const executors = executorTable(graph);
+	const participants = compileEffectParticipants({
+		graph,
+		participants: options.participants,
+	});
 	const state = createState<TEffects>({
 		graph,
 		inputs,
 		capabilities: options.capabilities,
 		signal,
-		executors: executorTable(graph),
+		executors,
 		middleware: compileNodeMiddleware({
 			graph,
 			middleware: options.middleware,
 		}),
-		observers: compileRunObservers({ observers: options.observers }),
+		observers,
+		journal: createEffectJournalRuntime({ participants, observers }),
 	});
 	listenForAbort(state);
 	const immediate = driveScheduler(state);
-	return (immediate ?? state.completion!.promise) as ScheduleGraphResult<
-		TNodes,
-		TEffects,
-		TProjection
-	>;
+	const complete = immediate
+		? settleScheduled(state, immediate)
+		: state.completion!.promise.then((outcome) =>
+				settleScheduled(state, outcome)
+			);
+	return complete as ScheduleGraphResult<TNodes, TEffects, TProjection>;
 };

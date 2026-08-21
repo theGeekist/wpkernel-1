@@ -4,13 +4,21 @@ import type {
 	NodeInvocation,
 } from '../graph/types.js';
 import type { ErasedNodeMiddleware } from '../middleware/types.js';
+import type {
+	EffectJournalFailure,
+	EffectJournalRuntime,
+} from '../effects/types.js';
 import type { ErasedExecutor } from './state.js';
 import type { PendingEffect, PendingPause } from './types.js';
 
-export interface NodeEvaluationFailure {
-	readonly kind: 'declared' | 'thrown' | 'contract';
-	readonly error: unknown;
-}
+export type NodeEvaluationFailure =
+	| { readonly kind: 'declared'; readonly error: unknown }
+	| { readonly kind: 'thrown'; readonly error: unknown }
+	| { readonly kind: 'contract'; readonly error: unknown }
+	| {
+			readonly kind: 'effect';
+			readonly error: EffectJournalFailure<EffectRegistry>;
+	  };
 
 interface EvaluationProjection<TEffects extends EffectRegistry> {
 	readonly effects: readonly PendingEffect<TEffects>[];
@@ -43,7 +51,9 @@ export interface EvaluationProgress<TEffects extends EffectRegistry> {
 	readonly effects: readonly PendingEffect<TEffects>[];
 }
 
-export interface EvaluationContext {
+export interface EvaluationContext<
+	TEffects extends EffectRegistry = EffectRegistry,
+> {
 	readonly node: string;
 	readonly nodeOrdinal: number;
 	readonly effectKeys: readonly string[];
@@ -55,6 +65,7 @@ export interface EvaluationContext {
 	>;
 	readonly middleware: readonly ErasedNodeMiddleware[];
 	readonly signal: AbortSignal;
+	readonly journal: EffectJournalRuntime<TEffects>;
 }
 
 export type CleanCancellation =
@@ -67,9 +78,16 @@ export interface NodeEvaluationSuccess {
 	readonly pause?: PendingPause;
 }
 
-export type EvaluationPhase =
+export type EvaluationPhase<TEffects extends EffectRegistry = EffectRegistry> =
 	| { kind: 'before'; cursor: number }
 	| { kind: 'node' }
+	| {
+			kind: 'prepare';
+			cursor: number;
+			readonly requests: readonly PendingEffect<TEffects>[];
+			readonly next: EvaluationPhase<TEffects>;
+			readonly failureDisposition: 'error' | 'after';
+	  }
 	| {
 			kind: 'after';
 			cursor: number;
@@ -91,8 +109,9 @@ export type EvaluationPhase =
 	  };
 
 export interface EvaluationRuntime<TEffects extends EffectRegistry> {
-	readonly context: EvaluationContext;
+	readonly context: EvaluationContext<TEffects>;
 	readonly entered: EnteredMiddleware[];
 	readonly effects: PendingEffect<TEffects>[];
-	phase: EvaluationPhase;
+	nextEffectOrdinal: number;
+	phase: EvaluationPhase<TEffects>;
 }

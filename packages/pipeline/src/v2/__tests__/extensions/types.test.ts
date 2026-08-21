@@ -64,6 +64,14 @@ const declaration: GraphDeclaration<
 	},
 };
 
+const participants = {
+	email: {
+		prepare: () => ({ kind: 'success' as const, value: undefined }),
+		commit: () => ({ kind: 'success' as const, value: undefined }),
+		compensate: () => ({ kind: 'success' as const, value: undefined }),
+	},
+} as const;
+
 const assertPreservedRegistryResult = async (): Promise<void> => {
 	const registry = createGraphExtensionRegistry({ declaration });
 	const result = await registry.compile();
@@ -84,6 +92,7 @@ const assertPreservedRegistryResult = async (): Promise<void> => {
 		graph: exact,
 		inputs: { source: 'source' },
 		capabilities: { token: 'capability' },
+		participants,
 	});
 };
 
@@ -206,6 +215,7 @@ describe('v2 graph extension public types', () => {
 			graph: exact,
 			inputs: { source: 'source' },
 			capabilities: { token: 'capability' },
+			participants,
 		});
 		expect(scheduled).not.toBeInstanceOf(Promise);
 		const outcome = await scheduled;

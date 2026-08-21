@@ -1,4 +1,4 @@
-import type { ErasedScheduleOutcome } from '../../scheduler/state.js';
+import type { ErasedRunOutcome } from '../../scheduler/state.js';
 import type { EffectRegistry } from '../../graph/types.js';
 import {
 	compileTestGraph,
@@ -18,9 +18,9 @@ const pause = (reason: string) => ({
 
 const expectAsync = (
 	value:
-		| ErasedScheduleOutcome<EffectRegistry>
-		| Promise<ErasedScheduleOutcome<EffectRegistry>>
-): Promise<ErasedScheduleOutcome<EffectRegistry>> => {
+		| ErasedRunOutcome<EffectRegistry>
+		| Promise<ErasedRunOutcome<EffectRegistry>>
+): Promise<ErasedRunOutcome<EffectRegistry>> => {
 	if (!(value instanceof Promise)) {
 		throw new Error('Expected asynchronous scheduling.');
 	}

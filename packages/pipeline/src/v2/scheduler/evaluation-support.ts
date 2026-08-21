@@ -4,34 +4,21 @@ import type {
 	EvaluationContext,
 	NodeEvaluationFailure,
 } from './evaluation-types.js';
-import {
-	observeParticipant,
-	type ObservedParticipant,
-} from './maybe-promise.js';
+import type { EffectRegistry } from '../graph/types.js';
+import { invokeParticipant } from './maybe-promise.js';
 
 export const freezeArray = <T>(values: readonly T[]): readonly T[] =>
 	Object.freeze([...values]);
 
-export const invokeParticipant = <T>(
-	participant: (...options: never[]) => unknown,
-	options: unknown
-): ObservedParticipant<T> => {
-	let returned: unknown;
-	try {
-		returned = Reflect.apply(participant, undefined, [options]);
-	} catch (error) {
-		return { kind: 'failed', error };
-	}
-	return observeParticipant<T>(returned);
-};
+export { invokeParticipant };
 
 export const enterMiddleware = (
 	middleware: ErasedNodeMiddleware,
 	state: unknown
 ): EnteredMiddleware => ({ middleware, state });
 
-export const enteredOptions = (
-	context: EvaluationContext,
+export const enteredOptions = <TEffects extends EffectRegistry>(
+	context: EvaluationContext<TEffects>,
 	entered: EnteredMiddleware
 ) =>
 	Object.freeze({
@@ -40,7 +27,11 @@ export const enteredOptions = (
 		state: entered.state,
 	});
 
-export const evaluationFailure = (
-	kind: NodeEvaluationFailure['kind'],
-	error: unknown
-): NodeEvaluationFailure => Object.freeze({ kind, error });
+export const evaluationFailure = <K extends NodeEvaluationFailure['kind']>(
+	kind: K,
+	error: Extract<NodeEvaluationFailure, { readonly kind: K }>['error']
+): Extract<NodeEvaluationFailure, { readonly kind: K }> =>
+	Object.freeze({ kind, error }) as Extract<
+		NodeEvaluationFailure,
+		{ readonly kind: K }
+	>;

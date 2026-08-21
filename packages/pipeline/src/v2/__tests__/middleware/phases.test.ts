@@ -360,6 +360,13 @@ describe('v2 single-node middleware interpretation', () => {
 		});
 		const result = runTestGraph({
 			graph,
+			participants: {
+				write: {
+					prepare: () => ({ kind: 'success', value: undefined }),
+					commit: () => ({ kind: 'success', value: undefined }),
+					compensate: () => ({ kind: 'success', value: undefined }),
+				},
+			},
 			middleware: [
 				{
 					node: 'node',

@@ -5,7 +5,9 @@ export class GraphSchedulerError extends Error {
 		| 'invalid-graph'
 		| 'invalid-node-result'
 		| 'invalid-middleware'
-		| 'invalid-observer';
+		| 'invalid-observer'
+		| 'invalid-participant'
+		| 'invalid-effect-result';
 
 	constructor(options: {
 		readonly code: GraphSchedulerError['code'];

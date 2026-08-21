@@ -48,6 +48,10 @@ export const compileErasedGraph = (options: {
 		anchors: validated.anchors,
 		ranks: topology.ranks,
 	});
-	retainExecutors({ graph, executors: validated.executors });
+	retainExecutors({
+		graph,
+		executors: validated.executors,
+		effectKeys: collected.effectKeys,
+	});
 	return { ok: true, graph };
 };

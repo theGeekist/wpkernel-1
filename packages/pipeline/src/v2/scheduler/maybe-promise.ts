@@ -56,3 +56,22 @@ export const observeParticipant = <T>(
 			}
 		: { kind: 'synchronous', value: value as T };
 };
+
+/**
+ * Invokes one participant without binding interpreter authority as `this`.
+ *
+ * @param participant - Participant phase callable.
+ * @param options     - Immutable phase options.
+ */
+export const invokeParticipant = <T>(
+	participant: (...options: never[]) => unknown,
+	options: unknown
+): ObservedParticipant<T> => {
+	let returned: unknown;
+	try {
+		returned = Reflect.apply(participant, undefined, [options]);
+	} catch (error) {
+		return { kind: 'failed', error };
+	}
+	return observeParticipant<T>(returned);
+};

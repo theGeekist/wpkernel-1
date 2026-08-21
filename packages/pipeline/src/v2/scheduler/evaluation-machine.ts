@@ -1,133 +1,52 @@
 import type { EffectRegistry, MaybePromise } from '../graph/types.js';
+import { prepareEffect } from '../effects/runtime.js';
 import {
 	ownMiddlewareAfterResult,
 	ownMiddlewareBeforeResult,
-	ownMiddlewareCleanupResult,
 } from '../middleware/ownership.js';
 import type { ErasedNodeMiddleware } from '../middleware/types.js';
 import { GraphSchedulerError } from './errors.js';
 import type {
-	CleanCancellation,
-	EnteredMiddleware,
-	EvaluationContext,
 	EvaluationPhase,
 	EvaluationRuntime,
 	NodeEvaluation,
-	NodeEvaluationFailure,
 	NodeEvaluationSuccess,
 } from './evaluation-types.js';
 import {
-	enteredOptions,
 	enterMiddleware,
 	evaluationFailure as failure,
-	freezeArray,
 	invokeParticipant,
 } from './evaluation-support.js';
+import {
+	appendEffects,
+	beginCancel,
+	beginError,
+	beginPreparation,
+	cancelledBySignal,
+	cleanupFailure,
+	completeCancelled,
+	completeFailure,
+	completeSuccess,
+	participantOptions,
+} from './evaluation-transitions.js';
 import type { ObservedParticipant } from './maybe-promise.js';
 import { ownNodeResult } from './ownership.js';
-import type { PendingEffect } from './types.js';
 
 type BeforePhase = Extract<EvaluationPhase, { kind: 'before' }>;
-type AfterPhase = Extract<EvaluationPhase, { kind: 'after' }>;
+type AfterPhase<TEffects extends EffectRegistry> = Extract<
+	EvaluationPhase<TEffects>,
+	{ kind: 'after' }
+>;
+type PreparePhase<TEffects extends EffectRegistry> = Extract<
+	EvaluationPhase<TEffects>,
+	{ kind: 'prepare' }
+>;
 type ErrorPhase = Extract<EvaluationPhase, { kind: 'error' }>;
 type CancelPhase = Extract<EvaluationPhase, { kind: 'cancel' }>;
 type EvaluationAdvance<TEffects extends EffectRegistry> =
 	| NodeEvaluation<TEffects>
 	| Promise<NodeEvaluation<TEffects>>
 	| undefined;
-
-const cleanupFailure = (
-	context: EvaluationContext,
-	phase: 'error' | 'cancel',
-	value: unknown
-): NodeEvaluationFailure | undefined => {
-	const invalid = ownMiddlewareCleanupResult({
-		value,
-		node: context.node,
-		phase,
-	});
-	return invalid ? failure('contract', invalid) : undefined;
-};
-
-const appendEffects = <TEffects extends EffectRegistry>(
-	runtime: EvaluationRuntime<TEffects>,
-	effects: readonly PendingEffect<TEffects>[]
-): void => {
-	for (const effect of effects) {
-		runtime.effects.push(effect);
-	}
-};
-
-const beginError = <TEffects extends EffectRegistry>(
-	runtime: EvaluationRuntime<TEffects>,
-	primary: NodeEvaluationFailure,
-	secondary: readonly NodeEvaluationFailure[] = []
-): void => {
-	runtime.phase = {
-		kind: 'error',
-		cursor: runtime.entered.length - 1,
-		primary,
-		secondary: [...secondary],
-	};
-};
-
-const beginCancel = <TEffects extends EffectRegistry>(
-	runtime: EvaluationRuntime<TEffects>,
-	clean: CleanCancellation | NodeEvaluationSuccess
-): void => {
-	runtime.phase = {
-		kind: 'cancel',
-		cursor: runtime.entered.length - 1,
-		failures: [],
-		clean,
-	};
-};
-
-const cancelledBySignal = (context: EvaluationContext): CleanCancellation => ({
-	reasonPresent: true,
-	reason: context.signal.reason,
-});
-
-const participantOptions = (
-	context: EvaluationContext,
-	entered: EnteredMiddleware,
-	fields: Readonly<Record<string, unknown>>
-): Readonly<Record<string, unknown>> =>
-	Object.freeze({ ...enteredOptions(context, entered), ...fields });
-
-const finalEffects = <TEffects extends EffectRegistry>(
-	runtime: EvaluationRuntime<TEffects>
-): readonly PendingEffect<TEffects>[] => freezeArray(runtime.effects);
-
-const completeSuccess = <TEffects extends EffectRegistry>(
-	runtime: EvaluationRuntime<TEffects>,
-	success: NodeEvaluationSuccess
-): NodeEvaluation<TEffects> =>
-	Object.freeze({ ...success, effects: finalEffects(runtime) });
-
-const completeCancelled = <TEffects extends EffectRegistry>(
-	runtime: EvaluationRuntime<TEffects>,
-	cancelled: CleanCancellation
-): NodeEvaluation<TEffects> =>
-	Object.freeze({
-		kind: 'cancelled',
-		effects: finalEffects(runtime),
-		...(cancelled.reasonPresent ? { reason: cancelled.reason } : {}),
-	});
-
-const completeFailure = <TEffects extends EffectRegistry>(options: {
-	readonly runtime: EvaluationRuntime<TEffects>;
-	readonly failureClass: 'graph' | 'cancel';
-	readonly primary: NodeEvaluationFailure;
-	readonly secondary: readonly NodeEvaluationFailure[];
-}): NodeEvaluation<TEffects> =>
-	Object.freeze({
-		kind: 'failure',
-		failureClass: options.failureClass,
-		effects: finalEffects(options.runtime),
-		primaryFailure: options.primary,
-		secondaryFailures: freezeArray(options.secondary),
-	});
 
 const processBeforeValue = <TEffects extends EffectRegistry>(options: {
 	readonly runtime: EvaluationRuntime<TEffects>;
@@ -140,7 +59,7 @@ const processBeforeValue = <TEffects extends EffectRegistry>(options: {
 		value: options.value,
 		node: runtime.context.node,
 		nodeOrdinal: runtime.context.nodeOrdinal,
-		effectOrdinalStart: runtime.effects.length,
+		effectOrdinalStart: runtime.nextEffectOrdinal,
 		effectKeys: runtime.context.effectKeys,
 	});
 	if (!owned.ok) {
@@ -152,8 +71,12 @@ const processBeforeValue = <TEffects extends EffectRegistry>(options: {
 		beginCancel(runtime, cancelledBySignal(runtime.context));
 		return;
 	}
-	appendEffects(runtime, owned.effects);
-	runtime.phase = { kind: 'before', cursor: options.nextCursor };
+	beginPreparation({
+		runtime,
+		requests: owned.effects,
+		next: { kind: 'before', cursor: options.nextCursor },
+		failureDisposition: 'error',
+	});
 };
 
 const processNodeValue = <TEffects extends EffectRegistry>(
@@ -165,7 +88,7 @@ const processNodeValue = <TEffects extends EffectRegistry>(
 		node: runtime.context.node,
 		nodeOrdinal: runtime.context.nodeOrdinal,
 		effectKeys: runtime.context.effectKeys,
-		effectOrdinalStart: runtime.effects.length,
+		effectOrdinalStart: runtime.nextEffectOrdinal,
 	});
 	if (result.kind === 'failure') {
 		beginError(runtime, failure('declared', result.error));
@@ -179,16 +102,23 @@ const processNodeValue = <TEffects extends EffectRegistry>(
 		processDeclaredCancellation(runtime, result);
 		return;
 	}
-	if (!runtime.context.signal.aborted) {
-		appendEffects(runtime, result.effects);
-	}
-	runtime.phase = {
+	const next: AfterPhase<TEffects> = {
 		kind: 'after',
 		cursor: runtime.entered.length - 1,
 		output: result.output,
 		...(result.pause ? { pause: result.pause } : {}),
 		failures: [],
 	};
+	if (runtime.context.signal.aborted) {
+		runtime.phase = next;
+		return;
+	}
+	beginPreparation({
+		runtime,
+		requests: result.effects,
+		next,
+		failureDisposition: 'error',
+	});
 };
 
 const processDeclaredCancellation = <TEffects extends EffectRegistry>(
@@ -218,22 +148,55 @@ const processDeclaredCancellation = <TEffects extends EffectRegistry>(
 
 const processAfterValue = <TEffects extends EffectRegistry>(options: {
 	readonly runtime: EvaluationRuntime<TEffects>;
-	readonly phase: AfterPhase;
+	readonly phase: AfterPhase<TEffects>;
 	readonly value: unknown;
 }): void => {
 	const owned = ownMiddlewareAfterResult<TEffects>({
 		value: options.value,
 		node: options.runtime.context.node,
 		nodeOrdinal: options.runtime.context.nodeOrdinal,
-		effectOrdinalStart: options.runtime.effects.length,
+		effectOrdinalStart: options.runtime.nextEffectOrdinal,
 		effectKeys: options.runtime.context.effectKeys,
 	});
 	if (!owned.ok) {
 		options.phase.failures.push(failure('contract', owned.error));
-	} else if (!options.runtime.context.signal.aborted) {
-		appendEffects(options.runtime, owned.effects);
+		options.phase.cursor -= 1;
+		return;
 	}
 	options.phase.cursor -= 1;
+	if (options.runtime.context.signal.aborted) {
+		return;
+	}
+	beginPreparation({
+		runtime: options.runtime,
+		requests: owned.effects,
+		next: options.phase,
+		failureDisposition: 'after',
+	});
+};
+
+const processPreparation = <TEffects extends EffectRegistry>(options: {
+	readonly runtime: EvaluationRuntime<TEffects>;
+	readonly phase: PreparePhase<TEffects>;
+	readonly result: Awaited<ReturnType<typeof prepareEffect<TEffects>>>;
+}): void => {
+	if (options.result.ok) {
+		appendEffects(options.runtime, [
+			options.phase.requests[options.phase.cursor]!,
+		]);
+		options.phase.cursor += 1;
+		return;
+	}
+	const effectFailure = failure('effect', options.result.failure);
+	if (
+		options.phase.failureDisposition === 'after' &&
+		options.phase.next.kind === 'after'
+	) {
+		options.phase.next.failures.push(effectFailure);
+		options.runtime.phase = options.phase.next;
+		return;
+	}
+	beginError(options.runtime, effectFailure);
 };
 
 const resumeParticipant = <T, TEffects extends EffectRegistry>(options: {
@@ -314,9 +277,44 @@ const advanceNode = <TEffects extends EffectRegistry>(
 		onFailure: (error) => beginError(runtime, failure('thrown', error)),
 	});
 
+const advancePrepare = <TEffects extends EffectRegistry>(
+	runtime: EvaluationRuntime<TEffects>,
+	phase: PreparePhase<TEffects>
+): EvaluationAdvance<TEffects> => {
+	if (runtime.context.signal.aborted) {
+		if (phase.next.kind === 'after' && phase.next.failures.length > 0) {
+			beginError(
+				runtime,
+				phase.next.failures[0]!,
+				phase.next.failures.slice(1)
+			);
+		} else {
+			beginCancel(runtime, cancelledBySignal(runtime.context));
+		}
+		return undefined;
+	}
+	if (phase.cursor >= phase.requests.length) {
+		runtime.phase = phase.next;
+		return undefined;
+	}
+	const prepared = prepareEffect({
+		runtime: runtime.context.journal,
+		effect: phase.requests[phase.cursor]!,
+		signal: runtime.context.signal,
+	});
+	if (prepared instanceof Promise) {
+		return prepared.then((result) => {
+			processPreparation({ runtime, phase, result });
+			return driveEvaluation(runtime);
+		});
+	}
+	processPreparation({ runtime, phase, result: prepared });
+	return undefined;
+};
+
 const completeAfter = <TEffects extends EffectRegistry>(
 	runtime: EvaluationRuntime<TEffects>,
-	phase: AfterPhase
+	phase: AfterPhase<TEffects>
 ): EvaluationAdvance<TEffects> => {
 	if (phase.failures.length > 0) {
 		beginError(runtime, phase.failures[0]!, phase.failures.slice(1));
@@ -336,7 +334,7 @@ const completeAfter = <TEffects extends EffectRegistry>(
 
 const advanceAfter = <TEffects extends EffectRegistry>(
 	runtime: EvaluationRuntime<TEffects>,
-	phase: AfterPhase
+	phase: AfterPhase<TEffects>
 ): EvaluationAdvance<TEffects> => {
 	while (
 		phase.cursor >= 0 &&
@@ -471,6 +469,9 @@ export const driveEvaluation = <TEffects extends EffectRegistry>(
 				break;
 			case 'node':
 				advanced = advanceNode(runtime);
+				break;
+			case 'prepare':
+				advanced = advancePrepare(runtime, phase);
 				break;
 			case 'after':
 				advanced = advanceAfter(runtime, phase);

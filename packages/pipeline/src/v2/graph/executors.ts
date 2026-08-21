@@ -1,18 +1,25 @@
 import type { ErasedGraph } from './types.js';
 
-const tables = new WeakMap<object, Readonly<Record<string, unknown>>>();
+interface GraphRuntimeAuthority {
+	readonly executors: Readonly<Record<string, unknown>>;
+	readonly effectKeys: readonly string[];
+}
+
+const authorities = new WeakMap<object, GraphRuntimeAuthority>();
 
 /**
  * Scheduler-only executor table registration.
  *
  * @internal
- * @param options           - Private executor ownership input.
- * @param options.graph     - Compiled graph identity.
- * @param options.executors - Complete keyed executor table.
+ * @param options            - Private executor ownership input.
+ * @param options.graph      - Compiled graph identity.
+ * @param options.executors  - Complete keyed executor table.
+ * @param options.effectKeys - Complete declared effect-key set.
  */
 export const retainExecutors = (options: {
 	readonly graph: object;
 	readonly executors: Readonly<Record<string, unknown>>;
+	readonly effectKeys: readonly string[];
 }): void => {
 	const snapshot: Record<string, unknown> = Object.create(null) as Record<
 		string,
@@ -21,7 +28,13 @@ export const retainExecutors = (options: {
 	for (const key of Object.keys(options.executors)) {
 		snapshot[key] = options.executors[key];
 	}
-	tables.set(options.graph, Object.freeze(snapshot));
+	authorities.set(
+		options.graph,
+		Object.freeze({
+			executors: Object.freeze(snapshot),
+			effectKeys: Object.freeze([...options.effectKeys]),
+		})
+	);
 };
 
 /**
@@ -35,4 +48,15 @@ export const retainExecutors = (options: {
 export const getGraphExecutor = (options: {
 	readonly graph: ErasedGraph;
 	readonly key: string;
-}): unknown => tables.get(options.graph)?.[options.key];
+}): unknown => authorities.get(options.graph)?.executors[options.key];
+
+/**
+ * Scheduler-only declared effect-key lookup.
+ *
+ * @internal
+ * @param options       - Graph-owned effect lookup.
+ * @param options.graph - Compiled graph authority.
+ */
+export const getGraphEffectKeys = (options: {
+	readonly graph: ErasedGraph;
+}): readonly string[] | undefined => authorities.get(options.graph)?.effectKeys;
