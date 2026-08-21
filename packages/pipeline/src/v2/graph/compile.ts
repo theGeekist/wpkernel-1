@@ -1,6 +1,6 @@
 import { compileErasedGraph } from './compiler.js';
 import { diagnostic } from './diagnostics.js';
-import { GraphCompilationError } from './errors.js';
+import { createGraphCompilationError } from './errors.js';
 import { inspectRecord } from './inspection.js';
 import type {
 	CompileGraphOptions,
@@ -123,7 +123,7 @@ export const compileGraphOrThrow = <
 ): Graph<TInputs, TNodes, TEdges, TEffects, TProjection, TCapabilities> => {
 	const result = compileGraph(options);
 	if (!result.ok) {
-		throw new GraphCompilationError({ diagnostics: result.diagnostics });
+		throw createGraphCompilationError({ diagnostics: result.diagnostics });
 	}
 	return result.graph;
 };

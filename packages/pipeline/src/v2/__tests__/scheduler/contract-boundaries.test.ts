@@ -1,5 +1,9 @@
+import { deserialize, serialize } from 'node:v8';
 import type { ErasedGraph, GraphValue } from '../../graph/types.js';
-import { GraphSchedulerError, scheduleGraph } from '../../scheduler/index.js';
+import {
+	createGraphSchedulerError,
+	scheduleGraph,
+} from '../../scheduler/index.js';
 import {
 	compileTestGraph,
 	controlled,
@@ -16,23 +20,105 @@ const expectContractFailure = (value: unknown): void => {
 	});
 };
 
+const rejectedGraph = (value: unknown): unknown => {
+	try {
+		runTestGraph({ graph: value as ErasedGraph });
+	} catch (error) {
+		return error;
+	}
+	throw new Error('Expected graph authority rejection.');
+};
+
 describe('v2 scheduler contract boundaries', () => {
-	it('exports the scheduler surface through its module index', () => {
+	it('exports a frozen tagged native scheduler error factory', () => {
+		const cause = new Error('cause');
+		const error = createGraphSchedulerError({
+			code: 'invalid-input',
+			message: 'x',
+			cause,
+		});
+
 		expect(scheduleGraph).toEqual(expect.any(Function));
-		expect(
-			new GraphSchedulerError({ code: 'invalid-input', message: 'x' })
-		).toMatchObject({ name: 'GraphSchedulerError', code: 'invalid-input' });
+		expect(error).toBeInstanceOf(Error);
+		expect(Object.getPrototypeOf(error)).toBe(Error.prototype);
+		expect(Object.isFrozen(error)).toBe(true);
+		expect(error).toMatchObject({
+			name: 'GraphSchedulerError',
+			code: 'invalid-input',
+			message: 'x',
+			cause,
+		});
+		expect(Object.hasOwn(error, 'name')).toBe(true);
+		expect(Object.hasOwn(error, 'code')).toBe(true);
 	});
 
-	it('rejects a graph identity without its private executor authority', () => {
+	it('installs a data-only non-enumerable graph type witness', () => {
 		const graph = compileTestGraph({
 			nodes: [{ key: 'a', executor: () => success('a') }],
 		});
-		const forged = { ...graph } as ErasedGraph;
+		const symbols = Object.getOwnPropertySymbols(graph);
+		const descriptor = Object.getOwnPropertyDescriptor(graph, symbols[0]!);
+		const witness = Reflect.get(graph, symbols[0]!);
 
-		expect(() => runTestGraph({ graph: forged })).toThrow(
-			'Compiled graph executor "a" is unavailable.'
+		expect(symbols).toHaveLength(1);
+		expect(descriptor).toMatchObject({
+			configurable: false,
+			enumerable: false,
+			writable: false,
+		});
+		expect(Object.isFrozen(witness)).toBe(true);
+		expect(witness).toEqual({
+			inputs: { value: undefined },
+			nodes: { value: undefined },
+			edges: { value: undefined },
+			effects: { value: undefined },
+			outputs: { value: undefined },
+			capabilities: { value: undefined },
+		});
+		expect(
+			Object.values(witness as Record<string, unknown>).every((cell) =>
+				Object.isFrozen(cell)
+			)
+		).toBe(true);
+		expect(JSON.stringify(graph)).not.toContain('WPKernel compiled graph');
+	});
+
+	it('rejects every copied graph identity despite reflected type witness data', () => {
+		const graph = compileTestGraph({
+			nodes: [{ key: 'a', executor: () => success('a') }],
+		});
+		const reflected = Object.freeze(
+			Object.defineProperties({}, Object.getOwnPropertyDescriptors(graph))
 		);
+		const literal = {
+			kind: graph.kind,
+			inputKeys: graph.inputKeys,
+			nodes: graph.nodes,
+			edges: graph.edges,
+			incoming: graph.incoming,
+			outgoing: graph.outgoing,
+			ranks: graph.ranks,
+			ordinals: graph.ordinals,
+			outputs: graph.outputs,
+			anchors: graph.anchors,
+			policy: graph.policy,
+		};
+		const candidates = [
+			literal,
+			{ ...graph },
+			deserialize(serialize(graph)),
+			JSON.parse(JSON.stringify(graph)),
+			new Proxy(graph, {}),
+			reflected,
+		];
+
+		for (const candidate of candidates) {
+			expect(rejectedGraph(candidate)).toMatchObject({
+				name: 'GraphSchedulerError',
+				code: 'invalid-graph',
+				message: 'Compiled graph executor "a" is unavailable.',
+			});
+		}
 	});
 
 	it.each([
@@ -204,7 +290,12 @@ describe('v2 scheduler contract boundaries', () => {
 				graph,
 				inputs: inputs as Readonly<Record<string, GraphValue>>,
 			})
-		).toThrow(GraphSchedulerError);
+		).toThrow(
+			expect.objectContaining({
+				name: 'GraphSchedulerError',
+				code: 'invalid-input',
+			})
+		);
 	});
 
 	it('marks a dependant blocked by its failed predecessor', () => {

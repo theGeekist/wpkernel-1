@@ -1,5 +1,5 @@
 import { inspectDenseArray } from '../graph/inspection.js';
-import { GraphSchedulerError } from '../scheduler/errors.js';
+import { createGraphSchedulerError } from '../scheduler/errors.js';
 import { observeParticipant } from '../scheduler/maybe-promise.js';
 import type {
 	EffectRunEvent,
@@ -29,7 +29,7 @@ const observerSnapshot = (value: unknown): readonly RunObserver[] => {
 		}
 		return Object.freeze([...inspected.value]) as readonly RunObserver[];
 	} catch (cause) {
-		throw new GraphSchedulerError({
+		throw createGraphSchedulerError({
 			code: 'invalid-observer',
 			message: 'Run observers must be a dense array of functions.',
 			cause,

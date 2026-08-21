@@ -5,7 +5,7 @@ import type {
 } from '../graph/types.js';
 import { evaluateNode } from './evaluation.js';
 import type { NodeEvaluation, NodeEvaluationFailure } from './evaluation.js';
-import { GraphSchedulerError } from './errors.js';
+import { createGraphSchedulerError } from './errors.js';
 import { finaliseSchedule } from './finalise.js';
 import { addReadyNode, readyNodeCount, takeReadyNodes } from './ready-queue.js';
 import type {
@@ -244,7 +244,7 @@ const normalisePauseConflicts = <TEffects extends EffectRegistry>(
 			node,
 			primary: Object.freeze({
 				kind: 'contract',
-				error: new GraphSchedulerError({
+				error: createGraphSchedulerError({
 					code: 'invalid-node-result',
 					message: `Node "${node}" returned a concurrent second pause request.`,
 				}),

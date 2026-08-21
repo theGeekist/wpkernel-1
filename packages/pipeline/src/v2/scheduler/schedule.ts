@@ -15,7 +15,7 @@ import {
 	createEffectJournalRuntime,
 } from '../effects/index.js';
 import { executeSchedulerState } from '../suspension/runtime.js';
-import { GraphSchedulerError } from './errors.js';
+import { createGraphSchedulerError } from './errors.js';
 import { ownGraphInputs } from './ownership.js';
 import { addReadyNode, createReadyQueue } from './ready-queue.js';
 import type { ErasedExecutor, SchedulerState } from './state.js';
@@ -28,7 +28,7 @@ const executorTable = (
 	for (const node of Object.values(graph.nodes)) {
 		const executor = getGraphExecutor({ graph, key: node.key });
 		if (typeof executor !== 'function') {
-			throw new GraphSchedulerError({
+			throw createGraphSchedulerError({
 				code: 'invalid-graph',
 				message: `Compiled graph executor "${node.key}" is unavailable.`,
 			});
@@ -116,7 +116,7 @@ export const scheduleGraph = <
 		TMiddleware
 	>
 ): ScheduleGraphResult<TNodes, TEffects, TProjection> => {
-	const graph = options.graph as ErasedGraph;
+	const graph = options.graph as unknown as ErasedGraph;
 	const inputs = ownGraphInputs({
 		value: options.inputs,
 		inputKeys: graph.inputKeys,

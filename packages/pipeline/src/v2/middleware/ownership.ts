@@ -1,6 +1,7 @@
 import { inspectRecord } from '../graph/inspection.js';
 import type { EffectRegistry } from '../graph/types.js';
-import { GraphSchedulerError } from '../scheduler/errors.js';
+import { createGraphSchedulerError } from '../scheduler/errors.js';
+import type { GraphSchedulerError } from '../scheduler/errors.js';
 import { ownEffectRequests } from '../scheduler/ownership.js';
 import type { PendingEffect } from '../scheduler/types.js';
 
@@ -18,7 +19,7 @@ const contractError = (options: {
 	readonly message: string;
 	readonly cause?: unknown;
 }): GraphSchedulerError =>
-	new GraphSchedulerError({
+	createGraphSchedulerError({
 		code: 'invalid-middleware',
 		message: `Middleware ${options.phase} phase for node "${options.node}" ${options.message}`,
 		...(options.cause === undefined ? {} : { cause: options.cause }),

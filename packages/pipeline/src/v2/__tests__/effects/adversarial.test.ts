@@ -1,4 +1,3 @@
-import { GraphSchedulerError } from '../../scheduler/errors.js';
 import type { RunEvent } from '../../observers/types.js';
 import {
 	compileTestGraph,
@@ -33,7 +32,10 @@ describe('v2 effect adversarial boundaries', () => {
 	it('validates and snapshots exact participant phase authority at admission', async () => {
 		const graph = effectGraph();
 		expect(() => runTestGraph({ graph, participants: {} })).toThrow(
-			GraphSchedulerError
+			expect.objectContaining({
+				name: 'GraphSchedulerError',
+				code: 'invalid-participant',
+			})
 		);
 		expect(() =>
 			runTestGraph({

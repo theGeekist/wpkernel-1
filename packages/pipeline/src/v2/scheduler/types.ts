@@ -174,8 +174,8 @@ export interface ScheduleGraphOptions<
 		TProjection,
 		TCapabilities
 	>;
-	readonly inputs: TInputs;
-	readonly capabilities: TCapabilities;
+	readonly inputs: NoInfer<TInputs>;
+	readonly capabilities: NoInfer<TCapabilities>;
 	readonly participants: TParticipants &
 		EffectParticipants<TEffects> &
 		Readonly<Record<Exclude<keyof TParticipants, keyof TEffects>, never>>;

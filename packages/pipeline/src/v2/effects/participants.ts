@@ -1,7 +1,7 @@
 import { inspectRecord } from '../graph/inspection.js';
 import { getGraphEffectKeys } from '../graph/executors.js';
 import type { ErasedGraph } from '../graph/types.js';
-import { GraphSchedulerError } from '../scheduler/errors.js';
+import { createGraphSchedulerError } from '../scheduler/errors.js';
 import type {
 	CompiledEffectParticipants,
 	ErasedEffectParticipant,
@@ -23,7 +23,7 @@ const inspectParticipant = (options: {
 			inspected.value.map(({ key, value }) => [key, value] as const)
 		);
 	} catch (cause) {
-		throw new GraphSchedulerError({
+		throw createGraphSchedulerError({
 			code: 'invalid-participant',
 			message: `Effect participant "${options.key}" must be an inspectable plain record.`,
 			cause,
@@ -31,7 +31,7 @@ const inspectParticipant = (options: {
 	}
 	for (const phase of phaseNames) {
 		if (typeof fields.get(phase) !== 'function') {
-			throw new GraphSchedulerError({
+			throw createGraphSchedulerError({
 				code: 'invalid-participant',
 				message: `Effect participant "${options.key}" requires a callable ${phase} phase.`,
 			});
@@ -63,7 +63,7 @@ export const compileEffectParticipants = (options: {
 		}
 		entries = inspected.value;
 	} catch (cause) {
-		throw new GraphSchedulerError({
+		throw createGraphSchedulerError({
 			code: 'invalid-participant',
 			message: 'Effect participants must be an inspectable plain record.',
 			cause,
@@ -71,7 +71,7 @@ export const compileEffectParticipants = (options: {
 	}
 	const declaredKeys = getGraphEffectKeys({ graph: options.graph });
 	if (!declaredKeys) {
-		throw new GraphSchedulerError({
+		throw createGraphSchedulerError({
 			code: 'invalid-graph',
 			message: 'Compiled graph effect authority is unavailable.',
 		});
@@ -79,7 +79,7 @@ export const compileEffectParticipants = (options: {
 	const declared = new Set(declaredKeys);
 	for (const { key } of entries) {
 		if (!declared.has(key)) {
-			throw new GraphSchedulerError({
+			throw createGraphSchedulerError({
 				code: 'invalid-participant',
 				message: `Effect participant "${key}" is not declared by the compiled graph.`,
 			});
@@ -93,7 +93,7 @@ export const compileEffectParticipants = (options: {
 	}
 	for (const key of declaredKeys) {
 		if (!participants[key]) {
-			throw new GraphSchedulerError({
+			throw createGraphSchedulerError({
 				code: 'invalid-participant',
 				message: `Effect participant "${key}" is required by the compiled graph.`,
 			});

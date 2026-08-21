@@ -1,4 +1,5 @@
-export { GraphSchedulerError } from './errors.js';
+export { createGraphSchedulerError } from './errors.js';
+export type { GraphSchedulerError } from './errors.js';
 export { scheduleGraph } from './schedule.js';
 export type {
 	GraphNodeFailure,

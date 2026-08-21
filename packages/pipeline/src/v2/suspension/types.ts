@@ -8,28 +8,41 @@ import type {
 	GraphValue,
 	MaybePromise,
 	NodeRegistry,
+	NodeTypes,
 } from '../graph/types.js';
 import type { RunObserverFailure } from '../observers/types.js';
 import type { PendingPause, RunOutcome } from '../scheduler/types.js';
+import type { suspensionBrand } from './brand.js';
 
-declare class SuspensionAuthority<
+interface SuspensionTypeWitness<
 	TNodes extends NodeRegistry,
 	TOutputs extends Readonly<Record<string, GraphValue>>,
 	TEffects extends EffectRegistry,
 > {
-	private readonly suspensionAuthority: {
-		readonly nodes: TNodes;
-		readonly outputs: TOutputs;
-		readonly effects: TEffects;
-	};
+	readonly nodes: InvariantTypeCell<NodeRegistryTypeWitness<TNodes>>;
+	readonly outputs: InvariantTypeCell<TOutputs>;
+	readonly effects: InvariantTypeCell<TEffects>;
 }
 
-/** Private, process-local, single-use authority with a diagnostic projection. */
+interface InvariantTypeCell<in out T> {
+	readonly value: T | undefined;
+}
+
+type NodeRegistryTypeWitness<TNodes> = {
+	readonly [K in keyof TNodes]: NodeTypes<TNodes[K]>;
+};
+
+/** Public diagnostic projection for private, process-local authority. */
 export type Suspension<
 	TNodes extends NodeRegistry,
 	TOutputs extends Readonly<Record<string, GraphValue>>,
 	TEffects extends EffectRegistry,
-> = SuspensionAuthority<TNodes, TOutputs, TEffects> & {
+> = {
+	readonly [suspensionBrand]: SuspensionTypeWitness<
+		TNodes,
+		TOutputs,
+		TEffects
+	>;
 	readonly pause: PendingPause;
 	readonly snapshot: RunDiagnostics;
 };
