@@ -44,14 +44,17 @@ P2-003 + P2-004
   -> P2-006 graph-frontier suspension and concurrent diagnostics
 
 P2-005 + P2-006
-  -> P2-007 v1 adapter and consumer integration
-       -> P2-008 TSDoc, authored docs and generated API
-            -> P2-009 packed qualification and 2.0.0 release
+  -> P2-012 class-free FP authority cleanup
+       -> P2-013 source TSDoc and authored public docs
+            -> P2-007 v1 adapter and consumer integration
+                 -> P2-008 generated API and site projection
+                      -> P2-009 packed qualification and 2.0.0 release
 ```
 
 P2-002 and P2-004 may run concurrently after P2-001. P2-005 and P2-006 may
-run concurrently after their shared runtime contracts settle. P2-007 owns the
-shared root exports and therefore integrates those lanes serially.
+run concurrently after their shared runtime contracts settle. P2-013 finishes
+source TSDoc and authored prose before P2-007 exposes the shared root. P2-008
+then regenerates the API projection from that integrated surface.
 
 ## Release meaning
 

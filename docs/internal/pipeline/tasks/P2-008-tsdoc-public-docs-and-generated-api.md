@@ -1,7 +1,7 @@
 ---
 architecture_version: 1
 id: P2-008
-title: Publish the v2 contract through TSDoc and authored documentation
+title: Generate and verify the v2 API documentation projection
 stage: qualification
 status: proposed
 priority: high
@@ -25,10 +25,6 @@ decision_dependencies:
 conflicts_with:
     - P2-009
 write_scope:
-    - packages/pipeline/src/**/*.ts
-    - packages/pipeline/README.md
-    - docs/packages/pipeline.md
-    - docs/packages/pipeline/**
     - docs/api/@wpkernel/**
 required_reading:
     - path: docs/internal/pipeline/contracts/v2-public-contract.md
@@ -48,31 +44,28 @@ review_owner: coordinator
 updated_at: 2026-08-19
 ---
 
-# P2-008: Publish the v2 contract through TSDoc and authored documentation
+# P2-008: Generate and verify the v2 API documentation projection
 
 ## Objective
 
-Make the implemented v2 contract legible without letting generated API output
-become the authoring surface.
+Regenerate and verify the API projection from the already reviewed source
+TSDoc after root integration. Generated output never becomes an authoring
+surface.
 
 ## Acceptance criteria
 
-- Every public v2 symbol has current source TSDoc and runnable examples.
-- Authored docs explain graph dataflow, concurrency, middleware, effects,
-  process-local suspension and host durability boundaries.
-- A v1 migration guide names every breaking semantic change.
-- The prose retains Pipeline's voice: direct claims, concrete typed examples,
-  explicit limits and no framework theatre.
-- Source TSDoc and authored pages are the authoring surfaces. The coordinator
-  regenerates the complete `docs/api/@wpkernel` projection; it is never
-  hand-edited or partially regenerated.
+- P2-013 source TSDoc and authored documentation remain the sole authoring
+  surfaces.
+- The coordinator regenerates the complete `docs/api/@wpkernel` projection; it
+  is never hand-edited or partially regenerated.
+- Every integrated public v2 symbol appears in the generated Pipeline API.
 - Site output contains the authored `/packages/pipeline.html` page and the
   generated `/api/@wpkernel/pipeline/README.html` package landing page.
 
 ## Verification
 
-`pnpm docs:api`, `pnpm docs:site`, route existence checks, example typechecks
-and an independent voice/accuracy review.
+`pnpm docs:api`, clean generated diff inspection, `pnpm docs:site`, route
+existence checks and API-surface completeness review.
 
-Suggested execution tier: fast projection after a balanced technical draft,
-then author review.
+Suggested execution tier: fast mechanical projection with independent
+completeness review.
