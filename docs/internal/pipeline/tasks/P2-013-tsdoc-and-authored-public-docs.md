@@ -17,7 +17,7 @@ base_sha: null
 branch: null
 worktree: null
 depends_on:
-    - P2-012
+    - P2-014
 decision_dependencies:
     - ADR-001
     - ADR-002
@@ -27,6 +27,7 @@ conflicts_with:
     - P2-012
 write_scope:
     - packages/pipeline/src/v2/**/*.ts
+    - packages/pipeline/src/v2/index.ts
     - packages/pipeline/README.md
     - docs/packages/pipeline.md
     - docs/packages/pipeline/**
@@ -60,11 +61,15 @@ with generic framework documentation.
 ## Acceptance criteria
 
 - Every intended public v2 symbol has current source TSDoc before root export.
+- `packages/pipeline/src/v2/index.ts` defines the reviewed intended surface
+  while it remains unreachable from the package root; P2-007 only integrates
+  that surface.
 - Authored docs explain graph dataflow, concurrency, middleware, effects,
   process-local suspension and host durability boundaries.
 - A v1 migration guide names every breaking semantic change.
-- Examples are concrete, typed and runnable against the pre-export v2 module
-  surface.
+- Examples are concrete and typed against the pre-export v2 barrel while
+  authored prose uses the future `@wpkernel/pipeline` root import rather than a
+  private source path.
 - The register matches v1: direct claims, precise limits, dry wit where it
   belongs, and no framework theatre or generic AI prose.
 - Generated API Markdown is not edited. P2-008 owns regeneration only after
