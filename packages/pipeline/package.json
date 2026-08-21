@@ -42,6 +42,7 @@
 		"typecheck:tests": "wpk-run-typecheck-tests"
 	},
 	"devDependencies": {
-		"@wpkernel/scripts": "workspace:*"
+		"@wpkernel/scripts": "workspace:*",
+		"fast-check": "^4.9.0"
 	}
 }
