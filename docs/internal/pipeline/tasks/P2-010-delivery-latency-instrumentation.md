@@ -54,6 +54,10 @@ This task is operational and does not block the Pipeline v2 release chain.
 - Independent semantic and documentation review began after implementation
   rather than alongside it.
 - Broad formatting and Task Graph schema repair occurred after the code patch.
+- The P2-013 commit hook spent roughly one minute in staged linting because
+  `normalize-punctuation.js` ignored the filenames supplied by `lint-staged`,
+  scanned all repository Markdown and rewrote 472 generated API files across
+  4,170 changed lines.
 - CPU-heavy lint and test gates were run concurrently, creating invalid timeout
   failures and requiring a serial rerun.
 - On 2026-08-18, the root lint gate took 13 minutes 10 seconds with three of
