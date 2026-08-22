@@ -37,31 +37,12 @@ scripts/workflow/sync-fork-main.sh
 - `FORK_BRANCH` and `UPSTREAM_BRANCH` remain configurable. The
   repository identities are deliberately fixed by the safety contract.
 
-## prerelease.ts
+## prerelease.ts retirement
 
-```
-pnpm exec tsx scripts/workflow/prerelease.ts [options]
-```
+`prerelease.ts` is permanently quarantined. It exits before reading or
+mutating repository state, including when passed its former flags. It cannot
+create commits or tags, push refs, publish packages, or stash or switch work.
 
-- Automates the hand-rolled prerelease flow directly on `${UPSTREAM_REMOTE:-upstream}/${UPSTREAM_BRANCH:-main}`.
-- Computes the next semver (defaults to `prerelease` bumps with `beta` preid, use `--mode patch` for patch+beta.0) and fans it out to every workspace via `scripts/release/bump-version.ts`.
-- Re-runs `pnpm docs:build` if the previous attempt failed so you can fix docs and resume without inventing a new semver.
-- Creates the release commit + tag locally on a temporary branch cloned from `${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}`, and optionally pushes (`--push`) and publishes to npm (`--publish`, uses `--publish-tag` or the preid).
-- Automatically stashes your current fork work (if dirty), switches to the upstream branch for the release, then restores your original branch and reminds you to `git stash pop` when finished.
-- Stores the target semver in `.release-next-version` until the workflow completes so reruns stay idempotent.
-
-Common flags:
-
-```
---mode <prerelease|patch>   # default prerelease
---preid <beta>              # prerelease identifier
---remote <upstream>         # remote to push/tags
---branch <main>             # branch tracking upstream
---push                      # push branch + tag to upstream when done
---publish                   # pnpm -r publish --tag <preid>
---publish-tag <tag>         # override npm dist-tag (default preid)
---version <semver>          # explicitly set the next version/resume
-```
-
-Promotion targets `theGeekist/wpkernel-1`; release PRs target
-`wpkernel/wpkernel`. Do not push directly to the release repository.
+Use `prepare-upstream-pr.sh` for the authoring-fork to upstream pull request,
+`sync-fork-main.sh` to synchronise the fork after the upstream merge, and the
+trusted Pipeline release workflow for packed qualification and publication.
