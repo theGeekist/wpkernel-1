@@ -363,6 +363,153 @@ describe('validateWPKernelConfig', () => {
 		);
 	});
 
+	it('rejects the same authoritative key in wp-post meta and taxonomies', () => {
+		const { reporter, child } = createMockReporter();
+		const config = createValidConfig();
+		config.resources.thing!.storage = {
+			mode: 'wp-post',
+			postType: 'thing',
+			meta: { shared: { type: 'string' } },
+			taxonomies: {
+				shared: { taxonomy: 'thing_shared' },
+			},
+		};
+
+		expect(() =>
+			validateWPKernelConfig(config, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).toThrow(WPKernelError);
+		expect(child.error).toHaveBeenCalledWith(
+			expect.stringContaining('authoritative wp-post field key "shared"'),
+			expect.objectContaining({
+				resourceName: 'thing',
+				key: 'shared',
+				existing: 'storage.meta',
+				claimant: 'storage.taxonomies',
+			})
+		);
+	});
+
+	it.each([
+		['status', 'meta'],
+		['title', 'taxonomy'],
+		['date_gmt', 'meta'],
+		['slug', 'meta'],
+		['page', 'taxonomy'],
+		['id', 'meta'],
+	] as const)(
+		'rejects reserved wp-post field %s claimed by %s',
+		(key, claimant) => {
+			const { reporter, child } = createMockReporter();
+			const config = createValidConfig();
+			config.resources.thing!.storage = {
+				mode: 'wp-post',
+				postType: 'thing',
+				meta:
+					claimant === 'meta'
+						? { [key]: { type: 'string' } }
+						: undefined,
+				taxonomies:
+					claimant === 'taxonomy'
+						? { [key]: { taxonomy: `thing_${key}` } }
+						: undefined,
+			};
+
+			expect(() =>
+				validateWPKernelConfig(config, {
+					reporter,
+					origin: 'wpk.config.ts',
+					sourcePath: '/tmp/wpk.config.ts',
+				})
+			).toThrow(WPKernelError);
+			expect(child.error).toHaveBeenCalledWith(
+				expect.stringContaining(`field key "${key}"`),
+				expect.objectContaining({ resourceName: 'thing', key })
+			);
+		}
+	);
+
+	it('accepts explicit wp-post slug identity as the canonical slug field', () => {
+		const { reporter } = createMockReporter();
+		const config = createValidConfig();
+		config.resources.thing!.identity = { type: 'string', param: 'slug' };
+		config.resources.thing!.routes.get = {
+			path: '/valid/v1/things/:slug',
+			method: 'GET',
+		};
+		config.resources.thing!.storage = {
+			mode: 'wp-post',
+			postType: 'thing',
+		};
+
+		expect(() =>
+			validateWPKernelConfig(config, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).not.toThrow();
+	});
+
+	it('accepts inferred wp-post slug identity as the canonical slug field', () => {
+		const { reporter } = createMockReporter();
+		const config = createValidConfig();
+		config.resources.thing!.identity = undefined;
+		config.resources.thing!.routes = {
+			get: {
+				path: '/valid/v1/things/:slug',
+				method: 'GET',
+			},
+		};
+		config.resources.thing!.storage = {
+			mode: 'wp-post',
+			postType: 'thing',
+		};
+
+		expect(() =>
+			validateWPKernelConfig(config, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).not.toThrow();
+	});
+
+	it('rejects a meta key claimed by the wp-post identity', () => {
+		const { reporter, child } = createMockReporter();
+		const config = createValidConfig();
+		config.resources.thing!.identity = { type: 'string', param: 'uuid' };
+		config.resources.thing!.routes.get = {
+			path: '/valid/v1/things/:uuid',
+			method: 'GET',
+		};
+		config.resources.thing!.storage = {
+			mode: 'wp-post',
+			postType: 'thing',
+			meta: { uuid: { type: 'string' } },
+		};
+
+		expect(() =>
+			validateWPKernelConfig(config, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).toThrow(WPKernelError);
+		expect(child.error).toHaveBeenCalledWith(
+			expect.stringContaining('field key "uuid"'),
+			expect.objectContaining({
+				resourceName: 'thing',
+				key: 'uuid',
+				existing: 'the resource identity',
+				claimant: 'storage.meta',
+			})
+		);
+	});
+
 	it('throws when adapters.php is not a function', () => {
 		const { reporter, child } = createMockReporter();
 

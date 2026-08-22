@@ -64,13 +64,20 @@ The current PHP executables duplicate transport, process and JSON assumptions, p
 
 ## File ownership
 
-Only edit this task, its declared write scope, work log and handoff. Request coordinator integration for shared exports, manifests, lockfiles, generated documentation or CI not explicitly named above.
+After admission, workers may edit only `base_sha`, `branch`, `worktree`,
+`updated_at`, the work log and handoff. The coordinator owns all lifecycle,
+ownership, dependency, conflict, write-scope and reading-authority metadata.
+Request coordinator integration for shared exports, manifests, lockfiles,
+generated documentation or CI not explicitly named above.
 
 ## Acceptance criteria
 
 - Every current bridge operation maps to one versioned envelope.
 - Timeout, abort, malformed output, missing assets and oversized output are classified.
 - Unknown protocol versions fail closed.
+- The completed handoff identifies `contracts/source-bridge-v1.md` as the
+  dependency-produced reading that the coordinator must add before admitting
+  its consumers.
 
 ## Verification
 

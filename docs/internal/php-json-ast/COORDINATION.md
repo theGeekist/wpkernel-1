@@ -30,7 +30,17 @@ Claiming records owner, owner kind, lease, base SHA, branch and checkout. The
 brief above `## Work log` is immutable while claimed. After admission, workers
 may update only `base_sha`, `branch`, `worktree` and `updated_at`, plus the work
 log and handoff. The coordinator alone changes lifecycle, ownership, lease,
-dependencies, decision dependencies, conflicts and `write_scope`.
+dependencies, decision dependencies, conflicts, `write_scope`, required reading
+and read scope.
+
+### Dependency-produced reading
+
+The planner validates every declared reading path before it admits any task. A
+downstream task therefore names its producer task brief while a dependency-owned
+contract does not yet exist. When the producer is done, the coordinator verifies
+the produced contract, adds it to the downstream task's `required_reading` and
+`read_scope`, and only then admits the downstream task. A worker must not claim
+or implement against an inferred contract path.
 
 ## Shared-checkout concurrency
 

@@ -410,6 +410,122 @@ describe('app-form builder (branches)', () => {
 		);
 	});
 
+	it('separates arbitrary data keys from collision-free generated bindings', async () => {
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+		const ir = makeIr({
+			resources: [
+				{
+					name: 'post',
+					id: 'post',
+					storage: {
+						mode: 'wp-post',
+						meta: {
+							"seo'title": { type: 'string' },
+							['__proto__']: { type: 'string' },
+						},
+						taxonomies: {
+							'book-genre': { taxonomy: 'book_genre' },
+							'book genre': { taxonomy: 'book_topic' },
+							'123': { taxonomy: 'numeric_topic' },
+							"critic's-choice": { taxonomy: 'critic_choice' },
+						},
+					},
+				} as any,
+			],
+		});
+		ir.artifacts.surfaces = {
+			post: {
+				resource: 'post',
+				modulePath: 'path',
+				appDir: 'app',
+				generatedAppDir: 'generated/app',
+			} as any,
+		};
+
+		await createAppFormBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content).toContain("'seo\\'title'?: string;");
+		expect(content).toContain("'__proto__'?: string;");
+		expect(content).toContain("'book-genre'?: number;");
+		expect(content).toContain("'book genre'?: number;");
+		expect(content).toContain("'123'?: number;");
+		expect(content).toContain("'critic\\'s-choice'?: number;");
+		expect(content).toContain("'seo\\'title': undefined,");
+		expect(content).toContain("['__proto__']: undefined,");
+		expect(content).toContain("'book-genre': undefined,");
+		expect(content).toContain(
+			"if (input['seo\\'title'] !== undefined) meta['seo\\'title'] = input['seo\\'title'];"
+		);
+		expect(content).toContain(
+			"if (input['book-genre']) payload['book-genre'] = [input['book-genre']];"
+		);
+		expect(content).toContain(
+			"if (input['__proto__'] !== undefined) Object.defineProperty(meta, '__proto__', { configurable: true, enumerable: true, value: input['__proto__'], writable: true });"
+		);
+		expect(content).not.toContain('meta.__proto__');
+		expect(content).not.toContain('payload.__proto__');
+		expect(content).toContain(
+			"const bookGenreOptions = useTaxonomyOptions('book-genre.list');"
+		);
+		expect(content).toContain(
+			"const bookGenreOptions2 = useTaxonomyOptions('book-topic.list');"
+		);
+		expect(content).toContain(
+			"const taxonomy123Options = useTaxonomyOptions('numeric-topic.list');"
+		);
+		expect(content).toContain(
+			"selectField<PostFormInput>('book-genre', bookGenreOptions.options, { label: 'Book Genre', edit: 'select' }),"
+		);
+		expect(content).toContain(
+			"selectField<PostFormInput>('book genre', bookGenreOptions2.options, { label: 'Book Topic', edit: 'select' }),"
+		);
+		expect(content).toContain(
+			"selectField<PostFormInput>('123', taxonomy123Options.options, { label: 'Numeric Topic', edit: 'select' }),"
+		);
+		expect(content).toContain(
+			"selectField<PostFormInput>('critic\\'s-choice', criticSChoiceOptions.options, { label: 'Critic Choice', edit: 'select' }),"
+		);
+		expect(content).toContain('bookGenreOptions.options,');
+		expect(content).toContain('bookGenreOptions2.options,');
+		expect(content).toContain('taxonomy123Options.options,');
+
+		const transpiled = ts.transpileModule(content, {
+			fileName: 'PostForm.tsx',
+			compilerOptions: {
+				jsx: ts.JsxEmit.ReactJSX,
+				target: ts.ScriptTarget.ES2022,
+			},
+			reportDiagnostics: true,
+		});
+		expect(
+			(transpiled.diagnostics ?? []).filter(
+				(diagnostic) =>
+					diagnostic.category === ts.DiagnosticCategory.Error
+			)
+		).toEqual([]);
+	});
+
 	it('uses the resource GET route when loading an edit record', async () => {
 		const { workspace, writes } = buildWorkspace();
 		const reporter = buildReporter();

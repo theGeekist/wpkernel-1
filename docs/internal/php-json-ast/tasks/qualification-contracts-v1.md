@@ -65,13 +65,20 @@ Runtime qualification must be stable before generators migrate so expected behav
 
 ## File ownership
 
-Only edit this task, its declared write scope, work log and handoff. Request coordinator integration for shared exports, manifests, lockfiles, generated documentation or CI not explicitly named above.
+After admission, workers may edit only `base_sha`, `branch`, `worktree`,
+`updated_at`, the work log and handoff. The coordinator owns all lifecycle,
+ownership, dependency, conflict, write-scope and reading-authority metadata.
+Request coordinator integration for shared exports, manifests, lockfiles,
+generated documentation or CI not explicitly named above.
 
 ## Acceptance criteria
 
 - API and browser responsibilities are separated.
 - Every runtime claim names packed artefacts and exact versions.
 - Infrastructure retry and product retry policies are distinct.
+- The completed handoff identifies
+  `contracts/runtime-qualification-v1.md` as dependency-produced reading that
+  the coordinator must add before admitting its consumers.
 
 ## Verification
 

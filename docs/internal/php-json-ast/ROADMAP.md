@@ -18,8 +18,10 @@ source-bridge-contract-v1 -> source-process-runner-v1
 cli-migration-contract-v1 -> cli-codemod-repair-v1
                           -> cli-migration-manifest-v1
 
-qualification-contracts-v1 -> wordpress-api-qualification-v1
-                           -> browser-qualification-v1
+qualification-contracts-v1 -> packed-plugin-harness-v1
+
+packed-plugin-harness-v1 -> wordpress-api-qualification-v1
+                         -> browser-qualification-v1
 ```
 
 The four contract tasks are the initial ready frontier. They own four separate

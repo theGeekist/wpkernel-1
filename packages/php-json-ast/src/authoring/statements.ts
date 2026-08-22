@@ -121,7 +121,7 @@ export function foreachStatement(
 	const iterable = requireStatementOption(options, 'iterable', '$foreach');
 	const value = requireStatementOption(options, 'value', '$foreach');
 	const key = readOptionalStatementOption(options, 'key', '$foreach');
-	const byReference = readOptionalStatementOption(
+	const byReference = readOptionalBooleanStatementOption(
 		options,
 		'byReference',
 		'$foreach'
@@ -147,7 +147,7 @@ export function foreachStatement(
 		buildForeach(renderPhpValue(iterable as PhpAuthoringValue), {
 			valueVar: renderPhpValue(valueVariable),
 			keyVar: keyVariable ? renderPhpValue(keyVariable) : null,
-			byRef: (byReference as boolean | undefined) ?? false,
+			byRef: byReference ?? false,
 			stmts: renderPhpStatements(
 				statements as readonly PhpStatementValue[]
 			),
@@ -263,6 +263,27 @@ function readOptionalStatementOption(
 		);
 	}
 	return option.kind === 'data' ? option.value : undefined;
+}
+
+function readOptionalBooleanStatementOption(
+	value: object,
+	key: string,
+	path: string
+): boolean | undefined {
+	const option = readOwnProperty(value, key);
+	if (option.kind === 'absent') {
+		return undefined;
+	}
+	if (option.kind === 'accessor') {
+		throw invalidStatement(
+			`${path}.${key}`,
+			'Statement options must use own data properties, not accessors.'
+		);
+	}
+	if (typeof option.value !== 'boolean') {
+		throw invalidStatement(`${path}.${key}`, 'Must be a boolean.');
+	}
+	return option.value;
 }
 
 function normalizeLoopVariable(

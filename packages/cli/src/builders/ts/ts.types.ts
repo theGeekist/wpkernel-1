@@ -4,6 +4,7 @@ import type { IRResource } from '../../ir/publicTypes';
 import type { ResourcePostMetaDescriptor } from '@wpkernel/core/resource';
 import { IndentationText, Project, type InterfaceDeclaration } from 'ts-morph';
 import { toPascalCase } from '../../utils';
+import { typeScriptPropertyName } from './typescript-syntax';
 
 /**
  * Creates a builder helper for generating TypeScript type definitions from resource storage configuration.
@@ -173,9 +174,14 @@ function addIdentityField(
 		return;
 	}
 
+	const param = resource.identity.param ?? 'id';
+	if (resource.storage?.mode === 'wp-post' && param === 'slug') {
+		return;
+	}
+
 	const type = resource.identity.type === 'number' ? 'number' : 'string';
 	iface.addProperty({
-		name: resource.identity.param as string,
+		name: typeScriptPropertyName(param),
 		type,
 	});
 }
@@ -252,7 +258,7 @@ function addQueryMetaFilters(
 	for (const [key, descriptor] of Object.entries(meta)) {
 		const type = metaTypeToScalar(descriptor);
 		queryIface.addProperty({
-			name: key,
+			name: typeScriptPropertyName(key),
 			hasQuestionToken: true,
 			type,
 		});
@@ -267,9 +273,9 @@ function addQueryTaxonomyFilters(
 		return;
 	}
 
-	for (const [key, config] of Object.entries(taxonomies)) {
+	for (const [key] of Object.entries(taxonomies)) {
 		queryIface.addProperty({
-			name: config?.taxonomy ?? key,
+			name: typeScriptPropertyName(key),
 			hasQuestionToken: true,
 			type: 'number | number[]',
 		});
@@ -369,9 +375,9 @@ function addPostTaxonomies(
 		return;
 	}
 
-	for (const [key, config] of Object.entries(taxonomies)) {
+	for (const [key] of Object.entries(taxonomies)) {
 		iface.addProperty({
-			name: config?.taxonomy ?? key,
+			name: typeScriptPropertyName(key),
 			hasQuestionToken: true,
 			type: 'number[]',
 		});
@@ -393,7 +399,7 @@ function addPostMeta(
 		const propertyType = isSingle ? baseType : `${baseType}[]`;
 
 		iface.addProperty({
-			name: key,
+			name: typeScriptPropertyName(key),
 			hasQuestionToken: true,
 			type: propertyType,
 		});

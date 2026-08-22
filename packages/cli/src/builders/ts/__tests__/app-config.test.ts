@@ -1,4 +1,5 @@
 import path from 'node:path';
+import * as ts from 'typescript';
 import { makeIr } from '@cli-tests/ir.test-support';
 import { makeWorkspaceMock } from '@cli-tests/workspace.test-support';
 import { makeResource } from '@cli-tests/builders/fixtures.test-support';
@@ -141,7 +142,7 @@ describe('app-config builder', () => {
 		expect(configWrite?.contents).toContain("id: 'title'");
 		expect(configWrite?.contents).toContain("id: 'rating'");
 		expect(configWrite?.contents).toContain("id: 'departments'");
-		expect(configWrite?.contents).toContain("item['departments']");
+		expect(configWrite?.contents).toContain('item.departments');
 		expect(configWrite?.contents).toMatch(
 			/defaultView: \{[\s\S]*fields: \[[\s\S]*'departments'/u
 		);
@@ -202,6 +203,82 @@ describe('app-config builder', () => {
 		expect(content.match(/id: 'priority'/gu)).toHaveLength(1);
 		expect(content.match(/'status'/gu)).toHaveLength(2);
 		expect(content.match(/'priority'/gu)).toHaveLength(2);
+	});
+
+	it('emits valid config source for arbitrary authoritative keys', async () => {
+		const ir = makeIr();
+		(ir.meta as { namespace: string }).namespace = "vendor's\\domain\n";
+		const resource = makeResource({
+			name: 'article',
+			storage: {
+				mode: 'wp-post',
+				meta: {
+					"editor's note": { type: 'string' },
+					'123': { type: 'number' },
+					['__proto__']: { type: 'string' },
+				},
+				taxonomies: {
+					"critic's-choice": { taxonomy: "writer's tags" },
+					'punctuation.key': { taxonomy: 'punctuation.key' },
+				},
+			} as any,
+		});
+		ir.resources = [resource];
+		ir.artifacts.surfaces[resource.id] = {
+			resource: resource.name,
+			appDir: `/app/${resource.name}`,
+			generatedAppDir: `/generated/app/${resource.name}`,
+			pagePath: '',
+			formPath: '',
+			configPath: '',
+		};
+		const { workspace, writes } = buildWorkspace();
+
+		await createAppConfigBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter: buildReporter(),
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output: buildOutput(),
+			reporter: buildReporter(),
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content).toContain("id: 'editor\\'s note'");
+		expect(content).toContain(
+			"label: __('Editor\\'s note', 'vendor\\'s\\\\domain\\n')"
+		);
+		expect(content).toContain("item['critic\\'s-choice']");
+		expect(content).toContain("id: '__proto__'");
+		expect(content).toContain(
+			"fields: ['123', 'editor\\'s note', '__proto__'"
+		);
+
+		const transpiled = ts.transpileModule(content, {
+			fileName: 'config.tsx',
+			compilerOptions: {
+				jsx: ts.JsxEmit.ReactJSX,
+				target: ts.ScriptTarget.ES2022,
+			},
+			reportDiagnostics: true,
+		});
+		expect(
+			(transpiled.diagnostics ?? []).filter(
+				(diagnostic) =>
+					diagnostic.category === ts.DiagnosticCategory.Error
+			)
+		).toEqual([]);
 	});
 
 	it('handles resources without storage gracefully', async () => {
