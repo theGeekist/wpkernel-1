@@ -77,6 +77,11 @@ source TSDoc and authored prose before P2-015 closes the commit-hook write-set
 leak. P2-007 then exposes the shared root, and P2-008 regenerates the API
 projection from that integrated surface.
 
+P2-017 is a separate future integration seam. It may expose an authority-free
+inspection of the final configured graph for consumers that need canonical
+topology without evaluating nodes. It does not join or delay the 2.0.0 release
+chain unless a later native consumer explicitly adopts that contract.
+
 ## Release meaning
 
 Implementation, packed qualification, downstream adoption and publication are
