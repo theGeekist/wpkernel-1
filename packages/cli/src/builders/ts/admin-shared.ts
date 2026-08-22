@@ -200,6 +200,8 @@ type DescriptorRoute = {
 	path?: string;
 };
 
+const DYNAMIC_ROUTE_SEGMENT = /(?:^|\/)(?::[^/]+|\{[^/{}]+\}|\(\?P<[^>]+>)/u;
+
 export function resolveListRoutePath(
 	descriptor: ResourceDescriptor
 ): string | null {
@@ -214,12 +216,7 @@ export function resolveListRoutePath(
 			.toUpperCase()
 			.trim();
 		const pathValue = String(path ?? '').trim();
-		return (
-			methodValue === 'GET' &&
-			!pathValue.includes('/:') &&
-			!pathValue.includes('(?P<') &&
-			!pathValue.includes('{id}')
-		);
+		return methodValue === 'GET' && !DYNAMIC_ROUTE_SEGMENT.test(pathValue);
 	});
 
 	return listRoute ? ((listRoute as DescriptorRoute).path ?? null) : null;

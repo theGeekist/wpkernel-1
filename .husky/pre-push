@@ -6,7 +6,7 @@ remote_name=${1:-unknown}
 remote_url=${2:-unknown}
 
 case "$remote_url" in
-	https://github.com/theGeekist/wpkernel-1.git | git@github.com:theGeekist/wpkernel-1.git)
+	https://github.com/theGeekist/wpkernel-1 | https://github.com/theGeekist/wpkernel-1.git | git@github.com:theGeekist/wpkernel-1 | git@github.com:theGeekist/wpkernel-1.git | ssh://git@github.com/theGeekist/wpkernel-1 | ssh://git@github.com/theGeekist/wpkernel-1.git)
 		exit 0
 		;;
 esac

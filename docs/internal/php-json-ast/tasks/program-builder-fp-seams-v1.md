@@ -139,8 +139,8 @@ Pending.
 
 ### Remaining risks
 
-The current class and oversized module remain until this task is admitted.
-Task Graph beta.4 successfully plans the combined repository authorities.
+The current class and oversized module remain until this task is admitted. Task
+Graph planner qualification is pending and must not be inferred from this task.
 
 ### Recommended next task
 

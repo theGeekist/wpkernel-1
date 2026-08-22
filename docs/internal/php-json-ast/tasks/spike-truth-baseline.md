@@ -13,9 +13,9 @@ owner: coordinator
 owner_kind: coordinator
 lease_started_at: null
 lease_expires_at: null
-base_sha: 'e5ec9b740e953f8d61e2e273516b0e3ccd83cbf6'
+base_sha: '940a86495f0804dd15ae546e82bc631b95797c62'
 branch: main
-worktree: '/Users/jasonnathan/Repos/wpkernel'
+worktree: null
 depends_on: []
 decision_dependencies: []
 conflicts_with: []

@@ -128,7 +128,7 @@ export default withMermaid(
 			logo: '/logo.png',
 			editLink: {
 				pattern:
-					'https://github.com/wpkernel/wpkernel/edit/main/docs/:path',
+					'https://github.com/theGeekist/wpkernel-1/edit/main/docs/:path',
 				text: 'Edit this page on GitHub',
 			},
 			externalLinkIcon: true,

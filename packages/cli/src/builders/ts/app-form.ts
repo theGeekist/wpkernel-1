@@ -22,6 +22,7 @@ type PostMetaField = {
 
 type PostTaxonomyField = {
 	readonly key: string;
+	readonly taxonomy: string;
 };
 
 type PostFormFields = {
@@ -658,10 +659,10 @@ function collectPostTaxonomyFields(
 	const taxonomies: PostTaxonomyField[] = [];
 	for (const [key, config] of Object.entries(storage.taxonomies ?? {})) {
 		const taxonomy = (config as { taxonomy?: string }).taxonomy ?? key;
-		if (!claimPostFormField(claimed, taxonomy)) {
+		if (!claimPostFormField(claimed, key)) {
 			continue;
 		}
-		taxonomies.push({ key: taxonomy });
+		taxonomies.push({ key, taxonomy });
 	}
 	return taxonomies;
 }
@@ -725,7 +726,7 @@ function writeTaxonomyHooks(
 	}
 	const fields = classifyPostFormFields(resource.storage);
 	for (const field of fields.taxonomies) {
-		const action = `${field.key.replace(/_/g, '-')}.list`;
+		const action = `${field.taxonomy.replace(/_/g, '-')}.list`;
 		const hookName = `${toCamelCase(field.key)}Options`;
 		writer.writeLine(
 			`const ${hookName} = useTaxonomyOptions('${action}');`
@@ -841,7 +842,7 @@ function addTaxonomyFieldDefinitions(
 	formInputType: string
 ): void {
 	for (const field of fields) {
-		const label = toTitleCase(field.key);
+		const label = toTitleCase(field.taxonomy.replace(/^(acme_|wpk_)/, ''));
 		const hookName = `${toCamelCase(field.key)}Options`;
 		writer.writeLine(
 			`selectField<${formInputType}>('${field.key}', ${hookName}.options, { label: '${label}', edit: 'select' }),`

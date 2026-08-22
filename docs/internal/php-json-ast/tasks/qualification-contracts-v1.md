@@ -75,6 +75,9 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 
 ## Verification
 
+- Verify that the contract separates API and browser responsibilities, names
+  exact packed artefacts and runtime versions, and distinguishes infrastructure
+  retries from product retries.
 - `git diff --check`
 
 ## Required evidence

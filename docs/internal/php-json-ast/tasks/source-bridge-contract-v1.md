@@ -74,6 +74,9 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 
 ## Verification
 
+- Review versioned fixtures for every request, success and error envelope,
+  including unsupported versions, timeout, abort, malformed output, missing
+  assets, output caps and partial output.
 - `git diff --check`
 
 ## Required evidence

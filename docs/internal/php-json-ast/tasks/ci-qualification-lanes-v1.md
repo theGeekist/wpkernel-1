@@ -19,6 +19,7 @@ worktree: null
 depends_on:
     - dual-path-runtime-parity-v1
     - cli-packed-qualification-v1
+    - browser-qualification-v1
 decision_dependencies: []
 conflicts_with: []
 write_scope:
@@ -76,8 +77,11 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 
 ## Verification
 
-- `pnpm lint:workflows`
+- `pnpm exec prettier --check .github/workflows/ci.yml playwright.config.ts`
 - `pnpm exec playwright test --list`
+- Record the exact PHP and WordPress version matrix exercised by each release lane.
+- Force one representative failure and verify that its PHP, WordPress, REST and
+  browser diagnostics are retained as CI artefacts.
 - `git diff --check`
 
 ## Required evidence

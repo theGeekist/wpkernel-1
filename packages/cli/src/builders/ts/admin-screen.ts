@@ -153,7 +153,9 @@ async function generateAdminScreen(options: {
 	const componentMeta = resolveAdminScreenComponentMetadata(descriptor);
 	const names = resolveAdminNames(descriptor, componentMeta);
 	const paths = resolveAdminPaths(uiPlan, componentMeta);
-	const canCreate = hasCollectionRoute(resource, ['POST']);
+	const canCreate =
+		listRoutePath !== null &&
+		hasRouteAtPath(resource, ['POST'], listRoutePath);
 
 	const resourceImport = buildRelativeImport(
 		paths.appliedScreenPath,
@@ -693,19 +695,15 @@ function writeAdminHeader(
 	writer.writeLine('</div>');
 }
 
-function hasCollectionRoute(
+function hasRouteAtPath(
 	resource: IRResource,
-	methods: readonly string[]
+	methods: readonly string[],
+	routePath: string
 ): boolean {
-	const identityParam = resource.identity?.param ?? 'id';
-	const placeholders = [`:${identityParam}`, `{${identityParam}}`];
-
 	return resource.routes.some(
 		(route) =>
 			methods.includes(route.method.toUpperCase()) &&
-			!placeholders.some((placeholder) =>
-				route.path.includes(placeholder)
-			)
+			route.path === routePath
 	);
 }
 

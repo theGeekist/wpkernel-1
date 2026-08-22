@@ -76,6 +76,8 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 ## Verification
 
 - `pnpm exec playwright test wordpress-browser.spec.ts`
+- Force one browser-contract failure and verify that its trace, screenshot and
+  WordPress runtime diagnostics are retained.
 - `git diff --check`
 
 ## Required evidence

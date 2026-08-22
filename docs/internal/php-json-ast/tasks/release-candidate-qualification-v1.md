@@ -75,6 +75,8 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 
 ## Verification
 
+- Verify exact artefact digests, exercised qualification layers, waiver
+  severities, performance thresholds, rollback evidence and support boundaries.
 - `git diff --check`
 
 ## Required evidence

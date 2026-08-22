@@ -185,8 +185,8 @@ function readArrayEntry(entry: PhpArrayEntry, index: number): PhpArrayEntry {
 	}
 	const value = requireArrayEntryOption(entry, 'value', path);
 	const key = readArrayEntryOption(entry, 'key', path);
-	const byReference = readArrayEntryOption(entry, 'byReference', path);
-	const unpack = readArrayEntryOption(entry, 'unpack', path);
+	const byReference = readArrayEntryBooleanOption(entry, 'byReference', path);
+	const unpack = readArrayEntryBooleanOption(entry, 'unpack', path);
 	if (byReference && unpack) {
 		throw ambiguousExpression(
 			path,
@@ -202,8 +202,8 @@ function readArrayEntry(entry: PhpArrayEntry, index: number): PhpArrayEntry {
 	return {
 		value: value as PhpExpressionInput,
 		key: key as PhpExpressionInput | undefined,
-		byReference: byReference as boolean | undefined,
-		unpack: unpack as boolean | undefined,
+		byReference,
+		unpack,
 	};
 }
 
@@ -235,6 +235,21 @@ function readArrayEntryOption(
 		);
 	}
 	return option.kind === 'data' ? option.value : undefined;
+}
+
+function readArrayEntryBooleanOption(
+	entry: Record<string, unknown>,
+	key: 'byReference' | 'unpack',
+	path: string
+): boolean | undefined {
+	const value = readArrayEntryOption(entry, key, path);
+	if (value !== undefined && typeof value !== 'boolean') {
+		throw ambiguousExpression(
+			path,
+			`Array entry option ${key} must be a boolean when provided.`
+		);
+	}
+	return value;
 }
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {

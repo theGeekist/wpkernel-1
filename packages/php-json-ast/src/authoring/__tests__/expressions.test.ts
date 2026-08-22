@@ -121,6 +121,20 @@ describe('PHP expression authoring', () => {
 		}
 	);
 
+	it.each(['byReference', 'unpack'] as const)(
+		'rejects non-boolean array entry %s',
+		(option) => {
+			const entry = { value: 1, [option]: 'true' };
+
+			expect(() => arrayExpression([entry] as never)).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'AMBIGUOUS_VALUE',
+					path: '$array[0]',
+				})
+			);
+		}
+	);
+
 	it('rejects ambiguous raw method subjects', () => {
 		expect(() => methodCall(buildScalarInt(1) as never, 'method')).toThrow(
 			expect.objectContaining<Partial<PhpAuthoringError>>({

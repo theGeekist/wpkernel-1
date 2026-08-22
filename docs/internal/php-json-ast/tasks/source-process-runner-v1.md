@@ -28,8 +28,11 @@ write_scope:
 required_reading:
     - path: docs/internal/php-json-ast/authoring-roadmap.md
       reason: 'Preserve the compiler boundary, recovered evidence and qualification distinctions relevant to this task.'
+    - path: docs/internal/php-json-ast/tasks/source-bridge-contract-v1.md
+      reason: 'Implement only after the source bridge contract task has frozen the versioned protocol.'
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
+    - docs/internal/php-json-ast/tasks/source-bridge-contract-v1.md
 review_owner: coordinator
 updated_at: 2026-08-13
 ---

@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { createWorkspaceRunner } from '../integration/workspace';
@@ -74,6 +75,14 @@ describe('versioned CLI project fixtures', () => {
 		expect(released.sourceCliVersion).not.toBe(
 			currentBeta.sourceCliVersion
 		);
+	});
+
+	it('isolates fixture Git commands from global and system configuration', () => {
+		const environment = createIsolatedGitEnvironment();
+
+		expect(environment.GIT_CONFIG_GLOBAL).toBe(os.devNull);
+		expect(environment.GIT_CONFIG_NOSYSTEM).toBe('1');
+		expect(environment.GIT_CONFIG_SYSTEM).toBeUndefined();
 	});
 
 	it('keeps committed user code outside generated ownership guards', async () => {

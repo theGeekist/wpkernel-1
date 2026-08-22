@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { WPK_CONFIG_SOURCES } from '@wpkernel/core/contracts';
@@ -600,6 +601,7 @@ export function createIsolatedGitEnvironment(): NodeJS.ProcessEnv {
 		'GIT_CONFIG',
 		'GIT_CONFIG_COUNT',
 		'GIT_CONFIG_PARAMETERS',
+		'GIT_CONFIG_SYSTEM',
 		'GIT_DIR',
 		'GIT_GRAFT_FILE',
 		'GIT_IMPLICIT_WORK_TREE',
@@ -624,6 +626,12 @@ export function createIsolatedGitEnvironment(): NodeJS.ProcessEnv {
 			delete env[variable];
 		}
 	}
+
+	// Fixtures must be independent from a developer's Git identity, hooks,
+	// aliases, and system policy. Repository-local settings are configured after
+	// initialisation and remain available to the child Git processes.
+	env.GIT_CONFIG_GLOBAL = os.devNull;
+	env.GIT_CONFIG_NOSYSTEM = '1';
 
 	return env;
 }

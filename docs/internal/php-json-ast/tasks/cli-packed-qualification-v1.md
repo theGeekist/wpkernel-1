@@ -18,6 +18,7 @@ branch: null
 worktree: null
 depends_on:
     - cli-idempotency-v1
+    - compiler-public-entrypoints-v1
 decision_dependencies: []
 conflicts_with: []
 write_scope:

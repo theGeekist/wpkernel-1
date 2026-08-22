@@ -40,6 +40,7 @@ jobs:
                   repository: theGeekist/wpkernel-1
                   ref: main
                   fetch-depth: 1
+                  persist-credentials: false
 
             - name: Qualify authoring revision
               id: qualify
@@ -57,24 +58,46 @@ jobs:
                   test "${committer_name}" = 'Pipe Work'
                   test "${committer_email}" = '780157+pipewrk@users.noreply.github.com'
 
-                  api_url="https://api.github.com/repos/theGeekist/wpkernel-1/actions/workflows/ci.yml/runs?branch=main&event=push&status=completed&head_sha=${source_sha}&per_page=10"
-                  successful_runs="$(
-                      curl --fail --silent --show-error --location \
-                          --header 'Accept: application/vnd.github+json' \
-                          --header 'X-GitHub-Api-Version: 2022-11-28' \
-                          "${api_url}" |
-                          jq --arg sha "${source_sha}" \
-                              '[.workflow_runs[] | select(.head_sha == $sha and .conclusion == "success")] | length'
-                  )"
-
                   printf 'source-sha=%s\n' "${source_sha}" >> "${GITHUB_OUTPUT}"
-                  if [[ "${successful_runs}" == '0' ]]; then
-                      echo "Authoring CI has not passed for ${source_sha}; deployment deferred."
-                      printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
-                      exit 0
-                  fi
+                  api_url="https://api.github.com/repos/theGeekist/wpkernel-1/actions/workflows/ci.yml/runs?branch=main&event=push&head_sha=${source_sha}&per_page=100"
+                  for attempt in {1..30}; do
+                      ci_state="$(
+                          curl --fail --silent --show-error --location \
+                              --header 'Accept: application/vnd.github+json' \
+                              --header 'X-GitHub-Api-Version: 2022-11-28' \
+                              "${api_url}" |
+                              jq --arg sha "${source_sha}" '
+                                  [.workflow_runs[] | select(
+                                      .head_sha == $sha and
+                                      .head_branch == "main" and
+                                      .event == "push"
+                                  )] as $runs |
+                                  if any($runs[]; .status == "completed" and .conclusion == "success") then
+                                      "success"
+                                  elif any($runs[]; .status == "completed") then
+                                      "failure"
+                                  else
+                                      "pending"
+                                  end'
+                      )"
 
-                  printf 'ready=true\n' >> "${GITHUB_OUTPUT}"
+                      case "${ci_state}" in
+                          success)
+                              printf 'ready=true\n' >> "${GITHUB_OUTPUT}"
+                              exit 0
+                              ;;
+                          failure)
+                              echo "Authoring CI did not pass for ${source_sha}; deployment deferred."
+                              printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
+                              exit 0
+                              ;;
+                      esac
+
+                      sleep 10
+                  done
+
+                  echo "Authoring CI did not complete for ${source_sha}; deployment deferred."
+                  printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
 
             - name: Setup pnpm
               if: steps.qualify.outputs.ready == 'true'

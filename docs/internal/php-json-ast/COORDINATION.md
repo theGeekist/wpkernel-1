@@ -27,8 +27,10 @@ proposed | ready | blocked -> cancelled
 ```
 
 Claiming records owner, owner kind, lease, base SHA, branch and checkout. The
-brief above `## Work log` is immutable while claimed. Workers may update only
-their task front matter, declared write scope, work log and handoff.
+brief above `## Work log` is immutable while claimed. After admission, workers
+may update only `base_sha`, `branch`, `worktree` and `updated_at`, plus the work
+log and handoff. The coordinator alone changes lifecycle, ownership, lease,
+dependencies, decision dependencies, conflicts and `write_scope`.
 
 ## Shared-checkout concurrency
 

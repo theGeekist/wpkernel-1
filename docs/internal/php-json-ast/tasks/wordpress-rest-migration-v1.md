@@ -79,6 +79,9 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 
 - `pnpm --filter @wpkernel/wp-json-ast test -- authoring-parity.test.ts --runInBand`
 - `pnpm --filter @wpkernel/wp-json-ast typecheck`
+- Record before-and-after raw AST-specific call counts for the named migrated
+  files, including the exact search expression, inputs and calculation proving
+  the required reduction.
 - `git diff --check`
 
 ## Required evidence

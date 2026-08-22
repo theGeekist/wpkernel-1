@@ -67,7 +67,7 @@ The table below records the vocabulary used by the recovered spike ledger. New
 execution uses the lifecycle in [`tasks/README.md`](tasks/README.md). It remains
 here only to interpret the historical evidence accurately.
 
-Tasks use the following states:
+The recovered ledger used the following historical states:
 
 | Status        | Meaning                                                                        |
 | ------------- | ------------------------------------------------------------------------------ |
