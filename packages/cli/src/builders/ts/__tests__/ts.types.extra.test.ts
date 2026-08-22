@@ -218,7 +218,7 @@ describe('ts.types builder (branches)', () => {
 		const dts =
 			writes.find((w) => w.file.endsWith('job.d.ts'))?.contents ?? '';
 		expect(dts).toContain('interface Job');
-		expect(dts).toContain('id');
+		expect(dts.match(/\bid: number;/gu)).toHaveLength(1);
 		expect(dts).toContain('title');
 	});
 

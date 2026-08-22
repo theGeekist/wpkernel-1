@@ -17,7 +17,7 @@ base_sha: null
 branch: null
 worktree: null
 depends_on:
-    - qualification-contracts-v1
+    - packed-plugin-harness-v1
 decision_dependencies: []
 conflicts_with: []
 write_scope:
@@ -27,8 +27,11 @@ write_scope:
 required_reading:
     - path: docs/internal/php-json-ast/authoring-roadmap.md
       reason: 'Preserve the compiler boundary, recovered evidence and qualification distinctions relevant to this task.'
+    - path: docs/internal/php-json-ast/tasks/qualification-contracts-v1.md
+      reason: 'Dependency-produced reading: the coordinator adds contracts/runtime-qualification-v1.md after the contract task is done.'
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
+    - docs/internal/php-json-ast/tasks/qualification-contracts-v1.md
 review_owner: coordinator
 updated_at: 2026-08-13
 ---
@@ -65,7 +68,11 @@ Browser behaviour is a separate product boundary and should not be mixed with RE
 
 ## File ownership
 
-Only edit this task, its declared write scope, work log and handoff. Request coordinator integration for shared exports, manifests, lockfiles, generated documentation or CI not explicitly named above.
+After admission, workers may edit only `base_sha`, `branch`, `worktree`,
+`updated_at`, the work log and handoff. The coordinator owns all lifecycle,
+ownership, dependency, conflict, write-scope and reading-authority metadata.
+Request coordinator integration for shared exports, manifests, lockfiles,
+generated documentation or CI not explicitly named above.
 
 ## Acceptance criteria
 
@@ -89,7 +96,11 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 
 ## Claim protocol
 
-Follow [`../COORDINATION.md`](../COORDINATION.md) and [`README.md`](README.md). Re-run admission immediately before claim.
+Follow [`../COORDINATION.md`](../COORDINATION.md) and [`README.md`](README.md).
+The coordinator must add
+`docs/internal/php-json-ast/contracts/runtime-qualification-v1.md` to both
+reading fields after verifying the completed contract and before this task is
+admitted. Re-run admission immediately before claim.
 
 ## Work log
 

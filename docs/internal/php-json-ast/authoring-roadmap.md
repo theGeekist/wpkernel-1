@@ -374,6 +374,10 @@ corrected.
 | `E2E-100` | `ACTIVE`  | Agent C (`roadmap_intent`)       | `E2E-090`, `CLI-100` | Make clean WordPress startup, teardown, database state, current seeds, and failure artifacts deterministic against the old generator. |
 | `E2E-110` | `BACKLOG` | Lane D                           | `E2E-100`            | Prove packed generated-plugin installation and activation against the old output.                                                     |
 
+The authoritative task-graph replacement for historical `E2E-110` is
+[`packed-plugin-harness-v1`](tasks/packed-plugin-harness-v1.md). The historical
+identifier is not a current dependency.
+
 **Checkpoint `G1 — Contract freeze`: PASSED 2026-07-31.** Dependency direction,
 the canonical codec, raw-free WordPress plan shape, ownership markers, diff
 rules, and compatibility policy are agreed.

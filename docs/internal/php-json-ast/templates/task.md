@@ -47,8 +47,9 @@ One testable outcome.
 
 ## File ownership
 
-Only edit the task front matter, declared write scope, work log and handoff. The
-brief above the work log is immutable while claimed.
+After admission, workers may edit only `base_sha`, `branch`, `worktree`,
+`updated_at`, the work log and handoff. The coordinator owns all lifecycle,
+ownership, dependency, conflict, write-scope and reading-authority metadata.
 
 ## Acceptance criteria
 

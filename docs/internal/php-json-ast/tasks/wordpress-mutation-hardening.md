@@ -15,7 +15,7 @@ lease_started_at: '2026-08-13T00:00:00+08:00'
 lease_expires_at: '2026-08-14T00:00:00+08:00'
 base_sha: 'e5ec9b740e953f8d61e2e273516b0e3ccd83cbf6'
 branch: main
-worktree: '/Users/jasonnathan/Repos/wpkernel'
+worktree: null
 depends_on:
     - spike-truth-baseline
 decision_dependencies: []
@@ -68,7 +68,11 @@ The current working tree fixes an undefined WordPress sanitiser call and must be
 
 ## File ownership
 
-Only edit this task, its declared write scope, work log and handoff. Request coordinator integration for shared exports, manifests, lockfiles, generated documentation or CI not explicitly named above.
+After admission, workers may edit only `base_sha`, `branch`, `worktree`,
+`updated_at`, the work log and handoff. The coordinator owns all lifecycle,
+ownership, dependency, conflict, write-scope and reading-authority metadata.
+Request coordinator integration for shared exports, manifests, lockfiles,
+generated documentation or CI not explicitly named above.
 
 ## Acceptance criteria
 

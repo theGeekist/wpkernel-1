@@ -8,6 +8,10 @@ import type { ResourcePostMetaDescriptor } from '@wpkernel/core/resource';
 import type { CodeBlockWriter, SourceFile } from 'ts-morph';
 import { buildTsMorphAccessor, type TsMorphAccessor } from './imports';
 import { toPascalCase } from '../../utils';
+import {
+	typeScriptPropertyAccess,
+	typeScriptStringLiteral,
+} from './typescript-syntax';
 
 export function createAppConfigBuilder() {
 	return createHelper({
@@ -138,7 +142,7 @@ function addConfigContents(options: {
 							writer.write('fields: [');
 							const visibleFields = getVisibleFields(resource);
 							visibleFields.forEach((f) =>
-								writer.write(`'${f}', `)
+								writer.write(`${typeScriptStringLiteral(f)}, `)
 							);
 							writer.writeLine('],');
 						});
@@ -240,9 +244,11 @@ function writeField(
 ) {
 	writer.writeLine('{');
 	writer.indent(() => {
-		writer.writeLine(`id: '${id}',`);
-		writer.writeLine(`label: __('${label}', '${namespace}'),`);
-		writer.writeLine(`type: '${type}',`);
+		writer.writeLine(`id: ${typeScriptStringLiteral(id)},`);
+		writer.writeLine(
+			`label: __(${typeScriptStringLiteral(label)}, ${typeScriptStringLiteral(namespace)}),`
+		);
+		writer.writeLine(`type: ${typeScriptStringLiteral(type)},`);
 		writer.writeLine(`enableSorting: ${sortable},`);
 		writer.writeLine(`enableHiding: ${hideable},`);
 		if (getValue) {
@@ -285,13 +291,16 @@ function writeTaxonomyFields(
 
 		writer.writeLine('{');
 		writer.indent(() => {
-			writer.writeLine(`id: '${key}',`);
-			writer.writeLine(`label: __('${label}', '${namespace}'),`);
+			const itemAccess = typeScriptPropertyAccess('item', key);
+			writer.writeLine(`id: ${typeScriptStringLiteral(key)},`);
+			writer.writeLine(
+				`label: __(${typeScriptStringLiteral(label)}, ${typeScriptStringLiteral(namespace)}),`
+			);
 			writer.writeLine(`type: 'text',`);
 			writer.writeLine('enableSorting: false,');
 			writer.writeLine('enableHiding: true,');
 			writer.writeLine(
-				`getValue: ({ item }: { item: Record<string, unknown> }) => Array.isArray(item['${key}']) ? item['${key}'].join(', ') : '',`
+				`getValue: ({ item }: { item: Record<string, unknown> }) => Array.isArray(${itemAccess}) ? ${itemAccess}.join(', ') : '',`
 			);
 		});
 		writer.writeLine('},');

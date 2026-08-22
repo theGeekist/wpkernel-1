@@ -1,7 +1,7 @@
 ---
 architecture_version: 1
-id: wordpress-api-qualification-v1
-title: 'Implement WordPress API qualification v1'
+id: packed-plugin-harness-v1
+title: 'Establish packed generated-plugin harness v1'
 stage: qualification
 status: proposed
 priority: high
@@ -17,48 +17,50 @@ base_sha: null
 branch: null
 worktree: null
 depends_on:
-    - packed-plugin-harness-v1
+    - qualification-contracts-v1
 decision_dependencies: []
 conflicts_with: []
 write_scope:
-    - docs/internal/php-json-ast/tasks/wordpress-api-qualification-v1.md
-    - examples/showcase/__tests__/e2e/wordpress-api.spec.ts
-    - examples/showcase/__tests__/e2e/support/api-fixtures.ts
+    - docs/internal/php-json-ast/tasks/packed-plugin-harness-v1.md
+    - examples/showcase/__tests__/e2e/support/packed-plugin-harness.ts
 required_reading:
     - path: docs/internal/php-json-ast/authoring-roadmap.md
-      reason: 'Preserve the compiler boundary, recovered evidence and qualification distinctions relevant to this task.'
+      reason: 'Preserve the recovered packed-plugin boundary and runtime qualification distinctions.'
     - path: docs/internal/php-json-ast/tasks/qualification-contracts-v1.md
       reason: 'Dependency-produced reading: the coordinator adds contracts/runtime-qualification-v1.md after the contract task is done.'
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
     - docs/internal/php-json-ast/tasks/qualification-contracts-v1.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-22
 ---
 
-# wordpress-api-qualification-v1: Implement WordPress API qualification v1
+# packed-plugin-harness-v1: Establish packed generated-plugin harness v1
 
 ## Objective
 
-Implement black-box WordPress activation, REST, CRUD, validation, authorization and persistence contracts.
+Create the deterministic packed generated-plugin fixture required by the API and
+browser qualification tasks.
 
 ## Why this exists
 
-API behaviour must be independently stable before the new authoring lowerer is substituted.
+Runtime contracts are only meaningful when they exercise the installed packed
+plugin rather than workspace aliases or an inferred generated tree.
 
 ## Inputs
 
 - Direct dependency briefs supplied by the task context compiler.
-- The versioned contract named by this task or its dependency, when applicable.
+- The versioned qualification contract from `qualification-contracts-v1`.
 
 ## In scope
 
-- Supported storage adapters and explicit unsupported responses.
-- Identity, schema, capability, cache and persistence behaviour.
+- Clean install, activation and provenance receipt for one packed generated
+  plugin fixture.
+- A reusable fixture seam for API and browser qualification.
 
 ## Out of scope
 
-- Browser interactions and generator source.
+- API or browser assertions, generator migration and registry publication.
 
 ## Contract and naming constraints
 
@@ -71,25 +73,29 @@ API behaviour must be independently stable before the new authoring lowerer is s
 After admission, workers may edit only `base_sha`, `branch`, `worktree`,
 `updated_at`, the work log and handoff. The coordinator owns all lifecycle,
 ownership, dependency, conflict, write-scope and reading-authority metadata.
-Request coordinator integration for shared exports, manifests, lockfiles,
-generated documentation or CI not explicitly named above.
+Request coordinator integration for Playwright configuration, generated
+fixtures, manifests, lockfiles or CI.
 
 ## Acceptance criteria
 
-- Tests exercise a packed generated plugin in real WordPress.
-- Every supported operation and explicit unsupported case is asserted.
-- Failure diagnostics retain REST bodies and runtime logs.
+- The fixture installs an exact packed artifact, not a workspace alias.
+- Activation records the package version, artifact digest, WordPress and PHP
+  versions.
+- API and browser qualification can consume the same fixture without creating a
+  second installation path.
 
 ## Verification
 
-- `pnpm exec playwright test wordpress-api.spec.ts`
+- `pnpm exec playwright test --list`
+- Exercise clean packed-plugin installation and activation, retaining the
+  artifact digest and runtime logs.
 - `git diff --check`
 
 ## Required evidence
 
 - Changed path list and exact base SHA.
-- Verification commands, exit statuses and concise results.
-- Contract, package and runtime versions exercised.
+- Verification commands, exit statuses and concise result.
+- Packed artifact digest, package version and PHP/WordPress versions exercised.
 - Remaining known loss and requested coordinator actions.
 
 ## Claim protocol
@@ -103,7 +109,7 @@ admitted. Re-run admission immediately before claim.
 ## Work log
 
 Execution mode: shared-checkout
-Execution rationale: The declared scope is designed for the primary checkout.
+Execution rationale: The fixture seam is disjoint from API and browser assertions.
 Concurrency evaluation: evaluate against the live planner before claim; same-priority disjoint tasks may start alongside.
 Concurrent task scopes: none recorded until claim.
 Swarm delegation: none
@@ -132,4 +138,5 @@ Pending implementation or review.
 
 ### Recommended next task
 
-Follow the dependency graph in [`../ROADMAP.md`](../ROADMAP.md).
+`wordpress-api-qualification-v1` and `browser-qualification-v1` after this
+fixture is qualified.

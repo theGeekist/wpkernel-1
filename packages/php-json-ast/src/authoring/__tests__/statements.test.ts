@@ -112,6 +112,27 @@ describe('PHP statement authoring', () => {
 		});
 	});
 
+	it.each([
+		['string', 'true'],
+		['number', 1],
+		['null', null],
+		['explicit undefined', undefined],
+	])('rejects a %s foreach byReference option', (_label, byReference) => {
+		expect(() =>
+			foreachStatement({
+				iterable: variable('items'),
+				value: variable('item'),
+				byReference: byReference as never,
+				statements: [],
+			})
+		).toThrow(
+			expect.objectContaining<Partial<PhpAuthoringError>>({
+				code: 'INVALID_STATEMENT',
+				path: '$foreach.byReference',
+			})
+		);
+	});
+
 	it('rejects raw statements in bounded bodies', () => {
 		const raw = buildReturn(buildScalarInt(1));
 

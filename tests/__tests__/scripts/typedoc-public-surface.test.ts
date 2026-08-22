@@ -6,7 +6,9 @@ import { spawnSync } from 'node:child_process';
 const typedoc = path.resolve('node_modules/typedoc/bin/typedoc');
 const plugin = path.resolve('scripts/docs/typedoc-public-surface.mjs');
 
-jest.setTimeout(30_000);
+const typedocTimeoutMs = 60_000;
+
+jest.setTimeout(75_000);
 
 type PipelineSourceOptions = {
 	driftAliasExtensionConstraint?:
@@ -112,7 +114,10 @@ type TypeDocResult = ReturnType<typeof spawnSync> & {
 	readonly outputFile: string;
 };
 
-async function runTypeDoc(source: string): Promise<TypeDocResult> {
+async function runTypeDoc(
+	source: string,
+	timeout = typedocTimeoutMs
+): Promise<TypeDocResult> {
 	const fixture = await fs.mkdtemp(
 		path.join(os.tmpdir(), 'wpkernel-typedoc-surface-')
 	);
@@ -133,7 +138,7 @@ async function runTypeDoc(source: string): Promise<TypeDocResult> {
 		})
 	);
 
-	return Object.assign(
+	const result = Object.assign(
 		spawnSync(
 			typedoc,
 			[
@@ -151,10 +156,20 @@ async function runTypeDoc(source: string): Promise<TypeDocResult> {
 				'--readme',
 				'none',
 			],
-			{ cwd: fixture, encoding: 'utf8' }
+			{ cwd: fixture, encoding: 'utf8', timeout }
 		),
 		{ outputFile }
 	);
+
+	if (result.error) {
+		await fs.rm(fixture, { force: true, recursive: true });
+		const code = (result.error as NodeJS.ErrnoException).code;
+		throw new Error(
+			`TypeDoc fixture process ${code === 'ETIMEDOUT' ? 'timed out' : 'failed'}: ${result.error.message}`
+		);
+	}
+
+	return result;
 }
 
 type JsonReflection = {
@@ -182,6 +197,12 @@ function findReflection(
 }
 
 describe('TypeDoc public Pipeline projection', () => {
+	it('reports a bounded TypeDoc child timeout explicitly', async () => {
+		await expect(runTypeDoc(pipelineSource({}), 1)).rejects.toThrow(
+			'TypeDoc fixture process timed out'
+		);
+	});
+
 	it('projects the complete validated source shape', async () => {
 		const result = await runTypeDoc(pipelineSource({}));
 		try {

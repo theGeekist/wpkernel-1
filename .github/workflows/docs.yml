@@ -6,114 +6,202 @@ on:
             - main
         paths:
             - 'docs/**'
+            - 'packages/**'
             - 'package.json'
+            - 'pnpm-lock.yaml'
+            - 'pnpm-workspace.yaml'
             - '.github/workflows/docs.yml'
-    workflow_dispatch:
+            - 'scripts/docs/promotion-resolver.cjs'
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-    contents: read
-    pages: write
-    id-token: write
+permissions: {}
 
-# Allow one concurrent deployment
 concurrency:
     group: pages
     cancel-in-progress: true
 
-# Environment variables for caching
 env:
     NODE_VERSION: '22.20.0'
     PNPM_VERSION: '10.19.0'
 
 jobs:
-    build:
-        name: Qualify and build authoring documentation
+    resolve-source:
+        name: Resolve promoted authoring source
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: read
         outputs:
-            ready: ${{ steps.qualify.outputs.ready }}
-            source-sha: ${{ steps.qualify.outputs.source-sha }}
+            source-sha: ${{ steps.receipt.outputs.source-sha }}
+            source-ci-run-id: ${{ steps.receipt.outputs.source-ci-run-id }}
+            source-ci-run-url: ${{ steps.receipt.outputs.source-ci-run-url }}
         steps:
-            - name: Check out authoring source
+            - name: Check out promotion resolver
               uses: actions/checkout@v4
               with:
-                  repository: theGeekist/wpkernel-1
-                  ref: main
                   fetch-depth: 1
                   persist-credentials: false
 
-            - name: Qualify authoring revision
-              id: qualify
+            - name: Verify promotion receipt and authoring CI
+              id: receipt
               shell: bash
+              env:
+                  GITHUB_TOKEN: ${{ github.token }}
               run: |
                   set -euo pipefail
-                  source_sha="$(git rev-parse HEAD)"
-                  author_name="$(git show -s --format=%an HEAD)"
-                  author_email="$(git show -s --format=%ae HEAD)"
-                  committer_name="$(git show -s --format=%cn HEAD)"
-                  committer_email="$(git show -s --format=%ce HEAD)"
 
-                  test "${author_name}" = 'Pipe Work'
-                  test "${author_email}" = '780157+pipewrk@users.noreply.github.com'
-                  test "${committer_name}" = 'Pipe Work'
-                  test "${committer_email}" = '780157+pipewrk@users.noreply.github.com'
+                  public_get() {
+                      local url=$1
+                      local destination=$2
+                      local headers="${destination}.headers"
+                      local status
 
-                  printf 'source-sha=%s\n' "${source_sha}" >> "${GITHUB_OUTPUT}"
-                  api_url="https://api.github.com/repos/theGeekist/wpkernel-1/actions/workflows/ci.yml/runs?branch=main&event=push&head_sha=${source_sha}&per_page=100"
-                  for attempt in {1..30}; do
-                      ci_state="$(
-                          curl --fail --silent --show-error --location \
+                      if ! status="$(
+                          curl --silent --show-error --location \
+                              --connect-timeout 10 \
+                              --max-time 45 \
+                              --retry 3 \
+                              --retry-all-errors \
+                              --retry-delay 2 \
                               --header 'Accept: application/vnd.github+json' \
+                              --header 'Cache-Control: no-cache' \
                               --header 'X-GitHub-Api-Version: 2022-11-28' \
-                              "${api_url}" |
-                              jq --arg sha "${source_sha}" '
-                                  [.workflow_runs[] | select(
-                                      .head_sha == $sha and
-                                      .head_branch == "main" and
-                                      .event == "push"
-                                  )] as $runs |
-                                  if any($runs[]; .status == "completed" and .conclusion == "success") then
-                                      "success"
-                                  elif any($runs[]; .status == "completed") then
-                                      "failure"
-                                  else
-                                      "pending"
-                                  end'
-                      )"
+                              --dump-header "${headers}" \
+                              --output "${destination}" \
+                              --write-out '%{http_code}' \
+                              "${url}"
+                      )"; then
+                          echo "Unauthenticated GitHub API request failed before an HTTP response: ${url}" >&2
+                          return 1
+                      fi
+                      node scripts/docs/promotion-resolver.cjs check-public-response \
+                          --url "${url}" \
+                          --status "${status}" \
+                          --headers-file "${headers}" \
+                          --body-file "${destination}"
+                  }
+
+                  pulls_files=()
+                  for page in 1 2 3; do
+                      pulls_page_file="${RUNNER_TEMP}/associated-pulls-${page}.json"
+                      curl --fail --silent --show-error --location \
+                          --connect-timeout 10 \
+                          --max-time 45 \
+                          --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+                          --header 'Accept: application/vnd.github+json' \
+                          --header 'X-GitHub-Api-Version: 2022-11-28' \
+                          --output "${pulls_page_file}" \
+                          "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls?per_page=100&page=${page}"
+                      pulls_files+=("${pulls_page_file}")
+                      page_state="$(node scripts/docs/promotion-resolver.cjs associated-pull-page-state \
+                          --page-file "${pulls_page_file}" \
+                          --page-number "${page}")"
+                      if [[ "${page_state}" == 'complete' ]]; then
+                          break
+                      fi
+                  done
+                  pulls_args=()
+                  for pulls_file in "${pulls_files[@]}"; do
+                      pulls_args+=(--pulls-file "${pulls_file}")
+                  done
+                  source_sha="$(node scripts/docs/promotion-resolver.cjs find-promotion \
+                      --upstream-sha "${GITHUB_SHA}" \
+                      "${pulls_args[@]}")"
+                  upstream_commit_file="${RUNNER_TEMP}/upstream-commit.json"
+                  curl --fail --silent --show-error --location \
+                      --connect-timeout 10 \
+                      --max-time 45 \
+                      --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+                          --header 'Accept: application/vnd.github+json' \
+                          --header 'X-GitHub-Api-Version: 2022-11-28' \
+                          --output "${upstream_commit_file}" \
+                          "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/commits/${GITHUB_SHA}"
+                  source_commit_file="${RUNNER_TEMP}/authoring-commit.json"
+                  public_get \
+                      "${GITHUB_API_URL}/repos/theGeekist/wpkernel-1/git/commits/${source_sha}" \
+                      "${source_commit_file}"
+                  IFS=$'\t' read -r source_sha source_tree < <(
+                      node scripts/docs/promotion-resolver.cjs resolve-promotion \
+                          --upstream-sha "${GITHUB_SHA}" \
+                          --upstream-commit-file "${upstream_commit_file}" \
+                          --source-commit-file "${source_commit_file}" \
+                          "${pulls_args[@]}"
+                  )
+
+                  ci_api_url="${GITHUB_API_URL}/repos/theGeekist/wpkernel-1/actions/workflows/ci.yml/runs?branch=main&event=push&head_sha=${source_sha}&per_page=100"
+                  # Ten polls with 710 seconds of scheduled wait. Request
+                  # timeouts and workflow overhead are additional.
+                  poll_wait_delays_seconds=(15 20 30 45 60 90 120 150 180)
+                  poll_attempts=$((${#poll_wait_delays_seconds[@]} + 1))
+                  for (( attempt = 1; attempt <= poll_attempts; attempt += 1 )); do
+                      ci_file="${RUNNER_TEMP}/authoring-ci-${attempt}.json"
+                      public_get "${ci_api_url}&poll=${attempt}" "${ci_file}"
+                      ci_result="$(node scripts/docs/promotion-resolver.cjs select-ci \
+                          --source-sha "${source_sha}" \
+                          --response-file "${ci_file}")"
+                      IFS=$'\t' read -r ci_state ci_run_id ci_run_url <<< "${ci_result}"
 
                       case "${ci_state}" in
                           success)
-                              printf 'ready=true\n' >> "${GITHUB_OUTPUT}"
+                              printf 'source-sha=%s\n' "${source_sha}" >> "${GITHUB_OUTPUT}"
+                              printf 'source-ci-run-id=%s\n' "${ci_run_id}" >> "${GITHUB_OUTPUT}"
+                              printf 'source-ci-run-url=%s\n' "${ci_run_url}" >> "${GITHUB_OUTPUT}"
+                              {
+                                  echo '### Documentation promotion receipt'
+                                  echo
+                                  echo "- Upstream revision: \`${GITHUB_SHA}\`"
+                                  echo "- Authoring revision: \`${source_sha}\`"
+                                  echo "- Tree: \`${source_tree}\`"
+                                  echo "- Authoring CI: ${ci_run_url}"
+                              } >> "${GITHUB_STEP_SUMMARY}"
                               exit 0
                               ;;
                           failure)
-                              echo "Authoring CI did not pass for ${source_sha}; deployment deferred."
-                              printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
-                              exit 0
+                              echo "Authoring CI run ${ci_run_url} failed for ${source_sha}." >&2
+                              exit 1
                               ;;
                       esac
 
-                      sleep 10
+                      if (( attempt < poll_attempts )); then
+                          sleep "${poll_wait_delays_seconds[attempt - 1]}"
+                      fi
                   done
 
-                  echo "Authoring CI did not complete for ${source_sha}; deployment deferred."
-                  printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
+                  echo "Authoring CI did not complete for ${source_sha}." >&2
+                  exit 1
+
+    build:
+        name: Build promoted authoring documentation
+        needs: resolve-source
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Check out promoted authoring source
+              uses: actions/checkout@v4
+              with:
+                  repository: theGeekist/wpkernel-1
+                  ref: ${{ needs.resolve-source.outputs.source-sha }}
+                  fetch-depth: 1
+                  persist-credentials: false
+
+            - name: Verify checked-out source
+              shell: bash
+              env:
+                  SOURCE_SHA: ${{ needs.resolve-source.outputs.source-sha }}
+              run: test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
 
             - name: Setup pnpm
-              if: steps.qualify.outputs.ready == 'true'
               uses: pnpm/action-setup@v4
               with:
                   version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node.js
-              if: steps.qualify.outputs.ready == 'true'
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'pnpm'
 
             - name: Cache node_modules
-              if: steps.qualify.outputs.ready == 'true'
               id: cache-node-modules
               uses: actions/cache@v4
               with:
@@ -126,31 +214,62 @@ jobs:
                       node-modules-${{ runner.os }}-
 
             - name: Install dependencies
-              if: steps.qualify.outputs.ready == 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: pnpm install --frozen-lockfile
 
-            - name: Setup Pages
-              if: steps.qualify.outputs.ready == 'true'
-              uses: actions/configure-pages@v5
-
             - name: Build documentation
-              if: steps.qualify.outputs.ready == 'true'
               run: pnpm docs:build
 
-            - name: Upload artifact
-              if: steps.qualify.outputs.ready == 'true'
-              uses: actions/upload-pages-artifact@v3
+            - name: Upload built documentation
+              uses: actions/upload-artifact@v4
               with:
+                  name: authoring-docs-site
                   path: docs/.vitepress/dist
+                  if-no-files-found: error
+                  retention-days: 1
 
     deploy:
+        name: Deploy promoted documentation
+        needs:
+            - resolve-source
+            - build
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            pages: write
+            id-token: write
         environment:
             name: github-pages
             url: ${{ steps.deployment.outputs.page_url }}
-        needs: build
-        if: needs.build.outputs.ready == 'true'
-        runs-on: ubuntu-latest
         steps:
+            - name: Configure Pages
+              uses: actions/configure-pages@v5
+
+            - name: Download built documentation
+              uses: actions/download-artifact@v4
+              with:
+                  name: authoring-docs-site
+                  path: ${{ runner.temp }}/authoring-docs-site
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: ${{ runner.temp }}/authoring-docs-site
+
+            - name: Record deployment receipt
+              shell: bash
+              env:
+                  SOURCE_CI_RUN_ID: ${{ needs.resolve-source.outputs.source-ci-run-id }}
+                  SOURCE_CI_RUN_URL: ${{ needs.resolve-source.outputs.source-ci-run-url }}
+                  SOURCE_SHA: ${{ needs.resolve-source.outputs.source-sha }}
+              run: |
+                  {
+                      echo '### Documentation deployment receipt'
+                      echo
+                      echo "- Authoring revision: \`${SOURCE_SHA}\`"
+                      echo "- Authoring CI run: [${SOURCE_CI_RUN_ID}](${SOURCE_CI_RUN_URL})"
+                  } >> "${GITHUB_STEP_SUMMARY}"
+
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v4
