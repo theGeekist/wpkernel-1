@@ -1,0 +1,7 @@
+import { taskPlanConfiguration } from '@geekist/task-graph';
+
+if (typeof taskPlanConfiguration !== 'object') {
+	throw new Error('Task Graph configuration did not load');
+}
+
+process.stdout.write('installed consumer resolved\n');

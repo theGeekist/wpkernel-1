@@ -3,27 +3,31 @@ architecture_version: 1
 id: P2-016
 title: Separate workspace source and installed package resolution
 stage: qualification
-status: proposed
+status: done
 priority: normal
-evidence_milestone: null
+evidence_milestone: 'Workspace source and installed dependency resolution qualified independently; CI and planner contracts green'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+owner: /root/p2_016_resolution
+owner_kind: codex
+lease_started_at: 2026-08-22T11:38:27+08:00
+lease_expires_at: 2026-08-22T15:38:27+08:00
+base_sha: 629117f70c779ee1b84faef3bac40ed54cf0bc47
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - P2-007
 decision_dependencies: []
 conflicts_with: []
 write_scope:
+    - .github/workflows/ci.yml
+    - docs/internal/pipeline/EXTERNAL-LANES.md
+    - docs/internal/pipeline/ROADMAP.md
     - tsconfig.base.json
     - tsconfig.lib.json
     - tsconfig.tests.json
+    - tsconfig.docs.json
     - packages/*/tsconfig*.json
     - tests/fixtures/installed-consumers/**
     - tests/__tests__/resolution/**
