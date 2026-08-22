@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / CustomKernelEvent
+[@wpkernel/core](../index.md) / CustomKernelEvent
 
 # Type Alias: CustomKernelEvent
 
@@ -18,7 +18,7 @@ type CustomKernelEvent = object;
 eventName: string;
 ```
 
----
+***
 
 ### payload
 

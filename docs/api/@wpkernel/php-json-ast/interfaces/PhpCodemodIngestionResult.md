@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpCodemodIngestionResult
+[@wpkernel/php-json-ast](../index.md) / PhpCodemodIngestionResult
 
 # Interface: PhpCodemodIngestionResult
 
@@ -14,7 +14,7 @@
 readonly exitCode: number;
 ```
 
----
+***
 
 ### lines
 
@@ -22,7 +22,7 @@ readonly exitCode: number;
 readonly lines: readonly string[];
 ```
 
----
+***
 
 ### stderr
 

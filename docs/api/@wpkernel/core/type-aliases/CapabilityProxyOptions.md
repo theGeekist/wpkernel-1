@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / CapabilityProxyOptions
+[@wpkernel/core](../index.md) / CapabilityProxyOptions
 
 # Type Alias: CapabilityProxyOptions
 
@@ -23,7 +23,7 @@ capability proxy for context propagation and event correlation.
 actionName: string;
 ```
 
----
+***
 
 ### bridged
 
@@ -31,7 +31,7 @@ actionName: string;
 bridged: boolean;
 ```
 
----
+***
 
 ### namespace
 
@@ -39,7 +39,7 @@ bridged: boolean;
 namespace: string;
 ```
 
----
+***
 
 ### requestId
 
@@ -47,10 +47,10 @@ namespace: string;
 requestId: string;
 ```
 
----
+***
 
 ### scope
 
 ```ts
-scope: 'crossTab' | 'tabLocal';
+scope: "crossTab" | "tabLocal";
 ```

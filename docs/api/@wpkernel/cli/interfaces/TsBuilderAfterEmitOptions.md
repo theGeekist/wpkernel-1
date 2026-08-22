@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / TsBuilderAfterEmitOptions
+[@wpkernel/cli](../index.md) / TsBuilderAfterEmitOptions
 
 # Interface: TsBuilderAfterEmitOptions
 
@@ -18,7 +18,7 @@ readonly emitted: readonly string[];
 
 A list of file paths that were emitted.
 
----
+***
 
 ### reporter
 
@@ -28,7 +28,7 @@ readonly reporter: Reporter;
 
 The reporter instance.
 
----
+***
 
 ### workspace
 

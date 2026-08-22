@@ -1,30 +1,20 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v2.0.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / isPromiseLike
+[@wpkernel/pipeline](../index.md) / isPromiseLike
 
 # Function: isPromiseLike()
 
 ## Call Signature
 
 ```ts
-function isPromiseLike<T>(value): value is PromiseLike<T>;
+function isPromiseLike&lt;T&gt;(value): value is PromiseLike&lt;T&gt;;
 ```
 
-Tests whether a value exposes an inspectable data-property `then` method.
-
-This is the same hardened boundary used by [maybeThen](maybeThen.md),
-[maybeTry](maybeTry.md) and [maybeAll](maybeAll.md). It walks own and prototype property
-descriptors without evaluating a `then` accessor or reading `value.then`.
-Proxy descriptor and prototype traps may run as part of inspection; if they
-throw, the exception is contained and the value is treated as synchronous
-data. An accessor-backed `then` is also treated as data rather than invoked.
-
-This intentionally differs from ordinary JavaScript promise assimilation,
-which reads `value.then` and may execute user code. The guard is suitable at
-native or hostile-object boundaries where inspecting an accessor would grant
-ambient execution.
+Tests whether a value exposes a callable `then` through one ordinary
+property read. Accessors and proxy traps therefore follow JavaScript's normal
+semantics and may throw synchronously.
 
 ### Type Parameters
 
@@ -36,50 +26,32 @@ ambient execution.
 
 #### value
 
-[`MaybePromise`](../type-aliases/MaybePromise.md)<`T`>
+[`MaybePromise`](../type-aliases/MaybePromise.md)&lt;`T`&gt;
 
 Candidate synchronous value or thenable.
 
 ### Returns
 
-`value is PromiseLike<T>`
+`value is PromiseLike&lt;T&gt;`
 
-`true` only for a safely captured data-property `then` function.
+`true` only when that read observes a callable `then`.
 
 ### Example
 
 ```ts
-import { isPromiseLike } from '@wpkernel/pipeline';
-
-const accessorBacked = Object.defineProperty({}, 'then', {
-	get() {
-		throw new Error('must not execute');
-	},
-});
-
 isPromiseLike(Promise.resolve('ready')); // true
-isPromiseLike(accessorBacked); // false, getter was not evaluated
+isPromiseLike('ready'); // false
 ```
 
 ## Call Signature
 
 ```ts
-function isPromiseLike(value): value is PromiseLike<unknown>;
+function isPromiseLike(value): value is PromiseLike&lt;unknown&gt;;
 ```
 
-Tests whether a value exposes an inspectable data-property `then` method.
-
-This is the same hardened boundary used by [maybeThen](maybeThen.md),
-[maybeTry](maybeTry.md) and [maybeAll](maybeAll.md). It walks own and prototype property
-descriptors without evaluating a `then` accessor or reading `value.then`.
-Proxy descriptor and prototype traps may run as part of inspection; if they
-throw, the exception is contained and the value is treated as synchronous
-data. An accessor-backed `then` is also treated as data rather than invoked.
-
-This intentionally differs from ordinary JavaScript promise assimilation,
-which reads `value.then` and may execute user code. The guard is suitable at
-native or hostile-object boundaries where inspecting an accessor would grant
-ambient execution.
+Tests whether a value exposes a callable `then` through one ordinary
+property read. Accessors and proxy traps therefore follow JavaScript's normal
+semantics and may throw synchronously.
 
 ### Parameters
 
@@ -91,21 +63,13 @@ Candidate synchronous value or thenable.
 
 ### Returns
 
-`value is PromiseLike<unknown>`
+`value is PromiseLike&lt;unknown&gt;`
 
-`true` only for a safely captured data-property `then` function.
+`true` only when that read observes a callable `then`.
 
 ### Example
 
 ```ts
-import { isPromiseLike } from '@wpkernel/pipeline';
-
-const accessorBacked = Object.defineProperty({}, 'then', {
-	get() {
-		throw new Error('must not execute');
-	},
-});
-
 isPromiseLike(Promise.resolve('ready')); // true
-isPromiseLike(accessorBacked); // false, getter was not evaluated
+isPromiseLike('ready'); // false
 ```

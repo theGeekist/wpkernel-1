@@ -1,18 +1,15 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / collectTaxonomyQueryEntries
+[@wpkernel/wp-json-ast](../index.md) / collectTaxonomyQueryEntries
 
 # Function: collectTaxonomyQueryEntries()
 
 ```ts
-function collectTaxonomyQueryEntries(storage): [
-	string,
-	{
-		taxonomy: string;
-	},
-][];
+function collectTaxonomyQueryEntries(storage): [string, {
+  taxonomy: string;
+}][];
 ```
 
 ## Parameters
@@ -24,5 +21,5 @@ function collectTaxonomyQueryEntries(storage): [
 ## Returns
 
 \[`string`, \{
-`taxonomy`: `string`;
+  `taxonomy`: `string`;
 \}\][]

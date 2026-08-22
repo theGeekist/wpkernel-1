@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / EnvironmentalError
+[@wpkernel/core](../index.md) / EnvironmentalError
 
 # Class: EnvironmentalError
 
@@ -52,7 +52,7 @@ Error code - identifies the type of error
 
 [`WPKernelError`](WPKernelError.md).[`code`](WPKernelError.md#code)
 
----
+***
 
 ### reason
 
@@ -60,7 +60,7 @@ Error code - identifies the type of error
 readonly reason: string;
 ```
 
----
+***
 
 ### context?
 
@@ -74,7 +74,7 @@ Context in which the error occurred
 
 [`WPKernelError`](WPKernelError.md).[`context`](WPKernelError.md#context)
 
----
+***
 
 ### data?
 
@@ -116,7 +116,7 @@ New WPKernelError instance
 
 [`WPKernelError`](WPKernelError.md).[`fromJSON`](WPKernelError.md#fromjson)
 
----
+***
 
 ### isWPKernelError()
 
@@ -144,7 +144,7 @@ True if error is a WPKernelError
 
 [`WPKernelError`](WPKernelError.md).[`isWPKernelError`](WPKernelError.md#iswpkernelerror)
 
----
+***
 
 ### toJSON()
 
@@ -164,7 +164,7 @@ Serialized error object
 
 [`WPKernelError`](WPKernelError.md).[`toJSON`](WPKernelError.md#tojson)
 
----
+***
 
 ### wrap()
 

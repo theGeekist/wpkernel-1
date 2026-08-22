@@ -1,10 +1,10 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/ui](../README.md) / Prefetcher
+[@wpkernel/ui](../index.md) / Prefetcher
 
-# Interface: Prefetcher<TQuery>
+# Interface: Prefetcher&lt;TQuery&gt;
 
 Interface for the prefetcher, which exposes stable cache prefetch helpers for a resource.
 
@@ -24,12 +24,12 @@ prefetchGet: PrefetchGet;
 
 Prefetches a single item from the resource.
 
----
+***
 
 ### prefetchList
 
 ```ts
-prefetchList: PrefetchList<TQuery>;
+prefetchList: PrefetchList&lt;TQuery&gt;;
 ```
 
 Prefetches a list of items from the resource.

@@ -58,14 +58,12 @@ installed or transitive consumers.
 
 ## Evidence
 
-- Published Task Graph beta.2 plans WPKernel's real manifest when installed
-  outside the WPKernel source-mapping boundary.
-- The same raw TypeScript CLI fails beneath WPKernel because Bun redirects its
-  canonical Pipeline import to `packages/pipeline/src/index.ts`.
-- A compiled Task Graph CLI retaining exact Pipeline 1.4.1 works from the
-  WPKernel directory because no runtime package import remains to redirect.
-- Importing Task Graph's public `TaskPlanConfiguration` under WPKernel's root
-  paths redirects its `HelperMode` declaration to local v2 and reports TS2305.
+- Published Task Graph beta.4 plans WPKernel's real Pipeline manifest from the
+  repository root while retaining exact Pipeline 1.4.1 as its own dependency.
+- Native installed-package resolution selects Task Graph beta.4's Pipeline
+  1.4.1 package rather than WPKernel's local v2 source.
+- Strict NodeNext qualification compiles the selected Pipeline 1.4.1
+  declarations without aliases, dependency overrides or `skipLibCheck`.
 
 ## Acceptance criteria
 

@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / MergeMarkers
+[@wpkernel/cli](../index.md) / MergeMarkers
 
 # Interface: MergeMarkers
 
@@ -16,7 +16,7 @@ Marker strings used when performing three-way merges.
 readonly end: string;
 ```
 
----
+***
 
 ### mid
 
@@ -24,7 +24,7 @@ readonly end: string;
 readonly mid: string;
 ```
 
----
+***
 
 ### start
 

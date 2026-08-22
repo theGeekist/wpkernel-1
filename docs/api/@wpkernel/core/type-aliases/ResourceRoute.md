@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ResourceRoute
+[@wpkernel/core](../index.md) / ResourceRoute
 
 # Type Alias: ResourceRoute
 
@@ -28,7 +28,7 @@ method: HttpMethod;
 
 HTTP method
 
----
+***
 
 ### path
 
@@ -38,7 +38,7 @@ path: string;
 
 REST API path (may include :id, :slug patterns)
 
----
+***
 
 ### capability?
 

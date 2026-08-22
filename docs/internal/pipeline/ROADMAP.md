@@ -11,8 +11,8 @@ now complete:
 ```text
 Pipeline 1.4.1 published from wpkernel/wpkernel
   -> Task Graph qualified against exact 1.4.1
-  -> Task Graph 0.1.0-beta.2 published
-  -> WPKernel pins exact Task Graph 0.1.0-beta.2
+  -> Task Graph 0.1.0-beta.4 published
+  -> WPKernel pins exact Task Graph 0.1.0-beta.4
 ```
 
 The published Task Graph manifest now owns the exact Pipeline 1.4.1 dependency.
@@ -20,19 +20,18 @@ WPKernel does not override it. Release evidence and the remaining external
 llm-core lane are recorded in [`EXTERNAL-LANES.md`](EXTERNAL-LANES.md).
 
 P2-016 separates WPKernel's intentional first-party source aliases from the
-root runtime context. Task Graph beta.2's raw TypeScript planner can therefore
-resolve its exact Pipeline 1.4.1 dependency without being redirected to the
-local v2 root. A narrow compiled beta.3 still retains and bundles exact Pipeline
-1.4.1, but it is now a downstream tooling update rather than a workspace bridge:
+root runtime context. Task Graph beta.4 retains exact Pipeline 1.4.1 and its
+compiled planner resolves that installed dependency without being redirected
+to the local v2 root:
 
 ```text
 Task Graph compiled-package base
-  -> qualified 0.1.0-beta.3 archive using Pipeline 1.4.1
+  -> qualified 0.1.0-beta.4 archive using Pipeline 1.4.1
   -> WPKernel exact dependency and lock update
-  -> successful task-graph:plan against the P2-007 checkout
+  -> successful task-graph:plan against the Pipeline v2 checkout
 ```
 
-Neither beta.3 nor native Task Graph v2 adoption is a Pipeline runtime or
+Neither beta.4 nor native Task Graph v2 adoption is a Pipeline runtime or
 release dependency. P2-016 owns and qualifies the WPKernel resolution boundary.
 
 The llm-core specification compiler has a separate early migration:

@@ -195,6 +195,6 @@ Suggested execution tier: frontier FP/API implementation followed by an
 independent authority and algebra review.
 
 This post-release task depends on P2-009. It does not block P2-007, Task Graph
-beta.3, current v2 qualification or the 2.0.0 release chain. It becomes a
+beta.4, current v2 qualification or the 2.0.0 release chain. It becomes a
 TaskGraph adoption dependency only if TaskGraph chooses to inspect canonical
 topology without evaluating genuine planning nodes.

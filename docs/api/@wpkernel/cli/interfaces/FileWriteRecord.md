@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / FileWriteRecord
+[@wpkernel/cli](../index.md) / FileWriteRecord
 
 # Interface: FileWriteRecord
 
@@ -16,7 +16,7 @@ Metadata describing an individual file write event.
 hash: string;
 ```
 
----
+***
 
 ### path
 
@@ -24,7 +24,7 @@ hash: string;
 path: string;
 ```
 
----
+***
 
 ### status
 
@@ -32,7 +32,7 @@ path: string;
 status: FileWriteStatus;
 ```
 
----
+***
 
 ### reason?
 

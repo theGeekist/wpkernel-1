@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / CapabilityMapWarning
+[@wpkernel/wp-json-ast](../index.md) / CapabilityMapWarning
 
 # Interface: CapabilityMapWarning
 
@@ -14,7 +14,7 @@
 readonly code: string;
 ```
 
----
+***
 
 ### message
 
@@ -22,10 +22,10 @@ readonly code: string;
 readonly message: string;
 ```
 
----
+***
 
 ### context?
 
 ```ts
-readonly optional context: Record<string, unknown>;
+readonly optional context: Record&lt;string, unknown&gt;;
 ```

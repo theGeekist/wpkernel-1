@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / BuildWpOptionStorageArtifactsOptions
+[@wpkernel/wp-json-ast](../index.md) / BuildWpOptionStorageArtifactsOptions
 
 # Interface: BuildWpOptionStorageArtifactsOptions
 
@@ -11,7 +11,7 @@
 ### errorCodeFactory()
 
 ```ts
-readonly errorCodeFactory: (suffix) => string;
+readonly errorCodeFactory: (suffix) =&gt; string;
 ```
 
 #### Parameters
@@ -24,7 +24,7 @@ readonly errorCodeFactory: (suffix) => string;
 
 `string`
 
----
+***
 
 ### optionName
 
@@ -32,7 +32,7 @@ readonly errorCodeFactory: (suffix) => string;
 readonly optionName: string;
 ```
 
----
+***
 
 ### pascalName
 

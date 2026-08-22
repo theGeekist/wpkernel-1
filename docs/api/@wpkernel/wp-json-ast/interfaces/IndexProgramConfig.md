@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / IndexProgramConfig
+[@wpkernel/wp-json-ast](../index.md) / IndexProgramConfig
 
 # Interface: IndexProgramConfig
 
@@ -14,7 +14,7 @@
 readonly entries: readonly ModuleIndexEntry[];
 ```
 
----
+***
 
 ### namespace
 
@@ -22,7 +22,7 @@ readonly entries: readonly ModuleIndexEntry[];
 readonly namespace: string | null;
 ```
 
----
+***
 
 ### origin
 
@@ -30,7 +30,7 @@ readonly namespace: string | null;
 readonly origin: string;
 ```
 
----
+***
 
 ### augment?
 
@@ -38,7 +38,7 @@ readonly origin: string;
 readonly optional augment: readonly ModuleIndexAugmentor[];
 ```
 
----
+***
 
 ### metadataName?
 

@@ -1,15 +1,15 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / PipelineExtensionHook
+[@wpkernel/cli](../index.md) / PipelineExtensionHook
 
 # Type Alias: PipelineExtensionHook
 
 ```ts
-type PipelineExtensionHook = (
-	options
-) => Promise<PipelineExtensionHookResult | void>;
+type PipelineExtensionHook = (options) =&gt; MaybePromise&lt;
+  | PipelineExtensionHookResult
+| void&gt;;
 ```
 
 Represents a pipeline extension hook function.
@@ -22,6 +22,6 @@ Represents a pipeline extension hook function.
 
 ## Returns
 
-`Promise`<
-\| [`PipelineExtensionHookResult`](../interfaces/PipelineExtensionHookResult.md)
-\| `void`>
+`MaybePromise`&lt;
+  \| [`PipelineExtensionHookResult`](../interfaces/PipelineExtensionHookResult.md)
+  \| `void`&gt;

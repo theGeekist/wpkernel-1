@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / GitHelperDependencies
+[@wpkernel/cli](../index.md) / GitHelperDependencies
 
 # Interface: GitHelperDependencies
 
@@ -11,7 +11,7 @@
 ### detectRepository()
 
 ```ts
-readonly detectRepository: (cwd, __namedParameters) => Promise<boolean>;
+readonly detectRepository: (cwd, __namedParameters) =&gt; Promise&lt;boolean&gt;;
 ```
 
 #### Parameters
@@ -26,14 +26,14 @@ readonly detectRepository: (cwd, __namedParameters) => Promise<boolean>;
 
 #### Returns
 
-`Promise`<`boolean`>
+`Promise`&lt;`boolean`&gt;
 
----
+***
 
 ### initRepository()
 
 ```ts
-readonly initRepository: (cwd, __namedParameters) => Promise<void>;
+readonly initRepository: (cwd, __namedParameters) =&gt; Promise&lt;void&gt;;
 ```
 
 #### Parameters
@@ -48,4 +48,4 @@ readonly initRepository: (cwd, __namedParameters) => Promise<void>;
 
 #### Returns
 
-`Promise`<`void`>
+`Promise`&lt;`void`&gt;

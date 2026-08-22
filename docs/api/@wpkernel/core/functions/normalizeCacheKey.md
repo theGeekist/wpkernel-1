@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / normalizeCacheKey
+[@wpkernel/core](../index.md) / normalizeCacheKey
 
 # Function: normalizeCacheKey()
 
@@ -30,7 +30,7 @@ Normalized string key
 ## Example
 
 ```ts
-normalizeCacheKey(['thing', 'list']); // → 'thing:list'
-normalizeCacheKey(['thing', 'list', null, 1]); // → 'thing:list:1'
-normalizeCacheKey(['thing', 'get', 123]); // → 'thing:get:123'
+normalizeCacheKey(['thing', 'list'])           // → 'thing:list'
+normalizeCacheKey(['thing', 'list', null, 1])  // → 'thing:list:1'
+normalizeCacheKey(['thing', 'get', 123])       // → 'thing:get:123'
 ```

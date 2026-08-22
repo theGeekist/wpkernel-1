@@ -1,23 +1,21 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / createPhpCodemodIngestionReadinessHelper
+[@wpkernel/cli](../index.md) / createPhpCodemodIngestionReadinessHelper
 
 # Function: createPhpCodemodIngestionReadinessHelper()
 
 ```ts
-function createPhpCodemodIngestionReadinessHelper(
-	overrides
-): ReadinessHelper<PhpCodemodIngestionState>;
+function createPhpCodemodIngestionReadinessHelper(overrides): ReadinessHelper&lt;PhpCodemodIngestionState&gt;;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`<[`PhpCodemodIngestionDependencies`](../interfaces/PhpCodemodIngestionDependencies.md)> = `{}`
+`Partial`&lt;[`PhpCodemodIngestionDependencies`](../interfaces/PhpCodemodIngestionDependencies.md)&gt; = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`PhpCodemodIngestionState`](../interfaces/PhpCodemodIngestionState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`PhpCodemodIngestionState`](../interfaces/PhpCodemodIngestionState.md)&gt;

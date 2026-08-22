@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / CapabilityOptions
+[@wpkernel/core](../index.md) / CapabilityOptions
 
 # Type Alias: CapabilityOptions
 
@@ -20,7 +20,7 @@ Additional options accepted by `defineCapability()`.
 optional adapters: CapabilityAdapters;
 ```
 
----
+***
 
 ### cache?
 
@@ -28,7 +28,7 @@ optional adapters: CapabilityAdapters;
 optional cache: CapabilityCacheOptions;
 ```
 
----
+***
 
 ### debug?
 
@@ -36,7 +36,7 @@ optional cache: CapabilityCacheOptions;
 optional debug: boolean;
 ```
 
----
+***
 
 ### namespace?
 

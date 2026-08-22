@@ -365,28 +365,49 @@ describe('standard pipeline runner coverage', () => {
 		).toThrow('expected "builder"');
 	});
 
-	it('uses the default validation error for equal helper kinds', () => {
-		expect(() =>
+	it('rejects equal helper kinds synchronously with host error authority', () => {
+		const equalKindOptions: Parameters<typeof createPipeline>[0] = {
+			fragmentKind: 'same',
+			builderKind: 'same',
+			createBuildOptions: () => ({}),
+			createContext: () => ({ reporter: baseReporter }),
+			createFragmentState: () => ({}),
+			createFragmentArgs: ({ context }) => ({
+				context,
+				input: undefined,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+			finalizeFragmentState: ({ draft }) => draft,
+			createBuilderArgs: ({ context }) => ({
+				context,
+				input: undefined,
+				output: undefined,
+				reporter: baseReporter,
+			}),
+			createRunResult: ({ artifact }) => artifact,
+		};
+
+		expect(() => createPipeline(equalKindOptions)).toThrow(
+			'must be distinct'
+		);
+
+		const customError = new Error('custom validation error');
+		const createError = jest.fn(() => customError);
+
+		try {
 			createPipeline({
-				fragmentKind: 'same',
-				builderKind: 'same',
-				createBuildOptions: () => ({}),
-				createContext: () => ({ reporter: baseReporter }),
-				createFragmentState: () => ({}),
-				createFragmentArgs: ({ context }) => ({
-					context,
-					input: undefined,
-					output: undefined,
-					reporter: baseReporter,
-				}),
-				finalizeFragmentState: ({ draft }) => draft,
-				createBuilderArgs: ({ context }) => ({
-					context,
-					input: undefined,
-					output: undefined,
-					reporter: baseReporter,
-				}),
-			})
-		).toThrow('must be distinct');
+				...equalKindOptions,
+				createError,
+			});
+			throw new Error('Expected createPipeline to fail');
+		} catch (error) {
+			expect(error).toBe(customError);
+		}
+
+		expect(createError).toHaveBeenCalledWith(
+			'ValidationError',
+			'Fragment and builder helper kinds must be distinct.'
+		);
 	});
 });

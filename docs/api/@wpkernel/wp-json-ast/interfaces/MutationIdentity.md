@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / MutationIdentity
+[@wpkernel/wp-json-ast](../index.md) / MutationIdentity
 
 # Interface: MutationIdentity
 
@@ -16,7 +16,7 @@ Identity descriptor for wp-post mutation helpers.
 readonly param: string;
 ```
 
----
+***
 
 ### type
 

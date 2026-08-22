@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / RestRouteConfig
+[@wpkernel/wp-json-ast](../index.md) / RestRouteConfig
 
 # Interface: RestRouteConfig
 
@@ -14,7 +14,7 @@
 readonly metadata: ResourceControllerRouteMetadata;
 ```
 
----
+***
 
 ### methodName
 
@@ -22,7 +22,7 @@ readonly metadata: ResourceControllerRouteMetadata;
 readonly methodName: string;
 ```
 
----
+***
 
 ### statements
 
@@ -30,7 +30,7 @@ readonly methodName: string;
 readonly statements: readonly PhpStmt[];
 ```
 
----
+***
 
 ### capability?
 
@@ -38,7 +38,7 @@ readonly statements: readonly PhpStmt[];
 readonly optional capability: string;
 ```
 
----
+***
 
 ### docblockSummary?
 
@@ -46,7 +46,7 @@ readonly optional capability: string;
 readonly optional docblockSummary: string;
 ```
 
----
+***
 
 ### requestParameters?
 
@@ -54,7 +54,7 @@ readonly optional docblockSummary: string;
 readonly optional requestParameters: readonly RestRouteRequestParameter[];
 ```
 
----
+***
 
 ### usesIdentity?
 

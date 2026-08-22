@@ -1,21 +1,21 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ResourceIdentityConfig
+[@wpkernel/core](../index.md) / ResourceIdentityConfig
 
 # Type Alias: ResourceIdentityConfig
 
 ```ts
 type ResourceIdentityConfig =
-	| {
-			type: 'number';
-			param?: 'id';
-	  }
-	| {
-			type: 'string';
-			param?: 'id' | 'slug' | 'uuid';
-	  };
+  | {
+  type: "number";
+  param?: "id";
+}
+  | {
+  type: "string";
+  param?: "id" | "slug" | "uuid";
+};
 ```
 
 Identifier configuration for CLI-generated helpers.

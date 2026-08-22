@@ -1,13 +1,13 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ReduxDispatch
+[@wpkernel/core](../index.md) / ReduxDispatch
 
 # Type Alias: ReduxDispatch
 
 ```ts
-type ReduxDispatch = (action) => unknown;
+type ReduxDispatch = (action) =&gt; unknown;
 ```
 
 Redux compatible dispatch signature (duck-typed from Redux types).

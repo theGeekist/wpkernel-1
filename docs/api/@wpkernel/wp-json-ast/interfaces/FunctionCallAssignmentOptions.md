@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / FunctionCallAssignmentOptions
+[@wpkernel/wp-json-ast](../index.md) / FunctionCallAssignmentOptions
 
 # Interface: FunctionCallAssignmentOptions
 
@@ -14,7 +14,7 @@
 readonly functionName: string;
 ```
 
----
+***
 
 ### variable
 
@@ -22,7 +22,7 @@ readonly functionName: string;
 readonly variable: string;
 ```
 
----
+***
 
 ### args?
 

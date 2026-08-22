@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / PopulateArtifactsBaseOptions
+[@wpkernel/cli](../index.md) / PopulateArtifactsBaseOptions
 
 # Interface: PopulateArtifactsBaseOptions
 
@@ -14,7 +14,7 @@
 readonly ir: IRv1;
 ```
 
----
+***
 
 ### state
 

@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / ResourceMetadataHost
+[@wpkernel/wp-json-ast](../index.md) / ResourceMetadataHost
 
 # Interface: ResourceMetadataHost
 
@@ -11,19 +11,19 @@
 ### getMetadata()
 
 ```ts
-getMetadata: () => WpPhpFileMetadata;
+getMetadata: () =&gt; WpPhpFileMetadata;
 ```
 
 #### Returns
 
 [`WpPhpFileMetadata`](../type-aliases/WpPhpFileMetadata.md)
 
----
+***
 
 ### setMetadata()
 
 ```ts
-setMetadata: (metadata) => void;
+setMetadata: (metadata) =&gt; void;
 ```
 
 #### Parameters

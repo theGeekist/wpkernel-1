@@ -1,20 +1,20 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / getPhpBuilderChannel
+[@wpkernel/cli](../index.md) / getPhpBuilderChannel
 
 # Function: getPhpBuilderChannel()
 
 ```ts
-function getPhpBuilderChannel<TContext>(context): PhpBuilderChannel;
+function getPhpBuilderChannel&lt;TContext&gt;(context): PhpBuilderChannel;
 ```
 
 ## Type Parameters
 
 ### TContext
 
-`TContext` _extends_ `PipelineContext`
+`TContext` *extends* `PipelineContext`
 
 ## Parameters
 

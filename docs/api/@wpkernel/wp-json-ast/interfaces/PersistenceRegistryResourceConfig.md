@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / PersistenceRegistryResourceConfig
+[@wpkernel/wp-json-ast](../index.md) / PersistenceRegistryResourceConfig
 
 # Interface: PersistenceRegistryResourceConfig
 
@@ -14,7 +14,7 @@
 readonly name: string;
 ```
 
----
+***
 
 ### identity?
 
@@ -22,7 +22,7 @@ readonly name: string;
 readonly optional identity: ResourceIdentityConfig | null;
 ```
 
----
+***
 
 ### storage?
 

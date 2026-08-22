@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / RouteIdentityContext
+[@wpkernel/wp-json-ast](../index.md) / RouteIdentityContext
 
 # Interface: RouteIdentityContext
 
@@ -14,7 +14,7 @@
 readonly identity: ResourceControllerIdentityPlan;
 ```
 
----
+***
 
 ### route
 
@@ -22,7 +22,7 @@ readonly identity: ResourceControllerIdentityPlan;
 readonly route: RouteDefinition;
 ```
 
----
+***
 
 ### routeKind
 

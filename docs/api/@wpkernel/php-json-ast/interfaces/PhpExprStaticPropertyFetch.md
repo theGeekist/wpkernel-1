@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpExprStaticPropertyFetch
+[@wpkernel/php-json-ast](../index.md) / PhpExprStaticPropertyFetch
 
 # Interface: PhpExprStaticPropertyFetch
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
----
+***
 
 ### class
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 readonly class: PhpExpr | PhpName;
 ```
 
----
+***
 
 ### name
 
@@ -42,7 +42,7 @@ readonly name:
   | PhpIdentifier;
 ```
 
----
+***
 
 ### nodeType
 

@@ -1,11 +1,11 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ReporterLevel
+[@wpkernel/core](../index.md) / ReporterLevel
 
 # Type Alias: ReporterLevel
 
 ```ts
-type ReporterLevel = 'debug' | 'info' | 'warn' | 'error';
+type ReporterLevel = "debug" | "info" | "warn" | "error";
 ```

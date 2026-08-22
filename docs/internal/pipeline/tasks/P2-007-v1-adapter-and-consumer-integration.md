@@ -64,7 +64,6 @@ write_scope:
     - docs/internal/pipeline/ROADMAP.md
     - docs/internal/pipeline/EXTERNAL-LANES.md
     - docs/internal/pipeline/tasks/P2-016-workspace-installed-resolution-boundary.md
-    - docs/internal/php-json-ast/tasks/program-builder-fp-seams-v1.md
     - docs/packages/pipeline/migrating-to-v2.md
     - vite.config.base.ts
     - scripts/check-dts-imports.mjs
@@ -206,16 +205,12 @@ throwing observers.
 
 ### Workspace tooling follow-up
 
-`@geekist/task-graph@0.1.0-beta.2` fails only when its raw TypeScript CLI is
-executed beneath WPKernel's global Pipeline source mapping. The same published
-archive plans this project under isolated package resolution, and the compiled
-beta.3 candidate plans it from the WPKernel working directory while retaining
-exact Pipeline 1.4.1.
-
-Publishing and pinning that compiled beta.3 is required before the next
-governed claim, not for P2-007 acceptance. P2-016 retains the separate valid
-finding that WPKernel's global type mapping can also redirect a transitive
-declaration import.
+The original beta.2 raw TypeScript CLI exposed WPKernel's global Pipeline source
+mapping collision. P2-016 separated first-party source development from
+installed-package resolution. The repository now pins compiled Task Graph
+beta.4, which plans from the WPKernel working directory while its own exact
+Pipeline 1.4.1 dependency remains installed-package authority. This tooling
+update was not a P2-007 acceptance condition.
 
 ## Handoff
 
@@ -229,9 +224,10 @@ P2-007 coverage axis is level with or above the reconstructed base.
 ### Remaining risks and explicit deferments
 
 - `packages/php-json-ast/src/programBuilder.ts` remains an 843-line module with
-  a runtime `LocationTracker` class. The valid FP/complexity finding is deferred
-  to `program-builder-fp-seams-v1` because changing source-location state during
-  the import migration would create avoidable compatibility risk.
+  a runtime `LocationTracker` class. The valid FP/complexity finding remains
+  deferred because changing source-location state during the import migration
+  would create avoidable compatibility risk. Any follow-up belongs in the
+  existing PHP JSON AST roadmap rather than Pipeline's task authority.
 - Declaration directory resolution assumes one complete declaration outDir per
   build. Every current WPKernel package satisfies that constraint. Multi-outDir
   support is deferred until a consumer introduces it.
@@ -243,7 +239,7 @@ P2-007 coverage axis is level with or above the reconstructed base.
 - WPKernel's global `@wpkernel/pipeline` type mapping can redirect a transitive
   declaration import away from the dependency version requested by its owner.
   The current planner does not import Task Graph's public types, so the finding
-  is safely deferable to P2-016 without weakening beta.3 qualification.
+  was safely deferred to P2-016 without weakening Task Graph qualification.
 - CLI's inherited 85.5% branch threshold predates P2-007 and remains red despite
   every coverage axis improving over the exact base. That threshold debt is
   deferred without lowering it; P2-007 owns non-regression, not unrelated
@@ -255,7 +251,6 @@ P2-007 coverage axis is level with or above the reconstructed base.
 
 ### Recommended next task
 
-Release and consume the qualified compiled Task Graph beta.3 tooling bridge,
-rerun planning, then claim P2-008. Native Pipeline v2 adoption remains a later
-Task Graph migration. Admit `program-builder-fp-seams-v1` independently after
-P2-007 releases its write scope.
+Claim P2-008. Native Pipeline v2 adoption remains a later Task Graph migration.
+Admit any program-builder FP work independently through the existing PHP JSON
+AST roadmap after P2-007 releases its write scope.

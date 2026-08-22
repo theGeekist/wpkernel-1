@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpAstContextEntry
+[@wpkernel/php-json-ast](../index.md) / PhpAstContextEntry
 
 # Interface: PhpAstContextEntry
 
@@ -14,7 +14,7 @@
 readonly context: PhpAstContext;
 ```
 
----
+***
 
 ### filePath
 
@@ -22,7 +22,7 @@ readonly context: PhpAstContext;
 readonly filePath: string;
 ```
 
----
+***
 
 ### key
 
@@ -30,7 +30,7 @@ readonly filePath: string;
 readonly key: string;
 ```
 
----
+***
 
 ### metadata
 

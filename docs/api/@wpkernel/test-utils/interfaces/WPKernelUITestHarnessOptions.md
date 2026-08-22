@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/test-utils](../README.md) / WPKernelUITestHarnessOptions
+[@wpkernel/test-utils](../index.md) / WPKernelUITestHarnessOptions
 
 # Interface: WPKernelUITestHarnessOptions
 
@@ -18,7 +18,7 @@ optional namespace: string;
 
 The namespace for the runtime.
 
----
+***
 
 ### provider?
 
@@ -28,12 +28,12 @@ optional provider: WPKernelUIProviderComponent;
 
 The WPKernelUIProvider component to use.
 
----
+***
 
 ### reporter?
 
 ```ts
-optional reporter: Partial<Reporter>;
+optional reporter: Partial&lt;Reporter&gt;;
 ```
 
 Partial overrides for the reporter.

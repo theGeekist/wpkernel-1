@@ -103,6 +103,7 @@
 		"notDocumented": false
 	},
 	"fileExtension": ".md",
+	"entryFileName": "index.md",
 	"flattenOutputFiles": false,
 	"useCodeBlocks": true
 }

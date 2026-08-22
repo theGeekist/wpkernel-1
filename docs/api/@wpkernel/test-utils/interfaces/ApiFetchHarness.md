@@ -1,8 +1,8 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/test-utils](../README.md) / ApiFetchHarness
+[@wpkernel/test-utils](../index.md) / ApiFetchHarness
 
 # Interface: ApiFetchHarness
 
@@ -18,7 +18,7 @@ apiFetch: Mock;
 
 The mock `apiFetch` function.
 
----
+***
 
 ### doAction
 
@@ -28,7 +28,7 @@ doAction: Mock;
 
 The mock `doAction` function from `wp.hooks`.
 
----
+***
 
 ### harness
 
@@ -38,7 +38,7 @@ harness: WordPressTestHarness;
 
 The underlying WordPress test harness.
 
----
+***
 
 ### hooks
 

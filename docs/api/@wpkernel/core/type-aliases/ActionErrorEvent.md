@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ActionErrorEvent
+[@wpkernel/core](../index.md) / ActionErrorEvent
 
 # Type Alias: ActionErrorEvent
 
@@ -13,7 +13,6 @@ type ActionErrorEvent = object & ActionLifecycleEventBase;
 Lifecycle event emitted when an action fails.
 
 Emitted when the action function throws an error, enabling:
-
 - Error notifications and reporting
 - Retry logic and fallback behavior
 - Error tracking in observability tools
@@ -37,5 +36,5 @@ error: unknown;
 ### phase
 
 ```ts
-phase: 'error';
+phase: "error";
 ```
