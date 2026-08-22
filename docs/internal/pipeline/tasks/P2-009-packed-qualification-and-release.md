@@ -186,7 +186,15 @@ Suggested execution tier: balanced release execution with frontier audit.
   Prettier output. Both are deferred generator-policy debt: generated API is
   never hand-edited, and neither finding changes the qualified Pipeline surface
   or a published route.
+- Upstream PR 399 merged as `a8f46132f37ac0b506aa6c376204701ef01f8098`.
+  Main CI run 32560994524 and documentation deployment 32560994532 pass on
+  that exact merge commit.
+- The first `pipeline-v2.0.0` trusted-publishing run, 32561246943, failed closed
+  before packing or publication because its admission shell referenced
+  `GITHUB_TOKEN` without mapping `github.token` into the step environment. The
+  recovery contribution makes that capability explicit; npm remains
+  unpublished while the corrected workflow is qualified and merged.
 - The task remains in progress until the contribution is merged upstream, `pipewrk`
-  creates `pipeline-v2.0.0` at that merged commit, the trusted workflow
-  publishes its single qualified archive, and registry SRI, shasum and `latest`
-  evidence are recorded.
+  recreates `pipeline-v2.0.0` at the corrected green merge commit, the trusted
+  workflow publishes its single qualified archive, and registry SRI, shasum
+  and `latest` evidence are recorded.

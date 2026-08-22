@@ -45,6 +45,8 @@ jobs:
             - name: Verify release identity and upstream admission
               id: identity
               shell: bash
+              env:
+                  GITHUB_TOKEN: ${{ github.token }}
               run: |
                   set -euo pipefail
                   if [[ "${GITHUB_ACTOR}" != 'pipewrk' ]]; then
