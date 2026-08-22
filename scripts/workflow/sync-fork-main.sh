@@ -11,16 +11,21 @@ require_binary() {
 	if ! command -v "$1" >/dev/null 2>&1; then
 		echo "Error: missing required command '$1'." >&2
 		exit 1
-	}
+	fi
 }
 
 require_clean_worktree() {
-	if [[ ${ALLOW_DIRTY:-0} != "1" ]]; then
-		if ! git diff --quiet --ignore-submodules --cached || \
-			! git diff --quiet --ignore-submodules; then
-			echo "Error: working tree has changes. Commit or stash before continuing." >&2
-			exit 1
-		fi
+	local status
+	if [[ ${ALLOW_DIRTY:-0} == "1" ]]; then
+		return
+	fi
+	if ! status=$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none); then
+		echo "Error: unable to inspect the working tree." >&2
+		exit 1
+	fi
+	if [[ -n $status ]]; then
+		echo "Error: working tree has changes. Commit or stash before continuing." >&2
+		exit 1
 	fi
 }
 
@@ -28,7 +33,7 @@ ensure_branch_exists() {
 	if ! git show-ref --verify --quiet "refs/heads/${FORK_BRANCH}"; then
 		echo "Error: local branch '${FORK_BRANCH}' does not exist." >&2
 		exit 1
-	}
+	fi
 }
 
 ensure_remote_branch() {
@@ -37,7 +42,7 @@ ensure_remote_branch() {
 	if ! git show-ref --verify --quiet "refs/remotes/${remote}/${branch}"; then
 		echo "Error: missing ${remote}/${branch}. Did you fetch it?" >&2
 		exit 1
-	}
+	fi
 }
 
 require_binary git
