@@ -20,15 +20,22 @@ const fixtureRoot = path.join(
 );
 const temporaryRoots: string[] = [];
 
-const resolveTaskGraphPipeline = async (): Promise<string> => {
+interface InstalledDependencyResolution {
+	readonly pipelineEntry: string;
+	readonly taskGraphEntry: string;
+}
+
+async function resolveTaskGraphPipeline(): Promise<InstalledDependencyResolution> {
 	const source = String.raw`
 		import { createRequire } from 'node:module';
-		import path from 'node:path';
+		import { fileURLToPath } from 'node:url';
 
-		const workspaceRequire = createRequire(path.join(process.cwd(), 'package.json'));
-		const taskGraphEntry = workspaceRequire.resolve('@geekist/task-graph');
+		const taskGraphEntry = fileURLToPath(import.meta.resolve('@geekist/task-graph'));
 		const taskGraphRequire = createRequire(taskGraphEntry);
-		process.stdout.write(taskGraphRequire.resolve('@wpkernel/pipeline'));
+		process.stdout.write(JSON.stringify({
+			pipelineEntry: taskGraphRequire.resolve('@wpkernel/pipeline'),
+			taskGraphEntry,
+		}));
 	`;
 	const { stdout, stderr } = await execFileAsync(
 		process.execPath,
@@ -40,8 +47,8 @@ const resolveTaskGraphPipeline = async (): Promise<string> => {
 			`Native installed-package resolution failed:\n${stderr}`
 		);
 	}
-	return stdout;
-};
+	return JSON.parse(stdout) as InstalledDependencyResolution;
+}
 
 const readConfig = (configPath: string): ts.ParsedCommandLine => {
 	const loaded = ts.readConfigFile(configPath, ts.sys.readFile);
@@ -96,10 +103,23 @@ describe('workspace and installed package resolution', () => {
 	});
 
 	it('typechecks the installed Pipeline declarations under strict NodeNext', async () => {
-		const publishedPipelineEntry = await resolveTaskGraphPipeline();
-		const publishedPipelineRoot = path.dirname(
-			path.dirname(publishedPipelineEntry)
-		);
+		const { pipelineEntry, taskGraphEntry } =
+			await resolveTaskGraphPipeline();
+		const taskGraphRoot = path.dirname(path.dirname(taskGraphEntry));
+		const taskGraphManifest = JSON.parse(
+			await readFile(path.join(taskGraphRoot, 'package.json'), 'utf8')
+		) as {
+			readonly dependencies: Readonly<Record<string, string>>;
+			readonly name: string;
+			readonly version: string;
+		};
+		expect(taskGraphManifest).toMatchObject({
+			dependencies: { '@wpkernel/pipeline': '1.4.1' },
+			name: '@geekist/task-graph',
+			version: '0.1.0-beta.4',
+		});
+
+		const publishedPipelineRoot = path.dirname(path.dirname(pipelineEntry));
 		const publishedManifest = JSON.parse(
 			await readFile(
 				path.join(publishedPipelineRoot, 'package.json'),
