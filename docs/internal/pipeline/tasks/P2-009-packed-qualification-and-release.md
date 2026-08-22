@@ -40,6 +40,7 @@ write_scope:
     - scripts/docs/typedoc-public-surface.mjs
     - scripts/release/release-pipeline.ts
     - scripts/release/pipeline-release-metadata.*
+    - scripts/workflow/prepare-upstream-pr.sh
     - tests/__tests__/scripts/typedoc-public-surface.test.ts
     - tests/__tests__/resolution/workspace-installed-resolution.test.ts
     - .github/workflows/publish-pipeline.yml
@@ -60,6 +61,7 @@ read_scope:
     - scripts/docs/typedoc-public-surface.mjs
     - scripts/release/release-pipeline.ts
     - scripts/release/pipeline-release-metadata.*
+    - scripts/workflow/prepare-upstream-pr.sh
     - tests/__tests__/scripts/typedoc-public-surface.test.ts
     - tests/__tests__/resolution/workspace-installed-resolution.test.ts
     - .github/workflows/publish-pipeline.yml

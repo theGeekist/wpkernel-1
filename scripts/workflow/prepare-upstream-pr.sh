@@ -11,16 +11,68 @@ require_binary() {
 	if ! command -v "$1" >/dev/null 2>&1; then
 		echo "Error: missing required command '$1'." >&2
 		exit 1
-	}
+	fi
 }
 
 require_clean_worktree() {
-	if [[ ${ALLOW_DIRTY:-0} != "1" ]]; then
-		if ! git diff --quiet --ignore-submodules --cached || \
-			! git diff --quiet --ignore-submodules; then
-			echo "Error: working tree has changes. Commit or stash before continuing." >&2
-			exit 1
-		fi
+	local status
+	if ! status=$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none); then
+		echo "Error: unable to inspect the working tree." >&2
+		exit 1
+	fi
+	if [[ -n $status ]]; then
+		echo "Error: working tree has changes. Commit or stash before continuing." >&2
+		exit 1
+	fi
+}
+
+parse_github_slug() {
+	local slug
+	case "$1" in
+		git@github.com:*) slug=${1#git@github.com:} ;;
+		https://github.com/*) slug=${1#https://github.com/} ;;
+		*) return 1 ;;
+	esac
+	slug=${slug%.git}
+	if [[ ! $slug =~ ^[^/]+/[^/]+$ ]]; then
+		return 1
+	fi
+	printf '%s\n' "$slug"
+}
+
+require_remote_contracts() {
+	local fork_url
+	local upstream_url
+	if ! fork_url=$(git remote get-url "$FORK_REMOTE"); then
+		echo "Error: missing fork remote '${FORK_REMOTE}'." >&2
+		exit 1
+	fi
+	if ! upstream_url=$(git remote get-url "$UPSTREAM_REMOTE"); then
+		echo "Error: missing upstream remote '${UPSTREAM_REMOTE}'." >&2
+		exit 1
+	fi
+	if ! fork_slug=$(parse_github_slug "$fork_url"); then
+		echo "Error: fork remote '${FORK_REMOTE}' is not a canonical GitHub repository URL." >&2
+		exit 1
+	fi
+	if ! upstream_slug=$(parse_github_slug "$upstream_url"); then
+		echo "Error: upstream remote '${UPSTREAM_REMOTE}' is not a canonical GitHub repository URL." >&2
+		exit 1
+	fi
+	if [[ $upstream_slug != 'wpkernel/wpkernel' ]]; then
+		echo "Error: upstream remote must resolve to wpkernel/wpkernel, not '${upstream_slug}'." >&2
+		exit 1
+	fi
+	if [[ $fork_slug == "$upstream_slug" ]]; then
+		echo "Error: fork remote must not resolve to the upstream repository." >&2
+		exit 1
+	fi
+}
+
+require_branch_name() {
+	if ! git check-ref-format --branch "$1" >/dev/null 2>&1; then
+		echo "Error: invalid branch name '$1'." >&2
+		exit 1
 	fi
 }
 
@@ -30,7 +82,7 @@ ensure_remote_branch() {
 	if ! git show-ref --verify --quiet "refs/remotes/${remote}/${branch}"; then
 		echo "Error: missing ${remote}/${branch}. Run 'git fetch ${remote} ${branch}' first." >&2
 		exit 1
-	}
+	fi
 }
 
 summarize_commits() {
@@ -38,7 +90,11 @@ summarize_commits() {
 }
 
 require_binary git
+require_binary date
 require_clean_worktree
+require_remote_contracts
+require_branch_name "$FORK_BRANCH"
+require_branch_name "$UPSTREAM_BRANCH"
 
 git fetch "${FORK_REMOTE}" "${FORK_BRANCH}"
 git fetch "${UPSTREAM_REMOTE}" "${UPSTREAM_BRANCH}"
@@ -48,8 +104,8 @@ ensure_remote_branch "${UPSTREAM_REMOTE}" "${UPSTREAM_BRANCH}"
 echo "Commits on ${FORK_REMOTE}/${FORK_BRANCH} not in ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}:"
 summarize_commits
 
-read -rp "Continue and open git's interactive rebase editor? [Y/n]: " confirm
-if [[ $confirm =~ ^[Nn]$ ]]; then
+read -rp "Continue and open git's interactive rebase editor? [y/N]: " confirm
+if [[ ! $confirm =~ ^[Yy]$ ]]; then
 	echo "Aborted."
 	exit 0
 fi
@@ -57,6 +113,7 @@ fi
 default_branch="pr/$(date +%Y%m%d)-${FORK_BRANCH}"
 read -rp "Name for the new PR branch [${default_branch}]: " pr_branch
 pr_branch=${pr_branch:-$default_branch}
+require_branch_name "$pr_branch"
 
 if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
 	echo "Error: branch '${pr_branch}' already exists. Choose another name." >&2
@@ -96,28 +153,13 @@ fi
 
 if [[ $pushed == true ]]; then
 	if command -v gh >/dev/null 2>&1; then
-		fork_url=$(git remote get-url "${FORK_REMOTE}")
-		upstream_url=$(git remote get-url "${UPSTREAM_REMOTE}")
-		parse_slug() {
-			case "$1" in
-				git@github.com:*) echo "${1#git@github.com:}" | sed 's/\.git$//' ;;
-				https://github.com/*) echo "${1#https://github.com/}" | sed 's/\.git$//' ;;
-				*) echo "" ;;
-			esac
-		}
-		fork_slug=$(parse_slug "${fork_url}")
-		upstream_slug=$(parse_slug "${upstream_url}")
-		if [[ -n $fork_slug && -n $upstream_slug ]]; then
-			read -rp "Open PR on ${upstream_slug} via GitHub CLI now? [y/N]: " pr_choice
-			if [[ $pr_choice =~ ^[Yy]$ ]]; then
-				gh pr create \
-					--repo "${upstream_slug}" \
-					--base "${UPSTREAM_BRANCH}" \
-					--head "${fork_slug%/*}:${pr_branch}" \
-					--fill
-			fi
-		else
-			echo "Skipping automatic PR creation (non-GitHub remote)."
+		read -rp "Open PR on ${upstream_slug} via GitHub CLI now? [y/N]: " pr_choice
+		if [[ $pr_choice =~ ^[Yy]$ ]]; then
+			gh pr create \
+				--repo "${upstream_slug}" \
+				--base "${UPSTREAM_BRANCH}" \
+				--head "${fork_slug%/*}:${pr_branch}" \
+				--fill
 		fi
 	else
 		echo "Push complete. Create the PR in ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH} when ready."
