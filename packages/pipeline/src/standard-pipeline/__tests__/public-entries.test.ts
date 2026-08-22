@@ -4,6 +4,7 @@ import type {
 	SerialNativeOutcome,
 	SerialPipeline,
 	SerialPipelineLifecycle,
+	HelperRollback,
 } from '../../v1.js';
 
 type NativeRuntimeKey = keyof typeof pipeline;
@@ -76,11 +77,23 @@ const typeBoundary: readonly [
 ];
 void typeBoundary;
 
+const consumerOwnedRollback: HelperRollback = {
+	key: 'test-cleanup',
+	run: () => undefined,
+};
+void consumerOwnedRollback;
+
 describe('public Pipeline entry points', () => {
 	it('keeps the package root native v2', () => {
 		expect(Object.keys(pipeline).sort()).toEqual([
 			'abandon',
+			'adoptMaybePromise',
 			'createPipeline',
+			'isPromiseLike',
+			'maybeAll',
+			'maybeThen',
+			'maybeTry',
+			'processSequentially',
 			'resume',
 			'runPipeline',
 		]);

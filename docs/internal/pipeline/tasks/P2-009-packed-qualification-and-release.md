@@ -24,6 +24,7 @@ decision_dependencies:
     - ADR-003
 conflicts_with: []
 write_scope:
+    - docs/api/@wpkernel/**
     - packages/pipeline/package.json
     - packages/pipeline/CHANGELOG.md
     - packages/pipeline/scripts/**
@@ -64,8 +65,13 @@ version workflow.
 - Clean Bundler and strict NodeNext consumers compile from root imports.
 - Runtime qualification covers fan-out, fan-in, bounded concurrency,
   synchronous settlement, middleware, effects, cancellation and migration.
+- The packed qualifier is split by responsibility so no implementation file
+  exceeds the programme's approximate 500-line budget.
 - Negative type assertions reject private imports and invalid graph contracts.
 - Tag and manifest version agree.
+- After the 2.0.0 manifest bump, the complete generated API projection is
+  regenerated, reviewed and labelled 2.0.0; both authored and generated
+  Pipeline site routes exist.
 - Prereleases publish to `beta`; final 2.0.0 publishes to `latest`.
 - Contributors push release branches to `origin` and merge through an upstream
   pull request.
@@ -81,6 +87,7 @@ version workflow.
 ## Verification
 
 Record exact archive SHA-512, packed contents, consumer lock binding, commands,
-workflow run, registry integrity and downstream adoption evidence.
+generated API and site routes, workflow run, registry integrity and downstream
+adoption evidence.
 
 Suggested execution tier: balanced release execution with frontier audit.

@@ -156,10 +156,19 @@ const findReachableForbiddenSymbols = (
 
 const source = String.raw`
 import {
+	adoptMaybePromise,
 	createPipeline,
+	isPromiseLike,
+	maybeAll,
+	maybeThen,
+	maybeTry,
+	processSequentially,
 	runPipeline as runNativePipeline,
 	type GraphDeclaration,
+	type MaybePromise,
 	type NodeContract,
+	type AwaitedTuple,
+	type Suspension,
 } from '@wpkernel/pipeline';
 import {
 	createHelper,
@@ -167,20 +176,23 @@ import {
 	runPipeline as runSerialPipeline,
 	type SerialNativeOutcome,
 	type SerialRunOutcome,
+	type HelperRollback,
 } from '@wpkernel/pipeline/v1';
-
-function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
-	return (
-		(typeof value === 'object' && value !== null) ||
-		typeof value === 'function'
-	) && typeof Reflect.get(value, 'then') === 'function';
-}
 
 type NativeInputs = Readonly<{ source: string }>;
 type NativeNodes = Readonly<{
 	uppercase: NodeContract<'source', string, never>;
 }>;
 type NativeOutputs = Readonly<{ result: 'uppercase' }>;
+export type PackedMaybePromise = MaybePromise<string>;
+export type PackedAwaitedTuple = AwaitedTuple<
+	readonly [1, PromiseLike<'two'>]
+>;
+export type PackedHelperRollback = HelperRollback;
+export const helperRollback: HelperRollback = {
+	key: 'consumer-cleanup',
+	run: () => undefined,
+};
 
 const declaration: GraphDeclaration<
 	NativeInputs,
@@ -213,6 +225,29 @@ export const nativeOutcome = runNativePipeline({
 	inputs: { source: 'native' },
 	capabilities: {},
 });
+const assertNominalPublicTokens = (
+	pipelineProjection: Pick<typeof native, 'kind'>,
+	suspensionProjection: Pick<
+		Suspension<
+			NativeNodes,
+			Readonly<{ result: string }>,
+			Readonly<Record<never, never>>
+		>,
+		'pause' | 'snapshot'
+	>
+): void => {
+	// @ts-expect-error the documented data projection cannot forge Pipeline provenance.
+	const forgedPipeline: typeof native = pipelineProjection;
+	// @ts-expect-error the documented data projection cannot forge Suspension authority.
+	const forgedSuspension: Suspension<
+		NativeNodes,
+		Readonly<{ result: string }>,
+		Readonly<Record<never, never>>
+	> = suspensionProjection;
+	void forgedPipeline;
+	void forgedSuspension;
+};
+void assertNominalPublicTokens;
 if (isPromiseLike(nativeOutcome)) {
 	throw new Error('Synchronous native graph became asynchronous.');
 }
@@ -220,6 +255,103 @@ if (
 	nativeOutcome.kind !== 'succeeded' || nativeOutcome.outputs.result !== 'NATIVE'
 ) {
 	throw new Error('Native root did not preserve synchronous graph evaluation.');
+}
+
+const adoptedDirect = adoptMaybePromise('direct');
+if (adoptedDirect.promise !== null || adoptedDirect.value !== 'direct') {
+	throw new Error('Root adoption did not preserve a direct value.');
+}
+if (maybeThen(2, (value) => value * 3) !== 6) {
+	throw new Error('Root mapping promoted synchronous composition.');
+}
+if (maybeTry(() => 'ok', () => 'recovered') !== 'ok') {
+	throw new Error('Root recovery changed synchronous success.');
+}
+const allDirect = maybeAll([1, 2, 3]);
+if (isPromiseLike(allDirect) || JSON.stringify(allDirect) !== '[1,2,3]') {
+	throw new Error('Root join promoted synchronous composition.');
+}
+const typedTuple: MaybePromise<[1, string]> = maybeAll([
+	1,
+	Promise.resolve('two'),
+] as const);
+if (JSON.stringify(await typedTuple) !== '[1,"two"]') {
+	throw new Error('Root join did not preserve packed tuple inference.');
+}
+const visited: number[] = [];
+const traversal = processSequentially([1, 2], (value) => {
+	visited.push(value);
+});
+if (isPromiseLike(traversal) || JSON.stringify(visited) !== '[1,2]') {
+	throw new Error('Root traversal promoted synchronous composition.');
+}
+
+const typedAsync: MaybePromise<number> = Promise.resolve(4);
+if ((await maybeThen(typedAsync, (value) => value + 1)) !== 5) {
+	throw new Error('Root mapping did not adopt asynchronous composition.');
+}
+let mappingReads = 0;
+let mappingInvocations = 0;
+const mappedThenable = maybeThen(2, (value) =>
+	Object.defineProperty({}, 'then', {
+		get: () => {
+			mappingReads += 1;
+			return (resolve: (resolved: number) => void) => {
+				mappingInvocations += 1;
+				resolve(value * 4);
+			};
+		},
+	}) as PromiseLike<number>
+);
+if (mappingReads !== 1 || mappingInvocations !== 0 || (await mappedThenable) !== 8) {
+	throw new Error('Root mapping did not preserve read-once queued adoption.');
+}
+let recoveryReads = 0;
+let recoveryInvocations = 0;
+const recoveredThenable = maybeTry(
+	() => {
+		throw new Error('recover');
+	},
+	() =>
+		Object.defineProperty({}, 'then', {
+			get: () => {
+				recoveryReads += 1;
+				return (resolve: (resolved: string) => void) => {
+					recoveryInvocations += 1;
+					resolve('recovered');
+				};
+			},
+		}) as PromiseLike<string>
+);
+if (
+	recoveryReads !== 1 ||
+	recoveryInvocations !== 0 ||
+	(await recoveredThenable) !== 'recovered'
+) {
+	throw new Error('Root recovery did not preserve read-once queued adoption.');
+}
+let directThenReads = 0;
+const directWithThen = Object.defineProperty({ value: 'direct' }, 'then', {
+	get: () => {
+		directThenReads += 1;
+		if (directThenReads > 1) throw new Error('then observed twice');
+		return undefined;
+	},
+});
+const mixed = await maybeAll([
+	directWithThen,
+	Promise.resolve('async'),
+]);
+if (mixed[0] !== directWithThen || directThenReads !== 1) {
+	throw new Error('Root join re-observed a synchronous sibling.');
+}
+const getterFailure = Object.defineProperty({}, 'then', {
+	get: () => {
+		throw new Error('getter failed');
+	},
+});
+if (maybeTry(() => getterFailure, () => 'recovered') !== 'recovered') {
+	throw new Error('Root recovery did not contain a synchronous getter failure.');
 }
 
 export const serial = createSerialPipeline({
@@ -410,7 +542,7 @@ try {
 	);
 	writeFileSync(
 		join(fixtureRoot, 'src', 'rejected-v1.ts'),
-		"// @ts-expect-error mutable runner authority is not exported by /v1\nimport { createPipeline } from '@wpkernel/pipeline/v1';\nvoid createPipeline;\n"
+		"// @ts-expect-error mutable runner authority is not exported by /v1\nimport { createPipeline } from '@wpkernel/pipeline/v1';\n// @ts-expect-error rollback factories are not exported by /v1\nimport { createPipelineRollback } from '@wpkernel/pipeline/v1';\nvoid createPipeline;\nvoid createPipelineRollback;\n"
 	);
 	writeFileSync(
 		join(fixtureRoot, 'src', 'rejected-deep.ts'),

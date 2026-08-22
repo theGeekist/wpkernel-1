@@ -92,7 +92,7 @@ const executeTestHelpers = (helpers: RegisteredHelper<TestHelper>[]) =>
 	);
 
 describe('executor', () => {
-	it('adopts helper thenables without reading their then property', async () => {
+	it('adopts helper thenables through one then property read', async () => {
 		type Output = string;
 		type OutputHelper = Helper<
 			TestContext,
@@ -101,19 +101,13 @@ describe('executor', () => {
 			TestReporter
 		>;
 		let thenReads = 0;
-		const invocation = new Proxy(
-			{
-				then(resolve: (value: HelperApplyResult<Output>) => void) {
+		const invocation = Object.defineProperty({}, 'then', {
+			get: () => {
+				thenReads += 1;
+				return (resolve: (value: HelperApplyResult<Output>) => void) =>
 					resolve({ output: 'adopted' });
-				},
 			},
-			{
-				get() {
-					thenReads += 1;
-					throw new Error('then must be adopted from its descriptor');
-				},
-			}
-		);
+		});
 		const helpers: RegisteredHelper<OutputHelper>[] = [
 			{
 				id: 'hostile',
@@ -153,7 +147,7 @@ describe('executor', () => {
 				() => undefined
 			)
 		).resolves.toMatchObject({ output: 'adopted' });
-		expect(thenReads).toBe(0);
+		expect(thenReads).toBe(1);
 	});
 
 	it('runs async helpers sequentially', async () => {

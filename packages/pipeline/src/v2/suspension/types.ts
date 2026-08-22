@@ -46,6 +46,7 @@ export type Suspension<
 	TOutputs extends Readonly<Record<string, GraphValue>>,
 	TEffects extends EffectRegistry,
 > = {
+	/** @hidden */
 	readonly [suspensionBrand]: SuspensionTypeWitness<
 		TNodes,
 		TOutputs,

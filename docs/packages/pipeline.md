@@ -6,10 +6,10 @@ process-local run through a `Pipeline` token.
 
 ## Version boundary
 
-The package's 1.x entry point is the v1 helper and stage API. V2 documentation
-describes the reviewed contract that will be exposed from
-`@wpkernel/pipeline` by the v2 integration task. It must not be read as an
-availability statement for a released 1.x package.
+Pipeline 2.0 makes the immutable dataflow evaluator the package root. The v1
+helper and stage API remains available from `@wpkernel/pipeline/v1` for serial
+compatibility. Version 1.4.1 is the final 1.x release and therefore still uses
+the old root until 2.0.0 is promoted.
 
 V1 and v2 use some familiar words for different authorities:
 
@@ -19,8 +19,8 @@ V1 and v2 use some familiar words for different authorities:
 - v2 uses separate graph extensions, node middleware, run observers and effect
   participants.
 
-Choose v1 only for a v1 consumer or compatibility adapter. New native work
-should use the v2 model when it reaches the package root.
+Choose `/v1` only for an existing serial consumer or compatibility adapter. New
+native work should use the v2 root.
 
 ## Guides
 

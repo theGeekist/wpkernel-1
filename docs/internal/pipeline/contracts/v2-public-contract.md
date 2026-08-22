@@ -65,6 +65,14 @@ a synchronous participant failure. All structurally valid thenables are
 accepted, and first settlement wins. The run promotes to a promise only when a
 callable `then` is observed.
 
+The package root exports the complete shared composition algebra:
+`MaybePromise`, `AwaitedTuple`, `adoptMaybePromise`, `isPromiseLike`,
+`maybeThen`, `maybeAll`, `maybeTry` and `processSequentially`. Public-surface
+curation applies to graph authority and interpreter machinery, not to these
+general FP primitives. `AwaitedTuple` preserves heterogeneous positions and
+their fulfilled value types while removing readonly from the fresh result;
+`maybeAll` returns that exact tuple algebra.
+
 ## 3. Heterogeneous graph and effect types
 
 Node and effect registries retain literal keys and member-specific types through
@@ -476,7 +484,9 @@ projection and grants no resume authority.
 ## 9. Compatibility and closure rules
 
 A v1 adapter is one serial native node. It may use `next` internally but cannot
-affect native readiness. It maps the complete v1 journal, halt and pause
+affect native readiness. The type-only `HelperRollback` descriptor lets a
+helper return a consumer-authored cleanup callback, but grants no admission or
+traversal authority. The adapter maps the complete v1 journal, halt and pause
 semantics exactly as specified in the vocabulary compatibility boundary; an
 uncapturable rollback is unsupported and no second rollback authority remains.
 
@@ -496,9 +506,10 @@ admission failure. `Pipeline` has no `run`, `use` or `compile` method.
 
 The hand-curated `v2/pipeline` module is the public orchestration surface. It
 exports `createPipeline`, `runPipeline`, suspension consumption operations and
-the authoring, role, outcome and diagnostic types needed to configure them.
-`scheduleGraph`, graph and role compilers, extension generation, journals and
-scheduler state remain internal seams.
+the authoring, role, outcome and diagnostic types needed to configure them. The
+package root additionally exports the shared `MaybePromise` composition
+algebra named above. `scheduleGraph`, graph and role compilers, extension
+generation, journals and scheduler state remain internal seams.
 
 ## 10. Diagnostics, anchors and future policies
 

@@ -9,32 +9,25 @@ type TestArtifact = { artifact: string };
 type TestContext = Record<string, never>;
 type TestOptions = Record<string, never>;
 
-function hostileThenable<T>(value: T): {
+function observedThenable<T>(value: T): {
 	readonly promise: Promise<T>;
 	readonly getThenReads: () => number;
 } {
 	let thenReads = 0;
-	const promise = new Proxy(
-		{
-			then(resolve: (resolved: T) => void) {
-				resolve(value);
-			},
+	const promise = Object.defineProperty({}, 'then', {
+		get: () => {
+			thenReads += 1;
+			return (resolve: (resolved: T) => void) => resolve(value);
 		},
-		{
-			get() {
-				thenReads += 1;
-				throw new Error('then must be adopted from its descriptor');
-			},
-		}
-	) as unknown as Promise<T>;
+	}) as unknown as Promise<T>;
 
 	return { promise, getThenReads: () => thenReads };
 }
 
 describe('extensions', () => {
 	describe('runExtensionHooks', () => {
-		it('adopts hook thenables without reading their then property', async () => {
-			const hookResult = hostileThenable({
+		it('adopts hook thenables through one then property read', async () => {
+			const hookResult = observedThenable({
 				artifact: { artifact: 'adopted' },
 			});
 			const hooks: ExtensionHookEntry<
@@ -59,7 +52,7 @@ describe('extensions', () => {
 			).resolves.toMatchObject({
 				artifact: { artifact: 'adopted' },
 			});
-			expect(hookResult.getThenReads()).toBe(0);
+			expect(hookResult.getThenReads()).toBe(1);
 		});
 
 		it('handles sync hooks returning values', () => {
@@ -289,8 +282,8 @@ describe('extensions', () => {
 			).toBeUndefined();
 		});
 
-		it('adopts rollback thenables without reading their then property', async () => {
-			const rollbackResult = hostileThenable(undefined);
+		it('adopts rollback thenables through one then property read', async () => {
+			const rollbackResult = observedThenable(undefined);
 			const results: ExtensionHookExecution<
 				TestContext,
 				TestOptions,
@@ -308,7 +301,7 @@ describe('extensions', () => {
 				() => undefined
 			);
 
-			expect(rollbackResult.getThenReads()).toBe(0);
+			expect(rollbackResult.getThenReads()).toBe(1);
 		});
 
 		it('handles async rollbacks', async () => {
@@ -388,8 +381,8 @@ describe('extensions', () => {
 	});
 
 	describe('commitExtensionResults', () => {
-		it('adopts commit thenables without reading their then property', async () => {
-			const commitResult = hostileThenable(undefined);
+		it('adopts commit thenables through one then property read', async () => {
+			const commitResult = observedThenable(undefined);
 			const results: ExtensionHookExecution<
 				TestContext,
 				TestOptions,
@@ -403,7 +396,7 @@ describe('extensions', () => {
 
 			await commitExtensionResults(results);
 
-			expect(commitResult.getThenReads()).toBe(0);
+			expect(commitResult.getThenReads()).toBe(1);
 		});
 
 		it('handles async commits', async () => {

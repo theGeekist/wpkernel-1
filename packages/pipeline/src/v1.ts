@@ -24,6 +24,7 @@ export type {
 	HelperKind,
 	HelperMode,
 	HelperNext,
+	HelperRollback,
 	MissingDependencyDiagnostic,
 	PipelineDiagnostic,
 	PipelineReporter,

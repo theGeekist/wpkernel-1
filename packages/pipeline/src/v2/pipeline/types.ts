@@ -64,6 +64,7 @@ export interface Pipeline<
 	TProjection,
 	TCapabilities,
 > {
+	/** @hidden */
 	readonly [pipelineBrand]: PipelineTypeWitness<
 		TInputs,
 		TNodes,
@@ -150,6 +151,10 @@ export interface CreatePipelineOptions<
 		TProjection,
 		TCapabilities
 	>;
+	/**
+	 * Ordered extension tuple. The type checker validates each contribution
+	 * against the declaration plus every preceding contribution.
+	 */
 	readonly extensions?: TExtensions &
 		CheckedGraphExtensionRegistrations<
 			TInputs,
@@ -159,6 +164,10 @@ export interface CreatePipelineOptions<
 			TCapabilities,
 			NoInfer<TExtensions>
 		>;
+	/**
+	 * Ordered middleware tuple. Each registration is checked against its exact
+	 * node invocation, output, state and admitted effect requests.
+	 */
 	readonly middleware?: TMiddleware &
 		CheckedNodeMiddlewareRegistrations<
 			TInputs,
@@ -276,13 +285,27 @@ export type RunPipelineResult<
 	| RunOutcome<TNodes, GraphOutputs<TNodes, TProjection>, TEffects>
 >;
 
-/** Final node registry inferred from a creation-time extension tuple. @public */
+/**
+ * Final node registry inferred from a creation-time extension tuple.
+ *
+ * The emitted declaration retains every literal-keyed contribution. The API
+ * projection shows its public {@link NodeRegistry} upper bound.
+ *
+ * @public
+ */
 export type PipelineNodes<
 	TNodes extends NodeRegistry,
 	TExtensions extends readonly GraphExtensionRegistrationShape[],
 > = ExtensionNodes<TNodes, TExtensions>;
 
-/** Final edge tuple inferred from a creation-time extension tuple. @public */
+/**
+ * Final edge tuple inferred from a creation-time extension tuple.
+ *
+ * The emitted declaration retains tuple order and literal endpoints. The API
+ * projection shows its public readonly {@link Edge} upper bound.
+ *
+ * @public
+ */
 export type PipelineEdges<
 	TEdges extends readonly Edge[],
 	TExtensions extends readonly GraphExtensionRegistrationShape[],
@@ -296,7 +319,14 @@ type ClosedOutputProjection<TProjection> = Readonly<{
 		: never]: TProjection[K];
 }>;
 
-/** Final output projection inferred from a creation-time extension tuple. @public */
+/**
+ * Final output projection inferred from a creation-time extension tuple.
+ *
+ * The emitted declaration retains exact named projection keys. The API
+ * projection shows the corresponding public {@link OutputProjection} bound.
+ *
+ * @public
+ */
 export type PipelineProjection<
 	TNodes extends NodeRegistry,
 	TProjection,

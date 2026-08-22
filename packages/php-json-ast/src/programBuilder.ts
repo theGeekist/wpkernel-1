@@ -11,9 +11,12 @@ export type {
 	Helper,
 	HelperApplyFn,
 	HelperApplyOptions,
+	HelperApplyResult,
 	HelperDescriptor,
 	HelperKind,
 	HelperMode,
+	HelperNext,
+	HelperRollback,
 } from '@wpkernel/pipeline/v1';
 export type PipelinePhase = 'init' | 'generate' | 'apply' | `custom:${string}`;
 

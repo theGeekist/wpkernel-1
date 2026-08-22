@@ -1,6 +1,12 @@
 import {
 	abandon,
+	adoptMaybePromise,
 	createPipeline,
+	isPromiseLike,
+	maybeAll,
+	maybeThen,
+	maybeTry,
+	processSequentially,
 	resume,
 	runPipeline,
 	type AbandonmentOutcome,
@@ -77,6 +83,7 @@ import {
 	type RunOutcome,
 	type RunPipelineOptions,
 	type RunPipelineResult,
+	type AwaitedTuple,
 	type Suspension,
 	type SuspensionError,
 	type TerminalRunEvent,
@@ -129,6 +136,8 @@ const exampleOutcome = runPipeline({
 	inputs: { source: 'honest dataflow' },
 	capabilities: { locale: 'en-SG' },
 });
+const awaitedTuple: AwaitedTuple<readonly [PromiseLike<1>, 2]> = [1, 2];
+awaitedTuple[0] = 1;
 type PublicSurface = readonly [
 	AbandonmentOutcome<EffectRegistry>,
 	AbandonOptions<
@@ -264,6 +273,7 @@ type PublicSurface = readonly [
 		EffectRegistry,
 		OutputProjection<NodeRegistry>
 	>,
+	AwaitedTuple<readonly [1, PromiseLike<'settled'>]>,
 	Suspension<
 		NodeRegistry,
 		Readonly<Record<string, GraphValue>>,
@@ -278,7 +288,7 @@ type PublicSurface = readonly [
 ];
 
 describe('v2 public surface', () => {
-	it('exports only the four public operations at runtime', () => {
+	it('exports the evaluator operations at runtime', () => {
 		expect({ abandon, createPipeline, resume, runPipeline }).toEqual({
 			abandon,
 			createPipeline,
@@ -291,5 +301,32 @@ describe('v2 public surface', () => {
 			kind: 'succeeded',
 			outputs: { result: 'HONEST DATAFLOW' },
 		});
+	});
+
+	it('exports the complete MaybePromise composition algebra', async () => {
+		expect(adoptMaybePromise('direct')).toEqual({
+			promise: null,
+			value: 'direct',
+		});
+		expect(isPromiseLike(Promise.resolve('async'))).toBe(true);
+		expect(maybeThen(2, (value) => value * 3)).toBe(6);
+		expect(
+			maybeTry(
+				() => 'ok',
+				() => 'recovered'
+			)
+		).toBe('ok');
+		expect(maybeAll([1, 2, 3])).toEqual([1, 2, 3]);
+
+		const visited: number[] = [];
+		const settled = processSequentially([1, 2], (value) => {
+			visited.push(value);
+		});
+		expect(isPromiseLike(settled)).toBe(false);
+		expect(visited).toEqual([1, 2]);
+
+		await expect(maybeAll([1, Promise.resolve(2)])).resolves.toEqual([
+			1, 2,
+		]);
 	});
 });

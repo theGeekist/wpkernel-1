@@ -67,8 +67,9 @@ interface CreatePipelineExtensionWithSetup<
  * receiving pipeline chooses its default lifecycle.
  *
  * Both forms preserve synchronous registration when their setup is
- * synchronous. Once setup returns a safely inspectable thenable, hook
- * resolution is asynchronous through {@link maybeThen}.
+ * synchronous. Once setup returns a structurally valid thenable, hook
+ * resolution is asynchronous through {@link maybeThen}. Reading a hostile
+ * `then` accessor may still fail synchronously.
  *
  * @internal
  */

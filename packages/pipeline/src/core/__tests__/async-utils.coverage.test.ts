@@ -40,50 +40,102 @@ describe('async-utils coverage', () => {
 		).resolves.toBe('recovered');
 	});
 
-	it('does not invoke accessor-backed then properties', () => {
+	it('adopts a thenable returned from synchronous mapping', async () => {
 		let reads = 0;
-		const hostile = Object.defineProperty({ value: 1 }, 'then', {
+		let invocations = 0;
+		const result = maybeThen(
+			2,
+			(value) =>
+				Object.defineProperty({}, 'then', {
+					get: () => {
+						reads += 1;
+						return (resolve: (resolved: number) => void) => {
+							invocations += 1;
+							resolve(value * 4);
+						};
+					},
+				}) as PromiseLike<number>
+		);
+
+		expect(reads).toBe(1);
+		expect(invocations).toBe(0);
+		await expect(result).resolves.toBe(8);
+		expect(reads).toBe(1);
+		expect(invocations).toBe(1);
+	});
+
+	it('adopts a thenable returned from synchronous recovery once', async () => {
+		let reads = 0;
+		let invocations = 0;
+		const result = maybeTry(
+			() => {
+				throw new Error('recover');
+			},
+			() =>
+				Object.defineProperty({}, 'then', {
+					get: () => {
+						reads += 1;
+						return (resolve: (resolved: string) => void) => {
+							invocations += 1;
+							resolve('recovered');
+						};
+					},
+				}) as PromiseLike<string>
+		);
+
+		expect(reads).toBe(1);
+		expect(invocations).toBe(0);
+		await expect(result).resolves.toBe('recovered');
+		expect(reads).toBe(1);
+		expect(invocations).toBe(1);
+	});
+
+	it('surfaces throwing then accessors synchronously', () => {
+		let reads = 0;
+		const hostile = () =>
+			Object.defineProperty({ value: 1 }, 'then', {
+				get: () => {
+					reads += 1;
+					throw new Error('then accessor failed');
+				},
+			});
+
+		expect(() => isPromiseLike(hostile())).toThrow('then accessor failed');
+		expect(() => maybeThen(hostile(), (value) => value)).toThrow(
+			'then accessor failed'
+		);
+		expect(reads).toBe(2);
+	});
+
+	it('uses ordinary property access for proxy then traps', () => {
+		let gets = 0;
+		const hostile = new Proxy(
+			{ then: () => undefined },
+			{
+				get: () => {
+					gets += 1;
+					throw new Error('get trap');
+				},
+			}
+		);
+
+		expect(() => isPromiseLike(hostile)).toThrow('get trap');
+		expect(gets).toBe(1);
+	});
+
+	it('lets maybeTry recover a throwing then getter synchronously', () => {
+		const hostile = Object.defineProperty({}, 'then', {
 			get: () => {
-				reads += 1;
-				throw new Error('then accessor must not execute');
+				throw new Error('getter failed');
 			},
 		});
 
-		expect(isPromiseLike(hostile)).toBe(false);
-		expect(maybeThen(hostile, (value) => value)).toBe(hostile);
-		expect(reads).toBe(0);
-	});
-
-	it('contains descriptor and prototype traps without reading then', () => {
-		let gets = 0;
-		const descriptorHostile = new Proxy(
-			{ then: () => undefined },
-			{
-				getOwnPropertyDescriptor: () => {
-					throw new Error('descriptor trap');
-				},
-				get: () => {
-					gets += 1;
-					throw new Error('get trap');
-				},
-			}
-		);
-		const prototypeHostile = new Proxy(
-			{},
-			{
-				getPrototypeOf: () => {
-					throw new Error('prototype trap');
-				},
-				get: () => {
-					gets += 1;
-					throw new Error('get trap');
-				},
-			}
-		);
-
-		expect(isPromiseLike(descriptorHostile)).toBe(false);
-		expect(isPromiseLike(prototypeHostile)).toBe(false);
-		expect(gets).toBe(0);
+		expect(
+			maybeTry(
+				() => hostile,
+				() => 'recovered'
+			)
+		).toBe('recovered');
 	});
 
 	it('turns a throwing data-method then into a rejection', async () => {
