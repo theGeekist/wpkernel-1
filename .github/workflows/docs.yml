@@ -12,6 +12,7 @@ on:
             - 'pnpm-workspace.yaml'
             - '.github/workflows/docs.yml'
             - 'scripts/docs/promotion-resolver.cjs'
+    workflow_dispatch:
 
 permissions: {}
 
@@ -24,8 +25,23 @@ env:
     PNPM_VERSION: '10.19.0'
 
 jobs:
+    admit-main-ref:
+        name: Admit main deployment ref
+        runs-on: ubuntu-latest
+        steps:
+            - name: Require main
+              shell: bash
+              run: |
+                  set -euo pipefail
+
+                  if [[ "${GITHUB_REF}" != 'refs/heads/main' ]]; then
+                      echo "Documentation deployment is only admitted from refs/heads/main; received ${GITHUB_REF}." >&2
+                      exit 1
+                  fi
+
     resolve-source:
         name: Resolve promoted authoring source
+        needs: admit-main-ref
         runs-on: ubuntu-latest
         permissions:
             contents: read

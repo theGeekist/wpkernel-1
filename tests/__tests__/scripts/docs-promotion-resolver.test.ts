@@ -5,6 +5,8 @@ import {
 	resolvePromotion,
 	selectAuthoringCI,
 } from '../../../scripts/docs/promotion-resolver.cjs';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 const upstreamSha = 'upstream-sha';
 const sourceSha = 'source-sha';
@@ -41,6 +43,38 @@ function ciRun(overrides: Partial<Record<string, string | number>> = {}) {
 }
 
 describe('documentation promotion resolver', () => {
+	const docsWorkflow = readFileSync(
+		path.resolve('.github/workflows/docs.yml'),
+		'utf8'
+	);
+
+	it('permits manual recovery only through an explicit main-ref admission gate', () => {
+		expect(docsWorkflow).toContain('    workflow_dispatch:\n');
+		expect(docsWorkflow).toContain('    admit-main-ref:\n');
+		expect(docsWorkflow).toContain(
+			'if [[ "${GITHUB_REF}" != \'refs/heads/main\' ]]; then'
+		);
+		expect(docsWorkflow).toContain(
+			'Documentation deployment is only admitted from refs/heads/main; received ${GITHUB_REF}.'
+		);
+		expect(docsWorkflow).toContain('        needs: admit-main-ref\n');
+	});
+
+	it('retains the push-only authoring-main promotion receipt contract', () => {
+		expect(docsWorkflow).toContain(
+			'    push:\n        branches:\n            - main\n'
+		);
+		expect(docsWorkflow).toContain(
+			'commits/${GITHUB_SHA}/pulls?per_page=100&page=${page}'
+		);
+		expect(docsWorkflow).toContain(
+			'branch=main&event=push&head_sha=${source_sha}&per_page=100'
+		);
+		expect(docsWorkflow).toContain(
+			'node scripts/docs/promotion-resolver.cjs resolve-promotion'
+		);
+	});
+
 	it('resolves one promotion receipt with matching authoring and upstream trees', () => {
 		expect(
 			resolvePromotion({
