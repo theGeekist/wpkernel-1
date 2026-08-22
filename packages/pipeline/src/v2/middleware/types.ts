@@ -133,7 +133,7 @@ export type CheckedNodeMiddlewareRegistrations<
 	TEdges extends readonly Edge[],
 	TEffects extends EffectRegistry,
 	TCapabilities,
-	TMiddleware extends readonly NodeMiddlewareRegistration[],
+	TMiddleware extends readonly object[],
 > = {
 	readonly [TIndex in keyof TMiddleware]: CheckedNodeMiddleware<
 		TInputs,

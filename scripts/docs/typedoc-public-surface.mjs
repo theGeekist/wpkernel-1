@@ -58,6 +58,8 @@ const readonlyShape = (target) => ({
 });
 const readonlyRegistrationConstraint = (name) =>
 	readonlyShape(arrayShape(referenceShape(name)));
+const readonlyObjectConstraint = () =>
+	readonlyShape(arrayShape(intrinsicShape('object')));
 const noInferShape = (name) =>
 	referenceShape('NoInfer', [parameterShape(name)]);
 const extensionNodesShape = () =>
@@ -136,10 +138,7 @@ const originalProjectedConstraints = new Map([
 					'GraphExtensionRegistrationShape'
 				),
 			],
-			[
-				'TMiddleware',
-				readonlyRegistrationConstraint('NodeMiddlewareRegistration'),
-			],
+			['TMiddleware', readonlyObjectConstraint()],
 		]),
 	],
 	[

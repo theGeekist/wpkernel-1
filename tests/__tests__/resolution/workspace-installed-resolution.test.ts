@@ -1,5 +1,4 @@
 import { execFile } from 'node:child_process';
-import { createRequire } from 'node:module';
 import {
 	mkdtemp,
 	mkdir,
@@ -20,6 +19,29 @@ const fixtureRoot = path.join(
 	'tests/fixtures/installed-consumers'
 );
 const temporaryRoots: string[] = [];
+
+const resolveTaskGraphPipeline = async (): Promise<string> => {
+	const source = String.raw`
+		import { createRequire } from 'node:module';
+		import path from 'node:path';
+
+		const workspaceRequire = createRequire(path.join(process.cwd(), 'package.json'));
+		const taskGraphEntry = workspaceRequire.resolve('@geekist/task-graph');
+		const taskGraphRequire = createRequire(taskGraphEntry);
+		process.stdout.write(taskGraphRequire.resolve('@wpkernel/pipeline'));
+	`;
+	const { stdout, stderr } = await execFileAsync(
+		process.execPath,
+		['--input-type=module', '--eval', source],
+		{ cwd: workspaceRoot }
+	);
+	if (stderr !== '') {
+		throw new Error(
+			`Native installed-package resolution failed:\n${stderr}`
+		);
+	}
+	return stdout;
+};
 
 const readConfig = (configPath: string): ts.ParsedCommandLine => {
 	const loaded = ts.readConfigFile(configPath, ts.sys.readFile);
@@ -74,10 +96,7 @@ describe('workspace and installed package resolution', () => {
 	});
 
 	it('typechecks the installed Pipeline declarations under strict NodeNext', async () => {
-		const taskGraphEntry = require.resolve('@geekist/task-graph');
-		const taskGraphRequire = createRequire(taskGraphEntry);
-		const publishedPipelineEntry =
-			taskGraphRequire.resolve('@wpkernel/pipeline');
+		const publishedPipelineEntry = await resolveTaskGraphPipeline();
 		const publishedPipelineRoot = path.dirname(
 			path.dirname(publishedPipelineEntry)
 		);

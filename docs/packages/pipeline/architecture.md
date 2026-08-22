@@ -6,9 +6,9 @@ creation-time role values; `runPipeline` then starts a fresh process-local run.
 No node, extension, middleware value or observer can start, skip or invoke
 another node.
 
-> **V2 availability:** This is the reviewed v2 surface. Its public examples
-> use the future `@wpkernel/pipeline` root import, which P2-007 exposes. The
-> current `@wpkernel/pipeline` 1.4.1 release remains the v1 API.
+> **V2 availability:** This is the current root surface. Import native v2 from
+> `@wpkernel/pipeline`; import the serial compatibility adapter from
+> `@wpkernel/pipeline/v1`.
 
 ## Graph dataflow, not stage order
 
@@ -64,10 +64,9 @@ The stored value is Pipeline-owned: later mutation through the caller's alias
 cannot change a graph run.
 
 Capabilities are different. They are live, process-local services passed to
-nodes and effect participants, such as a database client or credential broker.
-They are not copied, frozen or made deterministic by Pipeline. A capability
-provider must make concurrent access safe and must not allow access timing to
-change graph meaning.
+nodes, such as a database client or credential broker. They are not copied,
+frozen or made deterministic by Pipeline. A capability provider must make
+concurrent access safe and must not allow access timing to change graph meaning.
 
 That distinction excludes a common awkward shortcut: putting a client, promise
 or `Map` inside a graph input or extension configuration. Put static data in

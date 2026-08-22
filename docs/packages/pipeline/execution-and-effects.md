@@ -1,8 +1,8 @@
 # Pipeline v2 execution and effects
 
-> **V2 availability:** This is the reviewed v2 surface. Its public examples
-> use the future `@wpkernel/pipeline` root import, which P2-007 exposes. The
-> current `@wpkernel/pipeline` 1.4.1 release remains the v1 API.
+> **V2 availability:** This is the current root surface. Import native v2 from
+> `@wpkernel/pipeline`; import the serial compatibility adapter from
+> `@wpkernel/pipeline/v1`.
 
 ## Readiness and concurrency
 

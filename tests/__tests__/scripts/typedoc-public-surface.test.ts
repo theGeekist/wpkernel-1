@@ -29,7 +29,7 @@ export interface Edge<TFrom extends string = string, TTo extends string = string
 }
 export type OutputProjection<TNodes extends NodeRegistry> = Readonly<Record<string, keyof TNodes & string>>;
 type GraphExtensionRegistrationShape = object;
-type NodeMiddlewareRegistration = object;
+${options.driftCreateMiddlewareConstraint ? 'type NodeMiddlewareRegistration = object;' : ''}
 type ExtensionNodes<TNodes, TExtensions> = TNodes & { readonly extensionNodes?: TExtensions };
 type ExtensionEdges<TEdges, TExtensions> = TEdges & { readonly extensionEdges?: TExtensions };
 type ExtensionProjection<TProjection, TExtensions> = TProjection & { readonly extensionProjection?: TExtensions };
@@ -54,7 +54,7 @@ export interface CreatePipelineOptions<
 	TCapabilities,
 	TExtensions extends ${options.driftCreateExtensionsConstraint ? 'readonly object[]' : 'readonly GraphExtensionRegistrationShape[]'},
 	TParticipants,
-	TMiddleware extends ${options.driftCreateMiddlewareConstraint ? 'readonly object[]' : 'readonly NodeMiddlewareRegistration[]'},
+	TMiddleware extends ${options.driftCreateMiddlewareConstraint ? 'readonly NodeMiddlewareRegistration[]' : 'readonly object[]'},
 > {
 	readonly extensions?: ${options.reorderExtensions ? 'CheckedGraphExtensionRegistrations<TInputs, TNodes, TEdges, TEffects, TCapabilities, NoInfer<TExtensions>> & TExtensions' : `TExtensions & CheckedGraphExtensionRegistrations<TInputs, TNodes, TEdges, TEffects, TCapabilities, NoInfer<${options.wrongCheckedArguments ? 'TMiddleware' : 'TExtensions'}>>`};
 	readonly middleware?: TMiddleware & CheckedNodeMiddlewareRegistrations<
@@ -66,6 +66,28 @@ export interface CreatePipelineOptions<
 		NoInfer<TMiddleware>
 	>;
 }
+
+export declare function createPipeline<
+	TInputs,
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	TEffects,
+	TProjection extends OutputProjection<TNodes>,
+	TCapabilities,
+	TExtensions extends readonly GraphExtensionRegistrationShape[],
+	TParticipants,
+	TMiddleware extends readonly object[] = readonly [],
+>(options: CreatePipelineOptions<
+	TInputs,
+	TNodes,
+	TEdges,
+	TEffects,
+	TProjection,
+	TCapabilities,
+	TExtensions,
+	TParticipants,
+	TMiddleware
+>): Pipeline<TInputs, TNodes, TEdges, TEffects, TProjection, TCapabilities>;
 
 export type PipelineNodes<TNodes extends NodeRegistry, TExtensions extends ${options.driftAliasExtensionConstraint === 'PipelineNodes' ? 'readonly object[]' : 'readonly GraphExtensionRegistrationShape[]'}> = ${options.driftPipelineNodesRhs ? 'TNodes' : 'ExtensionNodes<TNodes, TExtensions>'};
 ${options.omitPipelineEdges ? '' : `export type PipelineEdges<TEdges extends readonly Edge[], TExtensions extends ${options.driftAliasExtensionConstraint === 'PipelineEdges' ? 'readonly object[]' : 'readonly GraphExtensionRegistrationShape[]'}> = ${options.driftPipelineEdgesRhs ? 'TEdges' : 'ExtensionEdges<TEdges, TExtensions>'};`}
@@ -173,6 +195,7 @@ describe('TypeDoc public Pipeline projection', () => {
 				? findReflection(createOptions, 'extensions')
 				: undefined;
 			const pipelineNodes = findReflection(project, 'PipelineNodes');
+			const createPipeline = findReflection(project, 'createPipeline');
 
 			expect(extensions?.type).toMatchObject({
 				name: 'TExtensions',
@@ -182,6 +205,18 @@ describe('TypeDoc public Pipeline projection', () => {
 				name: 'NodeRegistry',
 				type: 'reference',
 			});
+			for (const internalName of [
+				'CheckedGraphExtensionRegistrations',
+				'CheckedNodeMiddlewareRegistrations',
+				'NodeMiddlewareRegistration',
+			]) {
+				expect(JSON.stringify(createOptions)).not.toContain(
+					internalName
+				);
+				expect(JSON.stringify(createPipeline)).not.toContain(
+					internalName
+				);
+			}
 		} finally {
 			await fs.rm(path.dirname(result.outputFile), {
 				force: true,
