@@ -3,9 +3,9 @@ architecture_version: 1
 id: P2-009
 title: Qualify and release Pipeline 2.0.0
 stage: release
-status: in_progress
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'Pipeline 2.0.0 published through trusted OIDC workflow 32561994256; Node 20, 22.20.0 and 24 qualification, registry identity and live documentation verified'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
@@ -192,9 +192,21 @@ Suggested execution tier: balanced release execution with frontier audit.
 - The first `pipeline-v2.0.0` trusted-publishing run, 32561246943, failed closed
   before packing or publication because its admission shell referenced
   `GITHUB_TOKEN` without mapping `github.token` into the step environment. The
-  recovery contribution makes that capability explicit; npm remains
-  unpublished while the corrected workflow is qualified and merged.
-- The task remains in progress until the contribution is merged upstream, `pipewrk`
-  recreates `pipeline-v2.0.0` at the corrected green merge commit, the trusted
-  workflow publishes its single qualified archive, and registry SRI, shasum
-  and `latest` evidence are recorded.
+  recovery contribution made that capability explicit. npm was independently
+  confirmed to contain no 2.0.0 publication before the failed tag was replaced.
+- Recovery PR 400 merged as `b1198b692addc6b3957eeea686105847c486addb`.
+  Main CI run 32561750002 and documentation deployment 32561750008 pass on
+  that exact merge commit. `pipewrk` then recreated `pipeline-v2.0.0` at that
+  commit.
+- Trusted-publishing run 32561994256 passes release admission, the single-pack
+  build, full packed qualification, runtime qualification under Node 20,
+  22.20.0 and 24, OIDC publication and registry verification. The published
+  archive contains 179 canonical entries and has SHA-512
+  `821b2b5fea1db4b6e5390552faa1c09ed53df3daa635abc0401dc93a965745338a5130920dd0680f58ddd589057d16694f30454eaa6346d892ace36ad48f49df`,
+  SRI
+  `sha512-ghsrX+odtLblOQVS+qHAntU989qmNavAQB3JOpZXRTOKUTCSDdBoD1jd1YkFfRZpTzBFTqpjRtiSrONq1I9J3w==`
+  and shasum `6cef21eb8c48ec796d541f4b6144bc0cf810047c`.
+- Independent registry checks return `@wpkernel/pipeline@2.0.0`, bind `latest`
+  to 2.0.0 and reproduce the release artifact's SRI and shasum. The authored
+  Pipeline page and generated API root both return HTTP 200 from
+  `wpkernel.dev`.
