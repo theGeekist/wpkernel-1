@@ -1,4 +1,5 @@
 # Historical `@wpkernel/pipeline` hardening record
+
 > This page preserves the 1.2-era plan and its evidence as release history.
 > Version numbers, consumer pins, phase status and release gaps below describe
 > that work at the time. They are not current release guidance or a public v2
