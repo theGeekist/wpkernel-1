@@ -3,19 +3,19 @@ architecture_version: 1
 id: P2-009
 title: Qualify and release Pipeline 2.0.0
 stage: release
-status: proposed
+status: active
 priority: critical
 evidence_milestone: null
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+owner: /root/p2_009_release
+owner_kind: codex
+lease_started_at: 2026-08-22T13:46:14+08:00
+lease_expires_at: 2026-08-22T17:46:14+08:00
+base_sha: a6b74e063d7a462c10b787ef7191b827347abffd
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - P2-008
 decision_dependencies:
@@ -24,6 +24,7 @@ decision_dependencies:
     - ADR-003
 conflicts_with: []
 write_scope:
+    - docs/internal/pipeline/tasks/P2-009-packed-qualification-and-release.md
     - docs/api/@wpkernel/**
     - packages/pipeline/package.json
     - packages/pipeline/CHANGELOG.md
