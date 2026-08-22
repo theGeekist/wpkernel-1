@@ -8,8 +8,7 @@ process-local run through a `Pipeline` token.
 
 Pipeline 2.0 makes the immutable dataflow evaluator the package root. The v1
 helper and stage API remains available from `@wpkernel/pipeline/v1` for serial
-compatibility. Version 1.4.1 is the final 1.x release and therefore still uses
-the old root until 2.0.0 is promoted.
+compatibility. Version 1.4.1 is the final 1.x release; 2.0.0 owns the root.
 
 V1 and v2 use some familiar words for different authorities:
 

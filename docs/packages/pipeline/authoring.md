@@ -5,9 +5,9 @@ external input keys, nodes, data edges, effect contracts, output projections,
 execution policy and keyed executors. An executor receives only the external
 input keys and predecessor outputs declared for its node.
 
-> **V2 availability:** This is the reviewed v2 surface. Its public examples
-> use the future `@wpkernel/pipeline` root import, which P2-007 exposes. The
-> current `@wpkernel/pipeline` 1.4.1 release remains the v1 API.
+> **V2 availability:** This is the current root surface. Import native v2 from
+> `@wpkernel/pipeline`; import the serial compatibility adapter from
+> `@wpkernel/pipeline/v1`.
 
 ## Declarations and executors
 
@@ -19,10 +19,11 @@ cooperative cancellation after its signal is aborted.
 An output projection is explicit. It maps the public successful output shape to
 node keys; the runtime does not expose every intermediate value by accident.
 
-Use an edge when the target needs the source value. Use a node when values need
-combining. For example, two branches that produce a document and a theme do
-not make a renderer by completing in a convenient order. Declare both edges to
-`render`, then make the renderer's executor read
+Use an edge when the target consumes the source value or must wait for that
+source to succeed. Use a node when values need combining. For example, two
+branches that produce a document and a theme do not make a renderer by
+completing in a convenient order. Declare both edges to `render`, then make the
+renderer's executor read
 `input.dependencies.document` and `input.dependencies.theme`.
 
 `maxConcurrency` is required and is either a positive safe integer or

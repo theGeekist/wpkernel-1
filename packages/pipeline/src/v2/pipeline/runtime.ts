@@ -11,12 +11,10 @@ import type {
 	EffectRegistry,
 	GraphContribution,
 	GraphValue,
-	NodeKey,
 	NodeRegistry,
 	OutputProjection,
 } from '../graph/types.js';
 import { inspectRecord } from '../graph/inspection.js';
-import type { NodeMiddleware } from '../middleware/types.js';
 import type { RunObserver } from '../observers/types.js';
 import type { GraphSchedulerError } from '../scheduler/errors.js';
 import { createGraphSchedulerError } from '../scheduler/errors.js';
@@ -117,13 +115,7 @@ export function createPipeline<
 		readonly extension: GraphExtension<never, GraphContribution>;
 		readonly configuration: GraphValue;
 	}[] = readonly [],
-	const TMiddleware extends readonly NodeMiddleware<
-		NodeKey,
-		never,
-		unknown,
-		unknown,
-		unknown
-	>[] = readonly [],
+	const TMiddleware extends readonly object[] = readonly [],
 >(
 	options: CreatePipelineOptions<
 		TInputs,

@@ -1,8 +1,8 @@
-**@wpkernel/pipeline v1.4.1**
+**@wpkernel/pipeline v2.0.0**
 
 ***
 
-# @wpkernel/pipeline v1.4.1
+# @wpkernel/pipeline v2.0.0
 
 Immutable dataflow evaluation for WPKernel.
 

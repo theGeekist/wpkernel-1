@@ -8,6 +8,7 @@ import type {
 } from '../../graph/types.js';
 import type { GraphExtension } from '../../extensions/index.js';
 import type { CheckedGraphExtensionRegistrations } from '../../extensions/types.js';
+import type { NodeMiddlewareFor } from '../../middleware/types.js';
 import type { PipelineProjection as PublicPipelineProjection } from '../../pipeline/types.js';
 import {
 	createPipeline,
@@ -74,6 +75,94 @@ const participants = {
 		compensate: () => ({ kind: 'success' as const, value: undefined }),
 	},
 } as const;
+
+type MiddlewareState = Readonly<{ entered: true }>;
+
+const emitMiddleware: NodeMiddlewareFor<
+	Inputs,
+	Nodes,
+	Edges,
+	Effects,
+	Capabilities,
+	'emit',
+	MiddlewareState
+> = {
+	node: 'emit',
+	before: ({ invocation }) => {
+		const source: 'source' = invocation.input.external.source;
+		void source;
+		return {
+			state: { entered: true },
+			effects: [
+				{ participant: 'email', payload: 'middleware@example.com' },
+			],
+		};
+	},
+	after: ({ output, state }) => {
+		const emitted: true = output.emitted;
+		const entered: true = state.entered;
+		void emitted;
+		void entered;
+		return [];
+	},
+};
+
+const pipelineWithExplicitMiddlewareTuple = createPipeline<
+	Inputs,
+	Nodes,
+	Edges,
+	Effects,
+	Projection,
+	Capabilities,
+	typeof participants,
+	readonly [],
+	readonly [typeof emitMiddleware]
+>({
+	declaration,
+	middleware: [emitMiddleware],
+	participants,
+});
+
+const pipelineWithInferredMiddlewareTuple = createPipeline({
+	declaration,
+	middleware: [emitMiddleware] as const,
+	participants,
+});
+
+const invalidPipelineMiddleware = [
+	{
+		node: 'emit',
+		before: () => ({ state: { entered: true as const }, effects: [] }),
+		after: (options: {
+			readonly output: { readonly wrong: true };
+			readonly state: MiddlewareState;
+		}) => {
+			void options.output.wrong;
+			return [];
+		},
+	},
+] as const;
+
+const assertPipelineMiddlewareValidation = (): void => {
+	createPipeline({
+		declaration,
+		participants,
+		// @ts-expect-error middleware output must match its selected node.
+		middleware: invalidPipelineMiddleware,
+	});
+	createPipeline({
+		declaration,
+		participants,
+		// @ts-expect-error middleware must select a declared node.
+		middleware: [{ node: 'missing' }] as const,
+	});
+	createPipeline({
+		declaration,
+		participants,
+		// @ts-expect-error middleware registration must name its node.
+		middleware: [{}] as const,
+	});
+};
 
 const countExecutor: NodeExecutors<
 	Inputs,
@@ -236,9 +325,14 @@ const assertClosedInputs = (): void => {
 
 describe('v2 Pipeline public types', () => {
 	it('preserves exact composition and run relationships', () => {
+		expect(pipelineWithExplicitMiddlewareTuple.kind).toBe('pipeline');
+		expect(pipelineWithInferredMiddlewareTuple.kind).toBe('pipeline');
 		expect(assertExactPipeline).toEqual(expect.any(Function));
 		expect(assertRunResult).toEqual(expect.any(Function));
 		expect(assertBaseProjection).toEqual(expect.any(Function));
 		expect(assertClosedInputs).toEqual(expect.any(Function));
+		expect(assertPipelineMiddlewareValidation).toEqual(
+			expect.any(Function)
+		);
 	});
 });

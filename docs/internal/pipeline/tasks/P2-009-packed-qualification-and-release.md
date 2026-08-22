@@ -26,10 +26,22 @@ conflicts_with: []
 write_scope:
     - docs/internal/pipeline/tasks/P2-009-packed-qualification-and-release.md
     - docs/api/@wpkernel/**
+    - docs/packages/pipeline.md
+    - docs/packages/pipeline/**
     - packages/pipeline/package.json
     - packages/pipeline/CHANGELOG.md
+    - packages/pipeline/tsconfig.json
     - packages/pipeline/scripts/**
+    - packages/pipeline/src/v2/__tests__/pipeline/types.test.ts
+    - packages/pipeline/src/v2/middleware/types.ts
+    - packages/pipeline/src/v2/pipeline/runtime.ts
+    - packages/pipeline/src/v2/pipeline/types.ts
+    - package.json
+    - scripts/docs/typedoc-public-surface.mjs
     - scripts/release/release-pipeline.ts
+    - scripts/release/pipeline-release-metadata.*
+    - tests/__tests__/scripts/typedoc-public-surface.test.ts
+    - tests/__tests__/resolution/workspace-installed-resolution.test.ts
     - .github/workflows/publish-pipeline.yml
     - pnpm-lock.yaml
 required_reading:
@@ -41,14 +53,20 @@ required_reading:
       reason: Use origin for contribution and upstream for the trusted release tag.
 read_scope:
     - docs/internal/pipeline/**
+    - docs/packages/pipeline.md
+    - docs/packages/pipeline/**
     - instructions/wpkernel-repository-guide.md
     - packages/pipeline/**
+    - scripts/docs/typedoc-public-surface.mjs
     - scripts/release/release-pipeline.ts
+    - scripts/release/pipeline-release-metadata.*
+    - tests/__tests__/scripts/typedoc-public-surface.test.ts
+    - tests/__tests__/resolution/workspace-installed-resolution.test.ts
     - .github/workflows/publish-pipeline.yml
     - package.json
     - pnpm-lock.yaml
 review_owner: coordinator
-updated_at: 2026-08-19
+updated_at: 2026-08-22
 ---
 
 # P2-009: Qualify and release Pipeline 2.0.0
@@ -76,8 +94,10 @@ version workflow.
 - Prereleases publish to `beta`; final 2.0.0 publishes to `latest`.
 - Contributors push release branches to `origin` and merge through an upstream
   pull request.
-- The approved upstream release authority creates `pipeline-v<version>` at the
-  merged upstream commit without bypassing the direct-push guard.
+- The current approved upstream release authority, `pipewrk`, creates
+  `pipeline-v<version>` at the merged upstream commit without bypassing the
+  direct-push guard. The trusted workflow rejects every other tag-push actor;
+  this fail-closed admission does not imply that GitHub tag protection exists.
 - Only the trusted upstream workflow packs, qualifies and publishes the archive.
 - The release helper becomes prepare-and-qualify only, or delegates to the
   approved release authority. It never instructs `git push upstream <tag>` or
@@ -87,8 +107,8 @@ version workflow.
 
 ## Verification
 
-Record exact archive SHA-512, packed contents, consumer lock binding, commands,
-generated API and site routes, workflow run, registry integrity and downstream
-adoption evidence.
+Record exact archive SHA-512, SHA-1 shasum and SRI, packed contents, consumer
+lock binding, commands, generated API and site routes, workflow run, registry
+integrity and downstream adoption evidence.
 
 Suggested execution tier: balanced release execution with frontier audit.

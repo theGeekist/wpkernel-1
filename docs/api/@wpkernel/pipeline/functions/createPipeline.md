@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.4.1**](../index.md)
+[**@wpkernel/pipeline v2.0.0**](../index.md)
 
 ***
 
@@ -56,7 +56,7 @@ execution and claims no durable or cross-process authority.
 
 ### TMiddleware
 
-`TMiddleware` *extends* readonly [`NodeMiddleware`](../interfaces/NodeMiddleware.md)&lt;`string`, `never`, `unknown`, `unknown`, `unknown`&gt;[] = readonly \[\]
+`TMiddleware` *extends* readonly `object`[] = readonly \[\]
 
 ## Parameters
 

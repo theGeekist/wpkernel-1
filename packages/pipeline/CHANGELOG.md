@@ -3,6 +3,32 @@
 All notable changes to `@wpkernel/pipeline` are recorded here. The package is
 versioned and released independently from the WPKernel monorepo.
 
+## 2.0.0 - 2026-08-22
+
+### Changed
+
+- Replaced the package-root serial programme with Pipeline v2: an immutable,
+  compiled dataflow graph whose independent ready nodes may evaluate
+  concurrently. Node outputs are replacement graph values, and an edge makes a
+  predecessor's output available only after that predecessor succeeds.
+- Added deterministic graph compilation and evaluation, keyed node middleware,
+  process-local effect journalling, cancellation, and single-use
+  process-local suspension. Pipeline remains a process-local evaluator; durable
+  admission, recovery, leases, and external-effect authority remain host
+  concerns.
+- Exported the complete shared MaybePromise composition algebra from the root:
+  `MaybePromise`, `AwaitedTuple`, `adoptMaybePromise`, `isPromiseLike`,
+  `maybeThen`, `maybeAll`, `maybeTry`, and `processSequentially`.
+
+### Breaking
+
+- The package root now exposes native v2 graph authoring and evaluation. The
+  v1 serial helper API has moved to the explicit `@wpkernel/pipeline/v1`
+  compatibility entry point and is no longer exported from the root.
+- Native v2 no longer has stages, helpers, mutable runner state, callable
+  continuations, or shared draft output. Migrate serial consumers to `/v1` as
+  an interim step, then model causal work as nodes and edges when adopting v2.
+
 ## 1.4.1 - 2026-08-18
 
 ### Fixed

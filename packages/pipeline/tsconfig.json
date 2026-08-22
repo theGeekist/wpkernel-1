@@ -4,6 +4,8 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist",
+		"declarationMap": false,
+		"sourceMap": false,
 		// Override base paths to prevent pulling in other packages
 		"paths": {},
 		"baseUrl": "."

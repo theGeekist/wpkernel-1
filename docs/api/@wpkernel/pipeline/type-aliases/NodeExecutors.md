@@ -1,4 +1,4 @@
-[**@wpkernel/pipeline v1.4.1**](../index.md)
+[**@wpkernel/pipeline v2.0.0**](../index.md)
 
 ***
 

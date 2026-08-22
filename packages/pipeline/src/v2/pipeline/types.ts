@@ -18,10 +18,7 @@ import type {
 	NodeRegistry,
 	OutputProjection,
 } from '../graph/types.js';
-import type {
-	CheckedNodeMiddlewareRegistrations,
-	NodeMiddlewareRegistration,
-} from '../middleware/types.js';
+import type { CheckedNodeMiddlewareRegistrations } from '../middleware/types.js';
 import type { RunObserver } from '../observers/types.js';
 import type { GraphSchedulerError } from '../scheduler/errors.js';
 import type { RunOutcome } from '../scheduler/types.js';
@@ -141,7 +138,7 @@ export interface CreatePipelineOptions<
 	TCapabilities,
 	TExtensions extends readonly GraphExtensionRegistrationShape[],
 	TParticipants extends Readonly<Record<PropertyKey, unknown>>,
-	TMiddleware extends readonly NodeMiddlewareRegistration[],
+	TMiddleware extends readonly object[],
 > {
 	readonly declaration: GraphDeclaration<
 		TInputs,
