@@ -24,8 +24,14 @@ theme ─┘
 
 `render` is the join. Its executor declares how `parse` and `theme` become its
 own output. The scheduler never merges parent objects, spreads values or picks
-the last value to settle. If a relationship has no value to pass, it is not an
-edge in the v2 graph.
+the last value to settle.
+
+The target does not have to inspect every predecessor output. `undefined` is a
+valid graph value, so an edge can express a causal success dependency whose
+value is deliberately irrelevant, or whose output is only a small immutable
+completion fact. The edge still makes that output available and only unlocks
+the target after the source succeeds. It is therefore not generic ordering, a
+resource reservation or a middleware relation.
 
 Nodes receive a frozen snapshot of their declared external inputs and direct
 predecessor outputs. Each returns an independent replacement value. There is

@@ -15,8 +15,11 @@ run. A `Pipeline` token is the sole public authority for starting that work.
 - The compiled `Graph` is the scheduler's internal execution authority. It is
   reachable publicly only through its owning `Pipeline`. Nodes and extension
   roles cannot admit, suppress or invoke other nodes.
-- An `Edge` is a data dependency, not generic precedence, a resource claim or
-  middleware ordering.
+- An `Edge` is a data dependency. It makes the source output available to the
+  target and unlocks the target only after the source succeeds. The target need
+  not inspect that output; `undefined` and deliberately minimal immutable
+  completion facts are valid graph values. An edge is still not a resource
+  claim or middleware ordering.
 - Nodes receive immutable external inputs and direct predecessor outputs and
   produce independent replacement values. There is no shared draft or threaded
   current output.
@@ -248,8 +251,11 @@ One edge exposes its source node's whole output under that node key. A join is
 an ordinary node with every source edge declared and an explicit reducer in its
 executor. Compilation rejects duplicate keys, missing references, cycles,
 invalid projections, effect-key mismatches and invalid policy. The scheduler
-never merges or spreads parent values. Ordering-only and resource relations
-require distinct future types.
+never merges or spreads parent values. A dependant may intentionally ignore an
+available predecessor output, including `undefined`, when predecessor success
+is itself the causal fact. Relations that request order without making source
+success or output a prerequisite, and resource relations, require distinct
+future types.
 
 ## 4. Compilation, registration and canonical order
 

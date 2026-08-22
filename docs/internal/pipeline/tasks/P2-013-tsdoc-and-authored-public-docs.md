@@ -85,3 +85,14 @@ clean.
 
 Suggested execution tier: high-creativity technical writer followed by
 frontier contract review.
+
+## Follow-up semantic correction
+
+A later Task Graph integration audit found that the original architecture page
+overstated the edge algebra by requiring a relationship to carry a meaningful
+value. V2 permits `undefined` and deliberately ignored immutable completion
+facts: the source must succeed and its output is delivered, but the dependant
+need not inspect it. The authored documentation and governing contract now say
+so explicitly. A focused asynchronous scheduler regression proves causal
+blocking and own-key delivery, and the correction passed independent
+fix-and-re-review with no remaining findings.

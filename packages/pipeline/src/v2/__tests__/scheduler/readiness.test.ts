@@ -186,4 +186,45 @@ describe('v2 graph scheduler readiness', () => {
 		await expect(result).resolves.toMatchObject({ kind: 'succeeded' });
 		expect(join).toHaveBeenCalledTimes(1);
 	});
+
+	it('admits a dependant after an undefined predecessor output is intentionally ignored', async () => {
+		const prerequisite =
+			controlled<ReturnType<typeof success<undefined>>>();
+		const dependant = jest.fn(({ input }) => {
+			expect(
+				Object.prototype.hasOwnProperty.call(
+					input.dependencies,
+					'prerequisite'
+				)
+			).toBe(true);
+			expect(input.dependencies.prerequisite).toBeUndefined();
+			return success('complete');
+		});
+		const graph = compileTestGraph({
+			edges: [{ from: 'prerequisite', to: 'dependant' }],
+			outputs: { result: 'dependant' },
+			nodes: [
+				{
+					key: 'prerequisite',
+					executor: () => prerequisite.promise,
+				},
+				{
+					key: 'dependant',
+					executor: dependant,
+				},
+			],
+		});
+
+		const result = runTestGraph({ graph });
+		expect(result).toBeInstanceOf(Promise);
+		expect(dependant).not.toHaveBeenCalled();
+
+		prerequisite.resolve(success(undefined));
+
+		await expect(result).resolves.toMatchObject({
+			kind: 'succeeded',
+			outputs: { result: 'complete' },
+		});
+		expect(dependant).toHaveBeenCalledTimes(1);
+	});
 });

@@ -78,17 +78,17 @@ declaring its graph. Moving to v2 means modelling independent values, data
 edges, joins and effect ownership explicitly; there is no mechanical import
 change that performs that redesign.
 
-| V1 concept                   | V2 replacement                                              | Migration consequence                                                                                                           |
-| ---------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| helper                       | literal-keyed node plus executor                            | A node returns its own immutable output.                                                                                        |
-| `dependsOn`                  | data edge                                                   | The target receives the source output. It is not ordering-only precedence.                                                      |
-| stage array                  | compiled graph                                              | Readiness and capacity replace stage traversal.                                                                                 |
-| `next(output?)`              | no native equivalent                                        | Use edges and an explicit join node; keep `next` only inside a serial compatibility node.                                       |
-| shared draft/current output  | dependency outputs                                          | Model every value source and reduction explicitly.                                                                              |
-| mutable `use()` registration | creation-time extension tuple                               | Create a new `Pipeline` to reconfigure.                                                                                         |
-| lifecycle extension          | graph extension, middleware, observer or effect participant | Select the one role that owns the behaviour.                                                                                    |
-| rollback                     | `EffectParticipant.compensate`                              | Declare and prepare a native effect; `/v1` folds admitted cleanup into one native participant, not a public rollback authority. |
-| pause snapshot               | single-use process-local `Suspension`                       | Root v2 can suspend in-process. `/v1` pause/resume is unsupported.                                                              |
+| V1 concept                   | V2 replacement                                              | Migration consequence                                                                                                              |
+| ---------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| helper                       | literal-keyed node plus executor                            | A node returns its own immutable output.                                                                                           |
+| `dependsOn`                  | data edge                                                   | The target receives the source output after success, but may ignore it. `undefined` or a small immutable completion fact is valid. |
+| stage array                  | compiled graph                                              | Readiness and capacity replace stage traversal.                                                                                    |
+| `next(output?)`              | no native equivalent                                        | Use edges and an explicit join node; keep `next` only inside a serial compatibility node.                                          |
+| shared draft/current output  | dependency outputs                                          | Model every value source and reduction explicitly.                                                                                 |
+| mutable `use()` registration | creation-time extension tuple                               | Create a new `Pipeline` to reconfigure.                                                                                            |
+| lifecycle extension          | graph extension, middleware, observer or effect participant | Select the one role that owns the behaviour.                                                                                       |
+| rollback                     | `EffectParticipant.compensate`                              | Declare and prepare a native effect; `/v1` folds admitted cleanup into one native participant, not a public rollback authority.    |
+| pause snapshot               | single-use process-local `Suspension`                       | Root v2 can suspend in-process. `/v1` pause/resume is unsupported.                                                                 |
 
 ## Helpers and stages become graph nodes
 

@@ -33,6 +33,10 @@ Fan-in is explicit. A node that aggregates values is an ordinary reducer node.
 The scheduler does not merge parent outputs by completion order or implicit
 object spreading.
 
+A dependant may intentionally ignore a predecessor output, including
+`undefined`, when source success is itself a causal prerequisite. This remains
+a data edge, not arbitrary sequencing between unrelated work.
+
 Every ready node is admitted subject to an optional concurrency bound. When
 capacity is constrained, canonical rank, declared priority, key and
 registration order determine admission. Priority affects scheduling, not graph

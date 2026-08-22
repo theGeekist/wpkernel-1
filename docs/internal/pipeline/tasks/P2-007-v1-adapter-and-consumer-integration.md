@@ -166,8 +166,13 @@ public documentation, Pipeline semantic review and consumer compatibility review
   suites, declaration tests, formatting and diff checks also pass.
 - The declaration lane publishes an exact `.d.mts` contract for its five runtime
   exports and passes a clean strict NodeNext compile fixture.
-- Authored public documentation has completed independent behavioural and voice
-  review. Generated API remains the responsibility of P2-008.
+- Authored public documentation completed independent behavioural and voice
+  review. A later Task Graph integration audit found one overstrong edge claim:
+  dependants may ignore a delivered predecessor output, including `undefined`,
+  when source success is the causal prerequisite. The public architecture,
+  migration guide, governing contract, vocabulary, ADR and package README were
+  corrected, backed by a focused scheduler regression and independently
+  re-reviewed clean. Generated API remains the responsibility of P2-008.
 
 ### Intentional observer delta
 
