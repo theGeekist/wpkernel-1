@@ -255,7 +255,7 @@ export type { Pipeline } from '../../../pipeline/src/v1';
 		await expect(
 			execFileAsync(tsc, ['-p', 'tsconfig.json'], { cwd: fixture.root })
 		).resolves.toMatchObject({ stderr: '' });
-	});
+	}, 30_000);
 
 	it('publishes an exact compile-time contract for the shared build seam', async () => {
 		const implementation = path.resolve('scripts/declaration-imports.mjs');

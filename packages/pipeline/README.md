@@ -97,6 +97,10 @@ const outcome = runPipeline({
 its executor receives both outputs by node key. Its value cannot depend on
 which sibling settled first.
 
+A target may intentionally ignore an available predecessor output, including
+`undefined`, when predecessor success is itself the causal prerequisite. This
+does not turn an edge into arbitrary sequencing.
+
 ## Contract limits
 
 - Edges are data dependencies, not ordering hints, resource locks or
