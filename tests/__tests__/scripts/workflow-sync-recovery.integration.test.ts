@@ -151,43 +151,47 @@ describe('repository main synchronisation recovery', () => {
 		integrationTimeout
 	);
 
-	it('refuses to abort a rebase it does not own', async () => {
-		const fixture = await createFixture();
-		await prepareConflictFixture(fixture);
-		const env = {
-			...(await createMockGit(fixture)),
-			GIT_SEQUENCE_EDITOR: ':',
-		};
-		await expect(runSync(fixture, env, '\n')).rejects.toBeDefined();
-		await git(fixture.work, 'rebase', '--abort');
-		await git(
-			fixture.work,
-			'checkout',
-			'-b',
-			'unrelated',
-			'wpkernel-sync-candidate'
-		);
-		await expect(
-			execFileAsync(
-				'git',
-				['rebase', 'refs/wpkernel-sync/expected-upstream'],
-				{
-					cwd: fixture.work,
-				}
-			)
-		).rejects.toBeDefined();
+	it(
+		'refuses to abort a rebase it does not own',
+		async () => {
+			const fixture = await createFixture();
+			await prepareConflictFixture(fixture);
+			const env = {
+				...(await createMockGit(fixture)),
+				GIT_SEQUENCE_EDITOR: ':',
+			};
+			await expect(runSync(fixture, env, '\n')).rejects.toBeDefined();
+			await git(fixture.work, 'rebase', '--abort');
+			await git(
+				fixture.work,
+				'checkout',
+				'-b',
+				'unrelated',
+				'wpkernel-sync-candidate'
+			);
+			await expect(
+				execFileAsync(
+					'git',
+					['rebase', 'refs/wpkernel-sync/expected-upstream'],
+					{
+						cwd: fixture.work,
+					}
+				)
+			).rejects.toBeDefined();
 
-		await expect(
-			runSync(fixture, { ...env, SYNC_RECOVERY: 'abort' }, '')
-		).rejects.toMatchObject({
-			stderr: expect.stringContaining(
-				'active rebase is not owned by WPKernel synchronisation'
-			),
-		});
-		expect(await rebaseIsActive(fixture.work)).toBe(true);
-		await git(fixture.work, 'rebase', '--abort');
-		await runSync(fixture, { ...env, SYNC_RECOVERY: 'abort' }, '');
-	}, 60_000);
+			await expect(
+				runSync(fixture, { ...env, SYNC_RECOVERY: 'abort' }, '')
+			).rejects.toMatchObject({
+				stderr: expect.stringContaining(
+					'active rebase is not owned by WPKernel synchronisation'
+				),
+			});
+			expect(await rebaseIsActive(fixture.work)).toBe(true);
+			await git(fixture.work, 'rebase', '--abort');
+			await runSync(fixture, { ...env, SYNC_RECOVERY: 'abort' }, '');
+		},
+		integrationTimeout
+	);
 
 	it(
 		'preserves the named candidate when main CAS adoption fails',
@@ -251,7 +255,6 @@ describe('repository main synchronisation recovery', () => {
 			await expect(
 				access(env.MOCK_PUSH_LOG as string)
 			).rejects.toBeDefined();
-			await rm(path.join(fixture.work, 'concurrent-untracked.txt'));
 		},
 		integrationTimeout
 	);

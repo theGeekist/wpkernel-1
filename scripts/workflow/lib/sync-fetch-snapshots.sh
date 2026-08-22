@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# shellcheck source=sync-git-object-id.sh
+source "$(dirname "${BASH_SOURCE[0]}")/sync-git-object-id.sh"
+
 FETCH_FORK_REF=
 FETCH_UPSTREAM_REF=
 fetched_fork_sha=
@@ -7,7 +10,7 @@ fetched_upstream_sha=
 
 cleanup_fetch_snapshots() {
 	local result=$?
-	trap - EXIT
+	trap - EXIT INT TERM
 	if [[ -n $fetched_fork_sha || -n $fetched_upstream_sha ]]; then
 		if ! {
 			printf 'start\n'
@@ -27,10 +30,12 @@ cleanup_fetch_snapshots() {
 			fi
 		fi
 	fi
-	exit "$result"
+	return "$result"
 }
 
 trap cleanup_fetch_snapshots EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 reserve_fetch_snapshots() {
 	local initial_sha=$1

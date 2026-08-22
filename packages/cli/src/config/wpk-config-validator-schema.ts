@@ -25,6 +25,14 @@ const resourceRouteValidator = t.isObject(
 	{ extra: t.isRecord(t.isUnknown()) }
 );
 
+const resourceRouteOperations = [
+	'list',
+	'get',
+	'create',
+	'update',
+	'remove',
+] as const;
+
 /**
  * Typanion validator for resource routes.
  *
@@ -45,8 +53,8 @@ export const resourceRoutesValidator = t.cascade(
 		{ extra: t.isRecord(t.isUnknown()) }
 	),
 	(value, state) => {
-		const hasRoute = Object.values(value).some(
-			(route) => typeof route !== 'undefined'
+		const hasRoute = resourceRouteOperations.some(
+			(operation) => typeof value[operation] !== 'undefined'
 		);
 		if (!hasRoute) {
 			state?.errors?.push(

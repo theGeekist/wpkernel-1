@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -14,6 +14,29 @@ import {
 
 const execFileAsync = promisify(execFile);
 const integrationTimeout = 60_000;
+const syncScript = path.resolve('scripts/workflow/sync-fork-main.sh');
+
+function waitForPushDecision(child: ReturnType<typeof spawn>): Promise<void> {
+	return new Promise((resolve, reject) => {
+		let output = '';
+		const observe = (chunk: Buffer) => {
+			output += chunk.toString();
+			if (output.includes('Local main is now based on upstream/main.')) {
+				resolve();
+			}
+		};
+		child.stdout?.on('data', observe);
+		child.stderr?.on('data', observe);
+		child.once('error', reject);
+		child.once('close', (code, signal) => {
+			reject(
+				new Error(
+					`Synchronisation exited before the push decision: code=${code}, signal=${signal}.`
+				)
+			);
+		});
+	});
+}
 
 describe('repository main synchronisation transitions', () => {
 	afterEach(cleanupFixtures);
@@ -48,6 +71,44 @@ describe('repository main synchronisation transitions', () => {
 			expect(push).toContain(
 				'https://github.com/theGeekist/wpkernel-1.git'
 			);
+		},
+		integrationTimeout
+	);
+
+	it(
+		'cleans private fetch snapshots when interrupted before the push decision',
+		async () => {
+			const fixture = await createFixture();
+			await commitFile(fixture.work, 'release.txt', 'release\n');
+			await git(
+				fixture.work,
+				'push',
+				fixture.upstream,
+				'HEAD:refs/heads/main'
+			);
+			await git(fixture.work, 'reset', '--hard', fixture.baseSha);
+			const child = spawn(syncScript, [], {
+				cwd: fixture.work,
+				env: await createMockGit(fixture),
+				stdio: ['pipe', 'pipe', 'pipe'],
+			});
+			await waitForPushDecision(child);
+			const closed = new Promise<
+				readonly [number | null, NodeJS.Signals | null]
+			>((resolve) => {
+				child.once('close', (code, signal) => resolve([code, signal]));
+			});
+
+			child.kill('SIGINT');
+			await expect(closed).resolves.toEqual([130, null]);
+			expect(
+				await git(
+					fixture.work,
+					'for-each-ref',
+					'--format=%(refname)',
+					'refs/wpkernel-sync'
+				)
+			).toBe('');
 		},
 		integrationTimeout
 	);

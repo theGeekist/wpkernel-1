@@ -11,6 +11,7 @@ const workflowScripts = [
 	'scripts/workflow/sync-fork-main.sh',
 ] as const;
 const workflowLibraries = [
+	'scripts/workflow/lib/sync-git-object-id.sh',
 	'scripts/workflow/lib/sync-fetch-snapshots.sh',
 	'scripts/workflow/lib/sync-recovery-state.sh',
 ] as const;

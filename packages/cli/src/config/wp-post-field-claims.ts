@@ -125,10 +125,7 @@ function resolveIdentityParam(resource: WpPostClaimInput): string | undefined {
 			continue;
 		}
 		for (const match of route.path.matchAll(/:([a-zA-Z0-9_]+)/gu)) {
-			const placeholder = match[1]?.toLowerCase();
-			if (placeholder) {
-				placeholders.add(placeholder);
-			}
+			placeholders.add(match[1]!.toLowerCase());
 		}
 	}
 

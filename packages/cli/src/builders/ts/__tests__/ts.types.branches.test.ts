@@ -137,64 +137,67 @@ describe('ts.types builder branch coverage', () => {
 		expect(getDeclarationDiagnostics(dts ?? '')).toEqual([]);
 	});
 
-	it('emits a designated wp-post slug identity exactly once', async () => {
-		const ir = makeIr();
-		const resource = {
-			...baseResource,
-			storage: {
-				mode: 'wp-post',
-				postType: 'article',
-			},
-			identity: { type: 'string', param: 'slug' },
-		};
-		ir.resources = [resource];
-		ir.schemas.push({
-			id: 'some',
-			provenance: 'auto',
-			key: resource.schemaKey,
-			hash: { algo: 'sha256', inputs: [], value: 'schema' },
-			schema: { type: 'object', properties: {} },
-			sourcePath: 'schema.json',
-		});
-		ir.artifacts.schemas[resource.schemaKey] = {
-			typeDefPath: `/generated/types/${resource.name}.d.ts`,
-		};
-		ir.artifacts.resources[resource.id] = {
-			modulePath: '',
-			typeDefPath: `/generated/types/${resource.name}.d.ts`,
-			typeSource: 'inferred',
-		};
+	it.each(['wp-post', 'wp-taxonomy'] as const)(
+		'emits a designated %s slug identity exactly once',
+		async (mode) => {
+			const ir = makeIr();
+			const resource = {
+				...baseResource,
+				storage:
+					mode === 'wp-post'
+						? { mode: 'wp-post', postType: 'article' }
+						: { mode: 'wp-taxonomy' },
+				identity: { type: 'string', param: 'slug' },
+			};
+			ir.resources = [resource];
+			ir.schemas.push({
+				id: 'some',
+				provenance: 'auto',
+				key: resource.schemaKey,
+				hash: { algo: 'sha256', inputs: [], value: 'schema' },
+				schema: { type: 'object', properties: {} },
+				sourcePath: 'schema.json',
+			});
+			ir.artifacts.schemas[resource.schemaKey] = {
+				typeDefPath: `/generated/types/${resource.name}.d.ts`,
+			};
+			ir.artifacts.resources[resource.id] = {
+				modulePath: '',
+				typeDefPath: `/generated/types/${resource.name}.d.ts`,
+				typeSource: 'inferred',
+			};
 
-		const { workspace, writes } = buildWorkspace();
-		const reporter = buildReporter();
-		const output = buildOutput();
-		await createTsTypesBuilder().apply(
-			{
-				input: {
-					phase: 'generate',
-					options: {
-						origin: 'wpk.config.ts',
-						sourcePath: 'wpk.config.ts',
-						namespace: ir.meta.namespace,
+			const { workspace, writes } = buildWorkspace();
+			const reporter = buildReporter();
+			const output = buildOutput();
+			await createTsTypesBuilder().apply(
+				{
+					input: {
+						phase: 'generate',
+						options: {
+							origin: 'wpk.config.ts',
+							sourcePath: 'wpk.config.ts',
+							namespace: ir.meta.namespace,
+						},
+						ir,
 					},
-					ir,
-				},
-				context: {
-					workspace,
+					context: {
+						workspace,
+						reporter,
+						phase: 'generate',
+						generationState: buildEmptyGenerationState(),
+					},
+					output,
 					reporter,
-					phase: 'generate',
-					generationState: buildEmptyGenerationState(),
 				},
-				output,
-				reporter,
-			},
-			undefined
-		);
+				undefined
+			);
 
-		const dts = writes[0]?.contents ?? '';
-		expect(dts.match(/\bslug: string;/gu)).toHaveLength(1);
-		expect(getDeclarationDiagnostics(dts)).toEqual([]);
-	});
+			const dts = writes[0]?.contents ?? '';
+			expect(dts.match(/\bslug: string;/gu)).toHaveLength(1);
+			expect(getDeclarationDiagnostics(dts)).toEqual([]);
+		}
+	);
 });
 
 function getDeclarationDiagnostics(source: string): readonly ts.Diagnostic[] {

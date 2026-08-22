@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Requires the entry point to provide the recovery ref and branch configuration,
+# plus require_clean_worktree and require_candidate_state. resume_recovery
+# receives the current remote SHAs explicitly and prints its adopted candidate SHA.
+# shellcheck source=sync-git-object-id.sh
+source "$(dirname "${BASH_SOURCE[0]}")/sync-git-object-id.sh"
+
 recovery_state_exists() {
 	git show-ref --verify --quiet "refs/heads/${RECOVERY_BRANCH}" || \
 	git show-ref --verify --quiet "$EXPECTED_MAIN_REF" || \
@@ -82,6 +88,7 @@ rebase_in_progress() {
 active_rebase_head() {
 	local directory
 	local head_file
+	local rebase_head
 	for directory in \
 		"$(git rev-parse --git-path rebase-merge)" \
 		"$(git rev-parse --git-path rebase-apply)"; do
@@ -155,7 +162,7 @@ EOF
 		echo "The completed candidate remains preserved on ${RECOVERY_BRANCH}." >&2
 		exit 1
 	fi
-	git checkout "$FORK_BRANCH"
+	git checkout "$FORK_BRANCH" >/dev/null
 	clear_recovery_state \
 		"$recovery_sha" \
 		"$recorded_main_sha" \
@@ -167,6 +174,8 @@ EOF
 }
 
 resume_recovery() {
+	local current_fork_sha=$1
+	local current_upstream_sha=$2
 	local recovery_sha
 	local stored_main_sha
 	local stored_fork_sha
@@ -194,8 +203,8 @@ resume_recovery() {
 		echo "The candidate remains preserved on ${RECOVERY_BRANCH}." >&2
 		exit 1
 	fi
-	if [[ $fork_sha != "$stored_fork_sha" || \
-		$upstream_sha != "$stored_upstream_sha" ]]; then
+	if [[ $current_fork_sha != "$stored_fork_sha" || \
+		$current_upstream_sha != "$stored_upstream_sha" ]]; then
 		echo "Error: remote history changed while synchronisation was paused." >&2
 		echo "The recovery candidate remains preserved on ${RECOVERY_BRANCH}." >&2
 		exit 1
@@ -206,8 +215,6 @@ resume_recovery() {
 		"$stored_fork_sha" \
 		"$stored_upstream_sha" \
 		"$completed_sha"
-	candidate_sha=$recovery_sha
-	fork_sha=$stored_fork_sha
 }
 
 abort_recovery() {

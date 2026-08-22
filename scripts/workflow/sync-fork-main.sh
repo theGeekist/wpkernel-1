@@ -20,17 +20,6 @@ require_binary() {
 	fi
 }
 
-null_object_id() {
-	case "$(git rev-parse --show-object-format)" in
-		sha1) printf '%040d\n' 0 ;;
-		sha256) printf '%064d\n' 0 ;;
-		*)
-			echo "Error: unsupported Git object format." >&2
-			exit 1
-			;;
-	esac
-}
-
 SCRIPT_SOURCE=${BASH_SOURCE[0]}
 while [[ -h $SCRIPT_SOURCE ]]; do
 	SCRIPT_DIRECTORY=$(
@@ -44,6 +33,8 @@ done
 SCRIPT_DIRECTORY=$(
 	CDPATH= cd -P -- "$(dirname -- "$SCRIPT_SOURCE")" && pwd -P
 )
+# shellcheck source=lib/sync-git-object-id.sh
+source "${SCRIPT_DIRECTORY}/lib/sync-git-object-id.sh"
 # shellcheck source=lib/sync-fetch-snapshots.sh
 source "${SCRIPT_DIRECTORY}/lib/sync-fetch-snapshots.sh"
 # shellcheck source=lib/sync-recovery-state.sh
@@ -228,11 +219,11 @@ ensure_no_unpublished_local_commits "$fork_sha"
 
 case "$SYNC_RECOVERY" in
 	resume)
-		resume_recovery
+		candidate_sha=$(resume_recovery "$fork_sha" "$upstream_sha")
 		;;
 	complete)
 		complete_recovery
-		resume_recovery
+		candidate_sha=$(resume_recovery "$fork_sha" "$upstream_sha")
 		;;
 	abort) exit 0 ;;
 	'')

@@ -175,7 +175,11 @@ function addIdentityField(
 	}
 
 	const param = resource.identity.param ?? 'id';
-	if (resource.storage?.mode === 'wp-post' && param === 'slug') {
+	if (
+		(resource.storage?.mode === 'wp-post' ||
+			resource.storage?.mode === 'wp-taxonomy') &&
+		param === 'slug'
+	) {
 		return;
 	}
 

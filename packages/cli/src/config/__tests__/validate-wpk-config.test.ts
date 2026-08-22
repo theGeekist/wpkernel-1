@@ -20,33 +20,33 @@ function createMockReporter(): {
 	return { reporter: reporter as unknown as Reporter, child };
 }
 
-describe('validateWPKernelConfig', () => {
-	const baseSchema: WPKernelConfigV1['schemas'] = {
-		default: {
-			path: 'schemas/default.json',
-			description: 'Default schema',
-		},
-	} as const;
+const baseSchema: WPKernelConfigV1['schemas'] = {
+	default: {
+		path: 'schemas/default.json',
+		description: 'Default schema',
+	},
+} as const;
 
-	function createValidConfig(): WPKernelConfigV1 {
-		return {
-			version: 1,
-			namespace: 'valid-namespace',
-			schemas: baseSchema,
-			resources: {
-				thing: {
-					name: 'thing',
-					routes: {
-						get: {
-							path: '/valid/v1/things/:id',
-							method: 'GET',
-						},
+function createValidConfig(): WPKernelConfigV1 {
+	return {
+		version: 1,
+		namespace: 'valid-namespace',
+		schemas: baseSchema,
+		resources: {
+			thing: {
+				name: 'thing',
+				routes: {
+					get: {
+						path: '/valid/v1/things/:id',
+						method: 'GET',
 					},
 				},
 			},
-		} as WPKernelConfigV1;
-	}
+		},
+	} as WPKernelConfigV1;
+}
 
+describe('validateWPKernelConfig', () => {
 	it('returns sanitized namespace when required', () => {
 		const { reporter, child } = createMockReporter();
 		const config = createValidConfig();
@@ -588,6 +588,38 @@ describe('validateWPKernelConfig helpers', () => {
 		expect(state.errors).toContain(
 			'resources[].routes must define at least one operation.'
 		);
+	});
+
+	it('does not count an unknown route key as a resource operation', () => {
+		const state = { errors: [] as string[] };
+
+		const result = resourceRoutesValidator(
+			{
+				typo: { path: '/valid/v1/things', method: 'GET' },
+			} as never,
+			state as never
+		);
+
+		expect(result).toBe(false);
+		expect(state.errors).toContain(
+			'resources[].routes must define at least one operation.'
+		);
+	});
+
+	it('rejects a configuration with only an unknown route as a validation error', () => {
+		const { reporter } = createMockReporter();
+		const config = createValidConfig();
+		config.resources.thing!.routes = {
+			typo: { path: '/valid/v1/things', method: 'GET' },
+		} as never;
+
+		expect(() =>
+			validateWPKernelConfig(config, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).toThrow(WPKernelError);
 	});
 
 	it('normalizes missing versions and reports errors for unsupported ones', () => {

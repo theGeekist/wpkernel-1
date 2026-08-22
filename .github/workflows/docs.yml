@@ -57,6 +57,8 @@ jobs:
 
                       if ! status="$(
                           curl --silent --show-error --location \
+                              --connect-timeout 10 \
+                              --max-time 45 \
                               --retry 3 \
                               --retry-all-errors \
                               --retry-delay 2 \
@@ -82,6 +84,8 @@ jobs:
                   for page in 1 2 3; do
                       pulls_page_file="${RUNNER_TEMP}/associated-pulls-${page}.json"
                       curl --fail --silent --show-error --location \
+                          --connect-timeout 10 \
+                          --max-time 45 \
                           --header "Authorization: Bearer ${GITHUB_TOKEN}" \
                           --header 'Accept: application/vnd.github+json' \
                           --header 'X-GitHub-Api-Version: 2022-11-28' \
@@ -104,7 +108,9 @@ jobs:
                       "${pulls_args[@]}")"
                   upstream_commit_file="${RUNNER_TEMP}/upstream-commit.json"
                   curl --fail --silent --show-error --location \
-                          --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+                      --connect-timeout 10 \
+                      --max-time 45 \
+                      --header "Authorization: Bearer ${GITHUB_TOKEN}" \
                           --header 'Accept: application/vnd.github+json' \
                           --header 'X-GitHub-Api-Version: 2022-11-28' \
                           --output "${upstream_commit_file}" \
@@ -122,7 +128,11 @@ jobs:
                   )
 
                   ci_api_url="${GITHUB_API_URL}/repos/theGeekist/wpkernel-1/actions/workflows/ci.yml/runs?branch=main&event=push&head_sha=${source_sha}&per_page=100"
-                  for attempt in {1..30}; do
+                  # Ten polls with 710 seconds of scheduled wait. Request
+                  # timeouts and workflow overhead are additional.
+                  poll_wait_delays_seconds=(15 20 30 45 60 90 120 150 180)
+                  poll_attempts=$((${#poll_wait_delays_seconds[@]} + 1))
+                  for (( attempt = 1; attempt <= poll_attempts; attempt += 1 )); do
                       ci_file="${RUNNER_TEMP}/authoring-ci-${attempt}.json"
                       public_get "${ci_api_url}&poll=${attempt}" "${ci_file}"
                       ci_result="$(node scripts/docs/promotion-resolver.cjs select-ci \
@@ -151,7 +161,9 @@ jobs:
                               ;;
                       esac
 
-                      sleep 10
+                      if (( attempt < poll_attempts )); then
+                          sleep "${poll_wait_delays_seconds[attempt - 1]}"
+                      fi
                   done
 
                   echo "Authoring CI did not complete for ${source_sha}." >&2
@@ -174,7 +186,9 @@ jobs:
 
             - name: Verify checked-out source
               shell: bash
-              run: test "$(git rev-parse HEAD)" = "${{ needs.resolve-source.outputs.source-sha }}"
+              env:
+                  SOURCE_SHA: ${{ needs.resolve-source.outputs.source-sha }}
+              run: test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
@@ -244,12 +258,16 @@ jobs:
 
             - name: Record deployment receipt
               shell: bash
+              env:
+                  SOURCE_CI_RUN_ID: ${{ needs.resolve-source.outputs.source-ci-run-id }}
+                  SOURCE_CI_RUN_URL: ${{ needs.resolve-source.outputs.source-ci-run-url }}
+                  SOURCE_SHA: ${{ needs.resolve-source.outputs.source-sha }}
               run: |
                   {
                       echo '### Documentation deployment receipt'
                       echo
-                      echo "- Authoring revision: \`${{ needs.resolve-source.outputs.source-sha }}\`"
-                      echo "- Authoring CI run: [${{ needs.resolve-source.outputs.source-ci-run-id }}](${{ needs.resolve-source.outputs.source-ci-run-url }})"
+                      echo "- Authoring revision: \`${SOURCE_SHA}\`"
+                      echo "- Authoring CI run: [${SOURCE_CI_RUN_ID}](${SOURCE_CI_RUN_URL})"
                   } >> "${GITHUB_STEP_SUMMARY}"
 
             - name: Deploy to GitHub Pages

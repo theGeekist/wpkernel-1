@@ -10,8 +10,12 @@ function nonEmptyString(value) {
 	return typeof value === 'string' && value.length > 0;
 }
 
+function isObject(value) {
+	return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
 function object(value, label) {
-	if (value && typeof value === 'object' && !Array.isArray(value)) {
+	if (isObject(value)) {
 		return value;
 	}
 
@@ -45,6 +49,8 @@ function resolvePromotion(input) {
 		input.upstreamSha,
 		input.pullsPages
 	);
+	assertCommitSha(input.upstreamCommit, input.upstreamSha, 'upstream commit');
+	assertCommitSha(input.sourceCommit, sourceSha, 'authoring commit');
 	const upstreamTree = treeSha(input.upstreamCommit, 'upstream commit');
 	const sourceTree = treeSha(input.sourceCommit, 'authoring commit');
 	if (sourceTree !== upstreamTree) {
@@ -52,6 +58,13 @@ function resolvePromotion(input) {
 	}
 
 	return { sourceSha, sourceTree };
+}
+
+function assertCommitSha(commit, expectedSha, label) {
+	const sha = object(commit, label).sha;
+	if (nonEmptyString(sha) && sha !== expectedSha) {
+		throw new Error(`${label} SHA does not match the expected revision`);
+	}
 }
 
 function findPromotionSourceSha(upstreamSha, pullsPages) {
@@ -121,14 +134,20 @@ function associatedPullPageState(page, pageNumber) {
 }
 
 function isPromotionPull(pull, upstreamSha) {
-	if (!pull || typeof pull !== 'object' || Array.isArray(pull)) {
+	if (!isObject(pull)) {
 		return false;
 	}
 
 	const candidate = /** @type {Record<string, unknown>} */ (pull);
-	const base = object(candidate.base, 'promotion pull base');
-	const head = object(candidate.head, 'promotion pull head');
-	const repository = object(head.repo, 'promotion pull head repository');
+	if (!isObject(candidate.base) || !isObject(candidate.head)) {
+		return false;
+	}
+	const base = candidate.base;
+	const head = candidate.head;
+	if (!isObject(head.repo)) {
+		return false;
+	}
+	const repository = head.repo;
 	return (
 		nonEmptyString(candidate.merged_at) &&
 		base.ref === 'main' &&

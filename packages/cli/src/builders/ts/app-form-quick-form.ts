@@ -1,6 +1,10 @@
 import type { CodeBlockWriter, SourceFile } from 'ts-morph';
 import type { IRResource } from '../../ir/publicTypes';
-import { buildWpPostFormPolicy } from './wp-post-form-policy';
+import {
+	buildWpPostFormPolicy,
+	type WpPostFormPolicy,
+} from './wp-post-form-policy';
+import { typeScriptStringLiteral } from './typescript-syntax';
 
 export type QuickFormParams = {
 	sourceFile: SourceFile;
@@ -94,6 +98,10 @@ export function writeQuickFormComponent({
 	resource,
 }: QuickFormParams): void {
 	const fetchInfo = resolveFetchInfo(resource);
+	const policy =
+		resource.storage?.mode === 'wp-post'
+			? buildWpPostFormPolicy(resource.storage, formInputType)
+			: undefined;
 
 	sourceFile.addFunction({
 		name: quickFormName,
@@ -103,11 +111,11 @@ export function writeQuickFormComponent({
 			writer.writeLine(
 				'const { resource, runtime, editId, onClose, onRefresh } = props;'
 			);
-			writeTaxonomyHooks(writer, resource, formInputType);
+			writeTaxonomyHooks(writer, policy);
 			writeStateHooks(writer);
 			writeFieldsConfig(
 				writer,
-				resource,
+				policy,
 				formInputType,
 				entityType,
 				pascalName
@@ -120,16 +128,12 @@ export function writeQuickFormComponent({
 
 function writeTaxonomyHooks(
 	writer: CodeBlockWriter,
-	resource: IRResource,
-	formInputType: string
+	policy: WpPostFormPolicy | undefined
 ): void {
-	if (resource.storage?.mode !== 'wp-post') {
+	if (!policy) {
 		return;
 	}
-	writeLines(
-		writer,
-		buildWpPostFormPolicy(resource.storage, formInputType).taxonomyHookLines
-	);
+	writeLines(writer, policy.taxonomyHookLines);
 }
 
 function writeStateHooks(writer: CodeBlockWriter): void {
@@ -142,28 +146,20 @@ function writeStateHooks(writer: CodeBlockWriter): void {
 
 function writeFieldsConfig(
 	writer: CodeBlockWriter,
-	resource: IRResource,
+	policy: WpPostFormPolicy | undefined,
 	formInputType: string,
 	entityType: string,
 	pascalName: string
 ): void {
 	writer.writeLine('const fields = useMemo(() => [');
 	writer.indent(() => {
-		if (resource.storage?.mode === 'wp-post') {
-			writeLines(
-				writer,
-				buildWpPostFormPolicy(resource.storage, formInputType)
-					.fieldDefinitionLines
-			);
+		if (policy) {
+			writeLines(writer, policy.fieldDefinitionLines);
 		}
 	});
 	writer.writeLine('], [');
-	if (resource.storage?.mode === 'wp-post') {
-		writeLines(
-			writer,
-			buildWpPostFormPolicy(resource.storage, formInputType)
-				.fieldDependencyLines
-		);
+	if (policy) {
+		writeLines(writer, policy.fieldDependencyLines);
 	}
 	writer.writeLine(']);');
 	writer.writeLine(
@@ -227,9 +223,16 @@ function resolveFetchInfo(resource: IRResource): FetchInfo | undefined {
 	const pathTemplate = placeholders.reduce(
 		(candidatePath, placeholder) =>
 			candidatePath.replace(placeholder, '${editId}'),
-		getRoute.path
+		typeScriptTemplateLiteralContent(getRoute.path)
 	);
 	return { pathTemplate };
+}
+
+function typeScriptTemplateLiteralContent(value: string): string {
+	return typeScriptStringLiteral(value)
+		.slice(1, -1)
+		.replace(/`/gu, '\\`')
+		.replace(/\$\{/gu, '\\${');
 }
 
 function writeLoadEffect(

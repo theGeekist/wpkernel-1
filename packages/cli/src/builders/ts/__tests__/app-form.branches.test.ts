@@ -24,6 +24,25 @@ function buildWorkspace() {
 	return { workspace, writes };
 }
 
+function expectNoTypeScriptSyntaxErrors(
+	source: string,
+	fileName: string
+): void {
+	const transpiled = ts.transpileModule(source, {
+		fileName,
+		compilerOptions: {
+			jsx: ts.JsxEmit.ReactJSX,
+			target: ts.ScriptTarget.ES2022,
+		},
+		reportDiagnostics: true,
+	});
+	expect(
+		(transpiled.diagnostics ?? []).filter(
+			(diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
+		)
+	).toEqual([]);
+}
+
 describe('app-form builder (branches)', () => {
 	it('skips if phase is not generate', async () => {
 		const { workspace, writes } = buildWorkspace();
@@ -510,20 +529,7 @@ describe('app-form builder (branches)', () => {
 		expect(content).toContain('bookGenreOptions2.options,');
 		expect(content).toContain('taxonomy123Options.options,');
 
-		const transpiled = ts.transpileModule(content, {
-			fileName: 'PostForm.tsx',
-			compilerOptions: {
-				jsx: ts.JsxEmit.ReactJSX,
-				target: ts.ScriptTarget.ES2022,
-			},
-			reportDiagnostics: true,
-		});
-		expect(
-			(transpiled.diagnostics ?? []).filter(
-				(diagnostic) =>
-					diagnostic.category === ts.DiagnosticCategory.Error
-			)
-		).toEqual([]);
+		expectNoTypeScriptSyntaxErrors(content, 'PostForm.tsx');
 	});
 
 	it('uses the resource GET route when loading an edit record', async () => {
@@ -539,7 +545,7 @@ describe('app-form builder (branches)', () => {
 					routes: [
 						{
 							method: 'GET',
-							path: '/acme/v1/posts/:uuid',
+							path: '/acme/v1/posts/:uuid/`${unexpected}',
 						},
 					],
 					storage: { mode: 'wp-post' },
@@ -576,7 +582,11 @@ describe('app-form builder (branches)', () => {
 		});
 
 		expect(writes[0]?.contents).toContain(
-			'const fetchPath = `/acme/v1/posts/${editId}`;'
+			'const fetchPath = `/acme/v1/posts/${editId}/\\`\\${unexpected}`;'
+		);
+		expectNoTypeScriptSyntaxErrors(
+			writes[0]?.contents ?? '',
+			'PostForm.tsx'
 		);
 	});
 
@@ -633,20 +643,7 @@ describe('app-form builder (branches)', () => {
 		expect(content).toContain(
 			'Editing is not available for this resource.'
 		);
-		const transpiled = ts.transpileModule(content, {
-			fileName: 'PostForm.tsx',
-			compilerOptions: {
-				jsx: ts.JsxEmit.ReactJSX,
-				target: ts.ScriptTarget.ES2022,
-			},
-			reportDiagnostics: true,
-		});
-		expect(
-			(transpiled.diagnostics ?? []).filter(
-				(diagnostic) =>
-					diagnostic.category === ts.DiagnosticCategory.Error
-			)
-		).toEqual([]);
+		expectNoTypeScriptSyntaxErrors(content, 'PostForm.tsx');
 	});
 
 	it('generates delete and quick-edit actions for mutable item routes', async () => {

@@ -21,6 +21,25 @@ function buildWorkspace() {
 	return { workspace, writes };
 }
 
+function expectNoTypeScriptSyntaxErrors(
+	source: string,
+	fileName: string
+): void {
+	const transpiled = ts.transpileModule(source, {
+		fileName,
+		compilerOptions: {
+			jsx: ts.JsxEmit.ReactJSX,
+			target: ts.ScriptTarget.ES2022,
+		},
+		reportDiagnostics: true,
+	});
+	expect(
+		(transpiled.diagnostics ?? []).filter(
+			(diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
+		)
+	).toEqual([]);
+}
+
 describe('app-config builder', () => {
 	it('skips when not in generate phase', async () => {
 		const ir = makeIr();
@@ -265,20 +284,7 @@ describe('app-config builder', () => {
 			"fields: ['123', 'editor\\'s note', '__proto__'"
 		);
 
-		const transpiled = ts.transpileModule(content, {
-			fileName: 'config.tsx',
-			compilerOptions: {
-				jsx: ts.JsxEmit.ReactJSX,
-				target: ts.ScriptTarget.ES2022,
-			},
-			reportDiagnostics: true,
-		});
-		expect(
-			(transpiled.diagnostics ?? []).filter(
-				(diagnostic) =>
-					diagnostic.category === ts.DiagnosticCategory.Error
-			)
-		).toEqual([]);
+		expectNoTypeScriptSyntaxErrors(content, 'config.tsx');
 	});
 
 	it('handles resources without storage gracefully', async () => {

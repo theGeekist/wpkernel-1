@@ -90,7 +90,9 @@ export async function createMockGit(
 	const bin = path.join(fixture.root, 'bin');
 	const pushLog = path.join(fixture.root, 'push.log');
 	await mkdir(bin);
-	const realGit = (await execFileAsync('which', ['git'])).stdout.trim();
+	const realGit = (
+		await execFileAsync('bash', ['-c', 'command -v git'])
+	).stdout.trim();
 	const wrapper = [
 		'#!/usr/bin/env bash',
 		'set -euo pipefail',
@@ -137,8 +139,11 @@ export async function createMockGit(
 		'    candidate=$("$REAL_GIT" rev-parse refs/heads/wpkernel-sync-candidate)',
 		'    "$REAL_GIT" update-ref refs/wpkernel-sync/completed "$candidate"',
 		'  fi',
-		'  printf "%s\\n" "$input" | "$REAL_GIT" "$@"',
-		'  result=$?',
+		'  if printf "%s\\n" "$input" | "$REAL_GIT" "$@"; then',
+		'    result=0',
+		'  else',
+		'    result=$?',
+		'  fi',
 		'  if [[ ${MOCK_DIRTY_AFTER_ADOPTION:-0} == 1 && $input == *"update refs/heads/main"* && $result == 0 ]]; then',
 		'    printf dirty > concurrent-untracked.txt',
 		'  fi',
@@ -178,6 +183,8 @@ export async function runSync(
 
 export async function cleanupFixtures(): Promise<void> {
 	await Promise.all(
-		fixtureRoots.splice(0).map((root) => rm(root, { recursive: true }))
+		fixtureRoots
+			.splice(0)
+			.map((root) => rm(root, { recursive: true, force: true }))
 	);
 }

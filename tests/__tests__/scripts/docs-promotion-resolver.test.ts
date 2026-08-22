@@ -21,8 +21,8 @@ function promotionPull(headSha = sourceSha) {
 	};
 }
 
-function commit(treeSha: string) {
-	return { tree: { sha: treeSha } };
+function commit(treeSha: string, sha?: string) {
+	return { ...(sha ? { sha } : {}), tree: { sha: treeSha } };
 }
 
 function ciRun(overrides: Partial<Record<string, string | number>> = {}) {
@@ -70,6 +70,29 @@ describe('documentation promotion resolver', () => {
 		);
 	});
 
+	it('ignores malformed associated pulls while finding the promotion receipt', () => {
+		expect(
+			findPromotionSourceSha(upstreamSha, [
+				[promotionPull(), { ...promotionPull(), head: { repo: null } }],
+			])
+		).toBe(sourceSha);
+	});
+
+	it.each([
+		['a missing base', { base: undefined }],
+		['an array base', { base: [] }],
+		['a missing head', { head: undefined }],
+		['an array head', { head: [] }],
+		['a missing head repository', { head: {} }],
+		['an array head repository', { head: { repo: [] } }],
+	])('ignores an associated pull with %s', (_name, malformedPull) => {
+		expect(
+			findPromotionSourceSha(upstreamSha, [
+				[promotionPull(), { ...promotionPull(), ...malformedPull }],
+			])
+		).toBe(sourceSha);
+	});
+
 	it.each([false, '', 0])(
 		'rejects a malformed merged receipt value %p',
 		(mergedAt) => {
@@ -113,6 +136,33 @@ describe('documentation promotion resolver', () => {
 			})
 		).toThrow('authoring and upstream commit trees do not match');
 	});
+
+	it.each([
+		[
+			'authoring',
+			commit('tree-sha', 'unexpected-source-sha'),
+			commit('tree-sha', upstreamSha),
+			'authoring commit SHA does not match the expected revision',
+		],
+		[
+			'upstream',
+			commit('tree-sha', sourceSha),
+			commit('tree-sha', 'unexpected-upstream-sha'),
+			'upstream commit SHA does not match the expected revision',
+		],
+	])(
+		'rejects an %s commit whose API identity does not match its requested revision',
+		(_name, sourceCommit, upstreamCommit, message) => {
+			expect(() =>
+				resolvePromotion({
+					pullsPages: [[promotionPull()]],
+					sourceCommit,
+					upstreamCommit,
+					upstreamSha,
+				})
+			).toThrow(message);
+		}
+	);
 
 	it('rejects malformed API and associated-pull responses', () => {
 		expect(() =>

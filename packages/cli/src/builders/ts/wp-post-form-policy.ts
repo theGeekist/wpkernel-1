@@ -137,7 +137,7 @@ function allocateTaxonomyOptionsBinding(
 	const safeKey = /^[A-Za-z_$]/u.test(camelKey)
 		? camelKey
 		: `taxonomy${camelKey}`;
-	const base = `${safeKey || 'taxonomy'}Options`;
+	const base = `${safeKey}Options`;
 	let binding = base;
 	let suffix = 2;
 	while (claimed.has(binding)) {

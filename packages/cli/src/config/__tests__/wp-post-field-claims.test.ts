@@ -67,6 +67,17 @@ describe('wp-post authoritative field claims', () => {
 		}
 	);
 
+	it('defaults an explicit identity without a parameter to id', () => {
+		const resource = createResource({
+			identity: { type: 'string' },
+			routes: {
+				get: { method: 'GET', path: '/things/:id' },
+			},
+		});
+
+		expect(findWpPostFieldClaimConflict(resource)).toBeUndefined();
+	});
+
 	it.each([true, false])('detects a %s uuid identity claim', (explicit) => {
 		const resource = createResource({
 			identity: explicit ? { type: 'string', param: 'uuid' } : undefined,
