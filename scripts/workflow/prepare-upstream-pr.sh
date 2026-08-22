@@ -7,6 +7,18 @@ FORK_BRANCH=${FORK_BRANCH:-main}
 UPSTREAM_REMOTE=${UPSTREAM_REMOTE:-upstream}
 UPSTREAM_BRANCH=${UPSTREAM_BRANCH:-main}
 
+SCRIPT_SOURCE=${BASH_SOURCE[0]}
+while [[ -h $SCRIPT_SOURCE ]]; do
+	SCRIPT_DIRECTORY=$(CDPATH= cd -P -- "$(dirname -- "$SCRIPT_SOURCE")" && pwd -P)
+	SCRIPT_SOURCE=$(readlink "$SCRIPT_SOURCE")
+	if [[ $SCRIPT_SOURCE != /* ]]; then
+		SCRIPT_SOURCE="${SCRIPT_DIRECTORY}/${SCRIPT_SOURCE}"
+	fi
+done
+SCRIPT_DIRECTORY=$(CDPATH= cd -P -- "$(dirname -- "$SCRIPT_SOURCE")" && pwd -P)
+# shellcheck source=lib/authoring-remote-authority.sh
+source "${SCRIPT_DIRECTORY}/lib/authoring-remote-authority.sh"
+
 require_binary() {
 	if ! command -v "$1" >/dev/null 2>&1; then
 		echo "Error: missing required command '$1'." >&2
@@ -26,45 +38,20 @@ require_clean_worktree() {
 	fi
 }
 
-parse_github_slug() {
-	local slug
-	case "$1" in
-		git@github.com:*) slug=${1#git@github.com:} ;;
-		https://github.com/*) slug=${1#https://github.com/} ;;
-		*) return 1 ;;
-	esac
-	slug=${slug%.git}
-	if [[ ! $slug =~ ^[^/]+/[^/]+$ ]]; then
-		return 1
-	fi
-	printf '%s\n' "$slug"
-}
-
 require_remote_contracts() {
-	local fork_url
 	local upstream_url
-	if ! fork_url=$(git remote get-url "$FORK_REMOTE"); then
-		echo "Error: missing fork remote '${FORK_REMOTE}'." >&2
-		exit 1
-	fi
 	if ! upstream_url=$(git remote get-url "$UPSTREAM_REMOTE"); then
 		echo "Error: missing upstream remote '${UPSTREAM_REMOTE}'." >&2
 		exit 1
 	fi
-	if ! fork_slug=$(parse_github_slug "$fork_url"); then
-		echo "Error: fork remote '${FORK_REMOTE}' is not a canonical GitHub repository URL." >&2
-		exit 1
-	fi
-	if ! upstream_slug=$(parse_github_slug "$upstream_url"); then
+	if ! upstream_slug=$(github_slug_from_url "$upstream_url"); then
 		echo "Error: upstream remote '${UPSTREAM_REMOTE}' is not a canonical GitHub repository URL." >&2
 		exit 1
 	fi
+	require_authoring_remote_contract "$FORK_REMOTE"
+	fork_slug=theGeekist/wpkernel-1
 	if [[ $upstream_slug != 'wpkernel/wpkernel' ]]; then
 		echo "Error: upstream remote must resolve to wpkernel/wpkernel, not '${upstream_slug}'." >&2
-		exit 1
-	fi
-	if [[ $fork_slug == "$upstream_slug" ]]; then
-		echo "Error: fork remote must not resolve to the upstream repository." >&2
 		exit 1
 	fi
 }
@@ -72,6 +59,20 @@ require_remote_contracts() {
 require_branch_name() {
 	if ! git check-ref-format --branch "$1" >/dev/null 2>&1; then
 		echo "Error: invalid branch name '$1'." >&2
+		exit 1
+	fi
+}
+
+require_pr_branch_name() {
+	if [[ $1 != pr/* ]] || ! git check-ref-format --branch "$1" >/dev/null 2>&1; then
+		echo "Error: PR branch must be a valid pr/* branch, not '${1}'." >&2
+		exit 1
+	fi
+}
+
+require_authoring_main_branch() {
+	if [[ $FORK_BRANCH != main ]]; then
+		echo "Error: FORK_BRANCH must be main, not '${FORK_BRANCH}'." >&2
 		exit 1
 	fi
 }
@@ -85,12 +86,21 @@ ensure_remote_branch() {
 	fi
 }
 
-summarize_commits() {
-	git log --oneline "${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}..${FORK_REMOTE}/${FORK_BRANCH}" || true
+require_authoring_main_contains_upstream() {
+	if ! git merge-base --is-ancestor \
+		"${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}" \
+		"${FORK_REMOTE}/${FORK_BRANCH}"; then
+		cat >&2 <<EOF
+Error: ${FORK_REMOTE}/${FORK_BRANCH} does not contain ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}.
+Run scripts/workflow/sync-fork-main.sh before preparing an upstream PR.
+EOF
+		exit 1
+	fi
 }
 
 require_binary git
 require_binary date
+require_authoring_main_branch
 require_clean_worktree
 require_remote_contracts
 require_branch_name "$FORK_BRANCH"
@@ -100,11 +110,12 @@ git fetch "${FORK_REMOTE}" "${FORK_BRANCH}"
 git fetch "${UPSTREAM_REMOTE}" "${UPSTREAM_BRANCH}"
 ensure_remote_branch "${FORK_REMOTE}" "${FORK_BRANCH}"
 ensure_remote_branch "${UPSTREAM_REMOTE}" "${UPSTREAM_BRANCH}"
+require_authoring_main_contains_upstream
 
 echo "Commits on ${FORK_REMOTE}/${FORK_BRANCH} not in ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}:"
-summarize_commits
+git log --oneline "${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}..${FORK_REMOTE}/${FORK_BRANCH}" || true
 
-read -rp "Continue and open git's interactive rebase editor? [y/N]: " confirm
+read -rp "Continue and create a PR branch at the exact authoring-main revision? [y/N]: " confirm
 if [[ ! $confirm =~ ^[Yy]$ ]]; then
 	echo "Aborted."
 	exit 0
@@ -113,7 +124,7 @@ fi
 default_branch="pr/$(date +%Y%m%d)-${FORK_BRANCH}"
 read -rp "Name for the new PR branch [${default_branch}]: " pr_branch
 pr_branch=${pr_branch:-$default_branch}
-require_branch_name "$pr_branch"
+require_pr_branch_name "$pr_branch"
 
 if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
 	echo "Error: branch '${pr_branch}' already exists. Choose another name." >&2
@@ -123,24 +134,7 @@ fi
 echo "Creating branch '${pr_branch}' from ${FORK_REMOTE}/${FORK_BRANCH}..."
 git checkout -b "${pr_branch}" "${FORK_REMOTE}/${FORK_BRANCH}" >/dev/null
 
-cat <<EOF
-Launching interactive rebase onto ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}.
-Use git's todo editor to drop, reorder, or squash commits before opening your PR.
-EOF
-
-if ! git rebase -i "${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}"; then
-	cat <<'EOF'
-Interactive rebase stopped with conflicts.
-Resolve issues, then run:
-  git rebase --continue
-or abort with:
-  git rebase --abort
-Once the rebase completes, re-run the remaining steps manually.
-EOF
-	exit 1
-fi
-
-echo "Rebase complete. Current branch: ${pr_branch}"
+echo "PR branch preserves the exact authoring-main commit for documentation promotion."
 git status -sb
 
 read -rp "Push '${pr_branch}' to ${FORK_REMOTE}? [y/N]: " push_choice

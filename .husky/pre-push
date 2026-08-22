@@ -7,13 +7,42 @@ remote_url=${2:-unknown}
 
 case "$remote_url" in
 	https://github.com/theGeekist/wpkernel-1 | https://github.com/theGeekist/wpkernel-1.git | git@github.com:theGeekist/wpkernel-1 | git@github.com:theGeekist/wpkernel-1.git | ssh://git@github.com/theGeekist/wpkernel-1 | ssh://git@github.com/theGeekist/wpkernel-1.git)
-		exit 0
 		;;
-esac
-
-cat >&2 <<EOF
+	*)
+		cat >&2 <<EOF
 Push blocked: '${remote_name}' resolves to '${remote_url}'.
 Ordinary WPKernel pushes may target only theGeekist/wpkernel-1.
 The public wpkernel/wpkernel repository is updated by the publishing workflow.
 EOF
-exit 1
+		exit 1
+		;;
+esac
+
+main_sha=
+while read -r local_ref local_sha remote_ref remote_sha; do
+	case "$remote_ref" in
+		refs/heads/pr/*)
+			if [ "$local_sha" = 0000000000000000000000000000000000000000 ]; then
+				continue
+			fi
+			if [ -z "$main_sha" ]; then
+				main_ref=$(git ls-remote --exit-code "$remote_url" refs/heads/main 2>/dev/null) || {
+					cat >&2 <<EOF
+Push blocked: unable to resolve the authoring main at '${remote_url}'.
+Fetch the authoring repository and retry.
+EOF
+					exit 1
+				}
+				main_sha=${main_ref%%[[:space:]]*}
+			fi
+			if [ "$local_sha" != "$main_sha" ]; then
+				cat >&2 <<EOF
+Push blocked: ${remote_ref} does not equal the published authoring-main revision.
+Commit and push the correction to origin/main first, wait for its main-push CI,
+then fast-forward the PR branch with scripts/workflow/update-upstream-pr.sh.
+EOF
+				exit 1
+			fi
+			;;
+	esac
+done
