@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../index.md) / ResourceMetadataHost
 
@@ -18,7 +18,7 @@ getMetadata: () =&gt; WpPhpFileMetadata;
 
 [`WpPhpFileMetadata`](../type-aliases/WpPhpFileMetadata.md)
 
----
+***
 
 ### setMetadata()
 

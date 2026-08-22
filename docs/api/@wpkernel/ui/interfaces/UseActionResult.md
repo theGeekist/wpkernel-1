@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/ui](../index.md) / UseActionResult
 
@@ -36,7 +36,7 @@ A function to cancel all in-flight requests.
 
 `void`
 
----
+***
 
 ### inFlight
 
@@ -49,10 +49,10 @@ The number of in-flight requests.
 #### Inherited from
 
 ```ts
-UseActionState.inFlight;
+UseActionState.inFlight
 ```
 
----
+***
 
 ### reset()
 
@@ -66,7 +66,7 @@ A function to reset the state of the hook.
 
 `void`
 
----
+***
 
 ### run()
 
@@ -90,12 +90,12 @@ The input to the action.
 
 A promise that resolves with the result of the action.
 
----
+***
 
 ### status
 
 ```ts
-status: 'idle' | 'running' | 'success' | 'error';
+status: "idle" | "running" | "success" | "error";
 ```
 
 The status of the action.
@@ -103,10 +103,10 @@ The status of the action.
 #### Inherited from
 
 ```ts
-UseActionState.status;
+UseActionState.status
 ```
 
----
+***
 
 ### error?
 
@@ -119,10 +119,10 @@ The error, if the action failed.
 #### Inherited from
 
 ```ts
-UseActionState.error;
+UseActionState.error
 ```
 
----
+***
 
 ### result?
 
@@ -135,5 +135,5 @@ The result of the action.
 #### Inherited from
 
 ```ts
-UseActionState.result;
+UseActionState.result
 ```

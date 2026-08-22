@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / CapabilityCache
 
@@ -24,7 +24,7 @@ clear: () =&gt; void;
 
 `void`
 
----
+***
 
 ### get()
 
@@ -42,7 +42,7 @@ get: (key) =&gt; boolean | undefined;
 
 `boolean` \| `undefined`
 
----
+***
 
 ### getSnapshot()
 
@@ -54,7 +54,7 @@ getSnapshot: () =&gt; number;
 
 `number`
 
----
+***
 
 ### invalidate()
 
@@ -72,7 +72,7 @@ invalidate: (capabilityKey?) =&gt; void;
 
 `void`
 
----
+***
 
 ### keys()
 
@@ -84,7 +84,7 @@ keys: () =&gt; string[];
 
 `string`[]
 
----
+***
 
 ### set()
 
@@ -120,7 +120,7 @@ set: (key, value, options?) =&gt; void;
 
 `void`
 
----
+***
 
 ### subscribe()
 

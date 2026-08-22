@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / CapabilityContext
 
@@ -51,7 +51,7 @@ const rule: CapabilityRule&lt;number&gt; = async (ctx, postId) =&gt; {
 adapters: CapabilityAdapters;
 ```
 
----
+***
 
 ### cache
 
@@ -59,7 +59,7 @@ adapters: CapabilityAdapters;
 cache: CapabilityCache;
 ```
 
----
+***
 
 ### namespace
 
@@ -67,7 +67,7 @@ cache: CapabilityCache;
 namespace: string;
 ```
 
----
+***
 
 ### reporter?
 

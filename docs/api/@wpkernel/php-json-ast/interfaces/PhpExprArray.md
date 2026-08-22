@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / PhpExprArray
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
----
+***
 
 ### items
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 readonly items: PhpExprArrayItem[];
 ```
 
----
+***
 
 ### nodeType
 

@@ -1,6 +1,6 @@
 **@wpkernel/php-json-ast v0.12.6-beta.3**
 
----
+***
 
 # @wpkernel/php-json-ast v0.12.6-beta.3
 
@@ -108,7 +108,10 @@
 - [FlushBufferedMessageResult](interfaces/FlushBufferedMessageResult.md)
 - [Helper](interfaces/Helper.md)
 - [HelperApplyOptions](interfaces/HelperApplyOptions.md)
+- [HelperApplyResult](interfaces/HelperApplyResult.md)
 - [HelperDescriptor](interfaces/HelperDescriptor.md)
+- [HelperNext](interfaces/HelperNext.md)
+- [HelperRollback](interfaces/HelperRollback.md)
 - [PersistProgramArtifactsOptions](interfaces/PersistProgramArtifactsOptions.md)
 - [PhpAstBuilder](interfaces/PhpAstBuilder.md)
 - [PhpAstBuilderAdapter](interfaces/PhpAstBuilderAdapter.md)
@@ -206,19 +209,19 @@
 
 ### PHP AST
 
-- [PHP_CLASS_MODIFIER_ABSTRACT](variables/PHP_CLASS_MODIFIER_ABSTRACT.md)
-- [PHP_CLASS_MODIFIER_FINAL](variables/PHP_CLASS_MODIFIER_FINAL.md)
-- [PHP_METHOD_MODIFIER_ABSTRACT](variables/PHP_METHOD_MODIFIER_ABSTRACT.md)
-- [PHP_METHOD_MODIFIER_FINAL](variables/PHP_METHOD_MODIFIER_FINAL.md)
-- [PHP_METHOD_MODIFIER_PRIVATE](variables/PHP_METHOD_MODIFIER_PRIVATE.md)
-- [PHP_METHOD_MODIFIER_PROTECTED](variables/PHP_METHOD_MODIFIER_PROTECTED.md)
-- [PHP_METHOD_MODIFIER_PUBLIC](variables/PHP_METHOD_MODIFIER_PUBLIC.md)
-- [PHP_METHOD_MODIFIER_STATIC](variables/PHP_METHOD_MODIFIER_STATIC.md)
+- [PHP\_CLASS\_MODIFIER\_ABSTRACT](variables/PHP_CLASS_MODIFIER_ABSTRACT.md)
+- [PHP\_CLASS\_MODIFIER\_FINAL](variables/PHP_CLASS_MODIFIER_FINAL.md)
+- [PHP\_METHOD\_MODIFIER\_ABSTRACT](variables/PHP_METHOD_MODIFIER_ABSTRACT.md)
+- [PHP\_METHOD\_MODIFIER\_FINAL](variables/PHP_METHOD_MODIFIER_FINAL.md)
+- [PHP\_METHOD\_MODIFIER\_PRIVATE](variables/PHP_METHOD_MODIFIER_PRIVATE.md)
+- [PHP\_METHOD\_MODIFIER\_PROTECTED](variables/PHP_METHOD_MODIFIER_PROTECTED.md)
+- [PHP\_METHOD\_MODIFIER\_PUBLIC](variables/PHP_METHOD_MODIFIER_PUBLIC.md)
+- [PHP\_METHOD\_MODIFIER\_STATIC](variables/PHP_METHOD_MODIFIER_STATIC.md)
 
 ### Other
 
-- [DEFAULT_CODEMOD_STACK_KEY](variables/DEFAULT_CODEMOD_STACK_KEY.md)
-- [PHP_INCLUDE_TYPE](variables/PHP_INCLUDE_TYPE.md)
+- [DEFAULT\_CODEMOD\_STACK\_KEY](variables/DEFAULT_CODEMOD_STACK_KEY.md)
+- [PHP\_INCLUDE\_TYPE](variables/PHP_INCLUDE_TYPE.md)
 
 ## Functions
 

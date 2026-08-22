@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / PatchRecord
 
@@ -14,7 +14,7 @@
 readonly file: string;
 ```
 
----
+***
 
 ### status
 
@@ -22,7 +22,7 @@ readonly file: string;
 readonly status: PatchStatus;
 ```
 
----
+***
 
 ### description?
 
@@ -30,7 +30,7 @@ readonly status: PatchStatus;
 readonly optional description: string;
 ```
 
----
+***
 
 ### details?
 

@@ -1,13 +1,16 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / buildArrayItem
 
 # Function: buildArrayItem()
 
 ```ts
-function buildArrayItem(value, options, attributes?): PhpExprArrayItem;
+function buildArrayItem(
+   value,
+   options,
+   attributes?): PhpExprArrayItem;
 ```
 
 Builds a PHP array item node.

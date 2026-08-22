@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / CapabilityAdapters
 
@@ -72,7 +72,7 @@ optional restProbe: (key) =&gt; Promise&lt;boolean&gt;;
 
 `Promise`&lt;`boolean`&gt;
 
----
+***
 
 ### wp?
 

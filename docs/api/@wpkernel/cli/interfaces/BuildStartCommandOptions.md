@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / BuildStartCommandOptions
 
@@ -28,7 +28,7 @@ Optional: Custom reporter builder function.
 
 `Reporter`
 
----
+***
 
 ### fileSystem?
 
@@ -38,7 +38,7 @@ readonly optional fileSystem: Partial&lt;FileSystem&gt;;
 
 Optional: Partial file system utility functions for testing.
 
----
+***
 
 ### loadWatch()?
 
@@ -52,7 +52,7 @@ Optional: Custom function to load the `chokidar.watch` function.
 
 `Promise`&lt;(`paths`, `options?`) =&gt; `FSWatcher`&gt;
 
----
+***
 
 ### runGenerate?
 
@@ -62,7 +62,7 @@ readonly optional runGenerate: GenerateRunner;
 
 Optional: Custom generate runner function.
 
----
+***
 
 ### spawnViteProcess()?
 

@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../index.md) / ResourceAccessorDescriptor
 
@@ -20,7 +20,7 @@
 readonly id: string;
 ```
 
----
+***
 
 ### value
 
@@ -28,7 +28,7 @@ readonly id: string;
 readonly value: TValue;
 ```
 
----
+***
 
 ### summary?
 

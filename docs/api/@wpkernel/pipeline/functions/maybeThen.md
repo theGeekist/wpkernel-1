@@ -1,6 +1,6 @@
-[**@wpkernel/pipeline v1.4.0**](../index.md)
+[**@wpkernel/pipeline v1.4.1**](../index.md)
 
----
+***
 
 [@wpkernel/pipeline](../index.md) / maybeThen
 
@@ -10,15 +10,14 @@
 function maybeThen&lt;T, TResult&gt;(value, onFulfilled): MaybePromise&lt;TResult&gt;;
 ```
 
-Maps a synchronous value or safely inspectable thenable while preserving the
+Maps a synchronous value or structurally valid thenable while preserving the
 synchronous path.
 
 For synchronous input, `onFulfilled` runs before this function returns and
 its value is returned directly. Throws from that callback remain synchronous.
-For a safely inspectable thenable, the captured method is adopted exactly
+For a thenable, the captured method is adopted exactly
 once into a native promise; callback throws then become promise rejections.
-Accessor-backed or trap-hostile `then` properties remain ordinary data under
-the boundary described by [isPromiseLike](isPromiseLike.md).
+A throwing `then` getter remains a synchronous throw.
 
 ## Type Parameters
 
@@ -53,8 +52,6 @@ The callback result directly for synchronous input, or a native chained promise 
 ## Example
 
 ```ts
-import { isPromiseLike, maybeThen } from '@wpkernel/pipeline';
-
 const immediate = maybeThen(2, (value) =&gt; value * 3);
 isPromiseLike(immediate); // false
 

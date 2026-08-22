@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / PhpExprCoalesce
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
----
+***
 
 ### left
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 readonly left: PhpExpr;
 ```
 
----
+***
 
 ### nodeType
 
@@ -44,7 +44,7 @@ readonly nodeType: "Expr_BinaryOp_Coalesce";
 
 [`PhpExprBase`](PhpExprBase.md).[`nodeType`](PhpExprBase.md#nodetype)
 
----
+***
 
 ### right
 

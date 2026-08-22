@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / ResourceStoreConfig
 
@@ -17,8 +17,7 @@ Store configuration for a resource.
 ### resource
 
 ```ts
-resource: ResourceObject & lt;
-(T, TQuery & gt);
+resource: ResourceObject&lt;T, TQuery&gt;;
 ```
 
 The resource object this store is for.

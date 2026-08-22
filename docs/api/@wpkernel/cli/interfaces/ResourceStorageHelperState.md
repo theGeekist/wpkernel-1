@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / ResourceStorageHelperState
 
@@ -21,7 +21,7 @@ readonly transient: Map&lt;string, TransientStorageArtifacts&gt;;
 
 A map of resource names to their transient storage artifacts.
 
----
+***
 
 ### wpOption
 
@@ -31,7 +31,7 @@ readonly wpOption: Map&lt;string, WpOptionStorageHelperArtifacts&gt;;
 
 A map of resource names to their WP Option storage artifacts.
 
----
+***
 
 ### wpTaxonomy
 

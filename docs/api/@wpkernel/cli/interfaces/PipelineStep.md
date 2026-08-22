@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / PipelineStep
 
@@ -20,13 +20,13 @@ Represents a single step executed within the pipeline.
 readonly dependsOn: readonly string[];
 ```
 
-Helper keys that must complete before this helper may execute.
+Helper keys that place this helper later in the serial execution order.
 
 #### Inherited from
 
 [`HelperDescriptor`](HelperDescriptor.md).[`dependsOn`](HelperDescriptor.md#dependson)
 
----
+***
 
 ### id
 
@@ -36,7 +36,7 @@ readonly id: string;
 
 A unique identifier for the step.
 
----
+***
 
 ### index
 
@@ -46,7 +46,7 @@ readonly index: number;
 
 The execution order of the step.
 
----
+***
 
 ### key
 
@@ -60,7 +60,7 @@ Dependency and override identity within [kind](HelperDescriptor.md#kind).
 
 [`HelperDescriptor`](HelperDescriptor.md).[`key`](HelperDescriptor.md#key)
 
----
+***
 
 ### kind
 
@@ -74,7 +74,7 @@ Execution phase and registry containing this helper.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`kind`](HelperDescriptor.md#kind)
 
----
+***
 
 ### mode
 
@@ -88,7 +88,7 @@ Duplicate-key registration policy.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`mode`](HelperDescriptor.md#mode)
 
----
+***
 
 ### priority
 
@@ -102,7 +102,7 @@ Relative ordering hint; higher values run first when dependencies permit.
 
 [`HelperDescriptor`](HelperDescriptor.md).[`priority`](HelperDescriptor.md#priority)
 
----
+***
 
 ### origin?
 

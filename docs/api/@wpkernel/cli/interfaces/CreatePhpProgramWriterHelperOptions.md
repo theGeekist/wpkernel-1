@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / CreatePhpProgramWriterHelperOptions
 
@@ -14,7 +14,7 @@
 readonly optional driver: PhpDriverConfigurationOptions;
 ```
 
----
+***
 
 ### emitAst?
 
@@ -26,7 +26,7 @@ When true, emit `&lt;file&gt;.ast.json` and codemod diagnostics to disk.
 Defaults to `true` for library usage; callers (e.g., CLI) can disable
 this to avoid polluting generated output with debug artifacts.
 
----
+***
 
 ### key?
 

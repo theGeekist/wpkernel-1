@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / RunNodeProcessOptions
 
@@ -22,7 +22,7 @@ optional cwd: string | URL;
 
 [`RunProcessOptions`](RunProcessOptions.md).[`cwd`](RunProcessOptions.md#cwd)
 
----
+***
 
 ### env?
 
@@ -34,7 +34,7 @@ optional env: ProcessEnv;
 
 [`RunProcessOptions`](RunProcessOptions.md).[`env`](RunProcessOptions.md#env)
 
----
+***
 
 ### extras?
 
@@ -42,7 +42,7 @@ optional env: ProcessEnv;
 optional extras: readonly string[];
 ```
 
----
+***
 
 ### input?
 
@@ -54,7 +54,7 @@ optional input: string | Buffer&lt;ArrayBufferLike&gt;;
 
 [`RunProcessOptions`](RunProcessOptions.md).[`input`](RunProcessOptions.md#input)
 
----
+***
 
 ### loader?
 
@@ -62,7 +62,7 @@ optional input: string | Buffer&lt;ArrayBufferLike&gt;;
 optional loader: string;
 ```
 
----
+***
 
 ### noWarnings?
 
@@ -70,7 +70,7 @@ optional loader: string;
 optional noWarnings: boolean;
 ```
 
----
+***
 
 ### signal?
 
@@ -82,7 +82,7 @@ optional signal: AbortSignal;
 
 [`RunProcessOptions`](RunProcessOptions.md).[`signal`](RunProcessOptions.md#signal)
 
----
+***
 
 ### stdio?
 

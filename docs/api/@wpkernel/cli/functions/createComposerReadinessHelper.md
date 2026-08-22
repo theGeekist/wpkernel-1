@@ -1,14 +1,13 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / createComposerReadinessHelper
 
 # Function: createComposerReadinessHelper()
 
 ```ts
-function createComposerReadinessHelper(overrides): ReadinessHelper & lt;
-ComposerReadinessState & gt;
+function createComposerReadinessHelper(overrides): ReadinessHelper&lt;ComposerReadinessState&gt;;
 ```
 
 ## Parameters

@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / ResourceStoreOptions
 
@@ -64,7 +64,7 @@ Defaults to (item) =&gt; item.id
 
 `string` \| `number`
 
----
+***
 
 ### getQueryKey()?
 
@@ -85,7 +85,7 @@ Defaults to JSON.stringify
 
 `string`
 
----
+***
 
 ### initialState?
 

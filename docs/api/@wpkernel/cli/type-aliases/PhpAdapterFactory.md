@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / PhpAdapterFactory
 
@@ -32,5 +32,5 @@ Factory for producing PHP adapter configuration.
 
 ## Returns
 
-\| [`PhpAdapterConfig`](../interfaces/PhpAdapterConfig.md)&lt;`TConfigSurface`, `TIr`&gt;
-\| `void`
+  \| [`PhpAdapterConfig`](../interfaces/PhpAdapterConfig.md)&lt;`TConfigSurface`, `TIr`&gt;
+  \| `void`

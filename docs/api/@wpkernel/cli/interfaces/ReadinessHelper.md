@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / ReadinessHelper
 
@@ -36,7 +36,7 @@ readonly confirm: (context, state) =&gt; Promise&lt;ReadinessConfirmation&lt;Sta
 
 `Promise`&lt;[`ReadinessConfirmation`](ReadinessConfirmation.md)&lt;`State`&gt;&gt;
 
----
+***
 
 ### detect()
 
@@ -54,7 +54,7 @@ readonly detect: (context) =&gt; Promise&lt;ReadinessDetection&lt;State&gt;&gt;;
 
 `Promise`&lt;[`ReadinessDetection`](ReadinessDetection.md)&lt;`State`&gt;&gt;
 
----
+***
 
 ### key
 
@@ -62,7 +62,7 @@ readonly detect: (context) =&gt; Promise&lt;ReadinessDetection&lt;State&gt;&gt;;
 readonly key: ReadinessKey;
 ```
 
----
+***
 
 ### metadata
 
@@ -70,7 +70,7 @@ readonly key: ReadinessKey;
 readonly metadata: ReadinessHelperMetadata;
 ```
 
----
+***
 
 ### execute()?
 
@@ -92,7 +92,7 @@ readonly optional execute: (context, state) =&gt; Promise&lt;ReadinessStepResult
 
 `Promise`&lt;[`ReadinessStepResult`](ReadinessStepResult.md)&lt;`State`&gt;&gt;
 
----
+***
 
 ### prepare()?
 
@@ -114,7 +114,7 @@ readonly optional prepare: (context, state) =&gt; Promise&lt;ReadinessStepResult
 
 `Promise`&lt;[`ReadinessStepResult`](ReadinessStepResult.md)&lt;`State`&gt;&gt;
 
----
+***
 
 ### rollback()?
 

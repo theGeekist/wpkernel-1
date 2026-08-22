@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / WorkspaceLike
 
@@ -24,7 +24,7 @@ exists: (target) =&gt; Promise&lt;boolean&gt;;
 
 `Promise`&lt;`boolean`&gt;
 
----
+***
 
 ### resolve()
 
@@ -42,7 +42,7 @@ resolve: (...parts) =&gt; string;
 
 `string`
 
----
+***
 
 ### root
 

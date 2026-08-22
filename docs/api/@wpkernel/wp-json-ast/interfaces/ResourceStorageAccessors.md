@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../index.md) / ResourceStorageAccessors
 
@@ -14,7 +14,7 @@
 
 ### TStorageKind
 
-`TStorageKind` _extends_ `string` = `string`
+`TStorageKind` *extends* `string` = `string`
 
 ## Properties
 
@@ -27,10 +27,10 @@ readonly caches: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
 #### Inherited from
 
 ```ts
-ResourceAccessorBuckets.caches;
+ResourceAccessorBuckets.caches
 ```
 
----
+***
 
 ### helpers
 
@@ -41,10 +41,10 @@ readonly helpers: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
 #### Inherited from
 
 ```ts
-ResourceAccessorBuckets.helpers;
+ResourceAccessorBuckets.helpers
 ```
 
----
+***
 
 ### kind
 
@@ -52,7 +52,7 @@ ResourceAccessorBuckets.helpers;
 readonly kind: TStorageKind;
 ```
 
----
+***
 
 ### label
 
@@ -60,7 +60,7 @@ readonly kind: TStorageKind;
 readonly label: string;
 ```
 
----
+***
 
 ### mutations
 
@@ -71,10 +71,10 @@ readonly mutations: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
 #### Inherited from
 
 ```ts
-ResourceAccessorBuckets.mutations;
+ResourceAccessorBuckets.mutations
 ```
 
----
+***
 
 ### queries
 
@@ -85,10 +85,10 @@ readonly queries: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
 #### Inherited from
 
 ```ts
-ResourceAccessorBuckets.queries;
+ResourceAccessorBuckets.queries
 ```
 
----
+***
 
 ### requests
 
@@ -99,5 +99,5 @@ readonly requests: readonly ResourceAccessorDescriptor&lt;unknown&gt;[];
 #### Inherited from
 
 ```ts
-ResourceAccessorBuckets.requests;
+ResourceAccessorBuckets.requests
 ```

@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / ResourceStore
 
@@ -31,24 +31,22 @@ The query parameter type for list operations
 ### actions
 
 ```ts
-actions: ResourceActions & lt;
-T & gt;
+actions: ResourceActions&lt;T&gt;;
 ```
 
 State actions.
 
----
+***
 
 ### initialState
 
 ```ts
-initialState: ResourceState & lt;
-T & gt;
+initialState: ResourceState&lt;T&gt;;
 ```
 
 Initial state.
 
----
+***
 
 ### reducer()
 
@@ -72,29 +70,27 @@ Reducer function for state updates.
 
 [`ResourceState`](ResourceState.md)&lt;`T`&gt;
 
----
+***
 
 ### resolvers
 
 ```ts
-resolvers: ResourceResolvers & lt;
-(T, TQuery & gt);
+resolvers: ResourceResolvers&lt;T, TQuery&gt;;
 ```
 
 Resolvers for async data fetching.
 
----
+***
 
 ### selectors
 
 ```ts
-selectors: ResourceSelectors & lt;
-(T, TQuery & gt);
+selectors: ResourceSelectors&lt;T, TQuery&gt;;
 ```
 
 State selectors.
 
----
+***
 
 ### storeKey
 
@@ -104,7 +100,7 @@ storeKey: string;
 
 Store key for registration with @wordpress/data.
 
----
+***
 
 ### controls?
 

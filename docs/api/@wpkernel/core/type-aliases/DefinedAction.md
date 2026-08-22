@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / DefinedAction
 
@@ -13,7 +13,6 @@ type DefinedAction&lt;TArgs, TResult&gt; = Promise&lt;TResult&gt;;
 Callable action returned by `defineAction()`.
 
 After wrapping with `defineAction()`, actions become callable functions that:
-
 - Accept only the arguments (context is injected automatically)
 - Return a Promise with the action result
 - Emit lifecycle events automatically
@@ -58,7 +57,6 @@ type DefinedAction(args): Promise&lt;TResult&gt;;
 Callable action returned by `defineAction()`.
 
 After wrapping with `defineAction()`, actions become callable functions that:
-
 - Accept only the arguments (context is injected automatically)
 - Return a Promise with the action result
 - Emit lifecycle events automatically
@@ -100,7 +98,7 @@ console.log(CreatePost.options.scope); // "crossTab"
 readonly actionName: string;
 ```
 
----
+***
 
 ### options
 

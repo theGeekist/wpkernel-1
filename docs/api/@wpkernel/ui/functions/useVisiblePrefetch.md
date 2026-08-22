@@ -1,13 +1,16 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/ui](../index.md) / useVisiblePrefetch
 
 # Function: useVisiblePrefetch()
 
 ```ts
-function useVisiblePrefetch(ref, fn, options): void;
+function useVisiblePrefetch(
+   ref,
+   fn,
+   options): void;
 ```
 
 Triggers a prefetch when an element becomes visible in the viewport.

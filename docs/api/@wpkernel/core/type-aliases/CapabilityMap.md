@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / CapabilityMap
 
@@ -16,4 +16,4 @@ Mapping from capability key to rule implementation.
 
 ### Keys
 
-`Keys` _extends_ `Record`&lt;`string`, `unknown`&gt;
+`Keys` *extends* `Record`&lt;`string`, `unknown`&gt;

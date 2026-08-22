@@ -1,13 +1,16 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / buildPropertyFetch
 
 # Function: buildPropertyFetch()
 
 ```ts
-function buildPropertyFetch(variable, name, attributes?): PhpExprPropertyFetch;
+function buildPropertyFetch(
+   variable,
+   name,
+   attributes?): PhpExprPropertyFetch;
 ```
 
 Builds a PHP property fetch expression node.

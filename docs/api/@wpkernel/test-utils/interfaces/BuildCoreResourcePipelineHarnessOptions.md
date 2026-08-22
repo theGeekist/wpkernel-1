@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / BuildCoreResourcePipelineHarnessOptions
 
@@ -28,7 +28,7 @@ readonly optional namespace: string;
 
 The namespace for the reporter.
 
----
+***
 
 ### pipelineFactory()?
 
@@ -42,7 +42,7 @@ A factory function to create the resource pipeline.
 
 `ResourcePipeline`&lt;`T`, `TQuery`&gt;
 
----
+***
 
 ### resourceName?
 

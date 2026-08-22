@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / TsBuilderCreatorContext
 
@@ -18,7 +18,7 @@ readonly descriptor: ResourceDescriptor;
 
 The resource descriptor for which artifacts are being created.
 
----
+***
 
 ### emit()
 
@@ -38,7 +38,7 @@ A function to emit a generated TypeScript file.
 
 `Promise`&lt;`TsBuilderEmitResult`&gt;
 
----
+***
 
 ### ir
 
@@ -48,7 +48,7 @@ readonly ir: IRv1;
 
 The Intermediate Representation (IR) of the project.
 
----
+***
 
 ### paths
 
@@ -88,7 +88,7 @@ readonly runtimeGenerated: string;
 readonly surfacesApplied: string;
 ```
 
----
+***
 
 ### project
 
@@ -98,7 +98,7 @@ readonly project: Project;
 
 The `ts-morph` project instance for managing source files.
 
----
+***
 
 ### reporter
 
@@ -108,7 +108,7 @@ readonly reporter: Reporter;
 
 The reporter instance for logging.
 
----
+***
 
 ### sourcePath
 
@@ -118,7 +118,7 @@ readonly sourcePath: string;
 
 The source path of the configuration file.
 
----
+***
 
 ### workspace
 

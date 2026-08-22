@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / InteractionActionsRuntime
 
@@ -16,4 +16,4 @@ Runtime representation of bound interaction actions.
 
 ### TActions
 
-`TActions` _extends_ [`InteractionActionsRecord`](InteractionActionsRecord.md)
+`TActions` *extends* [`InteractionActionsRecord`](InteractionActionsRecord.md)

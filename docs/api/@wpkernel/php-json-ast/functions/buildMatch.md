@@ -1,13 +1,16 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / buildMatch
 
 # Function: buildMatch()
 
 ```ts
-function buildMatch(cond, arms, attributes?): PhpExprMatch;
+function buildMatch(
+   cond,
+   arms,
+   attributes?): PhpExprMatch;
 ```
 
 Builds a PHP `match` expression node.

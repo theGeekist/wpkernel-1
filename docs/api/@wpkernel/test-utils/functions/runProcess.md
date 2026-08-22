@@ -1,14 +1,16 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / runProcess
 
 # Function: runProcess()
 
 ```ts
-function runProcess(command, args, options): Promise & lt;
-RunProcessResult & gt;
+function runProcess(
+   command,
+   args,
+options): Promise&lt;RunProcessResult&gt;;
 ```
 
 ## Parameters

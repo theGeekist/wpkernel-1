@@ -1,6 +1,6 @@
 [**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/ui](../index.md) / Prefetcher
 
@@ -24,13 +24,12 @@ prefetchGet: PrefetchGet;
 
 Prefetches a single item from the resource.
 
----
+***
 
 ### prefetchList
 
 ```ts
-prefetchList: PrefetchList & lt;
-TQuery & gt;
+prefetchList: PrefetchList&lt;TQuery&gt;;
 ```
 
 Prefetches a list of items from the resource.

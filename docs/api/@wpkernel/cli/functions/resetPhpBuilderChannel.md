@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / resetPhpBuilderChannel
 
@@ -14,7 +14,7 @@ function resetPhpBuilderChannel&lt;TContext&gt;(context): void;
 
 ### TContext
 
-`TContext` _extends_ `PipelineContext`
+`TContext` *extends* `PipelineContext`
 
 ## Parameters
 

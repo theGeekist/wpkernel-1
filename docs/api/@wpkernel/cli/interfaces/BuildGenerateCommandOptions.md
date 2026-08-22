@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / BuildGenerateCommandOptions
 
@@ -40,7 +40,7 @@ Reporter instance with child helpers
 #### registerBuilders()?
 
 ```ts
-readonly optional registerBuilders: (pipeline) =&gt; void;
+readonly optional registerBuilders: () =&gt; readonly BuilderHelper[];
 ```
 
 Registers the core builders with the pipeline.
@@ -48,24 +48,18 @@ Registers the core builders with the pipeline.
 These builders are responsible for taking the Intermediate Representation
 and generating various output artifacts (e.g., PHP, TypeScript, bundles).
 
-##### Parameters
-
-###### pipeline
-
-[`Pipeline`](../type-aliases/Pipeline.md)
-
-The pipeline instance to register builders with.
-
 ##### Returns
 
-`void`
+readonly [`BuilderHelper`](../type-aliases/BuilderHelper.md)[]
 
----
+The immutable core builder programme.
+
+***
 
 #### registerFragments()?
 
 ```ts
-readonly optional registerFragments: (pipeline) =&gt; void;
+readonly optional registerFragments: () =&gt; readonly FragmentHelper[];
 ```
 
 Registers the core IR fragments with the pipeline.
@@ -73,17 +67,11 @@ Registers the core IR fragments with the pipeline.
 These fragments are responsible for extracting various pieces of information
 from the configuration and building up the Intermediate Representation.
 
-##### Parameters
-
-###### pipeline
-
-[`Pipeline`](../type-aliases/Pipeline.md)
-
-The pipeline instance to register fragments with.
-
 ##### Returns
 
-`void`
+readonly [`FragmentHelper`](../type-aliases/FragmentHelper.md)[]
+
+The immutable core fragment programme.
 
 ### Other
 
@@ -97,7 +85,7 @@ readonly optional buildAdapterExtensionsExtension: () =&gt; PipelineExtension;
 
 [`PipelineExtension`](../type-aliases/PipelineExtension.md)
 
----
+***
 
 #### buildReadinessRegistry()?
 
@@ -115,7 +103,7 @@ readonly optional buildReadinessRegistry: (options?) =&gt; ReadinessRegistry;
 
 [`ReadinessRegistry`](../classes/ReadinessRegistry.md)
 
----
+***
 
 #### buildWorkspace()?
 
@@ -133,7 +121,7 @@ readonly optional buildWorkspace: (root) =&gt; Workspace;
 
 [`Workspace`](Workspace.md)
 
----
+***
 
 #### createPipeline()?
 
@@ -149,9 +137,9 @@ readonly optional createPipeline: (overrides) =&gt; Pipeline;
 
 ##### Returns
 
-[`Pipeline`](../type-aliases/Pipeline.md)
+[`Pipeline`](Pipeline.md)
 
----
+***
 
 #### loadWPKernelConfig()?
 
@@ -183,7 +171,7 @@ The validated wpk config and associated metadata.
 
 WPKernelError when discovery, parsing or validation fails.
 
----
+***
 
 #### renderSummary()?
 
@@ -227,7 +215,7 @@ readonly optional renderSummary: (summary, dryRun, verbose, paths?) =&gt; string
 
 `string`
 
----
+***
 
 #### validateGeneratedImports()?
 

@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / Workspace
 
@@ -30,7 +30,7 @@ begin: (label?) =&gt; void;
 
 `void`
 
----
+***
 
 ### commit()
 
@@ -48,7 +48,7 @@ commit: (label?) =&gt; Promise&lt;FileManifest&gt;;
 
 `Promise`&lt;[`FileManifest`](FileManifest.md)&gt;
 
----
+***
 
 ### cwd()
 
@@ -60,7 +60,7 @@ cwd: () =&gt; string;
 
 `string`
 
----
+***
 
 ### dryRun()
 
@@ -86,11 +86,11 @@ dryRun: &lt;T&gt;(fn) =&gt; Promise&lt;{
 #### Returns
 
 `Promise`&lt;\{
-`manifest`: [`FileManifest`](FileManifest.md);
-`result`: `T`;
+  `manifest`: [`FileManifest`](FileManifest.md);
+  `result`: `T`;
 \}&gt;
 
----
+***
 
 ### exists()
 
@@ -111,10 +111,10 @@ exists: (target) =&gt; Promise&lt;boolean&gt;;
 #### Inherited from
 
 ```ts
-WorkspaceLike.exists;
+WorkspaceLike.exists
 ```
 
----
+***
 
 ### glob()
 
@@ -132,7 +132,7 @@ glob: (pattern) =&gt; Promise&lt;string[]&gt;;
 
 `Promise`&lt;`string`[]&gt;
 
----
+***
 
 ### read()
 
@@ -150,7 +150,7 @@ read: (file) =&gt; Promise&lt;Buffer&lt;ArrayBufferLike&gt; | null&gt;;
 
 `Promise`&lt;`Buffer`&lt;`ArrayBufferLike`&gt; \| `null`&gt;
 
----
+***
 
 ### readText()
 
@@ -168,7 +168,7 @@ readText: (file) =&gt; Promise&lt;string | null&gt;;
 
 `Promise`&lt;`string` \| `null`&gt;
 
----
+***
 
 ### resolve()
 
@@ -189,10 +189,10 @@ resolve: (...segments) =&gt; string;
 #### Overrides
 
 ```ts
-WorkspaceLike.resolve;
+WorkspaceLike.resolve
 ```
 
----
+***
 
 ### rm()
 
@@ -214,7 +214,7 @@ rm: (target, options?) =&gt; Promise&lt;void&gt;;
 
 `Promise`&lt;`void`&gt;
 
----
+***
 
 ### rollback()
 
@@ -232,7 +232,7 @@ rollback: (label?) =&gt; Promise&lt;FileManifest&gt;;
 
 `Promise`&lt;[`FileManifest`](FileManifest.md)&gt;
 
----
+***
 
 ### root
 
@@ -243,10 +243,10 @@ root: string;
 #### Overrides
 
 ```ts
-WorkspaceLike.root;
+WorkspaceLike.root
 ```
 
----
+***
 
 ### threeWayMerge()
 
@@ -280,7 +280,7 @@ threeWayMerge: (file, base, current, incoming, options?) =&gt; Promise&lt;"confl
 
 `Promise`&lt;`"conflict"` \| `"clean"`&gt;
 
----
+***
 
 ### tmpDir()
 
@@ -298,7 +298,7 @@ tmpDir: (prefix?) =&gt; Promise&lt;string&gt;;
 
 `Promise`&lt;`string`&gt;
 
----
+***
 
 ### write()
 
@@ -324,7 +324,7 @@ write: (file, data, options?) =&gt; Promise&lt;void&gt;;
 
 `Promise`&lt;`void`&gt;
 
----
+***
 
 ### writeJson()
 

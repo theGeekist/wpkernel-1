@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / InitWorkflowOptions
 
@@ -14,7 +14,7 @@
 readonly reporter: Reporter;
 ```
 
----
+***
 
 ### workspace
 
@@ -22,7 +22,7 @@ readonly reporter: Reporter;
 readonly workspace: Workspace;
 ```
 
----
+***
 
 ### env?
 
@@ -30,7 +30,7 @@ readonly workspace: Workspace;
 readonly optional env: InitWorkflowEnv;
 ```
 
----
+***
 
 ### force?
 
@@ -38,7 +38,7 @@ readonly optional env: InitWorkflowEnv;
 readonly optional force: boolean;
 ```
 
----
+***
 
 ### installDependencies?
 
@@ -46,7 +46,7 @@ readonly optional force: boolean;
 readonly optional installDependencies: boolean;
 ```
 
----
+***
 
 ### installers?
 
@@ -54,7 +54,7 @@ readonly optional installDependencies: boolean;
 readonly optional installers: Partial&lt;InitWorkflowInstallers&gt;;
 ```
 
----
+***
 
 ### packageManager?
 
@@ -62,7 +62,7 @@ readonly optional installers: Partial&lt;InitWorkflowInstallers&gt;;
 readonly optional packageManager: PackageManager;
 ```
 
----
+***
 
 ### preferRegistryVersionsFlag?
 
@@ -70,7 +70,7 @@ readonly optional packageManager: PackageManager;
 readonly optional preferRegistryVersionsFlag: boolean;
 ```
 
----
+***
 
 ### projectName?
 
@@ -78,7 +78,7 @@ readonly optional preferRegistryVersionsFlag: boolean;
 readonly optional projectName: string;
 ```
 
----
+***
 
 ### template?
 
@@ -86,7 +86,7 @@ readonly optional projectName: string;
 readonly optional template: string;
 ```
 
----
+***
 
 ### verbose?
 

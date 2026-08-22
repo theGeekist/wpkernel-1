@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../index.md) / BuildWpOptionUnsupportedRouteOptions
 
@@ -28,7 +28,7 @@ readonly errorCodeFactory: (suffix) =&gt; string;
 
 `string`
 
----
+***
 
 ### optionName
 
@@ -40,7 +40,7 @@ readonly optionName: string;
 
 [`BuildWpOptionRouteBaseOptions`](BuildWpOptionRouteBaseOptions.md).[`optionName`](BuildWpOptionRouteBaseOptions.md#optionname)
 
----
+***
 
 ### pascalName
 

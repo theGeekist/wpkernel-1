@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / InteractivityGlobal
 
@@ -16,7 +16,7 @@ Shape of the global object when running inside Jest or a browser.
 optional __WPKernelInteractivityStub: InteractivityModule;
 ```
 
----
+***
 
 ### wp?
 

@@ -1,13 +1,13 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / registerCoreBuilders
 
 # Function: registerCoreBuilders()
 
 ```ts
-function registerCoreBuilders(pipeline): void;
+function registerCoreBuilders(): readonly BuilderHelper[];
 ```
 
 Registers the core builders with the pipeline.
@@ -15,14 +15,8 @@ Registers the core builders with the pipeline.
 These builders are responsible for taking the Intermediate Representation
 and generating various output artifacts (e.g., PHP, TypeScript, bundles).
 
-## Parameters
-
-### pipeline
-
-[`Pipeline`](../type-aliases/Pipeline.md)
-
-The pipeline instance to register builders with.
-
 ## Returns
 
-`void`
+readonly [`BuilderHelper`](../type-aliases/BuilderHelper.md)[]
+
+The immutable core builder programme.

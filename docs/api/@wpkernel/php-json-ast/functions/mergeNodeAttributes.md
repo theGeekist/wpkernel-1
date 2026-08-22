@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / mergeNodeAttributes
 
@@ -19,7 +19,7 @@ otherwise, it returns the original node to ensure immutability where possible.
 
 ### T
 
-`T` _extends_ [`PhpNode`](../interfaces/PhpNode.md)
+`T` *extends* [`PhpNode`](../interfaces/PhpNode.md)
 
 ## Parameters
 

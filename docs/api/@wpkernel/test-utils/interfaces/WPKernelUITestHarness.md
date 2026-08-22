@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / WPKernelUITestHarness
 
@@ -28,7 +28,7 @@ Creates a new `WPKernelUIRuntime` instance.
 
 `WPKernelUIRuntime`
 
----
+***
 
 ### createWrapper()
 
@@ -65,7 +65,7 @@ Creates a React wrapper component for the WPKernel UI runtime.
 `ReactElement`&lt;\{
 \}&gt;
 
----
+***
 
 ### resetActionStoreRegistration()
 
@@ -79,7 +79,7 @@ Resets the action store registration.
 
 `void`
 
----
+***
 
 ### restoreConsoleError()
 
@@ -93,7 +93,7 @@ Restores the original console error function.
 
 `void`
 
----
+***
 
 ### suppressConsoleError()
 
@@ -113,7 +113,7 @@ Suppresses console errors that match a given predicate.
 
 `void`
 
----
+***
 
 ### teardown()
 
@@ -127,7 +127,7 @@ Tears down the harness, restoring original globals.
 
 `void`
 
----
+***
 
 ### wordpress
 

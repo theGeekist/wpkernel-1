@@ -1,6 +1,6 @@
 [**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/wp-json-ast](../index.md) / ResourceControllerRouteMetadata
 
@@ -22,7 +22,7 @@ readonly kind: "list" | "get" | "create" | "update" | "remove" | "custom";
 
 The kind of route.
 
----
+***
 
 ### method
 
@@ -32,7 +32,7 @@ readonly method: string;
 
 The HTTP method for the route.
 
----
+***
 
 ### path
 
@@ -42,7 +42,7 @@ readonly path: string;
 
 The path for the route.
 
----
+***
 
 ### cacheSegments?
 
@@ -52,7 +52,7 @@ readonly optional cacheSegments: readonly unknown[];
 
 Optional cache segments for the route.
 
----
+***
 
 ### tags?
 

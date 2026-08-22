@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / AdapterContext
 
@@ -30,7 +30,7 @@ Context shared with adapter factories while generating artifacts.
 config: TConfigSurface;
 ```
 
----
+***
 
 ### namespace
 
@@ -38,7 +38,7 @@ config: TConfigSurface;
 namespace: string;
 ```
 
----
+***
 
 ### reporter
 
@@ -46,7 +46,7 @@ namespace: string;
 reporter: Reporter;
 ```
 
----
+***
 
 ### ir?
 

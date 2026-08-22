@@ -1,6 +1,6 @@
 [**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/php-json-ast](../index.md) / createHelper
 
@@ -18,9 +18,10 @@ source options or dependency array after construction therefore cannot alter
 registration identity or execution order. Objects captured by `apply` are
 not cloned or frozen.
 
-Dependencies always run first. Among helpers ready to run, ordering uses
-descending priority, key and registration order. A dependency key waits for
-every registered helper with that key. `extend` registrations may coexist.
+Dependencies place the dependent helper later in the serial order. Among
+otherwise unordered helpers, ordering uses descending priority, key and
+registration order. A dependency key orders after every registered helper
+with that key. `extend` registrations may coexist.
 Registering an `override`
 removes earlier helpers with the same key; a second override is rejected.
 These modes affect registration, not how `apply` composes output.
@@ -28,7 +29,7 @@ These modes affect registration, not how `apply` composes output.
 An apply function may mutate its supplied output and return `void`, or return
 a result object containing an explicit replacement. The presence
 of the `output` property is authoritative, including `{ output: undefined }`.
-With no explicit call to HelperNext, the runner continues
+With no explicit call to [HelperNext](../interfaces/HelperNext.md), the runner continues
 automatically after `apply` settles and preserves the synchronous path when
 every helper is synchronous.
 
@@ -41,8 +42,9 @@ before propagating the helper's original failure. This lets downstream
 rollback registration finish without replacing the primary error.
 
 A rollback returned after successful helper settlement is admitted in helper
-visitation order and later unwound in reverse order. Use
-`createPipelineRollback` to attach diagnostic identity to cleanup.
+visitation order and later unwound in reverse order. Optional rollback `key`
+and `label` fields remain accepted for source compatibility but are not
+projected into rollback-failure evidence.
 
 ## Type Parameters
 
@@ -60,11 +62,11 @@ visitation order and later unwound in reverse order. Use
 
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
 
 ### TKind
 
-`TKind` _extends_ `string` = `string`
+`TKind` *extends* `string` = `string`
 
 ## Parameters
 
@@ -86,7 +88,7 @@ A frozen descriptor with a frozen dependency list.
 import {
   createHelper,
   type PipelineReporter,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
 
 type Context = { reporter: PipelineReporter };
 
@@ -105,7 +107,7 @@ const normalise = createHelper&lt;Context, string[], string[]&gt;({
 import {
   createHelper,
   type PipelineReporter,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
 
 type Context = { reporter: PipelineReporter };
 
@@ -122,9 +124,8 @@ const bracket = createHelper&lt;Context, string[], string[]&gt;({
 ```ts
 import {
   createHelper,
-  createPipelineRollback,
   type PipelineReporter,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
 
 type Context = {
   reporter: PipelineReporter;
@@ -138,10 +139,9 @@ const allocate = createHelper&lt;Context, void, string[]&gt;({
     context.allocated.add('result');
     return {
       output: [...output, 'result'],
-      rollback: createPipelineRollback(
-        () =&gt; context.allocated.delete('result'),
-        { key: 'allocate', label: 'Release result allocation' }
-      ),
+      rollback: {
+        run: () =&gt; context.allocated.delete('result'),
+      },
     };
   },
 });

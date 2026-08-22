@@ -1,14 +1,13 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / createTsxRuntimeReadinessHelper
 
 # Function: createTsxRuntimeReadinessHelper()
 
 ```ts
-function createTsxRuntimeReadinessHelper(overrides): ReadinessHelper & lt;
-TsxRuntimeState & gt;
+function createTsxRuntimeReadinessHelper(overrides): ReadinessHelper&lt;TsxRuntimeState&gt;;
 ```
 
 ## Parameters

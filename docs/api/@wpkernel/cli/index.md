@@ -1,6 +1,6 @@
 **@wpkernel/cli v0.12.6-beta.3**
 
----
+***
 
 # @wpkernel/cli v0.12.6-beta.3
 
@@ -94,6 +94,7 @@ wpk and UI packages.
 - [FragmentInput](interfaces/FragmentInput.md)
 - [FragmentOutput](interfaces/FragmentOutput.md)
 - [MissingDependencyDiagnostic](interfaces/MissingDependencyDiagnostic.md)
+- [Pipeline](interfaces/Pipeline.md)
 - [PipelineContext](interfaces/PipelineContext.md)
 - [PipelineExtensionHookResult](interfaces/PipelineExtensionHookResult.md)
 - [PipelineRunOptions](interfaces/PipelineRunOptions.md)
@@ -131,7 +132,10 @@ wpk and UI packages.
 - [GitReadinessState](interfaces/GitReadinessState.md)
 - [Helper](interfaces/Helper.md)
 - [HelperApplyOptions](interfaces/HelperApplyOptions.md)
+- [HelperApplyResult](interfaces/HelperApplyResult.md)
 - [HelperDescriptor](interfaces/HelperDescriptor.md)
+- [HelperNext](interfaces/HelperNext.md)
+- [HelperRollback](interfaces/HelperRollback.md)
 - [InitWorkflowOptions](interfaces/InitWorkflowOptions.md)
 - [InitWorkflowResult](interfaces/InitWorkflowResult.md)
 - [InstallerDependencies](interfaces/InstallerDependencies.md)
@@ -218,7 +222,6 @@ wpk and UI packages.
 - [BuilderOutput](type-aliases/BuilderOutput.md)
 - [BuilderWriteAction](type-aliases/BuilderWriteAction.md)
 - [FragmentHelper](type-aliases/FragmentHelper.md)
-- [Pipeline](type-aliases/Pipeline.md)
 - [PipelineDiagnostic](type-aliases/PipelineDiagnostic.md)
 - [PipelineExtension](type-aliases/PipelineExtension.md)
 - [PipelineExtensionHook](type-aliases/PipelineExtensionHook.md)
@@ -263,12 +266,12 @@ wpk and UI packages.
 
 ### IR
 
-- [META_EXTENSION_KEY](variables/META_EXTENSION_KEY.md)
-- [SCHEMA_EXTENSION_KEY](variables/SCHEMA_EXTENSION_KEY.md)
+- [META\_EXTENSION\_KEY](variables/META_EXTENSION_KEY.md)
+- [SCHEMA\_EXTENSION\_KEY](variables/SCHEMA_EXTENSION_KEY.md)
 
 ### Other
 
-- [DEFAULT_READINESS_ORDER](variables/DEFAULT_READINESS_ORDER.md)
+- [DEFAULT\_READINESS\_ORDER](variables/DEFAULT_READINESS_ORDER.md)
 - [resourceAccessors](variables/resourceAccessors.md)
 - [VERSION](variables/VERSION.md)
 

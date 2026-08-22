@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / AdaptersConfig
 
@@ -29,7 +29,7 @@ optional extensions: AdapterExtensionFactory&lt;TConfigSurface, TIr&gt;[];
 Adapter extension factories that run during generation to patch or extend
 the default adapters.
 
----
+***
 
 ### php?
 

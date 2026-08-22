@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / RunProcessResult
 
@@ -14,7 +14,7 @@
 code: number;
 ```
 
----
+***
 
 ### signal
 
@@ -22,7 +22,7 @@ code: number;
 signal: Signals | null;
 ```
 
----
+***
 
 ### stderr
 
@@ -30,7 +30,7 @@ signal: Signals | null;
 stderr: string;
 ```
 
----
+***
 
 ### stdout
 

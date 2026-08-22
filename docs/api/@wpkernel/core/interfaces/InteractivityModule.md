@@ -1,6 +1,6 @@
 [**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/core](../index.md) / InteractivityModule
 
@@ -29,10 +29,10 @@ getServerState: InteractivityServerStateResolver;
 #### Inherited from
 
 ```ts
-InteractivityCore.getServerState;
+InteractivityCore.getServerState
 ```
 
----
+***
 
 ### store()
 
@@ -57,5 +57,5 @@ store: (namespace, definition?) =&gt; InteractivityStoreResult;
 #### Inherited from
 
 ```ts
-InteractivityCore.store;
+InteractivityCore.store
 ```

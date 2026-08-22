@@ -1,6 +1,6 @@
 [**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/cli](../index.md) / FileSystem
 
@@ -31,10 +31,10 @@ written by the current process.
 import { access, constants } from 'node:fs/promises';
 
 try {
-	await access('/etc/passwd', constants.R_OK | constants.W_OK);
-	console.log('can access');
+  await access('/etc/passwd', constants.R_OK | constants.W_OK);
+  console.log('can access');
 } catch {
-	console.error('cannot access');
+  console.error('cannot access');
 }
 ```
 
@@ -64,7 +64,7 @@ Fulfills with `undefined` upon success.
 
 v10.0.0
 
----
+***
 
 ### cp()
 
@@ -104,7 +104,7 @@ Fulfills with `undefined` upon success.
 
 v16.7.0
 
----
+***
 
 ### mkdir()
 
@@ -133,12 +133,12 @@ rejection only when `recursive` is false.
 import { mkdir } from 'node:fs/promises';
 
 try {
-	const projectFolder = new URL('./test/project/', import.meta.url);
-	const createDir = await mkdir(projectFolder, { recursive: true });
+  const projectFolder = new URL('./test/project/', import.meta.url);
+  const createDir = await mkdir(projectFolder, { recursive: true });
 
-	console.log(`created ${createDir}`);
+  console.log(`created ${createDir}`);
 } catch (err) {
-	console.error(err.message);
+  console.error(err.message);
 }
 ```
 

@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / WPKernelUIProviderComponent
 
@@ -26,4 +26,4 @@ Component type for WPKernel UI Provider.
 
 ## Returns
 
-`ReturnType`&lt;_typeof_ `createElement`&gt;
+`ReturnType`&lt;*typeof* `createElement`&gt;

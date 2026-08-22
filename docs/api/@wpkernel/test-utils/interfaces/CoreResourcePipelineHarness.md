@@ -1,6 +1,6 @@
 [**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
 [@wpkernel/test-utils](../index.md) / CoreResourcePipelineHarness
 
@@ -28,7 +28,7 @@ readonly namespace: string;
 
 The namespace of the reporter.
 
----
+***
 
 ### pipeline
 
@@ -38,7 +38,7 @@ readonly pipeline: ResourcePipeline&lt;T, TQuery&gt;;
 
 The resource pipeline instance.
 
----
+***
 
 ### reporter
 
@@ -48,7 +48,7 @@ readonly reporter: MemoryReporter;
 
 The memory reporter instance.
 
----
+***
 
 ### resourceName
 
