@@ -28,24 +28,92 @@ env:
 
 jobs:
     build:
-        name: Setup & Install Dependencies
+        name: Qualify and build authoring documentation
         runs-on: ubuntu-latest
+        outputs:
+            ready: ${{ steps.qualify.outputs.ready }}
+            source-sha: ${{ steps.qualify.outputs.source-sha }}
         steps:
-            - name: Checkout
+            - name: Check out authoring source
               uses: actions/checkout@v4
+              with:
+                  repository: theGeekist/wpkernel-1
+                  ref: main
+                  fetch-depth: 1
+                  persist-credentials: false
+
+            - name: Qualify authoring revision
+              id: qualify
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  source_sha="$(git rev-parse HEAD)"
+                  author_name="$(git show -s --format=%an HEAD)"
+                  author_email="$(git show -s --format=%ae HEAD)"
+                  committer_name="$(git show -s --format=%cn HEAD)"
+                  committer_email="$(git show -s --format=%ce HEAD)"
+
+                  test "${author_name}" = 'Pipe Work'
+                  test "${author_email}" = '780157+pipewrk@users.noreply.github.com'
+                  test "${committer_name}" = 'Pipe Work'
+                  test "${committer_email}" = '780157+pipewrk@users.noreply.github.com'
+
+                  printf 'source-sha=%s\n' "${source_sha}" >> "${GITHUB_OUTPUT}"
+                  api_url="https://api.github.com/repos/theGeekist/wpkernel-1/actions/workflows/ci.yml/runs?branch=main&event=push&head_sha=${source_sha}&per_page=100"
+                  for attempt in {1..30}; do
+                      ci_state="$(
+                          curl --fail --silent --show-error --location \
+                              --header 'Accept: application/vnd.github+json' \
+                              --header 'X-GitHub-Api-Version: 2022-11-28' \
+                              "${api_url}" |
+                              jq --arg sha "${source_sha}" '
+                                  [.workflow_runs[] | select(
+                                      .head_sha == $sha and
+                                      .head_branch == "main" and
+                                      .event == "push"
+                                  )] as $runs |
+                                  if any($runs[]; .status == "completed" and .conclusion == "success") then
+                                      "success"
+                                  elif any($runs[]; .status == "completed") then
+                                      "failure"
+                                  else
+                                      "pending"
+                                  end'
+                      )"
+
+                      case "${ci_state}" in
+                          success)
+                              printf 'ready=true\n' >> "${GITHUB_OUTPUT}"
+                              exit 0
+                              ;;
+                          failure)
+                              echo "Authoring CI did not pass for ${source_sha}; deployment deferred."
+                              printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
+                              exit 0
+                              ;;
+                      esac
+
+                      sleep 10
+                  done
+
+                  echo "Authoring CI did not complete for ${source_sha}; deployment deferred."
+                  printf 'ready=false\n' >> "${GITHUB_OUTPUT}"
 
             - name: Setup pnpm
+              if: steps.qualify.outputs.ready == 'true'
               uses: pnpm/action-setup@v4
               with:
                   version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node.js
+              if: steps.qualify.outputs.ready == 'true'
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'pnpm'
 
             - name: Cache node_modules
+              if: steps.qualify.outputs.ready == 'true'
               id: cache-node-modules
               uses: actions/cache@v4
               with:
@@ -58,19 +126,19 @@ jobs:
                       node-modules-${{ runner.os }}-
 
             - name: Install dependencies
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              if: steps.qualify.outputs.ready == 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
               run: pnpm install --frozen-lockfile
 
             - name: Setup Pages
+              if: steps.qualify.outputs.ready == 'true'
               uses: actions/configure-pages@v5
 
             - name: Build documentation
+              if: steps.qualify.outputs.ready == 'true'
               run: pnpm docs:build
 
-            - name: Format generated docs
-              run: pnpm format docs/api/@wpkernel/
-
             - name: Upload artifact
+              if: steps.qualify.outputs.ready == 'true'
               uses: actions/upload-pages-artifact@v3
               with:
                   path: docs/.vitepress/dist
@@ -80,6 +148,7 @@ jobs:
             name: github-pages
             url: ${{ steps.deployment.outputs.page_url }}
         needs: build
+        if: needs.build.outputs.ready == 'true'
         runs-on: ubuntu-latest
         steps:
             - name: Deploy to GitHub Pages

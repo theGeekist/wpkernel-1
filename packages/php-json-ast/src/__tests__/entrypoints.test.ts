@@ -50,6 +50,44 @@ describe('package entrypoints', () => {
 		});
 	});
 
+	it('rejects forged authoring descriptors without exposing descriptor brands', () => {
+		const variable = authoring.variable('item');
+		const authoredExpression = authoring.functionCall('lookup');
+		const authoredStatement = authoring.returnStatement('item');
+
+		expect(Object.getOwnPropertySymbols(variable)).toEqual([]);
+		expect(Object.getOwnPropertySymbols(authoredExpression)).toEqual([]);
+		expect(Object.getOwnPropertySymbols(authoredStatement)).toEqual([]);
+
+		expect(() =>
+			authoring.renderPhpValue({
+				kind: 'variable',
+				name: 'forged',
+			} as authoring.PhpAuthoringValue)
+		).toThrow(
+			expect.objectContaining({ code: 'AMBIGUOUS_VALUE', path: '$' })
+		);
+		expect(() =>
+			authoring.renderPhpValue({
+				kind: 'expression',
+				expr: authoredExpression.expr,
+			} as authoring.PhpAuthoringValue)
+		).toThrow(
+			expect.objectContaining({ code: 'AMBIGUOUS_VALUE', path: '$' })
+		);
+		expect(() =>
+			authoring.renderPhpStatement({
+				kind: 'statement',
+				statement: authoredStatement.statement,
+			} as authoring.PhpStatementValue)
+		).toThrow(
+			expect.objectContaining({
+				code: 'INVALID_STATEMENT',
+				path: '$statement',
+			})
+		);
+	});
+
 	it('keeps the authoring runtime surface explicit', () => {
 		expect(Object.keys(authoring).sort()).toEqual([
 			'PhpAuthoringError',

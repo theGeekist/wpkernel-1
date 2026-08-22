@@ -199,14 +199,17 @@ describe('admin-shared', () => {
 			expect(resolveListRoutePath(descriptor)).toBe('/test');
 		});
 
-		it('ignores routes with {id}', () => {
-			const descriptor = descriptorMock({
-				resource: {
-					routes: [{ method: 'GET', path: '/test/{id}' }],
-				} as any,
-			});
-			expect(resolveListRoutePath(descriptor)).toBeNull();
-		});
+		it.each(['{id}', '{slug}'])(
+			'ignores routes with generic brace parameter %s',
+			(parameter) => {
+				const descriptor = descriptorMock({
+					resource: {
+						routes: [{ method: 'GET', path: `/test/${parameter}` }],
+					} as any,
+				});
+				expect(resolveListRoutePath(descriptor)).toBeNull();
+			}
+		);
 
 		it('ignores routes with (?P<', () => {
 			const descriptor = descriptorMock({

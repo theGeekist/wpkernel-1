@@ -160,6 +160,26 @@ describe('PHP authoring values', () => {
 		}
 	});
 
+	it('rejects accessor-backed authoring descriptors without evaluating them', () => {
+		let kindReads = 0;
+		const forged = {};
+		Object.defineProperty(forged, 'kind', {
+			enumerable: true,
+			get: () => {
+				kindReads += 1;
+				throw new Error('kind accessor must not run');
+			},
+		});
+
+		expect(() => renderPhpValue(forged as never)).toThrow(
+			expect.objectContaining<Partial<PhpAuthoringError>>({
+				code: 'AMBIGUOUS_VALUE',
+				path: '$.kind',
+			})
+		);
+		expect(kindReads).toBe(0);
+	});
+
 	it('rejects malformed expression descriptors at creation', () => {
 		expect(() => expression({ nodeType: 'Stmt_Return' } as never)).toThrow(
 			expect.objectContaining<Partial<PhpAuthoringError>>({
@@ -173,4 +193,30 @@ describe('PHP authoring values', () => {
 			})
 		);
 	});
+
+	it.each(['nodeType', 'attributes'] as const)(
+		'rejects accessor-backed expression %s without evaluating it',
+		(property) => {
+			let reads = 0;
+			const raw = {
+				nodeType: 'Expr_Variable',
+				attributes: {},
+			};
+			Object.defineProperty(raw, property, {
+				enumerable: true,
+				get: () => {
+					reads += 1;
+					return property === 'nodeType' ? 'Expr_Variable' : {};
+				},
+			});
+
+			expect(() => expression(raw as never)).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'INVALID_EXPRESSION',
+					path: '$expression',
+				})
+			);
+			expect(reads).toBe(0);
+		}
+	);
 });

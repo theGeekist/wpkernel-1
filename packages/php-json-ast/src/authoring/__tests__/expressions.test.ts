@@ -98,6 +98,43 @@ describe('PHP expression authoring', () => {
 		);
 	});
 
+	it.each(['byReference', 'unpack'] as const)(
+		'rejects accessor-backed array entry %s without evaluating it',
+		(option) => {
+			let reads = 0;
+			const entry = { value: 1 };
+			Object.defineProperty(entry, option, {
+				enumerable: true,
+				get: () => {
+					reads += 1;
+					return true;
+				},
+			});
+
+			expect(() => arrayExpression([entry])).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'AMBIGUOUS_VALUE',
+					path: '$array[0]',
+				})
+			);
+			expect(reads).toBe(0);
+		}
+	);
+
+	it.each(['byReference', 'unpack'] as const)(
+		'rejects non-boolean array entry %s',
+		(option) => {
+			const entry = { value: 1, [option]: 'true' };
+
+			expect(() => arrayExpression([entry] as never)).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'AMBIGUOUS_VALUE',
+					path: '$array[0]',
+				})
+			);
+		}
+	);
+
 	it('rejects ambiguous raw method subjects', () => {
 		expect(() => methodCall(buildScalarInt(1) as never, 'method')).toThrow(
 			expect.objectContaining<Partial<PhpAuthoringError>>({
@@ -128,4 +165,48 @@ describe('PHP expression authoring', () => {
 			args: [{ value: scalar }],
 		});
 	});
+
+	it.each([
+		[
+			'function arguments',
+			(input: unknown[]) => functionCall('consume', input as never),
+		],
+		[
+			'method arguments',
+			(input: unknown[]) =>
+				methodCall(variable('subject'), 'consume', input as never),
+		],
+		[
+			'array entries',
+			(input: unknown[]) => arrayExpression(input as never),
+		],
+	])(
+		'rejects accessor-backed map on %s without evaluating it',
+		(_label, operation) => {
+			const input = accessorMapArray();
+
+			expect(() => operation(input.value)).toThrow(
+				expect.objectContaining<Partial<PhpAuthoringError>>({
+					code: 'AMBIGUOUS_VALUE',
+				})
+			);
+			expect(input.reads()).toBe(0);
+		}
+	);
 });
+
+function accessorMapArray<T = never>(): {
+	readonly value: T[];
+	readonly reads: () => number;
+} {
+	let reads = 0;
+	const value = [] as T[];
+	Object.defineProperty(value, 'map', {
+		enumerable: true,
+		get: () => {
+			reads += 1;
+			throw new Error('must not invoke map');
+		},
+	});
+	return { value, reads: () => reads };
+}

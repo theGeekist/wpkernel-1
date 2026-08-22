@@ -2,10 +2,25 @@
 	"$schema": "https://raw.githubusercontent.com/theGeekist/task-graph/c460305c5ad9a211cbb50613bae854f4a41b59ca/schemas/project-manifest.v1.schema.json",
 	"schemaVersion": 1,
 	"taskSchemaVersion": 1,
-	"id": "wpkernel-pipeline-v2",
-	"label": "WPKernel Pipeline v2",
+	"id": "wpkernel-programmes",
+	"label": "WPKernel engineering programmes",
 	"workspaceRoot": ".",
 	"authorities": {
+		"php-json-ast": {
+			"architectureVersion": 1,
+			"architectureRoot": "docs/internal/php-json-ast",
+			"governingReading": [
+				"README.md",
+				"docs/internal/php-json-ast/README.md",
+				"docs/internal/php-json-ast/COORDINATION.md",
+				"docs/internal/php-json-ast/tasks/README.md"
+			],
+			"label": "PHP and WordPress JSON AST",
+			"logicalMount": null,
+			"optional": false,
+			"preferredOwnerKind": "codex",
+			"reviewOwner": "coordinator"
+		},
 		"pipeline-v2": {
 			"architectureVersion": 1,
 			"architectureRoot": "docs/internal/pipeline",
@@ -71,6 +86,73 @@
 						"--filter",
 						"@wpkernel/pipeline",
 						"test"
+					]
+				}
+			]
+		},
+		{
+			"id": "ast.php-tests",
+			"label": "Test PHP AST",
+			"description": "Run the php-json-ast package tests.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "php-json-ast tests",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/php-json-ast",
+						"test",
+						"--",
+						"--runInBand"
+					]
+				}
+			]
+		},
+		{
+			"id": "ast.wordpress-tests",
+			"label": "Test WordPress AST",
+			"description": "Run the wp-json-ast package tests.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "wp-json-ast tests",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/wp-json-ast",
+						"test",
+						"--",
+						"--runInBand"
+					]
+				}
+			]
+		},
+		{
+			"id": "ast.typecheck",
+			"label": "Typecheck AST packages",
+			"description": "Typecheck both AST package boundaries.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "php-json-ast typecheck",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/php-json-ast",
+						"typecheck"
+					]
+				},
+				{
+					"heading": "wp-json-ast typecheck",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/wp-json-ast",
+						"typecheck"
 					]
 				}
 			]

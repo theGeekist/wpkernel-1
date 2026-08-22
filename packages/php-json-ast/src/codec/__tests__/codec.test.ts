@@ -162,6 +162,27 @@ describe('PHP JSON AST codec', () => {
 		expect(decodePhpJsonAst(encoded)).toEqual(program);
 	});
 
+	it('preserves __proto__ keys in attributes and nested records', () => {
+		const program = JSON.parse(`[
+			{
+				"nodeType": "Stmt_Nop",
+				"attributes": {
+					"__proto__": { "attribute": true },
+					"custom": { "__proto__": { "nested": true } }
+				}
+			}
+		]`) as unknown;
+
+		const decoded = decodePhpJsonAst(encodePhpJsonAst(program));
+		const attributes = decoded[0]?.attributes as Record<string, unknown>;
+		const custom = attributes.custom as Record<string, unknown>;
+
+		expect(Object.hasOwn(attributes, '__proto__')).toBe(true);
+		expect(attributes.__proto__).toEqual({ attribute: true });
+		expect(Object.hasOwn(custom, '__proto__')).toBe(true);
+		expect(custom.__proto__).toEqual({ nested: true });
+	});
+
 	it('rejects unsupported versions', () => {
 		expectCodecError(
 			() =>

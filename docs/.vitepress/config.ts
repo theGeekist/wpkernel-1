@@ -128,7 +128,7 @@ export default withMermaid(
 			logo: '/logo.png',
 			editLink: {
 				pattern:
-					'https://github.com/wpkernel/wpkernel/edit/main/docs/:path',
+					'https://github.com/theGeekist/wpkernel-1/edit/main/docs/:path',
 				text: 'Edit this page on GitHub',
 			},
 			externalLinkIcon: true,
@@ -304,16 +304,10 @@ export default withMermaid(
 						collapsed: false,
 						items: [
 							{ text: 'Overview', link: '/api/' },
-							{ text: 'Resources', link: '/api/resources' },
-							{ text: 'Actions', link: '/api/actions' },
-							{ text: 'Events', link: '/api/events' },
-							{ text: 'Jobs', link: '/api/jobs' },
-							{ text: 'Reporter', link: '/api/reporter' },
-							{ text: 'Policy', link: '/api/policy' },
 						],
 					},
 					{
-						text: 'Typedoc output',
+						text: 'Packages',
 						collapsed: true,
 						items: [
 							{
@@ -327,6 +321,10 @@ export default withMermaid(
 							{
 								text: '@wpkernel/pipeline',
 								link: '/api/@wpkernel/pipeline/',
+							},
+							{
+								text: '@wpkernel/php-json-ast',
+								link: '/api/@wpkernel/php-json-ast/',
 							},
 							{
 								text: '@wpkernel/create-wpk',

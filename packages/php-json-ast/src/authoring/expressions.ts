@@ -26,6 +26,7 @@ import {
 	type PhpAuthoringValue,
 	type PhpExpressionValue,
 } from './values';
+import { readDenseArrayEntries, readOwnProperty } from './properties';
 
 export type PhpExpressionInput = PhpAuthoringValue;
 
@@ -52,10 +53,13 @@ export function functionCall(
 	const functionName = callable.fullyQualified
 		? buildFullyQualifiedName([...callable.parts])
 		: buildName([...callable.parts]);
+	const values = readExpressionArray(args, '$function.args');
 	return expression(
 		buildFuncCall(
 			functionName,
-			args.map((value) => buildArg(renderPhpValue(value)))
+			values.map((value) =>
+				buildArg(renderPhpValue(value as PhpExpressionInput))
+			)
 		)
 	);
 }
@@ -73,11 +77,14 @@ export function methodCall(
 	args: readonly PhpExpressionInput[] = []
 ): PhpExpressionValue {
 	assertCallSubject(subject);
+	const values = readExpressionArray(args, '$method.args');
 	return expression(
 		buildMethodCall(
 			renderPhpValue(subject),
 			buildIdentifier(normalizePhpMethodName(method)),
-			args.map((value) => buildArg(renderPhpValue(value)))
+			values.map((value) =>
+				buildArg(renderPhpValue(value as PhpExpressionInput))
+			)
 		)
 	);
 }
@@ -109,27 +116,28 @@ export function assignment(
 export function arrayExpression(
 	entries: readonly PhpArrayEntry[]
 ): PhpExpressionValue {
-	if (!Array.isArray(entries)) {
-		throw ambiguousExpression(
-			'$array',
-			'Explicit array entries must be provided as an array.'
-		);
-	}
+	const arrayEntries = readExpressionArray(entries, '$array');
 
 	return expression(
 		buildArray(
-			entries.map((entry, index) => {
-				assertArrayEntry(entry, index);
-				return buildArrayItem(renderPhpValue(entry.value), {
+			arrayEntries.map((entry, index) => {
+				const options = readArrayEntry(entry as PhpArrayEntry, index);
+				return buildArrayItem(renderPhpValue(options.value), {
 					key:
-						entry.key === undefined
+						options.key === undefined
 							? null
-							: renderPhpValue(entry.key),
-					byRef: entry.byReference ?? false,
-					unpack: entry.unpack ?? false,
+							: renderPhpValue(options.key),
+					byRef: options.byReference ?? false,
+					unpack: options.unpack ?? false,
 				});
 			})
 		)
+	);
+}
+
+function readExpressionArray(value: unknown, path: string): unknown[] {
+	return readDenseArrayEntries(value, path, (errorPath, message) =>
+		ambiguousExpression(errorPath, message)
 	);
 }
 
@@ -154,10 +162,7 @@ function requireVariableValue(value: unknown): PhpVariableValue {
 	return value;
 }
 
-function assertArrayEntry(
-	entry: PhpArrayEntry,
-	index: number
-): asserts entry is PhpArrayEntry {
+function readArrayEntry(entry: PhpArrayEntry, index: number): PhpArrayEntry {
 	const path = `$array[${index}]`;
 	if (!isPlainRecord(entry)) {
 		throw ambiguousExpression(path, 'Array entries must be plain records.');
@@ -178,18 +183,73 @@ function assertArrayEntry(
 			'Array entries require value and only support key, byReference, and unpack options.'
 		);
 	}
-	if (entry.byReference && entry.unpack) {
+	const value = requireArrayEntryOption(entry, 'value', path);
+	const key = readArrayEntryOption(entry, 'key', path);
+	const byReference = readArrayEntryBooleanOption(entry, 'byReference', path);
+	const unpack = readArrayEntryBooleanOption(entry, 'unpack', path);
+	if (byReference && unpack) {
 		throw ambiguousExpression(
 			path,
 			'An array entry cannot be both by-reference and unpacked.'
 		);
 	}
-	if (entry.unpack && entry.key !== undefined) {
+	if (unpack && key !== undefined) {
 		throw ambiguousExpression(
 			path,
 			'An unpacked array entry cannot declare an explicit key.'
 		);
 	}
+	return {
+		value: value as PhpExpressionInput,
+		key: key as PhpExpressionInput | undefined,
+		byReference,
+		unpack,
+	};
+}
+
+function requireArrayEntryOption(
+	entry: Record<string, unknown>,
+	key: string,
+	path: string
+): unknown {
+	const option = readOwnProperty(entry, key);
+	if (option.kind !== 'data') {
+		throw ambiguousExpression(
+			path,
+			'Array entries must use own data properties for every option.'
+		);
+	}
+	return option.value;
+}
+
+function readArrayEntryOption(
+	entry: Record<string, unknown>,
+	key: string,
+	path: string
+): unknown | undefined {
+	const option = readOwnProperty(entry, key);
+	if (option.kind === 'accessor') {
+		throw ambiguousExpression(
+			path,
+			'Array entry options must be own data properties, not accessors.'
+		);
+	}
+	return option.kind === 'data' ? option.value : undefined;
+}
+
+function readArrayEntryBooleanOption(
+	entry: Record<string, unknown>,
+	key: 'byReference' | 'unpack',
+	path: string
+): boolean | undefined {
+	const value = readArrayEntryOption(entry, key, path);
+	if (value !== undefined && typeof value !== 'boolean') {
+		throw ambiguousExpression(
+			path,
+			`Array entry option ${key} must be a boolean when provided.`
+		);
+	}
+	return value;
 }
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {

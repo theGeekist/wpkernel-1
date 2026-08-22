@@ -8,6 +8,137 @@ import {
 import { makeResource } from '@cli-tests/builders/fixtures.test-support';
 
 describe('ts admin screen builder (IR driven)', () => {
+	it('omits Create for a custom POST outside the canonical collection path', async () => {
+		const resource = makeResource({
+			id: 'res:job',
+			name: 'job',
+			routes: [
+				{ method: 'GET', path: '/demo/v1/jobs' },
+				{ method: 'POST', path: '/demo/v1/jobs/import' },
+			] as any,
+			storage: { mode: 'wp-post' } as any,
+		});
+		const ir = makeIr({ resources: [resource] });
+		ir.artifacts.resources = {
+			'res:job': {
+				modulePath: 'app/generated/job/resource.ts',
+				typeDefPath: 'types/generated/job.d.ts',
+				typeSource: 'inferred',
+				schemaKey: 'job',
+			},
+		};
+		ir.artifacts.surfaces = {
+			'res:job': {
+				resource: 'job',
+				appDir: 'ui/applied/job',
+				generatedAppDir: 'ui/generated/job',
+				pagePath: 'ui/applied/job/page.tsx',
+				formPath: 'ui/applied/job/form.tsx',
+				configPath: 'ui/applied/job/config.tsx',
+			},
+		};
+
+		const writes: Array<{ file: string; contents: string }> = [];
+		const workspace = makeWorkspaceMock({
+			write: async (file: string, contents: string | Buffer) => {
+				writes.push({ file, contents: String(contents) });
+			},
+		});
+		const reporter = buildReporter();
+		const output = buildOutput();
+
+		await createAdminScreenBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: { version: 1, resources: {}, removed: [] },
+			},
+			output,
+			reporter,
+		} as any);
+
+		const screen = writes.find(({ contents }) =>
+			contents.includes('wp-heading-inline')
+		)?.contents;
+		expect(screen).toBeDefined();
+		expect(screen).not.toContain('Create job');
+	});
+
+	it('renders Create for a canonical collection POST route', async () => {
+		const resource = makeResource({
+			id: 'res:job',
+			name: 'job',
+			routes: [
+				{ method: 'GET', path: '/demo/v1/jobs' },
+				{ method: 'POST', path: '/demo/v1/jobs' },
+			] as any,
+			storage: { mode: 'wp-post' } as any,
+		});
+		const ir = makeIr({ resources: [resource] });
+		ir.artifacts.resources = {
+			'res:job': {
+				modulePath: 'app/generated/job/resource.ts',
+				typeDefPath: 'types/generated/job.d.ts',
+				typeSource: 'inferred',
+				schemaKey: 'job',
+			},
+		};
+		ir.artifacts.surfaces = {
+			'res:job': {
+				resource: 'job',
+				appDir: 'ui/applied/job',
+				generatedAppDir: 'ui/generated/job',
+				pagePath: 'ui/applied/job/page.tsx',
+				formPath: 'ui/applied/job/form.tsx',
+				configPath: 'ui/applied/job/config.tsx',
+			},
+		};
+
+		const writes: Array<{ file: string; contents: string }> = [];
+		const workspace = makeWorkspaceMock({
+			write: async (file: string, contents: string | Buffer) => {
+				writes.push({ file, contents: String(contents) });
+			},
+		});
+		const reporter = buildReporter();
+		const output = buildOutput();
+
+		await createAdminScreenBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: { version: 1, resources: {}, removed: [] },
+			},
+			output,
+			reporter,
+		} as any);
+
+		const screen = writes.find(({ contents }) =>
+			contents.includes('wp-heading-inline')
+		)?.contents;
+		expect(screen).toContain('Create job');
+	});
+
 	it('skips when IR or artifacts are missing', async () => {
 		const builder = createAdminScreenBuilder();
 		const reporter = buildReporter();

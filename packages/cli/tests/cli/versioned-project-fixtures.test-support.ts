@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { WPK_CONFIG_SOURCES } from '@wpkernel/core/contracts';
@@ -586,5 +587,51 @@ async function initializeFixtureRepository(
 }
 
 async function execGit(workspaceRoot: string, args: readonly string[]) {
-	return execFileAsync('git', [...args], { cwd: workspaceRoot });
+	return execFileAsync('git', [...args], {
+		cwd: workspaceRoot,
+		env: createIsolatedGitEnvironment(),
+	});
+}
+
+export function createIsolatedGitEnvironment(): NodeJS.ProcessEnv {
+	const env = { ...process.env };
+	const repositoryLocalVariables = [
+		'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+		'GIT_COMMON_DIR',
+		'GIT_CONFIG',
+		'GIT_CONFIG_COUNT',
+		'GIT_CONFIG_PARAMETERS',
+		'GIT_CONFIG_SYSTEM',
+		'GIT_DIR',
+		'GIT_GRAFT_FILE',
+		'GIT_IMPLICIT_WORK_TREE',
+		'GIT_INDEX_FILE',
+		'GIT_INTERNAL_SUPER_PREFIX',
+		'GIT_NO_REPLACE_OBJECTS',
+		'GIT_OBJECT_DIRECTORY',
+		'GIT_PREFIX',
+		'GIT_REPLACE_REF_BASE',
+		'GIT_SHALLOW_FILE',
+		'GIT_WORK_TREE',
+	];
+
+	for (const variable of repositoryLocalVariables) {
+		delete env[variable];
+	}
+	for (const variable of Object.keys(env)) {
+		if (
+			variable.startsWith('GIT_CONFIG_KEY_') ||
+			variable.startsWith('GIT_CONFIG_VALUE_')
+		) {
+			delete env[variable];
+		}
+	}
+
+	// Fixtures must be independent from a developer's Git identity, hooks,
+	// aliases, and system policy. Repository-local settings are configured after
+	// initialisation and remain available to the child Git processes.
+	env.GIT_CONFIG_GLOBAL = os.devNull;
+	env.GIT_CONFIG_NOSYSTEM = '1';
+
+	return env;
 }

@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { createWorkspaceRunner } from '../integration/workspace';
@@ -10,6 +11,7 @@ import {
 	VERSIONED_CLI_FIXTURE_PATHS,
 	VERSIONED_CLI_FIXTURE_SCHEMA_VERSION,
 	VERSIONED_CLI_PROJECT_FIXTURES,
+	createIsolatedGitEnvironment,
 	getVersionedCliProjectFixture,
 	materializeVersionedCliProjectFixture,
 	type VersionedCliFixtureId,
@@ -73,6 +75,14 @@ describe('versioned CLI project fixtures', () => {
 		expect(released.sourceCliVersion).not.toBe(
 			currentBeta.sourceCliVersion
 		);
+	});
+
+	it('isolates fixture Git commands from global and system configuration', () => {
+		const environment = createIsolatedGitEnvironment();
+
+		expect(environment.GIT_CONFIG_GLOBAL).toBe(os.devNull);
+		expect(environment.GIT_CONFIG_NOSYSTEM).toBe('1');
+		expect(environment.GIT_CONFIG_SYSTEM).toBeUndefined();
 	});
 
 	it('keeps committed user code outside generated ownership guards', async () => {
@@ -219,7 +229,7 @@ async function expectRepositoryState(
 	const { stdout } = await execFileAsync(
 		'git',
 		['status', '--porcelain', '--untracked-files=all'],
-		{ cwd: workspaceRoot }
+		{ cwd: workspaceRoot, env: createIsolatedGitEnvironment() }
 	);
 
 	if (expectedState === 'clean') {

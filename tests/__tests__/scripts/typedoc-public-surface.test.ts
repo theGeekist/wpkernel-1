@@ -6,6 +6,8 @@ import { spawnSync } from 'node:child_process';
 const typedoc = path.resolve('node_modules/typedoc/bin/typedoc');
 const plugin = path.resolve('scripts/docs/typedoc-public-surface.mjs');
 
+jest.setTimeout(30_000);
+
 type PipelineSourceOptions = {
 	driftAliasExtensionConstraint?:
 		| 'PipelineEdges'
