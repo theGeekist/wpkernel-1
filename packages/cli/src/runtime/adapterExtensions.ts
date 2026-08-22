@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { WPKernelError } from '@wpkernel/core/error';
-import { createPipelineExtension } from '@wpkernel/pipeline';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import { runAdapterExtensions } from '../adapters';
 import type {
 	AdapterContext,
@@ -12,9 +12,9 @@ import type {
 	PipelineExtension,
 	PipelineExtensionHookOptions,
 	PipelineExtensionHookResult,
-	Pipeline,
 } from './types';
 import { buildTsFormatter } from '../builders/ts';
+import { observeMaybePromise } from './maybePromise';
 
 function invokeExtensionFactory(
 	factory: AdapterExtensionFactory,
@@ -91,10 +91,10 @@ async function ensureDirectory(
 	await fs.mkdir(absolute, { recursive: true });
 }
 
-async function runExtensions({
+function runExtensions({
 	options: runOptions,
 	artifact,
-}: PipelineExtensionHookOptions): Promise<PipelineExtensionHookResult | void> {
+}: PipelineExtensionHookOptions): MaybePromise<PipelineExtensionHookResult | void> {
 	if (runOptions.phase !== 'generate') {
 		return undefined;
 	}
@@ -135,50 +135,57 @@ async function runExtensions({
 
 	const tsFormatter = buildTsFormatter();
 
-	const runResult = await runAdapterExtensions({
+	const runResult = runAdapterExtensions({
 		extensions,
 		adapterContext,
 		ir: artifact,
 		outputDir,
 		configDirectory,
-		ensureDirectory: async (directoryPath) => {
-			await ensureDirectory(workspaceRoot, directoryPath);
-		},
-		writeFile: async (filePath, contents) => {
-			await runOptions.workspace.write(filePath, contents, {
-				ensureDir: true,
-			});
-		},
-		formatPhp: async (_filePath, contents) => contents,
+		ensureDirectory: (directoryPath) =>
+			ensureDirectory(workspaceRoot, directoryPath),
+		writeFile: (filePath, contents) =>
+			runOptions.workspace.write(filePath, contents, { ensureDir: true }),
+		formatPhp: (_filePath, contents) => contents,
 		formatTs: (filePath, contents) =>
 			tsFormatter.format({ filePath, contents }),
 	});
 
-	adapterContext.ir = runResult.ir;
+	return mapMaybe(runResult, (result) => {
+		adapterContext.ir = result.ir;
 
-	adapterReporter.info('Adapter extensions completed successfully.', {
-		count: extensions.length,
+		adapterReporter.info('Adapter extensions completed successfully.', {
+			count: extensions.length,
+		});
+
+		return {
+			artifact: result.ir,
+			commit: result.commit,
+			rollback: result.rollback,
+		};
 	});
-
-	return {
-		artifact: runResult.ir,
-		commit: runResult.commit,
-		rollback: runResult.rollback,
-	};
 }
 
 export function buildAdapterExtensionsExtension(): PipelineExtension {
-	return createPipelineExtension<
-		Pipeline,
-		PipelineExtensionHookOptions['context'],
-		PipelineExtensionHookOptions['options'],
-		PipelineExtensionHookOptions['artifact']
-	>({
+	return {
 		key: 'pipeline.extensions.adapters',
+		lifecycle: 'finalize',
 		hook(options) {
 			return runExtensions(options);
 		},
-	});
+	};
+}
+
+function mapMaybe<T, TResult>(
+	value: MaybePromise<T>,
+	map: (value: T) => TResult
+): MaybePromise<TResult> {
+	const observed = observeMaybePromise<T>(value);
+	if (observed.kind === 'failed') {
+		throw observed.error;
+	}
+	return observed.kind === 'synchronous'
+		? map(observed.value)
+		: observed.promise.then(map);
 }
 
 function resolveExtensionsOrSkip({

@@ -1,7 +1,4 @@
-import type {
-	PipelineRollback,
-	PipelineRollbackErrorMetadata,
-} from './rollback.js';
+import type { PipelineRollbackErrorMetadata } from './rollback.js';
 
 /**
  * A value that may be available synchronously or through a promise-compatible
@@ -9,12 +6,13 @@ import type {
  *
  * @remarks
  * Pipeline operations preserve the synchronous path when every participant is
- * synchronous. Runtime adoption recognises native promises and safely
- * inspectable data-property thenables. Accessor-backed or trap-hostile `then`
- * properties are deliberately treated as synchronous data.
+ * synchronous. Runtime adoption reads `then` exactly once. A callable value,
+ * including one returned by a getter, is adopted with first-settlement
+ * semantics; a throwing getter is a synchronous participant failure.
  *
  * @typeParam T - Settled value type.
- * @see {@link HelperApplyFn}
+ * @see {@link maybeThen}
+ * @see {@link maybeAll}
  * @public
  */
 export type MaybePromise<T> = T | PromiseLike<T>;
@@ -23,9 +21,9 @@ export type MaybePromise<T> = T | PromiseLike<T>;
  * Identifier for a helper execution phase, such as `fragment` or `builder`.
  *
  * @remarks
- * A pipeline accepts only the kinds declared in
- * `AgnosticPipelineOptions.helperKinds`. Dependencies are resolved within
- * one kind, never across kind registries.
+ * A serial programme accepts the fragment and builder kinds declared through
+ * `CreateSerialPipelineOptions`. Dependencies are resolved within one kind,
+ * never across the two registries.
  *
  * @public
  */
@@ -77,7 +75,7 @@ export interface HelperDescriptor<TKind extends HelperKind = HelperKind> {
 	readonly mode: HelperMode;
 	/** Relative ordering hint; higher values run first when dependencies permit. */
 	readonly priority: number;
-	/** Helper keys that must complete before this helper may execute. */
+	/** Helper keys that place this helper later in the serial execution order. */
 	readonly dependsOn: readonly string[];
 	/** Optional package or subsystem label used in diagnostics. */
 	readonly origin?: string;
@@ -107,13 +105,42 @@ export interface HelperApplyOptions<
 	/** Reporter associated with the current run. */
 	readonly reporter: TReporter;
 }
+
+/**
+ * Type-only v1 descriptor for cleanup admitted after a helper succeeds.
+ *
+ * Returning this descriptor from {@link HelperApplyResult.rollback} requests
+ * best-effort cleanup if later serial work fails. The callback remains
+ * consumer-authored and callable by its owner. The descriptor grants no
+ * evaluator admission or traversal authority; the compatibility evaluator
+ * exclusively owns admission and reverse-order invocation.
+ *
+ * @typeParam TResult - Direct or recursively adopted cleanup result.
+ *
+ * @public
+ */
+export interface HelperRollback<TResult = unknown> {
+	/** Stable machine-readable helper key for diagnostics. */
+	readonly key?: string;
+	/** Human-readable cleanup description for observers. */
+	readonly label?: string;
+	/**
+	 * Cleanup invoked at most once by one evaluator-owned traversal.
+	 *
+	 * The result crosses the standard read-once thenable boundary: a direct
+	 * value keeps cleanup synchronous, while a callable `then` is adopted before
+	 * the evaluator continues to the next older cleanup.
+	 */
+	readonly run: () => MaybePromise<TResult>;
+}
+
 /**
  * Optional transformation and compensation produced by a helper.
  *
  * @remarks
  * Omitting `output` preserves the current output. A rollback is registered only
  * after the helper completes successfully. Registered rollbacks participate in
- * the pipeline's global reverse-completion transaction chronology.
+ * the pipeline's reverse execution and compensation chronology.
  *
  * @typeParam TOutput - Replacement output type for the helper phase.
  *
@@ -123,7 +150,7 @@ export interface HelperApplyResult<TOutput> {
 	/** Replacement passed to downstream helpers and later stages. */
 	readonly output?: TOutput;
 	/** Compensation to execute if later work causes the run to fail. */
-	readonly rollback?: PipelineRollback;
+	readonly rollback?: HelperRollback;
 }
 
 /**
@@ -134,9 +161,11 @@ export interface HelperApplyResult<TOutput> {
  * @remarks
  * With no argument, downstream helpers receive the current output. Supplying an
  * argument replaces it. Repeated calls share the same downstream execution and
- * settlement. If a helper launches asynchronous downstream work without
- * awaiting it, the pipeline still waits for that work before settling the
- * helper or beginning rollback.
+ * settlement while the owning helper participant remains unsettled. The
+ * continuation is revoked when that participant settles; later calls fail
+ * without executing downstream work. If a helper launches asynchronous
+ * downstream work without awaiting it, the pipeline still waits for that work
+ * before settling the helper or beginning rollback.
  *
  * @typeParam TOutput - Value threaded through the helper chain.
  *
@@ -264,7 +293,12 @@ export interface PipelineStep<TKind extends HelperKind = HelperKind>
 }
 
 /**
- * Fatal diagnostic emitted when two override helpers claim the same key.
+ * Legacy compatibility shape for an override registration conflict.
+ *
+ * @remarks
+ * Static serial construction rejects duplicate overrides immediately and does
+ * not emit this diagnostic during a run. The shape remains in the v1
+ * diagnostic union for source compatibility with existing consumers.
  *
  * @typeParam TKind - Helper-kind union associated with the diagnostic.
  * @public
@@ -288,8 +322,8 @@ export interface ConflictDiagnostic<TKind extends HelperKind = HelperKind> {
  * Fatal diagnostic emitted when a declared dependency cannot be satisfied.
  *
  * @remarks
- * Keys listed in `AgnosticPipelineOptions.providedKeys` satisfy external
- * dependencies and therefore do not produce this diagnostic.
+ * Keys listed in `fragmentProvidedKeys` or `builderProvidedKeys` satisfy
+ * external dependencies and therefore do not produce this diagnostic.
  *
  * @typeParam TKind - Helper-kind union associated with the diagnostic.
  * @public
@@ -309,14 +343,16 @@ export interface MissingDependencyDiagnostic<
 	readonly kind?: TKind;
 	/** Origin or key identifying the affected helper. */
 	readonly helper?: string;
+	/** Dependencies declared by the affected helper at admission. */
+	readonly dependsOn?: readonly string[];
 }
 
 /**
  * Diagnostic describing a registered helper that did not execute.
  *
  * @remarks
- * Custom stage compositions decide whether and when to report unused helpers
- * through {@link PipelineStageDiagnostics.flagUnusedHelper}.
+ * Serial ordering reports this diagnostic when registered helpers cannot enter
+ * the executable order.
  *
  * @typeParam TKind - Helper-kind union associated with the diagnostic.
  * @public
@@ -353,7 +389,7 @@ export type PipelineDiagnostic<TKind extends HelperKind = HelperKind> =
  * @remarks
  * `artifact` is the final user state. Diagnostics and steps are immutable views
  * of this run only. A custom result shape may be supplied through the required
- * `createRunResult` adapter in {@link AgnosticPipelineOptions}.
+ * `createRunResult` adapter in `CreateSerialPipelineOptions`.
  *
  * @typeParam TArtifact - Final artifact or user-state type.
  * @typeParam TDiagnostic - Diagnostic union collected by the run.
@@ -375,8 +411,9 @@ export interface PipelineRunState<
  * Summary of registration and execution for one helper kind.
  *
  * @remarks
- * Standard pipeline finalisation exposes this metadata so consumers can reason
- * about conditional stage composition without receiving executable helpers.
+ * Serial compatibility finalisation exposes this metadata so consumers can
+ * reason about conditional helper composition without receiving executable
+ * helpers.
  *
  * @typeParam TKind - Helper kind represented by this summary.
  * @public
@@ -636,7 +673,7 @@ export interface PipelineHelperRollback<THelper> {
 	/** Original helper that produced the rollback. */
 	readonly helper: THelper;
 	/** Compensation registered by the helper result. */
-	readonly rollback: PipelineRollback;
+	readonly rollback: HelperRollback;
 }
 
 /**
@@ -975,9 +1012,10 @@ export type PipelineExtensionRollbackErrorMetadata =
  * A pipeline extension hook function.
  *
  * @remarks
- * Hooks may remain synchronous or return a native promise. Hooks within one
- * lifecycle are awaited sequentially and observe the artifact returned by the
- * preceding hook.
+ * Hooks may remain synchronous or expose a callable `then`, which is read once
+ * and adopted with first-settlement semantics. A throwing `then` getter is a
+ * synchronous hook failure. Hooks within one lifecycle settle sequentially and
+ * observe the artifact returned by the preceding hook.
  *
  * @typeParam TContext - Per-run context type.
  * @typeParam TOptions - Run-options type.

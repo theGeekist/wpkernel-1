@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / BuildWpTaxonomyGetRouteStatementsOptions
+[@wpkernel/wp-json-ast](../index.md) / BuildWpTaxonomyGetRouteStatementsOptions
 
 # Interface: BuildWpTaxonomyGetRouteStatementsOptions
 
@@ -14,12 +14,12 @@
 readonly cacheSegments: readonly unknown[];
 ```
 
----
+***
 
 ### errorCodeFactory()
 
 ```ts
-readonly errorCodeFactory: (suffix) => string;
+readonly errorCodeFactory: (suffix) =&gt; string;
 ```
 
 #### Parameters
@@ -32,7 +32,7 @@ readonly errorCodeFactory: (suffix) => string;
 
 `string`
 
----
+***
 
 ### identity
 
@@ -40,7 +40,7 @@ readonly errorCodeFactory: (suffix) => string;
 readonly identity: ResolvedIdentity;
 ```
 
----
+***
 
 ### metadataHost
 
@@ -48,7 +48,7 @@ readonly identity: ResolvedIdentity;
 readonly metadataHost: ResourceMetadataHost;
 ```
 
----
+***
 
 ### pascalName
 
@@ -56,7 +56,7 @@ readonly metadataHost: ResourceMetadataHost;
 readonly pascalName: string;
 ```
 
----
+***
 
 ### storage
 
@@ -64,7 +64,7 @@ readonly pascalName: string;
 readonly storage: ResourceStorageConfig | undefined;
 ```
 
----
+***
 
 ### identityVariable?
 
@@ -72,7 +72,7 @@ readonly storage: ResourceStorageConfig | undefined;
 readonly optional identityVariable: string;
 ```
 
----
+***
 
 ### requestVariable?
 
@@ -80,7 +80,7 @@ readonly optional identityVariable: string;
 readonly optional requestVariable: string;
 ```
 
----
+***
 
 ### resourceName?
 

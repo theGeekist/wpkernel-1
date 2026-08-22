@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpStmtEcho
+[@wpkernel/php-json-ast](../index.md) / PhpStmtEcho
 
 # Interface: PhpStmtEcho
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpStmtBase`](PhpStmtBase.md).[`attributes`](PhpStmtBase.md#attributes)
 
----
+***
 
 ### exprs
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 readonly exprs: PhpExpr[];
 ```
 
----
+***
 
 ### nodeType
 

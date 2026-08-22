@@ -1,8 +1,8 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / MutationHelperResource
+[@wpkernel/wp-json-ast](../index.md) / MutationHelperResource
 
 # Interface: MutationHelperResource
 
@@ -16,7 +16,7 @@ Minimal resource shape expected by wp-post mutation helpers.
 readonly name: string;
 ```
 
----
+***
 
 ### storage?
 

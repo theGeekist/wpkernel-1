@@ -1,13 +1,13 @@
-[**@wpkernel/test-utils v0.12.6-beta.3**](../README.md)
+[**@wpkernel/test-utils v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/test-utils](../README.md) / loadTestLayout
+[@wpkernel/test-utils](../index.md) / loadTestLayout
 
 # Function: loadTestLayout()
 
 ```ts
-function loadTestLayout(options): Promise<TestLayout>;
+function loadTestLayout(options): Promise&lt;TestLayout&gt;;
 ```
 
 Backwards-compatible async loader that resolves the default layout manifest
@@ -23,7 +23,7 @@ using the production resolver. Mirrors the CLI test helper API.
 
 #### overrides?
 
-`Record`<`string`, `string`>
+`Record`&lt;`string`, `string`&gt;
 
 #### strict?
 
@@ -31,4 +31,4 @@ using the production resolver. Mirrors the CLI test helper API.
 
 ## Returns
 
-`Promise`<[`TestLayout`](../interfaces/TestLayout.md)>
+`Promise`&lt;[`TestLayout`](../interfaces/TestLayout.md)&gt;

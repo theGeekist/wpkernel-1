@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpIntersectionType
+[@wpkernel/php-json-ast](../index.md) / PhpIntersectionType
 
 # Interface: PhpIntersectionType
 
@@ -24,7 +24,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpNode`](PhpNode.md).[`attributes`](PhpNode.md#attributes)
 
----
+***
 
 ### nodeType
 
@@ -36,7 +36,7 @@ readonly nodeType: "IntersectionType";
 
 [`PhpNode`](PhpNode.md).[`nodeType`](PhpNode.md#nodetype)
 
----
+***
 
 ### types
 

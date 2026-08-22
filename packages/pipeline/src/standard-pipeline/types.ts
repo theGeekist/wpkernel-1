@@ -1,51 +1,30 @@
 import type {
 	Helper,
 	HelperApplyOptions,
-	HelperExecutionSnapshot,
 	HelperKind,
-	MaybePromise,
 	PipelineDiagnostic,
 	PipelineReporter,
 	PipelineRunState,
 	PipelineStep,
-	PipelineExtension,
 	PipelineExtensionRollbackErrorMetadata,
 } from '../core/types.js';
+import type { StandardPipelineExtension } from './extension.js';
+import type {
+	FragmentFinalizationMetadata,
+	PipelineExecutionMetadata,
+} from './metadata.js';
+import type { Pipeline } from './pipeline.js';
 export type {
 	PipelineExtensionRollbackErrorMetadata,
 	PipelineReporter,
 	PipelineRunState,
 };
-
-/**
- * Execution metadata available when a standard pipeline finalises its draft.
- *
- * The snapshot describes the configured fragment kind and the helpers that
- * were registered, executed, or excluded because dependencies were missing.
- * @public
- */
-export interface FragmentFinalizationMetadata<
-	TFragmentKind extends HelperKind = HelperKind,
-> {
-	/** Snapshot of fragment helper resolution and execution for this run. */
-	readonly fragments: HelperExecutionSnapshot<TFragmentKind>;
-}
-
-/**
- * Complete helper execution metadata supplied to a custom run-result adapter.
- *
- * Fragment metadata is captured before draft finalisation. Builder metadata is
- * captured after the final builder helper and therefore describes the whole
- * standard helper sequence.
- * @public
- */
-export interface PipelineExecutionMetadata<
-	TFragmentKind extends HelperKind = HelperKind,
-	TBuilderKind extends HelperKind = HelperKind,
-> extends FragmentFinalizationMetadata<TFragmentKind> {
-	/** Snapshot of builder helper resolution and execution for this run. */
-	readonly builders: HelperExecutionSnapshot<TBuilderKind>;
-}
+export type {
+	FragmentFinalizationMetadata,
+	Pipeline,
+	PipelineExecutionMetadata,
+	StandardPipelineExtension,
+};
 
 /**
  * Options for creating a pipeline.
@@ -453,206 +432,3 @@ export type CreatePipelineOptions<
 			TBuilderKind
 		>
 	>;
-
-/**
- * Extension descriptor specialised to a standard fragment-and-builder
- * pipeline. Hooks receive the finalised public artifact rather than internal
- * draft or bookkeeping state.
- *
- * A hook without explicit lifecycle metadata defaults to `after-fragments`.
- * Standard pipelines schedule hooks after draft finalisation at
- * `after-fragments`, `before-builders`, `after-builders`, and `finalize`.
- * Artifact replacements are adopted before the next hook or phase. Commit and
- * rollback callbacks retain their registration identity and participate in the
- * run transaction.
- *
- * Registration may perform synchronous or asynchronous setup. A run waits for
- * registration to become quiescent, then captures an immutable registration
- * snapshot. Extensions added after that boundary participate in later runs.
- *
- * @see {@link Pipeline.extensions}
- * @public
- */
-export type StandardPipelineExtension<
-	TRunOptions,
-	TRunResult,
-	TContext extends { reporter: TReporter },
-	TReporter extends PipelineReporter = PipelineReporter,
-	TBuildOptions = unknown,
-	TArtifact = unknown,
-	TFragmentInput = unknown,
-	TFragmentOutput = unknown,
-	TBuilderInput = unknown,
-	TBuilderOutput = unknown,
-	TDiagnostic extends PipelineDiagnostic = PipelineDiagnostic,
-	TFragmentKind extends HelperKind = 'fragment',
-	TBuilderKind extends HelperKind = 'builder',
-	TFragmentHelper extends Helper<
-		TContext,
-		TFragmentInput,
-		TFragmentOutput,
-		TReporter,
-		TFragmentKind
-	> = Helper<
-		TContext,
-		TFragmentInput,
-		TFragmentOutput,
-		TReporter,
-		TFragmentKind
-	>,
-	TBuilderHelper extends Helper<
-		TContext,
-		TBuilderInput,
-		TBuilderOutput,
-		TReporter,
-		TBuilderKind
-	> = Helper<
-		TContext,
-		TBuilderInput,
-		TBuilderOutput,
-		TReporter,
-		TBuilderKind
-	>,
-> = PipelineExtension<
-	Pipeline<
-		TRunOptions,
-		TRunResult,
-		TContext,
-		TReporter,
-		TBuildOptions,
-		TArtifact,
-		TFragmentInput,
-		TFragmentOutput,
-		TBuilderInput,
-		TBuilderOutput,
-		TDiagnostic,
-		TFragmentKind,
-		TBuilderKind,
-		TFragmentHelper,
-		TBuilderHelper
-	>,
-	TContext,
-	TRunOptions,
-	TArtifact
->;
-
-/**
- * A configured standard fragment-and-builder pipeline.
- *
- * The dedicated {@link Pipeline.ir} and {@link Pipeline.builders} surfaces
- * validate helper kinds at registration. {@link Pipeline.use} accepts either
- * configured kind while preserving the original helper object's identity.
- * Calls to {@link Pipeline.run} preserve synchronous settlement until a helper,
- * extension, commit, rollback or stage actually becomes asynchronous.
- *
- * Registrations are pipeline configuration. Each run waits for pending
- * extension registration to quiesce and captures immutable helper and hook
- * orders, so overlapping runs cannot acquire one another's later additions.
- *
- * @public
- */
-export interface Pipeline<
-	TRunOptions,
-	TRunResult,
-	TContext extends { reporter: TReporter },
-	TReporter extends PipelineReporter = PipelineReporter,
-	TBuildOptions = unknown,
-	TArtifact = unknown,
-	TFragmentInput = unknown,
-	TFragmentOutput = unknown,
-	TBuilderInput = unknown,
-	TBuilderOutput = unknown,
-	TDiagnostic extends PipelineDiagnostic = PipelineDiagnostic,
-	TFragmentKind extends HelperKind = 'fragment',
-	TBuilderKind extends HelperKind = 'builder',
-	TFragmentHelper extends Helper<
-		TContext,
-		TFragmentInput,
-		TFragmentOutput,
-		TReporter,
-		TFragmentKind
-	> = Helper<
-		TContext,
-		TFragmentInput,
-		TFragmentOutput,
-		TReporter,
-		TFragmentKind
-	>,
-	TBuilderHelper extends Helper<
-		TContext,
-		TBuilderInput,
-		TBuilderOutput,
-		TReporter,
-		TBuilderKind
-	> = Helper<
-		TContext,
-		TBuilderInput,
-		TBuilderOutput,
-		TReporter,
-		TBuilderKind
-	>,
-> {
-	/** Fragment helper kind configured for this pipeline. */
-	readonly fragmentKind: TFragmentKind;
-	/** Builder helper kind configured for this pipeline. */
-	readonly builderKind: TBuilderKind;
-	/** Typed registration surface for fragment helpers. */
-	readonly ir: {
-		/**
-		 * Registers a fragment helper by object identity.
-		 * @throws A validation error when `helper.kind` is not {@link Pipeline.fragmentKind}.
-		 */
-		use: (helper: TFragmentHelper) => void;
-	};
-	/** Typed registration surface for builder helpers. */
-	readonly builders: {
-		/**
-		 * Registers a builder helper by object identity.
-		 * @throws A validation error when `helper.kind` is not {@link Pipeline.builderKind}.
-		 */
-		use: (helper: TBuilderHelper) => void;
-	};
-	/** Extension registration surface for artifact lifecycle hooks. */
-	readonly extensions: {
-		/**
-		 * Registers extension setup and an optional lifecycle hook.
-		 *
-		 * Returns synchronously for synchronous registration and a promise-like
-		 * value only when registration is asynchronous. Unawaited asynchronous
-		 * registration is still awaited by the next {@link Pipeline.run}.
-		 */
-		use: (
-			extension: StandardPipelineExtension<
-				TRunOptions,
-				TRunResult,
-				TContext,
-				TReporter,
-				TBuildOptions,
-				TArtifact,
-				TFragmentInput,
-				TFragmentOutput,
-				TBuilderInput,
-				TBuilderOutput,
-				TDiagnostic,
-				TFragmentKind,
-				TBuilderKind,
-				TFragmentHelper,
-				TBuilderHelper
-			>
-		) => MaybePromise<unknown>;
-	};
-	/**
-	 * Registers either a configured fragment helper or builder helper while
-	 * preserving the original helper object's identity. Prefer {@link Pipeline.ir}
-	 * or {@link Pipeline.builders} when the helper family is known statically.
-	 */
-	use: (helper: TFragmentHelper | TBuilderHelper) => void;
-	/**
-	 * Executes one isolated fragment, extension and builder sequence.
-	 *
-	 * Returns `TRunResult` synchronously when all participating work is
-	 * synchronous; otherwise returns a promise-like value. Diagnostics belong to
-	 * this invocation and do not leak into overlapping or later runs.
-	 */
-	run: (options: TRunOptions) => MaybePromise<TRunResult>;
-}

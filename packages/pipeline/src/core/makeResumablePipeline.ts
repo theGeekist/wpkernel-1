@@ -48,8 +48,6 @@ import type {
  *
  * @example Pause once and resume with input
  * ```ts
- * import { makeResumablePipeline } from '@wpkernel/pipeline';
- *
  * const pipeline = makeResumablePipeline({
  *   helperKinds: [] as const,
  *   createContext: () => ({ reporter: console }),
@@ -74,7 +72,7 @@ import type {
  * @param options - Context, state, stages, helper kinds and observer factories.
  * @returns A configured resumable pipeline instance.
  * @see {@link PipelineStageState}
- * @public
+ * @internal
  */
 export function makeResumablePipeline<
 	TRunOptions,

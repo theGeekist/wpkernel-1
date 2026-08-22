@@ -7,12 +7,12 @@ import type { ActionDefinedEvent } from '../../events/bus';
 import type { WPKernelError } from '../../error/WPKernelError';
 import type { Reporter } from '../../reporter/types';
 import type {
-	CreatePipelineOptions,
+	CreateSerialPipelineOptions,
 	Helper,
-	Pipeline,
 	PipelineDiagnostic,
 	PipelineRunState,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import type { CorePipelineContext } from '../helpers/context';
 
 /**
@@ -20,7 +20,7 @@ import type { CorePipelineContext } from '../helpers/context';
  *
  * @example
  * ```ts
- * pipeline.ir.use({
+ * const fragment = createHelper({
  *   key: 'custom.fragment',
  *   kind: ACTION_FRAGMENT_KIND,
  *   apply: ({ output }) => {
@@ -209,45 +209,27 @@ export type ActionPipelineRunResult<TResult> = PipelineRunState<
 /**
  * Pipeline configuration contract used to instantiate the action pipeline.
  */
-export type ActionPipelineOptions<TArgs, TResult> = CreatePipelineOptions<
+export type ActionPipelineOptions<TArgs, TResult> = CreateSerialPipelineOptions<
 	ActionPipelineRunOptions<TArgs, TResult>,
 	ActionPipelineBuildOptions<TArgs, TResult>,
 	ActionPipelineContext<TArgs, TResult>,
-	Reporter,
 	ActionInvocationDraft<TResult>,
 	ActionPipelineArtifact<TResult>,
-	PipelineDiagnostic,
 	ActionPipelineRunResult<TResult>,
 	ActionLifecycleFragmentInput<TArgs>,
 	ActionInvocationDraft<TResult>,
 	ActionBuilderInput<TArgs, TResult>,
-	ActionInvocationDraft<TResult>,
-	ActionFragmentKind,
-	ActionBuilderKind,
-	ActionFragmentHelper<TArgs, TResult>,
-	ActionBuilderHelper<TArgs, TResult>
+	ActionInvocationDraft<TResult>
 >;
 
 /**
  * Fully constructed action pipeline exposing helper registration and execution.
  */
-export type ActionPipeline<TArgs, TResult> = Pipeline<
-	ActionPipelineRunOptions<TArgs, TResult>,
-	ActionPipelineRunResult<TResult>,
-	ActionPipelineContext<TArgs, TResult>,
-	Reporter,
-	ActionPipelineBuildOptions<TArgs, TResult>,
-	ActionPipelineArtifact<TResult>,
-	ActionLifecycleFragmentInput<TArgs>,
-	ActionInvocationDraft<TResult>,
-	ActionBuilderInput<TArgs, TResult>,
-	ActionInvocationDraft<TResult>,
-	PipelineDiagnostic,
-	ActionFragmentKind,
-	ActionBuilderKind,
-	ActionFragmentHelper<TArgs, TResult>,
-	ActionBuilderHelper<TArgs, TResult>
->;
+export interface ActionPipeline<TArgs, TResult> {
+	run: (
+		options: ActionPipelineRunOptions<TArgs, TResult>
+	) => MaybePromise<ActionPipelineRunResult<TResult>>;
+}
 
 /**
  * Descriptor type for lifecycle fragment helpers.

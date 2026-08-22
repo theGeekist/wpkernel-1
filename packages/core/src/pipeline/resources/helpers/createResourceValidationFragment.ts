@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { validateConfig } from '../../../resource/validation';
 import { RESOURCE_LOG_MESSAGES } from '../../../resource/logMessages';
 import type {
@@ -18,7 +18,7 @@ import type { Reporter } from '../../../reporter/types';
  * @example
  * ```ts
  * const validation = createResourceValidationFragment<Post, { id: number }>();
- * pipeline.ir.use(validation);
+ * const programme = createSerialPipeline({ fragments: [validation], ...options });
  * ```
  */
 export function createResourceValidationFragment<

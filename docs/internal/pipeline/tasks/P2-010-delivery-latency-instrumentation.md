@@ -1,0 +1,98 @@
+---
+architecture_version: 1
+id: P2-010
+title: Instrument Pipeline delivery latency
+stage: qualification
+status: proposed
+priority: high
+evidence_milestone: null
+replaced_by: []
+forward_to: []
+preferred_owner_kind: codex
+owner: null
+owner_kind: null
+lease_started_at: null
+lease_expires_at: null
+base_sha: null
+branch: null
+worktree: null
+depends_on: []
+decision_dependencies: []
+conflicts_with: []
+write_scope:
+    - docs/internal/pipeline/evidence/delivery-latency/**
+    - scripts/benchmark-delivery-gates.mjs
+    - task-graph.project.json
+required_reading:
+    - path: docs/internal/pipeline/COORDINATION.md
+      reason: Measure the intended ownership and review sequence against actual execution.
+    - path: instructions/wpkernel-repository-guide.md
+      reason: Preserve the repository's required qualification and publication boundaries.
+read_scope:
+    - docs/internal/pipeline/**
+    - instructions/wpkernel-repository-guide.md
+    - package.json
+    - turbo.json
+    - packages/*/package.json
+    - scripts/**
+review_owner: coordinator
+updated_at: 2026-08-19
+---
+
+# P2-010: Instrument Pipeline delivery latency
+
+## Objective
+
+Explain the elapsed-time gap between an early working implementation and final
+delivery using phase and process evidence, then remove avoidable orchestration
+and repository-gate delay without weakening qualification.
+
+This task is operational and does not block the Pipeline v2 release chain.
+
+## Known evidence to preserve
+
+- Independent semantic and documentation review began after implementation
+  rather than alongside it.
+- Broad formatting and Task Graph schema repair occurred after the code patch.
+- The P2-013 commit hook spent roughly one minute in staged linting because
+  `normalize-punctuation.js` ignored the filenames supplied by `lint-staged`,
+  scanned all repository Markdown and rewrote 472 generated API files across
+  4,170 changed lines.
+- CPU-heavy lint and test gates were run concurrently, creating invalid timeout
+  failures and requiring a serial rerun.
+- On 2026-08-18, the root lint gate took 13 minutes 10 seconds with three of
+  nine package tasks cached. Active ESLint workers included `core`, `cli`, `ui`
+  and `wp-json-ast`; the final `cli` worker alone remained active for more than
+  12 minutes.
+- Root source and test typechecks took approximately 2 minutes 20 seconds and
+  2 minutes 46 seconds respectively with no diagnostics.
+- Parallel root test runs produced load-sensitive CLI fixture timeouts in both
+  sandbox and host contexts. A host `--runInBand` run passed 419 suites and
+  2,814 tests in 11 minutes 26 seconds.
+
+## Acceptance criteria
+
+- Record wall-clock timestamps for discovery, implementation, independent
+  review, reconciliation, focused qualification, repository qualification,
+  commit and push.
+- Record each gate's wall time, cache state, host or sandbox context, process
+  fan-out and peak concurrency.
+- Establish uncontended baselines for formatting, documentation build, lint,
+  source typecheck, test typecheck and tests.
+- Separate repository execution cost from agent sequencing, approval waits,
+  tool polling and repeated work.
+- Identify which gates are required before review, before commit and before
+  push, and which can safely run concurrently.
+- Produce a concrete reduction plan with before-and-after timings while
+  preserving the packed NodeNext consumer and release contract.
+- Register a non-mutating `pipeline.delivery-latency` Task Graph command with
+  the measured serial and safe-concurrent gate schedules once the benchmark
+  script exists.
+
+## Verification
+
+Commit the raw timing ledger, process samples, command outcomes and the proposed
+gate schedule. Re-run one representative Pipeline change through the revised
+schedule and compare total elapsed time and failure quality.
+
+Suggested execution tier: fast instrumentation with balanced review.

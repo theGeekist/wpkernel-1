@@ -1,8 +1,8 @@
 /**
  * Domain-specific pipeline orchestrators and helpers for WPKernel.
  *
- * For generic pipeline primitives (createHelper, createPipeline, types),
- * import directly from '@wpkernel/pipeline'.
+ * These orchestration helpers retain Pipeline v1's serial semantics. For
+ * generic v1 primitives, import from '@wpkernel/pipeline/v1'.
  *
  * This module exports:
  * - createPipelineCommit, createPipelineRollback: Domain-specific commit helpers

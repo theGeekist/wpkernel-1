@@ -1,10 +1,10 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / HydrateServerStateInput
+[@wpkernel/core](../index.md) / HydrateServerStateInput
 
-# Interface: HydrateServerStateInput<TEntity, TQuery>
+# Interface: HydrateServerStateInput&lt;TEntity, TQuery&gt;
 
 Input shape forwarded to custom hydration callbacks.
 
@@ -23,10 +23,10 @@ Input shape forwarded to custom hydration callbacks.
 ### resource
 
 ```ts
-readonly resource: ResourceObject<TEntity, TQuery>;
+readonly resource: ResourceObject&lt;TEntity, TQuery&gt;;
 ```
 
----
+***
 
 ### serverState
 
@@ -40,18 +40,18 @@ readonly serverState: object;
 [key: string]: unknown
 ```
 
----
+***
 
 ### syncCache
 
 ```ts
-readonly syncCache: ResourceCacheSync<TEntity>;
+readonly syncCache: ResourceCacheSync&lt;TEntity&gt;;
 ```
 
----
+***
 
 ### registry?
 
 ```ts
-readonly optional registry: any;
+readonly optional registry: WPKernelRegistry;
 ```

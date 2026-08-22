@@ -43,8 +43,6 @@ import type {
  *
  * @example A custom lifecycle around one helper kind
  * ```ts
- * import { makePipeline } from '@wpkernel/pipeline';
- *
  * const pipeline = makePipeline({
  *   helperKinds: ['compile'] as const,
  *   createContext: () => ({ reporter: console }),
@@ -63,7 +61,7 @@ import type {
  *
  * @param options - Context, state, stages, helper kinds and observer factories.
  * @returns A configured agnostic pipeline instance.
- * @public
+ * @internal
  */
 export function makePipeline<
 	TRunOptions,

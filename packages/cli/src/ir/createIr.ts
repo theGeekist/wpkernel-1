@@ -3,7 +3,12 @@ import type { Reporter } from '@wpkernel/core/reporter';
 import { createNoopReporter as buildNoopReporter } from '@wpkernel/core/reporter';
 import type { FragmentIrOptions, IRv1 } from './publicTypes';
 import { createPipeline } from '../runtime';
-import type { PipelinePhase, Pipeline } from '../runtime';
+import type {
+	BuilderHelper,
+	FragmentHelper,
+	Pipeline,
+	PipelinePhase,
+} from '../runtime';
 import type { Workspace } from '../workspace';
 import { buildWorkspace } from '../workspace';
 import { createMetaFragment } from './fragments/ir.meta.core';
@@ -75,22 +80,24 @@ export interface CreateIrEnvironment {
  * from the configuration and building up the Intermediate Representation.
  *
  * @category IR
- * @param    pipeline - The pipeline instance to register fragments with.
+ * @returns The immutable core fragment programme.
  */
-function registerCoreFragments(pipeline: Pipeline): void {
-	pipeline.ir.use(createLayoutFragment());
-	pipeline.ir.use(createMetaFragment());
-	pipeline.ir.use(createSchemasFragment());
-	pipeline.ir.use(createResourcesFragment());
-	pipeline.ir.use(createBundlerFragment());
-	pipeline.ir.use(createUiFragment());
-	pipeline.ir.use(createCapabilitiesFragment());
-	pipeline.ir.use(createCapabilityMapFragment());
-	pipeline.ir.use(createDiagnosticsFragment());
-	pipeline.ir.use(createBlocksFragment());
-	pipeline.ir.use(createOrderingFragment());
-	pipeline.ir.use(createValidationFragment());
-	pipeline.ir.use(createArtifactsFragment());
+function registerCoreFragments(): readonly FragmentHelper[] {
+	return [
+		createLayoutFragment(),
+		createMetaFragment(),
+		createSchemasFragment(),
+		createResourcesFragment(),
+		createBundlerFragment(),
+		createUiFragment(),
+		createCapabilitiesFragment(),
+		createCapabilityMapFragment(),
+		createDiagnosticsFragment(),
+		createBlocksFragment(),
+		createOrderingFragment(),
+		createValidationFragment(),
+		createArtifactsFragment(),
+	];
 }
 
 /**
@@ -100,36 +107,38 @@ function registerCoreFragments(pipeline: Pipeline): void {
  * and generating various output artifacts (e.g., PHP, TypeScript, bundles).
  *
  * @category IR
- * @param    pipeline - The pipeline instance to register builders with.
+ * @returns The immutable core builder programme.
  */
-function registerCoreBuilders(pipeline: Pipeline): void {
-	pipeline.builders.use(createJsBlocksBuilder());
-	pipeline.builders.use(createTsTypesBuilder());
-	pipeline.builders.use(createTsResourcesBuilder());
-	pipeline.builders.use(createAdminScreenBuilder());
-	pipeline.builders.use(createAppConfigBuilder());
-	pipeline.builders.use(createAppFormBuilder());
-	pipeline.builders.use(createUiEntryBuilder());
-	pipeline.builders.use(createTsConfigBuilder());
-	pipeline.builders.use(createBundler());
-	pipeline.builders.use(createPhpDriverInstaller());
-	pipeline.builders.use(createPhpChannelHelper());
-	pipeline.builders.use(createPhpBuilderConfigHelper());
-	pipeline.builders.use(createPhpBaseControllerHelper());
-	pipeline.builders.use(createPhpTransientStorageHelper());
-	pipeline.builders.use(createPhpWpOptionStorageHelper());
-	pipeline.builders.use(createPhpWpTaxonomyStorageHelper());
-	pipeline.builders.use(createPhpWpPostRoutesHelper());
-	pipeline.builders.use(createPhpResourceControllerHelper());
-	pipeline.builders.use(createPhpCapabilityHelper());
-	pipeline.builders.use(createPhpPersistenceRegistryHelper());
-	pipeline.builders.use(createPhpPluginLoaderHelper());
-	pipeline.builders.use(createPhpIndexFileHelper());
-	pipeline.builders.use(createPhpCodemodIngestionHelper({ files: [] }));
-	pipeline.builders.use(createWpProgramWriterHelper());
-	pipeline.builders.use(createTsCapabilityBuilder());
-	pipeline.builders.use(createTsIndexBuilder());
-	pipeline.builders.use(createPlanBuilder());
+function registerCoreBuilders(): readonly BuilderHelper[] {
+	return [
+		createJsBlocksBuilder(),
+		createTsTypesBuilder(),
+		createTsResourcesBuilder(),
+		createAdminScreenBuilder(),
+		createAppConfigBuilder(),
+		createAppFormBuilder(),
+		createUiEntryBuilder(),
+		createTsConfigBuilder(),
+		createBundler(),
+		createPhpDriverInstaller(),
+		createPhpChannelHelper(),
+		createPhpBuilderConfigHelper(),
+		createPhpBaseControllerHelper(),
+		createPhpTransientStorageHelper(),
+		createPhpWpOptionStorageHelper(),
+		createPhpWpTaxonomyStorageHelper(),
+		createPhpWpPostRoutesHelper(),
+		createPhpResourceControllerHelper(),
+		createPhpCapabilityHelper(),
+		createPhpPersistenceRegistryHelper(),
+		createPhpPluginLoaderHelper(),
+		createPhpIndexFileHelper(),
+		createPhpCodemodIngestionHelper({ files: [] }),
+		createWpProgramWriterHelper(),
+		createTsCapabilityBuilder(),
+		createTsIndexBuilder(),
+		createPlanBuilder(),
+	];
 }
 
 async function runIrPipeline(
@@ -137,14 +146,13 @@ async function runIrPipeline(
 	environment: CreateIrEnvironment,
 	mode: 'fragments-only' | 'with-builders'
 ): Promise<IRv1> {
-	const pipeline = environment.pipeline ?? createPipeline();
-
-	registerCoreFragments(pipeline);
-	if (mode === 'with-builders') {
-		registerCoreBuilders(pipeline);
-	}
-
-	pipeline.extensions.use(buildAdapterExtensionsExtension());
+	const pipeline =
+		environment.pipeline ??
+		createPipeline({
+			fragments: registerCoreFragments(),
+			builders: mode === 'with-builders' ? registerCoreBuilders() : [],
+			extensions: [buildAdapterExtensionsExtension()],
+		});
 
 	const workspace =
 		environment.workspace ??

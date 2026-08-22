@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / ReleasePackManifestEntry
+[@wpkernel/cli](../index.md) / ReleasePackManifestEntry
 
 # Interface: ReleasePackManifestEntry
 
@@ -14,7 +14,7 @@
 readonly expectedArtifacts: readonly string[];
 ```
 
----
+***
 
 ### packageDir
 
@@ -22,7 +22,7 @@ readonly expectedArtifacts: readonly string[];
 readonly packageDir: string;
 ```
 
----
+***
 
 ### packageName
 
@@ -30,7 +30,7 @@ readonly packageDir: string;
 readonly packageName: string;
 ```
 
----
+***
 
 ### buildArgs?
 

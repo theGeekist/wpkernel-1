@@ -1,13 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / DoctorStatus
+[@wpkernel/cli](../index.md) / DoctorStatus
 
 # Type Alias: DoctorStatus
 
 ```ts
-type DoctorStatus = 'pass' | 'warn' | 'fail';
+type DoctorStatus = "pass" | "warn" | "fail";
 ```
 
 Status of a doctor check.

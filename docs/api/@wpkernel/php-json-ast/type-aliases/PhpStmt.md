@@ -1,39 +1,39 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpStmt
+[@wpkernel/php-json-ast](../index.md) / PhpStmt
 
 # Type Alias: PhpStmt
 
 ```ts
 type PhpStmt =
-	| PhpStmtNamespace
-	| PhpStmtUse
-	| PhpStmtGroupUse
-	| PhpStmtClass
-	| PhpStmtDeclare
-	| PhpStmtTraitUse
-	| PhpStmtClassConst
-	| PhpStmtProperty
-	| PhpStmtClassMethod
-	| PhpStmtFunction
-	| PhpStmtExpression
-	| PhpStmtEcho
-	| PhpStmtReturn
-	| PhpStmtIf
-	| PhpStmtForeach
-	| PhpStmtFor
-	| PhpStmtWhile
-	| PhpStmtDo
-	| PhpStmtSwitch
-	| PhpStmtCase
-	| PhpStmtBreak
-	| PhpStmtContinue
-	| PhpStmtNop
-	| PhpStmtElseIf
-	| PhpStmtElse
-	| PhpStmtBase;
+  | PhpStmtNamespace
+  | PhpStmtUse
+  | PhpStmtGroupUse
+  | PhpStmtClass
+  | PhpStmtDeclare
+  | PhpStmtTraitUse
+  | PhpStmtClassConst
+  | PhpStmtProperty
+  | PhpStmtClassMethod
+  | PhpStmtFunction
+  | PhpStmtExpression
+  | PhpStmtEcho
+  | PhpStmtReturn
+  | PhpStmtIf
+  | PhpStmtForeach
+  | PhpStmtFor
+  | PhpStmtWhile
+  | PhpStmtDo
+  | PhpStmtSwitch
+  | PhpStmtCase
+  | PhpStmtBreak
+  | PhpStmtContinue
+  | PhpStmtNop
+  | PhpStmtElseIf
+  | PhpStmtElse
+  | PhpStmtBase;
 ```
 
 Represents any PHP statement node.

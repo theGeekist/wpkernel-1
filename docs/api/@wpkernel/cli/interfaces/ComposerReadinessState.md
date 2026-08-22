@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / ComposerReadinessState
+[@wpkernel/cli](../index.md) / ComposerReadinessState
 
 # Interface: ComposerReadinessState
 
@@ -14,7 +14,7 @@
 readonly autoloadPath: string | null;
 ```
 
----
+***
 
 ### sourcePackage
 

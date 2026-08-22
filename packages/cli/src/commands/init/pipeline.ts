@@ -1,15 +1,18 @@
 import path from 'node:path';
 import {
-	createPipeline as createCorePipeline,
+	createSerialPipeline,
 	createHelper,
-} from '@wpkernel/pipeline';
+	runPipeline,
+} from '@wpkernel/pipeline/v1';
 import type {
 	PipelineDiagnostic,
 	PipelineRunState,
 	Helper,
-} from '@wpkernel/pipeline';
+	SerialRunOutcome,
+} from '@wpkernel/pipeline/v1';
 import { WPKernelError } from '@wpkernel/core/error';
 import type { Reporter } from '@wpkernel/core/reporter';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import { resolveDependencyVersions } from './dependency-versions';
 import {
 	assertNoCollisions,
@@ -49,6 +52,7 @@ import type {
 	InstallationMeasurements,
 	ScaffoldSummary,
 } from './types';
+import { observeMaybePromise } from '../../runtime/maybePromise';
 
 const INIT_FRAGMENT_KEY_NAMESPACE = 'init.namespace';
 const INIT_FRAGMENT_KEY_DETECT = 'init.detect';
@@ -74,23 +78,17 @@ type InitBuilderHelper = Helper<
 >;
 
 export function createInitPipeline() {
-	const pipeline = createCorePipeline<
+	return createSerialPipeline<
 		InitPipelineRunOptions,
 		InitPipelineRunOptions,
 		InitPipelineContext,
-		Reporter,
 		InitPipelineDraft,
 		InitPipelineArtifact,
-		PipelineDiagnostic,
 		PipelineRunState<InitWorkflowResult, PipelineDiagnostic>,
 		void,
 		InitPipelineDraft,
 		InitPipelineArtifact,
-		InitPipelineArtifact,
-		'fragment',
-		'builder',
-		InitFragmentHelper,
-		InitBuilderHelper
+		InitPipelineArtifact
 	>({
 		createBuildOptions: (options) => options,
 		createContext: (options) => ({
@@ -126,25 +124,49 @@ export function createInitPipeline() {
 				steps,
 			};
 		},
+		fragments: [
+			createNamespaceHelper(),
+			createDetectionHelper(),
+			createCollisionHelper(),
+			createDependencyHelper(),
+		],
+		builders: [
+			createScaffoldBuilder(),
+			createInstallBuilder(),
+			createResultBuilder(),
+		],
 	});
-
-	pipeline.ir.use(createNamespaceHelper());
-	pipeline.ir.use(createDetectionHelper());
-	pipeline.ir.use(createCollisionHelper());
-	pipeline.ir.use(createDependencyHelper());
-	pipeline.builders.use(createScaffoldBuilder());
-	pipeline.builders.use(createInstallBuilder());
-	pipeline.builders.use(createResultBuilder());
-
-	return pipeline;
 }
 
-export async function runInitPipeline(
+export function runInitPipeline(
 	options: InitPipelineRunOptions
-): Promise<InitWorkflowResult> {
+): MaybePromise<InitWorkflowResult> {
 	const pipeline = createInitPipeline();
-	const result = await pipeline.run(options);
-	return result.artifact;
+	const observed = observeMaybePromise<
+		SerialRunOutcome<
+			PipelineRunState<InitWorkflowResult, PipelineDiagnostic>
+		>
+	>(runPipeline({ pipeline, options }));
+	if (observed.kind === 'failed') {
+		throw observed.error;
+	}
+	return observed.kind === 'synchronous'
+		? unwrapInitOutcome(observed.value)
+		: observed.promise.then(unwrapInitOutcome);
+}
+
+function unwrapInitOutcome(
+	outcome: SerialRunOutcome<
+		PipelineRunState<InitWorkflowResult, PipelineDiagnostic>
+	>
+): InitWorkflowResult {
+	if (outcome.kind === 'succeeded') {
+		return outcome.result.artifact;
+	}
+	if (outcome.kind === 'failed') {
+		throw outcome.error;
+	}
+	throw outcome.reason ?? new Error('Init pipeline run was cancelled.');
 }
 
 function createNamespaceHelper(): InitFragmentHelper {

@@ -1,33 +1,31 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / requireIr
+[@wpkernel/cli](../index.md) / requireIr
 
 # Function: requireIr()
 
 ```ts
-function requireIr<K>(input, keys?): object & Pick<IRv1, K>;
+function requireIr&lt;K&gt;(input, keys?): object & Pick&lt;IRv1, K&gt;;
 ```
 
 Narrowing helper for builders that require the finalized IR.
 
 Usage:
-
 ```ts
 const { ir, resources, capabilityMap } = requireIr(input, [
-	'resources',
-	'capabilityMap',
+  'resources',
+  'capabilityMap',
 ]);
 ```
-
 Throws a developer-facing error if `input.ir` is null.
 
 ## Type Parameters
 
 ### K
 
-`K` _extends_ keyof [`IRv1`](../interfaces/IRv1.md)
+`K` *extends* keyof [`IRv1`](../interfaces/IRv1.md)
 
 ## Parameters
 
@@ -41,4 +39,4 @@ readonly `K`[]
 
 ## Returns
 
-`object` & `Pick`<[`IRv1`](../interfaces/IRv1.md), `K`>
+`object` & `Pick`&lt;[`IRv1`](../interfaces/IRv1.md), `K`&gt;

@@ -1,30 +1,22 @@
-import { createPipeline } from '@wpkernel/pipeline';
+import { createSerialPipeline, runPipeline } from '@wpkernel/pipeline/v1';
 import { createActionPipeline } from '../createActionPipeline';
 import type { Reporter } from '../../../reporter/types';
-import type { PipelineDiagnostic } from '@wpkernel/pipeline';
+import type { PipelineDiagnostic } from '@wpkernel/pipeline/v1';
 import * as reportingModule from '../../reporting';
 import { resetResolvedActionReporters } from '../../../actions/resolveReporter';
 
-type MockPipeline = {
-	ir: { use: jest.Mock };
-	builders: { use: jest.Mock };
-	run: jest.Mock;
-};
-
-jest.mock('@wpkernel/pipeline', () => ({
-	createPipeline: jest.fn(),
+jest.mock('@wpkernel/pipeline/v1', () => ({
+	createSerialPipeline: jest.fn(),
+	runPipeline: jest.fn(),
 	createHelper: jest.fn((options) => options),
 }));
 
 describe('createActionPipeline diagnostics reporting', () => {
-	const mockPipeline: MockPipeline = {
-		ir: { use: jest.fn() },
-		builders: { use: jest.fn() },
-		run: jest.fn(),
-	};
-
-	const createPipelineMock = createPipeline as jest.MockedFunction<
-		typeof createPipeline
+	const createPipelineMock = createSerialPipeline as jest.MockedFunction<
+		typeof createSerialPipeline
+	>;
+	const runPipelineMock = runPipeline as jest.MockedFunction<
+		typeof runPipeline
 	>;
 
 	let originalRuntime: typeof global.__WP_KERNEL_ACTION_RUNTIME__;
@@ -34,9 +26,10 @@ describe('createActionPipeline diagnostics reporting', () => {
 		originalRuntime = global.__WP_KERNEL_ACTION_RUNTIME__;
 		originalSilentFlag = process.env.WPK_SILENT_REPORTERS;
 		global.__WP_KERNEL_ACTION_RUNTIME__ = undefined;
-		createPipelineMock.mockReturnValue(
-			mockPipeline as unknown as ReturnType<typeof createPipeline>
-		);
+		createPipelineMock.mockReturnValue({
+			kind: 'serial-pipeline',
+		} as never);
+		runPipelineMock.mockReset();
 	});
 
 	afterEach(() => {
@@ -80,6 +73,66 @@ describe('createActionPipeline diagnostics reporting', () => {
 		pipelineOptions?.onDiagnostic?.({ reporter, diagnostic });
 
 		expect(reportSpy).toHaveBeenCalledWith({ reporter, diagnostic });
+	});
+
+	it('constructs the configured developer error type', () => {
+		createActionPipeline();
+		const pipelineOptions = createPipelineMock.mock.calls[0]?.[0];
+
+		const error = pipelineOptions?.createError?.(
+			'DeveloperError',
+			'configuration failed'
+		);
+
+		expect(error).toMatchObject({
+			code: 'DeveloperError',
+			message: 'configuration failed',
+		});
+	});
+
+	it('projects synchronous action outcomes and preserves failure and cancellation', () => {
+		const pipeline = createActionPipeline();
+
+		runPipelineMock.mockReturnValue({
+			kind: 'succeeded',
+			result: { artifact: {}, diagnostics: [], steps: [] },
+		} as never);
+		expect(pipeline.run({} as never)).toEqual({
+			artifact: {},
+			diagnostics: [],
+			steps: [],
+		});
+
+		const failure = new Error('action failed');
+		runPipelineMock.mockReturnValue({
+			kind: 'failed',
+			error: failure,
+		} as never);
+		expect(() => pipeline.run({} as never)).toThrow(failure);
+
+		runPipelineMock.mockImplementation(() => {
+			throw failure;
+		});
+		expect(() => pipeline.run({} as never)).toThrow(failure);
+
+		runPipelineMock.mockReturnValue({
+			get then(): never {
+				throw failure;
+			},
+		} as never);
+		expect(() => pipeline.run({} as never)).toThrow(failure);
+
+		runPipelineMock.mockReturnValue({ kind: 'cancelled' } as never);
+		expect(() => pipeline.run({} as never)).toThrow(
+			'Action pipeline run was cancelled.'
+		);
+	});
+
+	it('rejects a detached action pipeline authority', () => {
+		const pipeline = createActionPipeline();
+		expect(() => pipeline.run.call({} as never, {} as never)).toThrow(
+			'Invalid ActionPipeline authority.'
+		);
 	});
 
 	it('reuses the fallback reporter between pipeline runs', () => {
@@ -135,5 +188,53 @@ describe('createActionPipeline diagnostics reporting', () => {
 		expect(consoleWarnSpy).not.toHaveBeenCalled();
 
 		consoleWarnSpy.mockRestore();
+	});
+
+	it('reports every diagnostic variant and preserves diagnostic order', () => {
+		const reporter = {
+			info: jest.fn(),
+			warn: jest.fn(),
+			error: jest.fn(),
+			debug: jest.fn(),
+			child: jest.fn(),
+		} as unknown as Reporter;
+		const diagnostics: PipelineDiagnostic[] = [
+			{
+				type: 'missing-dependency',
+				key: 'action.missing',
+				dependency: 'action.prerequisite',
+				helper: 'action.missing',
+				kind: 'fragment',
+				message: 'missing dependency',
+			},
+			{
+				type: 'unused-helper',
+				key: 'action.unused',
+				helper: 'action.unused',
+				dependsOn: ['action.prerequisite'],
+				kind: 'fragment',
+				message: 'unused helper',
+			},
+		];
+
+		reportingModule.reportPipelineDiagnostics({ reporter, diagnostics });
+
+		expect(reporter.warn).toHaveBeenCalledTimes(2);
+		expect(reporter.warn).toHaveBeenNthCalledWith(
+			1,
+			'Pipeline diagnostic reported.',
+			expect.objectContaining({
+				type: 'missing-dependency',
+				dependency: 'action.prerequisite',
+			})
+		);
+		expect(reporter.warn).toHaveBeenNthCalledWith(
+			2,
+			'Pipeline diagnostic reported.',
+			expect.objectContaining({
+				type: 'unused-helper',
+				dependsOn: ['action.prerequisite'],
+			})
+		);
 	});
 });

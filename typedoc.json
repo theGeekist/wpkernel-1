@@ -12,7 +12,10 @@
 	],
 	"entryPointStrategy": "expand",
 	"tsconfig": "tsconfig.docs.json",
-	"plugin": ["typedoc-plugin-markdown"],
+	"plugin": [
+		"typedoc-plugin-markdown",
+		"./scripts/docs/typedoc-public-surface.mjs"
+	],
 	"readme": "none",
 	"skipErrorChecking": true,
 	"useHTMLEncodedBrackets": false,
@@ -100,6 +103,7 @@
 		"notDocumented": false
 	},
 	"fileExtension": ".md",
+	"entryFileName": "index.md",
 	"flattenOutputFiles": false,
 	"useCodeBlocks": true
 }

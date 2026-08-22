@@ -20,7 +20,7 @@ interface CreatePipelineExtensionBaseOptions {
  * hook is installed.
  *
  * @category Pipeline
- * @public
+ * @internal
  */
 export interface CreatePipelineExtensionWithRegister<
 	TPipeline,
@@ -67,10 +67,11 @@ interface CreatePipelineExtensionWithSetup<
  * receiving pipeline chooses its default lifecycle.
  *
  * Both forms preserve synchronous registration when their setup is
- * synchronous. Once setup returns a safely inspectable thenable, hook
- * resolution is asynchronous through {@link maybeThen}.
+ * synchronous. Once setup returns a structurally valid thenable, hook
+ * resolution is asynchronous through {@link maybeThen}. Reading a hostile
+ * `then` accessor may still fail synchronously.
  *
- * @public
+ * @internal
  */
 export type CreatePipelineExtensionOptions<
 	TPipeline,
@@ -122,11 +123,6 @@ export type CreatePipelineExtensionOptions<
  *
  * @example Conditional dynamic registration
  * ```ts
- * import {
- *   createPipelineExtension,
- *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
- *
  * type HostPipeline = { helpers: { use(value: unknown): void } };
  * type Context = { reporter: PipelineReporter };
  * type RunOptions = { normalise: boolean };
@@ -149,11 +145,6 @@ export type CreatePipelineExtensionOptions<
  *
  * @example Static setup with an explicit lifecycle
  * ```ts
- * import {
- *   createPipelineExtension,
- *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
- *
  * type HostPipeline = { helpers: { use(value: unknown): void } };
  * type Context = { reporter: PipelineReporter };
  * type RunOptions = Record<string, never>;
@@ -175,11 +166,6 @@ export type CreatePipelineExtensionOptions<
  *
  * @example Commit and compensating rollback
  * ```ts
- * import {
- *   createPipelineExtension,
- *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
- *
  * type Context = { reporter: PipelineReporter };
  * const published = new Set<string>();
  *
@@ -199,7 +185,7 @@ export type CreatePipelineExtensionOptions<
  * ```
  *
  * @category Pipeline
- * @public
+ * @internal
  */
 export function createPipelineExtension<
 	TPipeline,

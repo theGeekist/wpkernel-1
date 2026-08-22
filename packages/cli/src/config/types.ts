@@ -1,6 +1,7 @@
 import type { Reporter } from '@wpkernel/core/reporter';
 import type { ResourceConfig } from '@wpkernel/core/resource';
 import type { WPKConfigSource } from '@wpkernel/core/contracts';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import type {
 	PhpAstBuilder,
 	PhpDriverConfigurationOptions,
@@ -262,7 +263,7 @@ export interface AdapterExtensionContext<
 	tempDir: string;
 	queueFile: (filePath: string, contents: string) => Promise<void>;
 	updateIr: (ir: TIr) => void;
-	formatPhp: (filePath: string, contents: string) => Promise<string>;
+	formatPhp: (filePath: string, contents: string) => MaybePromise<string>;
 	formatTs: (filePath: string, contents: string) => Promise<string>;
 }
 

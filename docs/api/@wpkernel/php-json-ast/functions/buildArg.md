@@ -1,13 +1,16 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / buildArg
+[@wpkernel/php-json-ast](../index.md) / buildArg
 
 # Function: buildArg()
 
 ```ts
-function buildArg(value, options, attributes?): PhpArg;
+function buildArg(
+   value,
+   options,
+   attributes?): PhpArg;
 ```
 
 Builds a PHP argument node.
@@ -38,7 +41,7 @@ Optional configuration for the argument (by reference, unpack, name).
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

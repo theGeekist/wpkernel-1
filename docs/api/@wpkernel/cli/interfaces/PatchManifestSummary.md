@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / PatchManifestSummary
+[@wpkernel/cli](../index.md) / PatchManifestSummary
 
 # Interface: PatchManifestSummary
 
@@ -16,7 +16,7 @@ Summary of the patch manifest.
 readonly applied: number;
 ```
 
----
+***
 
 ### conflicts
 
@@ -24,7 +24,7 @@ readonly applied: number;
 readonly conflicts: number;
 ```
 
----
+***
 
 ### skipped
 

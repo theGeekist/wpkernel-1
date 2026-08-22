@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { createClient } from '../../../resource/client';
 import type {
 	ResourceFragmentHelper,
@@ -17,7 +17,7 @@ import type { Reporter } from '../../../reporter/types';
  * @example
  * ```ts
  * const clientFragment = createResourceClientFragment<Post, { id: number }>();
- * pipeline.ir.use(clientFragment);
+ * const programme = createSerialPipeline({ fragments: [clientFragment], ...options });
  * ```
  */
 export function createResourceClientFragment<

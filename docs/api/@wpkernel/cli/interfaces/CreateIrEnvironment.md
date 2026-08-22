@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / CreateIrEnvironment
+[@wpkernel/cli](../index.md) / CreateIrEnvironment
 
 # Interface: CreateIrEnvironment
 
@@ -18,7 +18,7 @@ readonly optional phase: PipelinePhase;
 
 Optional: The pipeline phase to execute.
 
----
+***
 
 ### pipeline?
 
@@ -28,7 +28,7 @@ readonly optional pipeline: Pipeline;
 
 Optional: The pipeline instance to use.
 
----
+***
 
 ### reporter?
 
@@ -38,7 +38,7 @@ readonly optional reporter: Reporter;
 
 Optional: The reporter instance for logging.
 
----
+***
 
 ### workspace?
 

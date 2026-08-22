@@ -1,13 +1,13 @@
-[**@wpkernel/ui v0.12.6-beta.3**](../README.md)
+[**@wpkernel/ui v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/ui](../README.md) / PrefetchList
+[@wpkernel/ui](../index.md) / PrefetchList
 
-# Type Alias: PrefetchList<TQuery>
+# Type Alias: PrefetchList&lt;TQuery&gt;
 
 ```ts
-type PrefetchList<TQuery> = (query?) => void;
+type PrefetchList&lt;TQuery&gt; = (query?) =&gt; void;
 ```
 
 Function type for prefetching a list of items with optional query parameters.

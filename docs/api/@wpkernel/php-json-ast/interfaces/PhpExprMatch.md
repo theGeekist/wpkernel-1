@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpExprMatch
+[@wpkernel/php-json-ast](../index.md) / PhpExprMatch
 
 # Interface: PhpExprMatch
 
@@ -20,7 +20,7 @@ Represents a PHP `match` expression.
 readonly arms: PhpMatchArm[];
 ```
 
----
+***
 
 ### attributes
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
----
+***
 
 ### cond
 
@@ -40,7 +40,7 @@ readonly attributes: PhpAttributes;
 readonly cond: PhpExpr;
 ```
 
----
+***
 
 ### nodeType
 

@@ -1,13 +1,13 @@
-[**@wpkernel/pipeline v1.3.0**](../README.md)
+[**@wpkernel/pipeline v2.0.0**](../index.md)
 
----
+***
 
-[@wpkernel/pipeline](../README.md) / MaybePromise
+[@wpkernel/pipeline](../index.md) / MaybePromise
 
-# Type Alias: MaybePromise<T>
+# Type Alias: MaybePromise&lt;T&gt;
 
 ```ts
-type MaybePromise<T> = T | PromiseLike<T>;
+type MaybePromise&lt;T&gt; = T | PromiseLike&lt;T&gt;;
 ```
 
 A value that may be available synchronously or through a promise-compatible
@@ -24,10 +24,11 @@ Settled value type.
 ## Remarks
 
 Pipeline operations preserve the synchronous path when every participant is
-synchronous. Runtime adoption recognises native promises and safely
-inspectable data-property thenables. Accessor-backed or trap-hostile `then`
-properties are deliberately treated as synchronous data.
+synchronous. Runtime adoption reads `then` exactly once. A callable value,
+including one returned by a getter, is adopted with first-settlement
+semantics; a throwing getter is a synchronous participant failure.
 
 ## See
 
-[HelperApplyFn](HelperApplyFn.md)
+ - [maybeThen](../functions/maybeThen.md)
+ - [maybeAll](../functions/maybeAll.md)

@@ -1,5 +1,6 @@
 import { defineConfig, type UserConfig } from 'vite';
 import { resolve } from 'path';
+import { rm, writeFile } from 'node:fs/promises';
 import dts from 'vite-plugin-dts';
 // eslint-disable-next-line camelcase
 import { wp_globals } from '@kucrut/vite-for-wp/utils';
@@ -158,6 +159,28 @@ export const createWPKLibConfig = (
 					'../../types/**/*.d.ts',
 				],
 				outDir: 'dist',
+				// Keep declared @wpkernel package imports as package imports. The
+				// workspace paths are for source development, not a published API.
+				pathsToAliases: false,
+				afterBuild: async (emittedFiles) => {
+					const { normaliseDeclarationImports } = await import(
+						'./scripts/declaration-imports.mjs'
+					);
+					const declarationFiles = [...emittedFiles.keys()];
+					await Promise.all(
+						[...emittedFiles].map(async ([filePath, content]) => {
+							const result = normaliseDeclarationImports(
+								content,
+								filePath,
+								declarationFiles
+							);
+							if (result.changed) {
+								await writeFile(filePath, result.text, 'utf8');
+								await rm(`${filePath}.map`, { force: true });
+							}
+						})
+					);
+				},
 				rollupTypes: false, // avoid TS version mismatch warnings
 			}),
 		],

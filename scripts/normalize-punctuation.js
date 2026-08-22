@@ -308,13 +308,58 @@ async function runWithConcurrency(items, limit, worker) {
 	await Promise.all(runners);
 }
 
-async function main() {
-	const totals = new Map();
-	const files = await glob('**/*.md', {
+async function resolveExplicitMarkdownFiles(arguments_) {
+	const seen = new Set();
+	const files = [];
+
+	for (const argument of arguments_) {
+		if (path.extname(argument).toLowerCase() !== '.md') {
+			continue;
+		}
+
+		const file = path.resolve(argument);
+		if (seen.has(file)) {
+			continue;
+		}
+		seen.add(file);
+
+		try {
+			const stats = await fs.stat(file);
+			if (stats.isFile()) {
+				files.push(file);
+			}
+		} catch (error) {
+			if (
+				!(
+					error &&
+					typeof error === 'object' &&
+					'code' in error &&
+					error.code === 'ENOENT'
+				)
+			) {
+				throw error;
+			}
+		}
+	}
+
+	return files;
+}
+
+async function resolveMarkdownFiles(arguments_) {
+	if (arguments_.length > 0) {
+		return resolveExplicitMarkdownFiles(arguments_);
+	}
+
+	return glob('**/*.md', {
 		ignore: IGNORE_PATTERNS,
 		nodir: true,
 		absolute: true,
 	});
+}
+
+async function main() {
+	const totals = new Map();
+	const files = await resolveMarkdownFiles(process.argv.slice(2));
 
 	const concurrency = resolveParallelism();
 	await runWithConcurrency(files, concurrency, async (file) => {

@@ -1,15 +1,13 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / createHelper
+[@wpkernel/php-json-ast](../index.md) / createHelper
 
 # Function: createHelper()
 
 ```ts
-function createHelper<TContext, TInput, TOutput, TReporter, TKind>(
-	options
-): Helper<TContext, TInput, TOutput, TReporter, TKind>;
+function createHelper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;(options): Helper&lt;TContext, TInput, TOutput, TReporter, TKind&gt;;
 ```
 
 Creates a frozen [Helper](../interfaces/Helper.md) descriptor from declarative registration
@@ -20,9 +18,10 @@ source options or dependency array after construction therefore cannot alter
 registration identity or execution order. Objects captured by `apply` are
 not cloned or frozen.
 
-Dependencies always run first. Among helpers ready to run, ordering uses
-descending priority, key and registration order. A dependency key waits for
-every registered helper with that key. `extend` registrations may coexist.
+Dependencies place the dependent helper later in the serial order. Among
+otherwise unordered helpers, ordering uses descending priority, key and
+registration order. A dependency key orders after every registered helper
+with that key. `extend` registrations may coexist.
 Registering an `override`
 removes earlier helpers with the same key; a second override is rejected.
 These modes affect registration, not how `apply` composes output.
@@ -30,7 +29,7 @@ These modes affect registration, not how `apply` composes output.
 An apply function may mutate its supplied output and return `void`, or return
 a result object containing an explicit replacement. The presence
 of the `output` property is authoritative, including `{ output: undefined }`.
-With no explicit call to HelperNext, the runner continues
+With no explicit call to [HelperNext](../interfaces/HelperNext.md), the runner continues
 automatically after `apply` settles and preserves the synchronous path when
 every helper is synchronous.
 
@@ -43,8 +42,9 @@ before propagating the helper's original failure. This lets downstream
 rollback registration finish without replacing the primary error.
 
 A rollback returned after successful helper settlement is admitted in helper
-visitation order and later unwound in reverse order. Use
-`createPipelineRollback` to attach diagnostic identity to cleanup.
+visitation order and later unwound in reverse order. Optional rollback `key`
+and `label` fields remain accepted for source compatibility but are not
+projected into rollback-failure evidence.
 
 ## Type Parameters
 
@@ -62,83 +62,87 @@ visitation order and later unwound in reverse order. Use
 
 ### TReporter
 
-`TReporter` _extends_ `PipelineReporter` = `PipelineReporter`
+`TReporter` *extends* `PipelineReporter` = `PipelineReporter`
 
 ### TKind
 
-`TKind` _extends_ `string` = `string`
+`TKind` *extends* `string` = `string`
 
 ## Parameters
 
 ### options
 
-[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`CreateHelperOptions`](../interfaces/CreateHelperOptions.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 Helper identity, ordering metadata and apply behaviour.
 
 ## Returns
 
-[`Helper`](../interfaces/Helper.md)<`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`>
+[`Helper`](../interfaces/Helper.md)&lt;`TContext`, `TInput`, `TOutput`, `TReporter`, `TKind`&gt;
 
 A frozen descriptor with a frozen dependency list.
 
 ## Examples
 
 ```ts
-import { createHelper, type PipelineReporter } from '@wpkernel/pipeline';
+import {
+  createHelper,
+  type PipelineReporter,
+} from '@wpkernel/pipeline/v1';
 
 type Context = { reporter: PipelineReporter };
 
-const normalise = createHelper<Context, string[], string[]>({
-	key: 'normalise',
-	kind: 'transform',
-	dependsOn: ['parse'],
-	priority: 20,
-	apply: ({ output }) => ({
-		output: output.map((value) => value.trim()),
-	}),
-});
-```
-
-```ts
-import { createHelper, type PipelineReporter } from '@wpkernel/pipeline';
-
-type Context = { reporter: PipelineReporter };
-
-const bracket = createHelper<Context, string[], string[]>({
-	key: 'bracket',
-	kind: 'transform',
-	apply: async ({ output }, next) => {
-		const downstream = await next?.(['before', ...output]);
-		return { output: [...(downstream ?? output), 'after'] };
-	},
+const normalise = createHelper&lt;Context, string[], string[]&gt;({
+  key: 'normalise',
+  kind: 'transform',
+  dependsOn: ['parse'],
+  priority: 20,
+  apply: ({ output }) =&gt; ({
+    output: output.map((value) =&gt; value.trim()),
+  }),
 });
 ```
 
 ```ts
 import {
-	createHelper,
-	createPipelineRollback,
-	type PipelineReporter,
-} from '@wpkernel/pipeline';
+  createHelper,
+  type PipelineReporter,
+} from '@wpkernel/pipeline/v1';
+
+type Context = { reporter: PipelineReporter };
+
+const bracket = createHelper&lt;Context, string[], string[]&gt;({
+  key: 'bracket',
+  kind: 'transform',
+  apply: async ({ output }, next) =&gt; {
+    const downstream = await next?.(['before', ...output]);
+    return { output: [...(downstream ?? output), 'after'] };
+  },
+});
+```
+
+```ts
+import {
+  createHelper,
+  type PipelineReporter,
+} from '@wpkernel/pipeline/v1';
 
 type Context = {
-	reporter: PipelineReporter;
-	allocated: Set<string>;
+  reporter: PipelineReporter;
+  allocated: Set&lt;string&gt;;
 };
 
-const allocate = createHelper<Context, void, string[]>({
-	key: 'allocate',
-	kind: 'build',
-	apply: ({ context, output }) => {
-		context.allocated.add('result');
-		return {
-			output: [...output, 'result'],
-			rollback: createPipelineRollback(
-				() => context.allocated.delete('result'),
-				{ key: 'allocate', label: 'Release result allocation' }
-			),
-		};
-	},
+const allocate = createHelper&lt;Context, void, string[]&gt;({
+  key: 'allocate',
+  kind: 'build',
+  apply: ({ context, output }) =&gt; {
+    context.allocated.add('result');
+    return {
+      output: [...output, 'result'],
+      rollback: {
+        run: () =&gt; context.allocated.delete('result'),
+      },
+    };
+  },
 });
 ```

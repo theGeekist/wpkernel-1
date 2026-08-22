@@ -1,13 +1,16 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / buildPropertyFetch
+[@wpkernel/php-json-ast](../index.md) / buildPropertyFetch
 
 # Function: buildPropertyFetch()
 
 ```ts
-function buildPropertyFetch(variable, name, attributes?): PhpExprPropertyFetch;
+function buildPropertyFetch(
+   variable,
+   name,
+   attributes?): PhpExprPropertyFetch;
 ```
 
 Builds a PHP property fetch expression node.
@@ -28,7 +31,7 @@ The name of the property, either an identifier or an expression.
 
 ### attributes?
 
-`Readonly`<`Record`<`string`, `unknown`>>
+`Readonly`&lt;`Record`&lt;`string`, `unknown`&gt;&gt;
 
 Optional attributes for the node.
 

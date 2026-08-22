@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / WordPressRESTError
+[@wpkernel/core](../index.md) / WordPressRESTError
 
 # Type Alias: WordPressRESTError
 
@@ -24,7 +24,7 @@ code: string;
 
 Error code from WordPress (e.g., 'rest_forbidden', 'invalid_param')
 
----
+***
 
 ### message
 
@@ -34,7 +34,7 @@ message: string;
 
 Human-readable error message
 
----
+***
 
 ### data?
 
@@ -53,7 +53,7 @@ Additional error data
 #### details?
 
 ```ts
-optional details: Record<string, unknown>;
+optional details: Record&lt;string, unknown&gt;;
 ```
 
 Detailed validation or error information
@@ -61,7 +61,7 @@ Detailed validation or error information
 #### params?
 
 ```ts
-optional params: Record<string, string>;
+optional params: Record&lt;string, string&gt;;
 ```
 
 Invalid parameters that caused the error

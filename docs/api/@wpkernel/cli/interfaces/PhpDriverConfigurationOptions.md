@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / PhpDriverConfigurationOptions
+[@wpkernel/cli](../index.md) / PhpDriverConfigurationOptions
 
 # Interface: PhpDriverConfigurationOptions
 
@@ -14,7 +14,7 @@
 readonly optional autoloadPaths: readonly string[];
 ```
 
----
+***
 
 ### binary?
 
@@ -22,7 +22,7 @@ readonly optional autoloadPaths: readonly string[];
 readonly optional binary: string;
 ```
 
----
+***
 
 ### importMetaUrl?
 
@@ -30,7 +30,7 @@ readonly optional binary: string;
 readonly optional importMetaUrl: string;
 ```
 
----
+***
 
 ### scriptPath?
 

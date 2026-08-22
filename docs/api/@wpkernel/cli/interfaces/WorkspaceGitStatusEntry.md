@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / WorkspaceGitStatusEntry
+[@wpkernel/cli](../index.md) / WorkspaceGitStatusEntry
 
 # Interface: WorkspaceGitStatusEntry
 
@@ -14,7 +14,7 @@
 readonly code: string;
 ```
 
----
+***
 
 ### path
 
@@ -22,7 +22,7 @@ readonly code: string;
 readonly path: string;
 ```
 
----
+***
 
 ### raw
 
@@ -30,7 +30,7 @@ readonly path: string;
 readonly raw: string;
 ```
 
----
+***
 
 ### originalPath?
 

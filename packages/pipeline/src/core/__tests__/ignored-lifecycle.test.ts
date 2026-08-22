@@ -2,21 +2,14 @@ import { makePipeline } from '../makePipeline';
 import { createPipelineExtension } from '../createExtension';
 
 describe('ignored extension lifecycles', () => {
-	it('adopts setup thenables without reading their then property', async () => {
+	it('adopts setup thenables through one then property read', async () => {
 		let thenReads = 0;
-		const setupResult = new Proxy(
-			{
-				then(resolve: () => void) {
-					resolve();
-				},
+		const setupResult = Object.defineProperty({}, 'then', {
+			get: () => {
+				thenReads += 1;
+				return (resolve: () => void) => resolve();
 			},
-			{
-				get() {
-					thenReads += 1;
-					throw new Error('then must be adopted from its descriptor');
-				},
-			}
-		) as unknown as Promise<void>;
+		}) as unknown as Promise<void>;
 		const hook = jest.fn();
 		const extension = createPipelineExtension({
 			setup: () => setupResult,
@@ -24,7 +17,7 @@ describe('ignored extension lifecycles', () => {
 		});
 
 		await expect(extension.register({})).resolves.toBe(hook);
-		expect(thenReads).toBe(0);
+		expect(thenReads).toBe(1);
 	});
 
 	it('warns about ignored hooks for unscheduled lifecycles', async () => {

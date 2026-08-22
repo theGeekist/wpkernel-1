@@ -21,7 +21,7 @@ import type {
 	FragmentFinalizationMetadata,
 	Helper,
 	HelperApplyOptions,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
 import type { PipelineContext } from '../runtime/types';
 
 export interface MutableIr {
@@ -78,7 +78,7 @@ const CORE_FRAGMENT_PREFIXES = [
 ] as const;
 
 function assertCoreFragmentsExecuted(
-	helpers: FragmentFinalizationMetadata<'fragment'>
+	helpers: FragmentFinalizationMetadata
 ): void {
 	const missing = new Set(helpers.fragments.missing);
 
@@ -110,7 +110,7 @@ function assertCoreFragmentsExecuted(
 
 export function finalizeIrDraft(
 	draft: MutableIr,
-	helpers: FragmentFinalizationMetadata<'fragment'>
+	helpers: FragmentFinalizationMetadata
 ): IRv1 {
 	assertCoreFragmentsExecuted(helpers);
 

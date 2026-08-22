@@ -1,8 +1,8 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / WriteJsonOptions
+[@wpkernel/cli](../index.md) / WriteJsonOptions
 
 # Interface: WriteJsonOptions
 
@@ -23,10 +23,10 @@ readonly optional ensureDir: boolean;
 #### Inherited from
 
 ```ts
-WriteOptions.ensureDir;
+WriteOptions.ensureDir
 ```
 
----
+***
 
 ### mode?
 
@@ -37,10 +37,10 @@ readonly optional mode: number;
 #### Inherited from
 
 ```ts
-WriteOptions.mode;
+WriteOptions.mode
 ```
 
----
+***
 
 ### pretty?
 

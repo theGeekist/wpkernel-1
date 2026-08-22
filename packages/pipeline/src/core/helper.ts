@@ -15,9 +15,10 @@ import type {
  * registration identity or execution order. Objects captured by `apply` are
  * not cloned or frozen.
  *
- * Dependencies always run first. Among helpers ready to run, ordering uses
- * descending priority, key and registration order. A dependency key waits for
- * every registered helper with that key. `extend` registrations may coexist.
+ * Dependencies place the dependent helper later in the serial order. Among
+ * otherwise unordered helpers, ordering uses descending priority, key and
+ * registration order. A dependency key orders after every registered helper
+ * with that key. `extend` registrations may coexist.
  * Registering an `override`
  * removes earlier helpers with the same key; a second override is rejected.
  * These modes affect registration, not how `apply` composes output.
@@ -38,8 +39,9 @@ import type {
  * rollback registration finish without replacing the primary error.
  *
  * A rollback returned after successful helper settlement is admitted in helper
- * visitation order and later unwound in reverse order. Use
- * `createPipelineRollback` to attach diagnostic identity to cleanup.
+ * visitation order and later unwound in reverse order. Optional rollback `key`
+ * and `label` fields remain accepted for source compatibility but are not
+ * projected into rollback-failure evidence.
  *
  * @param    options - Helper identity, ordering metadata and apply behaviour.
  * @returns A frozen descriptor with a frozen dependency list.
@@ -49,7 +51,7 @@ import type {
  * import {
  *   createHelper,
  *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
+ * } from '@wpkernel/pipeline/v1';
  *
  * type Context = { reporter: PipelineReporter };
  *
@@ -69,7 +71,7 @@ import type {
  * import {
  *   createHelper,
  *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
+ * } from '@wpkernel/pipeline/v1';
  *
  * type Context = { reporter: PipelineReporter };
  *
@@ -87,9 +89,8 @@ import type {
  * ```ts
  * import {
  *   createHelper,
- *   createPipelineRollback,
  *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
+ * } from '@wpkernel/pipeline/v1';
  *
  * type Context = {
  *   reporter: PipelineReporter;
@@ -103,10 +104,9 @@ import type {
  *     context.allocated.add('result');
  *     return {
  *       output: [...output, 'result'],
- *       rollback: createPipelineRollback(
- *         () => context.allocated.delete('result'),
- *         { key: 'allocate', label: 'Release result allocation' }
- *       ),
+ *       rollback: {
+ *         run: () => context.allocated.delete('result'),
+ *       },
  *     };
  *   },
  * });

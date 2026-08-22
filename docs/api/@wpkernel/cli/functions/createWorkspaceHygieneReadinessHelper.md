@@ -1,23 +1,21 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / createWorkspaceHygieneReadinessHelper
+[@wpkernel/cli](../index.md) / createWorkspaceHygieneReadinessHelper
 
 # Function: createWorkspaceHygieneReadinessHelper()
 
 ```ts
-function createWorkspaceHygieneReadinessHelper(
-	overrides
-): ReadinessHelper<WorkspaceHygieneState>;
+function createWorkspaceHygieneReadinessHelper(overrides): ReadinessHelper&lt;WorkspaceHygieneState&gt;;
 ```
 
 ## Parameters
 
 ### overrides
 
-`Partial`<[`WorkspaceHygieneDependencies`](../interfaces/WorkspaceHygieneDependencies.md)> = `{}`
+`Partial`&lt;[`WorkspaceHygieneDependencies`](../interfaces/WorkspaceHygieneDependencies.md)&gt; = `{}`
 
 ## Returns
 
-[`ReadinessHelper`](../interfaces/ReadinessHelper.md)<[`WorkspaceHygieneState`](../interfaces/WorkspaceHygieneState.md)>
+[`ReadinessHelper`](../interfaces/ReadinessHelper.md)&lt;[`WorkspaceHygieneState`](../interfaces/WorkspaceHygieneState.md)&gt;

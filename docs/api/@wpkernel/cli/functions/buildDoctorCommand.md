@@ -1,13 +1,13 @@
-[**@wpkernel/cli v0.12.6-beta.3**](../README.md)
+[**@wpkernel/cli v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/cli](../README.md) / buildDoctorCommand
+[@wpkernel/cli](../index.md) / buildDoctorCommand
 
 # Function: buildDoctorCommand()
 
 ```ts
-function buildDoctorCommand(options): () => Command;
+function buildDoctorCommand(options): () =&gt; Command;
 ```
 
 Builds the `doctor` command for the CLI.

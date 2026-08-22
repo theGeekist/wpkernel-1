@@ -1,8 +1,8 @@
-[**@wpkernel/core v0.12.6-beta.3**](../README.md)
+[**@wpkernel/core v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/core](../README.md) / ActionDomainEvent
+[@wpkernel/core](../index.md) / ActionDomainEvent
 
 # Type Alias: ActionDomainEvent
 
@@ -18,7 +18,7 @@ type ActionDomainEvent = object;
 eventName: string;
 ```
 
----
+***
 
 ### metadata
 
@@ -26,7 +26,7 @@ eventName: string;
 metadata: ActionLifecycleEventBase;
 ```
 
----
+***
 
 ### payload
 

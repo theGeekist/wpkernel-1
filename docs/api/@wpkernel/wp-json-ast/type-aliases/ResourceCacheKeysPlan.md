@@ -1,14 +1,13 @@
-[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/wp-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/wp-json-ast](../README.md) / ResourceCacheKeysPlan
+[@wpkernel/wp-json-ast](../index.md) / ResourceCacheKeysPlan
 
 # Type Alias: ResourceCacheKeysPlan
 
 ```ts
-type ResourceCacheKeysPlan = object &
-	Partial<Record<OptionalCacheKeyKind, ResourceCacheKeyDescriptor>>;
+type ResourceCacheKeysPlan = object & Partial&lt;Record&lt;OptionalCacheKeyKind, ResourceCacheKeyDescriptor&gt;&gt;;
 ```
 
 ## Type Declaration

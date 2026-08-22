@@ -1,0 +1,79 @@
+{
+	"$schema": "https://raw.githubusercontent.com/theGeekist/task-graph/c460305c5ad9a211cbb50613bae854f4a41b59ca/schemas/project-manifest.v1.schema.json",
+	"schemaVersion": 1,
+	"taskSchemaVersion": 1,
+	"id": "wpkernel-pipeline-v2",
+	"label": "WPKernel Pipeline v2",
+	"workspaceRoot": ".",
+	"authorities": {
+		"pipeline-v2": {
+			"architectureVersion": 1,
+			"architectureRoot": "docs/internal/pipeline",
+			"governingReading": [
+				"README.md",
+				"docs/internal/pipeline/README.md",
+				"docs/internal/pipeline/COORDINATION.md",
+				"docs/internal/pipeline/tasks/README.md"
+			],
+			"label": "Pipeline v2",
+			"logicalMount": null,
+			"optional": false,
+			"preferredOwnerKind": "codex",
+			"reviewOwner": "coordinator"
+		}
+	},
+	"contextSources": [
+		{
+			"mutableReadingStatuses": null,
+			"pathPrefix": null,
+			"rootFromWorkspace": "."
+		}
+	],
+	"commands": [
+		{
+			"id": "pipeline.typecheck",
+			"label": "Typecheck Pipeline",
+			"description": "Typecheck Pipeline source and tests.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "Pipeline source typecheck",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/pipeline",
+						"typecheck"
+					]
+				},
+				{
+					"heading": "Pipeline test typecheck",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/pipeline",
+						"typecheck:tests"
+					]
+				}
+			]
+		},
+		{
+			"id": "pipeline.test",
+			"label": "Test Pipeline",
+			"description": "Run the Pipeline package tests.",
+			"mutates": false,
+			"requiresTask": false,
+			"invocations": [
+				{
+					"heading": "Pipeline tests",
+					"command": [
+						"pnpm",
+						"--filter",
+						"@wpkernel/pipeline",
+						"test"
+					]
+				}
+			]
+		}
+	]
+}

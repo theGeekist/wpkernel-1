@@ -13,45 +13,122 @@ concurrency:
     cancel-in-progress: false
 
 jobs:
-    publish:
+    build-archive:
+        if: github.repository == 'wpkernel/wpkernel'
         runs-on: ubuntu-latest
+        timeout-minutes: 30
         permissions:
+            actions: read
             contents: read
-            id-token: write
+            pull-requests: read
+        outputs:
+            artifact-name: ${{ steps.identity.outputs.artifact-name }}
+            dist-tag: ${{ steps.identity.outputs.dist-tag }}
+            version: ${{ steps.identity.outputs.version }}
         steps:
             - name: Check out repository
-              uses: actions/checkout@v6
+              uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+              with:
+                  fetch-depth: 0
 
             - name: Set up pnpm
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
               with:
                   version: '10.19.0'
 
             - name: Set up Node.js
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
               with:
-                  node-version: '24'
-                  registry-url: 'https://registry.npmjs.org'
+                  node-version: '22.20.0'
                   package-manager-cache: false
 
-            - name: Pin npm with trusted publishing support
-              run: npm install --global npm@11.10.0
-
-            - name: Verify release identity
+            - name: Verify release identity and upstream admission
+              id: identity
               shell: bash
               run: |
                   set -euo pipefail
-                  version="$(node -p "require('./packages/pipeline/package.json').version")"
-                  test "${GITHUB_REF_NAME}" = "pipeline-v${version}"
+                  if [[ "${GITHUB_ACTOR}" != 'pipewrk' ]]; then
+                    printf 'Pipeline publication is restricted to the approved upstream release authority; received actor %s.\n' \
+                      "${GITHUB_ACTOR}" >&2
+                    exit 1
+                  fi
+                  IFS='|' read -r version dist_tag < <(
+                    node scripts/release/pipeline-release-metadata.mjs \
+                      identity packages/pipeline/package.json "${GITHUB_REF_NAME}"
+                  )
+                  git merge-base --is-ancestor "${GITHUB_SHA}" origin/main
+
+                  pulls_file="${RUNNER_TEMP}/associated-pulls.json"
+                  curl --fail --silent --show-error \
+                    --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+                    --header 'Accept: application/vnd.github+json' \
+                    --header 'X-GitHub-Api-Version: 2022-11-28' \
+                    --output "${pulls_file}" \
+                    "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls"
+                  node --input-type=module - "${pulls_file}" <<'NODE'
+                  import { readFileSync } from 'node:fs';
+                  const pulls = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+                  const sha = process.env.GITHUB_SHA;
+                  if (
+                    !pulls.some(
+                      (pull) =>
+                        pull.merged_at &&
+                        pull.base?.ref === 'main' &&
+                        pull.merge_commit_sha === sha
+                    )
+                  ) {
+                    throw new Error('Tagged commit is not the merged commit of an upstream main pull request.');
+                  }
+                  NODE
+
+                  ci_file="${RUNNER_TEMP}/ci-runs.json"
+                  ci_passed=false
+                  for attempt in {1..30}; do
+                    curl --fail --silent --show-error \
+                      --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+                      --header 'Accept: application/vnd.github+json' \
+                      --header 'X-GitHub-Api-Version: 2022-11-28' \
+                      --output "${ci_file}" \
+                      "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?event=push&head_sha=${GITHUB_SHA}&status=completed&per_page=100"
+                    if node --input-type=module - "${ci_file}" "${GITHUB_SHA}" <<'NODE'
+                  import { readFileSync } from 'node:fs';
+                  const [file, sha] = process.argv.slice(2);
+                  const { workflow_runs: runs } = JSON.parse(readFileSync(file, 'utf8'));
+                  const passed = runs.some(
+                    (run) =>
+                      run.head_sha === sha &&
+                      run.head_branch === 'main' &&
+                      run.event === 'push' &&
+                      run.conclusion === 'success'
+                  );
+                  process.exitCode = passed ? 0 : 1;
+                  NODE
+                    then
+                      ci_passed=true
+                      break
+                    fi
+                    sleep 10
+                  done
+                  test "${ci_passed}" = true
+
+                  printf 'artifact-name=pipeline-release-%s\n' "${version}" >> "${GITHUB_OUTPUT}"
+                  printf 'dist-tag=%s\n' "${dist_tag}" >> "${GITHUB_OUTPUT}"
+                  printf 'version=%s\n' "${version}" >> "${GITHUB_OUTPUT}"
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
+
+            - name: Test release metadata
+              run: node --test scripts/release/pipeline-release-metadata.test.mjs
 
             - name: Lint
               run: pnpm --filter @wpkernel/pipeline lint
 
             - name: Typecheck source
               run: pnpm --filter @wpkernel/pipeline typecheck
+
+            - name: Clean Pipeline build output
+              run: pnpm --filter @wpkernel/pipeline clean
 
             - name: Build
               run: pnpm --filter @wpkernel/core... build
@@ -62,18 +139,204 @@ jobs:
             - name: Test with coverage
               run: pnpm --filter @wpkernel/pipeline test:coverage
 
-            - name: Pack and qualify the release archive
-              id: archive
+            - name: Pack the release archive once
               shell: bash
               run: |
                   set -euo pipefail
-                  version="$(node -p "require('./packages/pipeline/package.json').version")"
-                  archive="${RUNNER_TEMP}/wpkernel-pipeline-${version}.tgz"
-                  pnpm --filter @wpkernel/pipeline pack --pack-destination "${RUNNER_TEMP}"
+                  version="${{ steps.identity.outputs.version }}"
+                  release_root="${RUNNER_TEMP}/pipeline-release"
+                  archive="${release_root}/wpkernel-pipeline-${version}.tgz"
+                  metadata="${release_root}/release-metadata.json"
+                  mkdir -p "${release_root}"
+                  pnpm --filter @wpkernel/pipeline pack --pack-destination "${release_root}"
                   test -f "${archive}"
+                  node scripts/release/pipeline-release-metadata.mjs \
+                    record-archive packages/pipeline/package.json "${GITHUB_REF_NAME}" \
+                    "${archive}" "${metadata}"
+                  tee -a "${GITHUB_STEP_SUMMARY}" < "${metadata}"
+                  sha512sum "${archive}" | tee -a "${GITHUB_STEP_SUMMARY}"
+                  tar -tzf "${archive}" | tee -a "${GITHUB_STEP_SUMMARY}"
+
+            - name: Fully qualify the exact release archive
+              shell: bash
+              run: |
+                  archive="${RUNNER_TEMP}/pipeline-release/wpkernel-pipeline-${{ steps.identity.outputs.version }}.tgz"
                   node packages/pipeline/scripts/qualify-packed-api.mjs "${archive}"
-                  sha512sum "${archive}"
-                  printf 'path=%s\n' "${archive}" >> "${GITHUB_OUTPUT}"
+
+            - name: Upload the immutable release candidate
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: ${{ steps.identity.outputs.artifact-name }}
+                  path: |
+                      ${{ runner.temp }}/pipeline-release/wpkernel-pipeline-${{ steps.identity.outputs.version }}.tgz
+                      ${{ runner.temp }}/pipeline-release/release-metadata.json
+                  if-no-files-found: error
+                  compression-level: 0
+                  retention-days: 1
+
+    qualify-archive:
+        if: github.repository == 'wpkernel/wpkernel'
+        needs: build-archive
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        permissions:
+            actions: read
+            contents: read
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ['20', '22.20.0', '24']
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+              with:
+                  version: '10.19.0'
+
+            - name: Set up Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  package-manager-cache: false
+
+            - name: Download the release candidate
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+              with:
+                  name: ${{ needs.build-archive.outputs.artifact-name }}
+                  path: ${{ runner.temp }}/pipeline-release
+
+            - name: Rehash and qualify the exact archive
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  release_root="${RUNNER_TEMP}/pipeline-release"
+                  archive="${release_root}/wpkernel-pipeline-${{ needs.build-archive.outputs.version }}.tgz"
+                  node scripts/release/pipeline-release-metadata.mjs \
+                    verify-archive "${release_root}/release-metadata.json" "${archive}"
+                  node packages/pipeline/scripts/qualify-packed-api.mjs --runtime-only "${archive}"
+
+    publish:
+        if: github.repository == 'wpkernel/wpkernel'
+        needs: [build-archive, qualify-archive]
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            actions: read
+            id-token: write
+        steps:
+            - name: Set up Node.js
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+              with:
+                  node-version: '24'
+                  registry-url: 'https://registry.npmjs.org'
+                  package-manager-cache: false
+
+            - name: Download the qualified release candidate
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+              with:
+                  name: ${{ needs.build-archive.outputs.artifact-name }}
+                  path: ${{ runner.temp }}/pipeline-release
+
+            - name: Verify publication inputs
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  release_root="${RUNNER_TEMP}/pipeline-release"
+                  archive="${release_root}/wpkernel-pipeline-${{ needs.build-archive.outputs.version }}.tgz"
+                  RELEASE_ROOT="${release_root}" ARCHIVE="${archive}" \
+                    EXPECTED_VERSION="${{ needs.build-archive.outputs.version }}" \
+                    EXPECTED_TAG="${{ needs.build-archive.outputs.dist-tag }}" \
+                    node --input-type=module <<'NODE'
+                  import { createHash } from 'node:crypto';
+                  import { readFileSync } from 'node:fs';
+                  const metadata = JSON.parse(
+                    readFileSync(`${process.env.RELEASE_ROOT}/release-metadata.json`, 'utf8')
+                  );
+                  const bytes = readFileSync(process.env.ARCHIVE);
+                  const sha512 = createHash('sha512').update(bytes).digest('hex');
+                  const shasum = createHash('sha1').update(bytes).digest('hex');
+                  const integrity = `sha512-${createHash('sha512').update(bytes).digest('base64')}`;
+                  if (
+                    metadata.version !== process.env.EXPECTED_VERSION ||
+                    metadata.distTag !== process.env.EXPECTED_TAG ||
+                    metadata.sha512 !== sha512 ||
+                    metadata.shasum !== shasum ||
+                    metadata.integrity !== integrity
+                  ) {
+                    throw new Error('Publication input does not match the qualified release identity.');
+                  }
+                  NODE
+                  npm_version="$(npm --version)"
+                  NPM_VERSION="${npm_version}" node --input-type=module <<'NODE'
+                  const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(process.env.NPM_VERSION);
+                  if (!match) {
+                    throw new Error(`A stable npm CLI version is required; found ${process.env.NPM_VERSION}.`);
+                  }
+                  const [major, minor, patch] = match.slice(1).map(Number);
+                  if (major < 11 || (major === 11 && (minor < 5 || (minor === 5 && patch < 1)))) {
+                    throw new Error(`npm 11.5.1 or newer is required for trusted publishing; found ${process.env.NPM_VERSION}.`);
+                  }
+                  NODE
 
             - name: Publish the qualified archive
-              run: npm publish "${{ steps.archive.outputs.path }}" --access public --tag latest
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  npm publish \
+                    "${RUNNER_TEMP}/pipeline-release/wpkernel-pipeline-${{ needs.build-archive.outputs.version }}.tgz" \
+                    --access public \
+                    --provenance \
+                    --tag "${{ needs.build-archive.outputs.dist-tag }}"
+
+            - name: Verify registry integrity and channel
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  release_root="${RUNNER_TEMP}/pipeline-release"
+                  version="${{ needs.build-archive.outputs.version }}"
+                  dist_tag="${{ needs.build-archive.outputs.dist-tag }}"
+                  verified=false
+                  for attempt in {1..30}; do
+                    if npm view "@wpkernel/pipeline@${version}" version --json > "${RUNNER_TEMP}/registry-version.json" 2>/dev/null && \
+                       npm view "@wpkernel/pipeline@${version}" dist.integrity --json > "${RUNNER_TEMP}/registry-integrity.json" 2>/dev/null && \
+                       npm view "@wpkernel/pipeline@${version}" dist.shasum --json > "${RUNNER_TEMP}/registry-shasum.json" 2>/dev/null && \
+                       npm view '@wpkernel/pipeline' dist-tags --json > "${RUNNER_TEMP}/registry-tags.json" 2>/dev/null && \
+                       RELEASE_ROOT="${release_root}" EXPECTED_VERSION="${version}" \
+                         EXPECTED_TAG="${dist_tag}" RUNNER_TEMP="${RUNNER_TEMP}" \
+                         node --input-type=module <<'NODE'
+                  import { readFileSync } from 'node:fs';
+                  const metadata = JSON.parse(
+                    readFileSync(`${process.env.RELEASE_ROOT}/release-metadata.json`, 'utf8')
+                  );
+                  const registryVersion = JSON.parse(
+                    readFileSync(`${process.env.RUNNER_TEMP}/registry-version.json`, 'utf8')
+                  );
+                  const registryIntegrity = JSON.parse(
+                    readFileSync(`${process.env.RUNNER_TEMP}/registry-integrity.json`, 'utf8')
+                  );
+                  const registryShasum = JSON.parse(
+                    readFileSync(`${process.env.RUNNER_TEMP}/registry-shasum.json`, 'utf8')
+                  );
+                  const tags = JSON.parse(
+                    readFileSync(`${process.env.RUNNER_TEMP}/registry-tags.json`, 'utf8')
+                  );
+                  const matches =
+                    registryVersion === process.env.EXPECTED_VERSION &&
+                    registryIntegrity === metadata.integrity &&
+                    registryShasum === metadata.shasum &&
+                    tags[process.env.EXPECTED_TAG] === process.env.EXPECTED_VERSION &&
+                    (process.env.EXPECTED_TAG === 'latest' ||
+                      tags.latest !== process.env.EXPECTED_VERSION);
+                  process.exitCode = matches ? 0 : 1;
+                  NODE
+                    then
+                      verified=true
+                      break
+                    fi
+                    sleep 10
+                  done
+                  test "${verified}" = true
+                  printf 'Verified @wpkernel/pipeline@%s: %s=%s, SRI and shasum match the qualified archive.\n' \
+                    "${version}" "${dist_tag}" "${version}" >> "${GITHUB_STEP_SUMMARY}"

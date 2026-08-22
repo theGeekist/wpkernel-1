@@ -1,8 +1,8 @@
-[**@wpkernel/php-json-ast v0.12.6-beta.3**](../README.md)
+[**@wpkernel/php-json-ast v0.12.6-beta.3**](../index.md)
 
----
+***
 
-[@wpkernel/php-json-ast](../README.md) / PhpExprFuncCall
+[@wpkernel/php-json-ast](../index.md) / PhpExprFuncCall
 
 # Interface: PhpExprFuncCall
 
@@ -20,7 +20,7 @@ Represents a PHP function call expression (e.g., `myFunction()`).
 readonly args: PhpArg[];
 ```
 
----
+***
 
 ### attributes
 
@@ -32,7 +32,7 @@ readonly attributes: PhpAttributes;
 
 [`PhpExprBase`](PhpExprBase.md).[`attributes`](PhpExprBase.md#attributes)
 
----
+***
 
 ### name
 
@@ -40,7 +40,7 @@ readonly attributes: PhpAttributes;
 readonly name: PhpExpr | PhpName;
 ```
 
----
+***
 
 ### nodeType
 

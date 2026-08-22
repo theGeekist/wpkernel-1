@@ -6,106 +6,89 @@ type ThenMethod = (
 ) => unknown;
 
 /**
- * Find a data-property `then` without reading it through ordinary property
- * access. Descriptor and prototype traps are contained; values that cannot be
- * inspected remain synchronous data.
+ * Read `then` once through ordinary JavaScript property access.
  *
- * @param value - Candidate value to inspect.
+ * @param value - Candidate value to observe.
  */
-function findThenMethod(value: unknown): ThenMethod | null {
+function readThenMethod(value: unknown): ThenMethod | null {
 	if (
 		(typeof value !== 'object' || value === null) &&
 		typeof value !== 'function'
 	) {
 		return null;
 	}
-
-	const seen = new Set<object>();
-	let cursor: object | null = value;
-	try {
-		while (cursor !== null && !seen.has(cursor)) {
-			seen.add(cursor);
-			const descriptor = Object.getOwnPropertyDescriptor(cursor, 'then');
-			if (descriptor !== undefined) {
-				return 'value' in descriptor &&
-					typeof descriptor.value === 'function'
-					? (descriptor.value as ThenMethod)
-					: null;
-			}
-			cursor = Object.getPrototypeOf(cursor);
-		}
-	} catch {
-		return null;
-	}
-	return null;
+	const then = Reflect.get(value, 'then') as unknown;
+	return typeof then === 'function' ? (then as ThenMethod) : null;
 }
 
 /**
  * Adopt a previously inspected thenable without reading `.then` again.
  *
  * @param value - Original thenable receiver.
- * @param then  - Captured data-property method.
+ * @param then  - Captured method.
  */
 function adoptThenable<T>(value: unknown, then: ThenMethod): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
-		try {
-			then.call(value, resolve as (value: unknown) => unknown, reject);
-		} catch (error) {
-			reject(error);
-		}
+		queueMicrotask(() => {
+			try {
+				Reflect.apply(then, value, [
+					resolve as (resolved: unknown) => unknown,
+					reject,
+				]);
+			} catch (error) {
+				reject(error);
+			}
+		});
 	});
 }
 
 /**
- * Adopt a promise-like value using the exact `then` method found during
- * guarded descriptor inspection. Returns `null` for synchronous values.
+ * Fresh mutable tuple of recursively awaited fulfilment values.
+ *
+ * Literal positions and their distinct fulfilled value types are preserved;
+ * readonly input positions become mutable because settlement creates a new
+ * array and never returns the caller's tuple.
+ *
+ * @public
+ */
+export type AwaitedTuple<TValues extends readonly unknown[]> = {
+	-readonly [K in keyof TValues]: Awaited<TValues[K]>;
+};
+
+/**
+ * Adopt a promise-like value using the exact `then` method observed through
+ * one ordinary property read. The returned record carries `promise: null` for
+ * synchronous values. A throwing `then` getter remains a synchronous throw for
+ * the caller to compose through {@link maybeTry} when recovery is required.
  *
  * @param value - A value that may or may not be promise-like
- * @returns An adopted native promise, or `null` when the value is synchronous
+ * @returns A tagged record containing either the direct value or its adopted native promise.
  *
- * @internal
+ * @public
  */
 export function adoptMaybePromise<T>(
 	value: MaybePromise<T>
 ):
 	| { readonly promise: Promise<T>; readonly value?: never }
 	| { readonly promise: null; readonly value: T } {
-	const then = findThenMethod(value);
+	const then = readThenMethod(value);
 	return then === null
 		? { promise: null, value: value as T }
 		: { promise: adoptThenable<T>(value, then) };
 }
 
 /**
- * Tests whether a value exposes an inspectable data-property `then` method.
- *
- * This is the same hardened boundary used by {@link maybeThen},
- * {@link maybeTry} and {@link maybeAll}. It walks own and prototype property
- * descriptors without evaluating a `then` accessor or reading `value.then`.
- * Proxy descriptor and prototype traps may run as part of inspection; if they
- * throw, the exception is contained and the value is treated as synchronous
- * data. An accessor-backed `then` is also treated as data rather than invoked.
- *
- * This intentionally differs from ordinary JavaScript promise assimilation,
- * which reads `value.then` and may execute user code. The guard is suitable at
- * native or hostile-object boundaries where inspecting an accessor would grant
- * ambient execution.
+ * Tests whether a value exposes a callable `then` through one ordinary
+ * property read. Accessors and proxy traps therefore follow JavaScript's normal
+ * semantics and may throw synchronously.
  *
  * @param value - Candidate synchronous value or thenable.
- * @returns `true` only for a safely captured data-property `then` function.
+ * @returns `true` only when that read observes a callable `then`.
  *
  * @example
  * ```ts
- * import { isPromiseLike } from '@wpkernel/pipeline';
- *
- * const accessorBacked = Object.defineProperty({}, 'then', {
- *   get() {
- *     throw new Error('must not execute');
- *   },
- * });
- *
  * isPromiseLike(Promise.resolve('ready')); // true
- * isPromiseLike(accessorBacked); // false, getter was not evaluated
+ * isPromiseLike('ready'); // false
  * ```
  *
  * @public
@@ -115,19 +98,18 @@ export function isPromiseLike<T>(
 ): value is PromiseLike<T>;
 export function isPromiseLike(value: unknown): value is PromiseLike<unknown>;
 export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
-	return findThenMethod(value) !== null;
+	return readThenMethod(value) !== null;
 }
 
 /**
- * Maps a synchronous value or safely inspectable thenable while preserving the
+ * Maps a synchronous value or structurally valid thenable while preserving the
  * synchronous path.
  *
  * For synchronous input, `onFulfilled` runs before this function returns and
  * its value is returned directly. Throws from that callback remain synchronous.
- * For a safely inspectable thenable, the captured method is adopted exactly
+ * For a thenable, the captured method is adopted exactly
  * once into a native promise; callback throws then become promise rejections.
- * Accessor-backed or trap-hostile `then` properties remain ordinary data under
- * the boundary described by {@link isPromiseLike}.
+ * A throwing `then` getter remains a synchronous throw.
  *
  * @param value       - Value or thenable to map.
  * @param onFulfilled - Transformation applied to the fulfilled value.
@@ -135,8 +117,6 @@ export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
  *
  * @example
  * ```ts
- * import { isPromiseLike, maybeThen } from '@wpkernel/pipeline';
- *
  * const immediate = maybeThen(2, (value) => value * 3);
  * isPromiseLike(immediate); // false
  *
@@ -159,12 +139,13 @@ export function maybeThen<T, TResult>(
 		return adopted.promise.then(onFulfilled);
 	}
 
-	return onFulfilled(adopted.value);
+	const mapped = adoptMaybePromise(onFulfilled(adopted.value));
+	return mapped.promise === null ? mapped.value : mapped.promise;
 }
 
 /**
  * Runs an operation and recovers from either a synchronous throw or a rejected
- * safely inspectable thenable.
+ * thenable.
  *
  * A successful synchronous result is returned directly. A synchronous throw
  * calls `onError` immediately, so a synchronous recovery also remains
@@ -172,17 +153,12 @@ export function maybeThen<T, TResult>(
  * and recovery runs through its rejection channel. The recovery function may
  * itself return a value or thenable.
  *
- * Values excluded by the hardened boundary in {@link isPromiseLike} are
- * successful synchronous data, even when they expose an accessor named `then`.
- *
  * @param run     - Operation to execute.
  * @param onError - Recovery invoked with the original failure.
  * @returns The successful result or recovery result, preserving sync when possible.
  *
  * @example
  * ```ts
- * import { maybeTry } from '@wpkernel/pipeline';
- *
  * const parsed = maybeTry(
  *   () => JSON.parse('{invalid}') as unknown,
  *   () => ({ valid: false })
@@ -205,22 +181,36 @@ export function maybeTry<T>(
 
 		return adopted.value;
 	} catch (error) {
-		return onError(error);
+		const recovered = adoptMaybePromise(onError(error));
+		return recovered.promise === null ? recovered.value : recovered.promise;
 	}
 }
 
 /**
- * Process an array of items sequentially (not in parallel).
+ * Processes items in order without promoting an entirely synchronous traversal
+ * to a promise.
  *
- * Handles both synchronous and asynchronous handlers. If a handler returns
- * a promise, waits for it to resolve before processing the next item.
+ * Synchronous handlers run in the current call stack. After the first thenable
+ * result, later items run only after that result settles. Each handler result
+ * crosses the shared read-once thenable boundary. A synchronous throw or
+ * throwing `then` getter stops traversal synchronously; after promotion, a
+ * failure rejects the returned native promise and no later item is admitted.
  *
- * @param items     - The array of items to process
- * @param handler   - The function to call for each item
- * @param direction - Whether to process forward (0 → length) or reverse (length → 0)
- * @returns A promise if any handler is async, otherwise `void`
+ * @param items     - Ordered items to visit.
+ * @param handler   - Operation invoked once for each admitted item.
+ * @param direction - Whether to visit from the first item or the last.
+ * @returns `void` for a synchronous traversal, or a native promise after asynchronous promotion.
  *
- * @internal
+ * @example
+ * ```ts
+ * const visited: number[] = [];
+ * const result = processSequentially([1, 2], (value) => {
+ *   visited.push(value);
+ * });
+ * isPromiseLike(result); // false
+ * ```
+ *
+ * @public
  */
 export function processSequentially<T>(
 	items: readonly T[],
@@ -258,23 +248,21 @@ export function processSequentially<T>(
 }
 
 /**
- * Resolves an ordered collection of values and safely inspectable thenables.
+ * Resolves an ordered collection of values and thenables.
  *
  * If every entry is synchronous, this returns a new array immediately. If any
  * entry is asynchronous, all captured thenables are adopted and the function
  * returns a native `Promise` with `Promise.all` ordering and rejection
  * semantics. Input order is preserved in both paths.
  *
- * Each value crosses the same descriptor boundary as {@link isPromiseLike}.
- * Accessor-backed or uninspectable `then` properties remain synchronous data.
+ * Each value crosses the same read-once boundary as {@link isPromiseLike}.
+ * A throwing getter remains a synchronous throw.
  *
  * @param values - Ordered values to resolve.
  * @returns A new array directly, or a native promise when any entry is asynchronous.
  *
  * @example
  * ```ts
- * import { isPromiseLike, maybeAll } from '@wpkernel/pipeline';
- *
  * const immediate = maybeAll([1, 2, 3]);
  * isPromiseLike(immediate); // false
  *
@@ -284,17 +272,22 @@ export function processSequentially<T>(
  *
  * @public
  */
-export function maybeAll<T>(
-	values: readonly MaybePromise<T>[]
-): MaybePromise<T[]> {
+export function maybeAll<const TValues extends readonly unknown[]>(
+	values: TValues
+): MaybePromise<AwaitedTuple<TValues>> {
 	const adopted = values.map(adoptMaybePromise);
 	if (adopted.every((entry) => entry.promise === null)) {
-		return adopted.map((entry) => entry.value as T);
+		return adopted.map((entry) => entry.value) as AwaitedTuple<TValues>;
 	}
 
 	return Promise.all(
 		adopted.map((entry) =>
-			entry.promise === null ? entry.value : entry.promise
+			entry.promise === null
+				? { value: entry.value }
+				: entry.promise.then((value) => ({ value }))
 		)
+	).then(
+		(entries) =>
+			entries.map((entry) => entry.value) as AwaitedTuple<TValues>
 	);
 }
