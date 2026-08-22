@@ -112,3 +112,34 @@ lock binding, commands, generated API and site routes, workflow run, registry
 integrity and downstream adoption evidence.
 
 Suggested execution tier: balanced release execution with frontier audit.
+
+## Evidence
+
+- A clean frozen workspace install passes. After refreshing Core's emitted
+  declarations, the complete package build passes all ten participating Turbo
+  tasks.
+- The actual staged pre-commit hook passes lint-staged, build-artifact checks,
+  repository-wide source and test typechecks, and the root coverage suite.
+  Pipeline's package run passes 82 suites and 564 tests with 99.97% statements,
+  99.86% branches, 99.88% functions and 100% lines.
+- One local 2.0.0 candidate contains 179 canonical entries and passes the full
+  packed Bundler, strict NodeNext, declaration-reachability, negative-contract,
+  native runtime and v1 migration qualification. Its identity is SHA-512
+  `0d64038c4a675804015b3056958abe5f60d2b8602a7800c80bcf2b644780ac6a0b9b328811bacf37d40df5939656f850e4e7fa0e7d2a2b9c0d2fe4089a20352a`,
+  SRI
+  `sha512-DWQDjEpnWAQBWzBWlYq+X2DSuGAqeADIC88rZEeArGoLmzKIEbrPN9QN9ZOWVvhQ5Of6Dn0qK5wNL+QImiA1Kg==`
+  and shasum `c2a1efe0cda195ee334f46dea295cc93fac307ac`.
+- Runtime-only qualification passes against that exact archive under Node
+  20.19.5, 22.20.0 and 24.19.0. The consumer lock records the supplied archive
+  integrity rather than a workspace link.
+- Forced API generation, its immediate cached rerun and a clean site build
+  pass. The authored Pipeline route, generated 2.0.0 root, `maybeAll` and
+  `AwaitedTuple` routes exist; stale v1 HTML and private implementation names
+  do not.
+- Independent reviews are clean for middleware typing, archive hygiene, the
+  packed qualifier, TypeDoc projection, public prose, installed Task Graph
+  resolution and the trusted release workflow.
+- The task remains active until the contribution is merged upstream, `pipewrk`
+  creates `pipeline-v2.0.0` at that merged commit, the trusted workflow
+  publishes its single qualified archive, and registry SRI, shasum and `latest`
+  evidence are recorded.
