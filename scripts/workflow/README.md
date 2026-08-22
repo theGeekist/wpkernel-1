@@ -10,8 +10,23 @@ scripts/workflow/prepare-upstream-pr.sh
 ```
 
 - Fetches `${FORK_REMOTE:-origin}`/`${FORK_BRANCH:-main}` and `${UPSTREAM_REMOTE:-upstream}`/`${UPSTREAM_BRANCH:-main}`.
-- Shows the commits unique to the fork and then launches a standard `git rebase -i upstream/main` so you can curate what goes into the PR.
-- Creates a scratch branch (defaults to `pr/<date>-main`), pushes to your fork, and optionally opens a PR via `gh pr create`.
+- Requires authoring main to contain upstream main. Synchronise the fork first if it does not.
+- Creates a scratch branch (defaults to `pr/<date>-main`) at the exact published authoring-main revision, then pushes it to the fork and optionally opens a PR via `gh pr create`.
+
+The PR head must remain an already-published authoring-main commit. This gives
+the promoted documentation workflow an exact `main` push CI receipt for the
+source it builds. Curate commits on authoring main before pushing them. Do not
+rebase, squash or add commits only to an open `pr/*` branch.
+
+## update-upstream-pr.sh
+
+```
+PR_BRANCH=pr/<existing-pr> scripts/workflow/update-upstream-pr.sh
+```
+
+After review, commit and push the correction to `origin/main`, wait for its
+main-push CI, then use this helper to fast-forward the existing PR branch. It
+refuses a divergent PR branch and pushes only the exact authoring-main revision.
 
 ## sync-fork-main.sh
 
