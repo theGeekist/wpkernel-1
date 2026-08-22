@@ -1,4 +1,5 @@
 import type { EffectRegistry } from '../graph/types.js';
+import { publishEffectEvent } from '../observers/dispatcher.js';
 import { invokeParticipant } from '../scheduler/maybe-promise.js';
 import { ownEffectPhaseResult } from './ownership.js';
 import {
@@ -164,7 +165,7 @@ const markCommit = <TEffects extends EffectRegistry>(options: {
 	replaceJournalEntry(options.state.runtime, updated);
 	options.state.entries[options.state.cursor] = updated;
 	if (succeeded) {
-		options.state.runtime.observers.publishEffect({
+		publishEffectEvent(options.state.runtime.observers, {
 			effect: options.entry.effect,
 			phase: 'commit',
 			state: 'succeeded',
@@ -189,7 +190,7 @@ const markCompensation = <TEffects extends EffectRegistry>(options: {
 	replaceJournalEntry(options.state.runtime, updated);
 	options.state.entries[options.state.cursor] = updated;
 	if (options.result.ok) {
-		options.state.runtime.observers.publishEffect({
+		publishEffectEvent(options.state.runtime.observers, {
 			effect: options.entry.effect,
 			phase: 'compensate',
 			state: 'succeeded',

@@ -9,7 +9,7 @@ import type {
 } from '../graph/types.js';
 import { compileNodeMiddleware } from '../middleware/compile.js';
 import type { NodeMiddlewareRegistration } from '../middleware/types.js';
-import { compileRunObservers } from '../observers/dispatcher.js';
+import { createObserverRuntime } from '../observers/dispatcher.js';
 import {
 	compileEffectParticipants,
 	createEffectJournalRuntime,
@@ -135,10 +135,12 @@ const executeOwnedGraph = <
 	readonly participants: unknown;
 	readonly signal?: AbortSignal;
 	readonly middleware?: readonly NodeMiddlewareRegistration[];
-	readonly observers?: Parameters<typeof compileRunObservers>[0]['observers'];
+	readonly observers?: Parameters<
+		typeof createObserverRuntime
+	>[0]['observers'];
 }): ScheduleGraphResult<TNodes, TEffects, TProjection> => {
 	const signal = options.signal ?? new AbortController().signal;
-	const observers = compileRunObservers({ observers: options.observers });
+	const observers = createObserverRuntime({ observers: options.observers });
 	const executors = executorTable(options.graph);
 	const participants = compileEffectParticipants({
 		graph: options.graph,

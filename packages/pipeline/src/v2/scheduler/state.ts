@@ -6,7 +6,7 @@ import type {
 	NodeRegistry,
 } from '../graph/types.js';
 import type { CompiledNodeMiddleware } from '../middleware/types.js';
-import type { ObserverDispatcher } from '../observers/types.js';
+import type { ObserverRuntime } from '../observers/types.js';
 import type { EffectJournalRuntime } from '../effects/types.js';
 import type {
 	GraphNodeFailure,
@@ -88,7 +88,7 @@ export interface SchedulerState<TEffects extends EffectRegistry> {
 	readonly signal: AbortSignal;
 	readonly executors: ReadonlyMap<string, ErasedExecutor>;
 	readonly middleware: CompiledNodeMiddleware;
-	readonly observers: ObserverDispatcher;
+	readonly observers: ObserverRuntime;
 	readonly journal: EffectJournalRuntime<TEffects>;
 	readonly nodes: Map<string, NodeRuntimeState<TEffects>>;
 	readonly ready: OrdinalReadyQueue;

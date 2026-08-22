@@ -1,4 +1,5 @@
 import type { EffectRegistry } from '../graph/types.js';
+import { projectRunEvents } from '../observers/dispatcher.js';
 import type { NodeRuntimeState, SchedulerState } from '../scheduler/state.js';
 import type { NodeDiagnostic, RunDiagnostics } from './types.js';
 
@@ -82,5 +83,5 @@ export const projectRunDiagnostics = <TEffects extends EffectRegistry>(
 				.sort((left, right) => left.ordinal - right.ordinal)
 				.map(({ key }) => projectNode({ state, node: key }))
 		),
-		events: state.observers.events(),
+		events: projectRunEvents(state.observers),
 	});

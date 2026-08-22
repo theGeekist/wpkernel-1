@@ -236,10 +236,6 @@ P2-007 coverage axis is level with or above the reconstructed base.
   is corrected here; identifier reconciliation requires a central Task Graph
   schema or compatibility decision and must not be attempted by renaming one
   task. `ADR-*` decision identifiers already match the decision schema.
-- WPKernel's global `@wpkernel/pipeline` type mapping can redirect a transitive
-  declaration import away from the dependency version requested by its owner.
-  The current planner does not import Task Graph's public types, so the finding
-  was safely deferred to P2-016 without weakening Task Graph qualification.
 - CLI's inherited 85.5% branch threshold predates P2-007 and remains red despite
   every coverage axis improving over the exact base. That threshold debt is
   deferred without lowering it; P2-007 owns non-regression, not unrelated

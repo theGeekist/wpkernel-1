@@ -1,4 +1,9 @@
-import { compileRunObservers, type RunEvent } from '../../observers/index.js';
+import {
+	createObserverRuntime,
+	publishNodeEvent,
+	publishTerminalEvent,
+} from '../../observers/dispatcher.js';
+import type { RunEvent } from '../../observers/types.js';
 import {
 	compileTestGraph,
 	controlled,
@@ -8,8 +13,19 @@ import {
 } from '../../scheduler/scheduler.test-support.js';
 
 describe('v2 read-only run observers', () => {
-	it('exports observer compilation through its module boundary', () => {
-		expect(compileRunObservers).toEqual(expect.any(Function));
+	it('exports explicit observer runtime operations through its module boundary', () => {
+		expect(createObserverRuntime).toEqual(expect.any(Function));
+		expect(publishNodeEvent).toEqual(expect.any(Function));
+		expect(publishTerminalEvent).toEqual(expect.any(Function));
+
+		const runtime = createObserverRuntime({});
+		expect(runtime).toEqual({
+			observers: [],
+			failures: [],
+			events: [],
+			nextSequence: 0,
+		});
+		expect(Object.values(runtime)).not.toContainEqual(expect.any(Function));
 	});
 
 	it('delivers frozen events in FIFO registration order and contains failures', () => {
@@ -101,7 +117,7 @@ describe('v2 read-only run observers', () => {
 		const first = controlled<void>();
 		const second = controlled<void>();
 		const delivered: number[] = [];
-		const dispatcher = compileRunObservers({
+		const runtime = createObserverRuntime({
 			observers: [
 				(event) => {
 					delivered.push(event.sequence);
@@ -112,17 +128,17 @@ describe('v2 read-only run observers', () => {
 				},
 			],
 		});
-		dispatcher.publishNode({
+		publishNodeEvent(runtime, {
 			node: 'node',
 			nodeOrdinal: 0,
 			state: 'active',
 		});
-		const prior = dispatcher.publishTerminal('suspended');
+		const prior = publishTerminalEvent(runtime, 'suspended');
 
 		first.resolve();
 		await flushMicrotasks();
 		expect(delivered).toEqual([0, 1]);
-		const next = dispatcher.publishTerminal('abandoned');
+		const next = publishTerminalEvent(runtime, 'abandoned');
 		expect(next).toBeInstanceOf(Promise);
 		expect(delivered).toEqual([0, 1]);
 

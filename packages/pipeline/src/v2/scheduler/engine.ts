@@ -3,6 +3,7 @@ import type {
 	GraphValue,
 	NodeRegistry,
 } from '../graph/types.js';
+import { publishNodeEvent } from '../observers/dispatcher.js';
 import { evaluateNode } from './evaluation.js';
 import type { NodeEvaluation, NodeEvaluationFailure } from './evaluation.js';
 import { createGraphSchedulerError } from './errors.js';
@@ -112,7 +113,7 @@ const settleFailure = <TEffects extends EffectRegistry>(options: {
 		})
 	);
 	options.state.admissionStopped = true;
-	options.state.observers.publishNode({
+	publishNodeEvent(options.state.observers, {
 		node: options.node,
 		nodeOrdinal: failure.nodeOrdinal,
 		state: 'failed',
@@ -161,7 +162,7 @@ const settleSuccess = <TEffects extends EffectRegistry>(options: {
 	if (options.result.pause) {
 		options.state.admissionStopped = true;
 	}
-	options.state.observers.publishNode({
+	publishNodeEvent(options.state.observers, {
 		node: options.node,
 		nodeOrdinal: options.state.graph.ordinals[options.node]!,
 		state: 'succeeded',
@@ -205,7 +206,7 @@ const settleEvaluation = <TEffects extends EffectRegistry>(options: {
 		})
 	);
 	options.state.admissionStopped = true;
-	options.state.observers.publishNode({
+	publishNodeEvent(options.state.observers, {
 		node: options.node,
 		nodeOrdinal: options.state.graph.ordinals[options.node]!,
 		state: 'cancelled',
@@ -293,7 +294,7 @@ const selectAdmission = <TEffects extends EffectRegistry>(
 			Object.freeze({ kind: 'active', admissionSequence })
 		);
 		state.active += 1;
-		state.observers.publishNode({
+		publishNodeEvent(state.observers, {
 			node,
 			nodeOrdinal: state.graph.ordinals[node]!,
 			state: 'active',

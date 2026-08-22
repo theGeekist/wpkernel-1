@@ -45,9 +45,21 @@ write_scope:
     - packages/pipeline/src/standard-pipeline/runner/index.ts
     - packages/pipeline/src/standard-pipeline/__tests__/runner.coverage.test.ts
     - packages/pipeline/src/v2/__tests__/pipeline/types.test.ts
+    - packages/pipeline/src/v2/__tests__/effects/settlement-boundaries.test.ts
+    - packages/pipeline/src/v2/__tests__/observers/delivery.test.ts
+    - packages/pipeline/src/v2/diagnostics/project.ts
+    - packages/pipeline/src/v2/effects/runtime.ts
+    - packages/pipeline/src/v2/effects/settlement.ts
+    - packages/pipeline/src/v2/effects/types.ts
     - packages/pipeline/src/v2/middleware/types.ts
+    - packages/pipeline/src/v2/observers/**
     - packages/pipeline/src/v2/pipeline/runtime.ts
     - packages/pipeline/src/v2/pipeline/types.ts
+    - packages/pipeline/src/v2/scheduler/engine.ts
+    - packages/pipeline/src/v2/scheduler/schedule.ts
+    - packages/pipeline/src/v2/scheduler/state.ts
+    - packages/pipeline/src/v2/suspension/authority.ts
+    - packages/pipeline/src/v2/suspension/runtime.ts
     - package.json
     - scripts/docs/typedoc-public-surface.mjs
     - scripts/release/release-pipeline.ts
@@ -139,15 +151,15 @@ Suggested execution tier: balanced release execution with frontier audit.
   tasks.
 - The actual staged pre-commit hook passes lint-staged, build-artifact checks,
   repository-wide source and test typechecks, and the root coverage suite.
-  Pipeline's package run passes 82 suites and 564 tests with 99.97% statements,
+  Pipeline's package run passes 82 suites and 563 tests with 99.97% statements,
   99.86% branches, 99.88% functions and 100% lines.
 - One local 2.0.0 candidate contains 179 canonical entries and passes the full
   packed Bundler, strict NodeNext, declaration-reachability, negative-contract,
   native runtime and v1 migration qualification. Its identity is SHA-512
-  `0d64038c4a675804015b3056958abe5f60d2b8602a7800c80bcf2b644780ac6a0b9b328811bacf37d40df5939656f850e4e7fa0e7d2a2b9c0d2fe4089a20352a`,
+  `ef42a2d887fd10738dac33e5b39d466eefefadcad74d64caa45365ea52c511df5e1bf6fc1df2b59bb6509a8705519d08936c015ae1731ba4962623789873d3a7`,
   SRI
-  `sha512-DWQDjEpnWAQBWzBWlYq+X2DSuGAqeADIC88rZEeArGoLmzKIEbrPN9QN9ZOWVvhQ5Of6Dn0qK5wNL+QImiA1Kg==`
-  and shasum `c2a1efe0cda195ee334f46dea295cc93fac307ac`.
+  `sha512-70Ki2If9EHONrDPls51Gbu/vrcrXTWTKpFNl6lLFEd9eG/b8HfK1m7ZQmocFUZ0Ik2wBWuFzG6SWJiN4mHPTpw==`
+  and shasum `060cee507c1c801464d5abd676648fdc49221721`.
 - Runtime-only qualification passes against that exact archive under Node
   20.19.5, 22.20.0 and 24.19.0. The consumer lock records the supplied archive
   integrity rather than a workspace link.
@@ -158,6 +170,10 @@ Suggested execution tier: balanced release execution with frontier audit.
 - Independent reviews are clean for middleware typing, archive hygiene, the
   packed qualifier, TypeDoc projection, public prose, installed Task Graph
   resolution and the trusted release workflow.
+- Final upstream-diff review removed the observer dispatcher's hidden mutable
+  closure cell. Observer delivery is now represented by explicit process-local
+  runtime data and module functions; focused observer, effects, suspension and
+  diagnostics suites, the full package suite and packed qualification pass.
 - The repository planner uses exact `@geekist/task-graph@0.1.0-beta.4`; its
   installed dependency resolves exact Pipeline 1.4.1 while first-party
   WPKernel packages continue to resolve local v2 source.

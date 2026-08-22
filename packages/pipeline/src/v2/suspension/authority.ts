@@ -10,7 +10,7 @@ import type {
 	SchedulerState,
 } from '../scheduler/state.js';
 import type { CompiledNodeMiddleware } from '../middleware/types.js';
-import type { ObserverDispatcher } from '../observers/types.js';
+import type { ObserverRuntime } from '../observers/types.js';
 import type { EffectJournalRuntime } from '../effects/types.js';
 
 interface FrontierNode<TEffects extends EffectRegistry> {
@@ -36,7 +36,7 @@ interface SuspensionConfiguration<TEffects extends EffectRegistry> {
 	readonly signal: AbortSignal;
 	readonly executors: ReadonlyMap<string, ErasedExecutor>;
 	readonly middleware: CompiledNodeMiddleware;
-	readonly observers: ObserverDispatcher;
+	readonly observers: ObserverRuntime;
 	readonly journal: EffectJournalRuntime<TEffects>;
 }
 

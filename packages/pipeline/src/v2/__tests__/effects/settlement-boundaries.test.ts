@@ -9,7 +9,7 @@ import {
 	projectPreparedEffects,
 	settleGraphEffects,
 } from '../../effects/index.js';
-import { compileRunObservers } from '../../observers/dispatcher.js';
+import { createObserverRuntime } from '../../observers/dispatcher.js';
 import {
 	compileTestGraph,
 	controlled,
@@ -41,7 +41,7 @@ const effectGraph = () =>
 const createPreparedRuntime = (options: {
 	readonly commit: () => unknown;
 	readonly compensate: () => unknown;
-	readonly observers?: ReturnType<typeof compileRunObservers>;
+	readonly observers?: ReturnType<typeof createObserverRuntime>;
 }) => {
 	const graph = effectGraph();
 	const runtime = createEffectJournalRuntime({
@@ -55,7 +55,7 @@ const createPreparedRuntime = (options: {
 				},
 			},
 		}),
-		observers: options.observers ?? compileRunObservers({}),
+		observers: options.observers ?? createObserverRuntime({}),
 	});
 	const prepared = prepareEffect({
 		runtime,
@@ -368,25 +368,10 @@ describe('v2 effect settlement boundaries', () => {
 
 	it('rejects re-entrant joins and retains an unexpected synchronous failure', async () => {
 		const internalError = new Error('observer authority failed');
-		let armed = false;
-		const observers: ReturnType<typeof compileRunObservers> = Object.freeze(
-			{
-				publishNode() {},
-				publishEffect() {
-					if (armed) {
-						throw internalError;
-					}
-				},
-				publishTerminal: () => undefined,
-				failures: () => Object.freeze([]),
-				events: () => Object.freeze([]),
-			}
-		);
 		let nested!: Promise<unknown>;
 		const signal = new AbortController().signal;
 		const commit = jest.fn(() => phaseSuccess('receipt'));
 		const runtime = createPreparedRuntime({
-			observers,
 			commit,
 			compensate: () => phaseSuccess(undefined),
 		});
@@ -397,7 +382,9 @@ describe('v2 effect settlement boundaries', () => {
 			}) as Promise<unknown>;
 			return phaseSuccess('receipt');
 		});
-		armed = true;
+		runtime.observers.events.push = () => {
+			throw internalError;
+		};
 
 		expect(() => commitEffectJournal({ runtime, signal })).toThrow(
 			internalError
@@ -411,26 +398,13 @@ describe('v2 effect settlement boundaries', () => {
 	it('retains an unexpected asynchronous settlement failure', async () => {
 		const gate = controlled<unknown>();
 		const internalError = new Error('async observer authority failed');
-		let armed = false;
-		const observers: ReturnType<typeof compileRunObservers> = Object.freeze(
-			{
-				publishNode() {},
-				publishEffect() {
-					if (armed) {
-						throw internalError;
-					}
-				},
-				publishTerminal: () => undefined,
-				failures: () => Object.freeze([]),
-				events: () => Object.freeze([]),
-			}
-		);
 		const runtime = createPreparedRuntime({
-			observers,
 			commit: () => gate.promise,
 			compensate: () => phaseSuccess(undefined),
 		});
-		armed = true;
+		runtime.observers.events.push = () => {
+			throw internalError;
+		};
 		const signal = new AbortController().signal;
 		const settlement = commitEffectJournal({ runtime, signal });
 

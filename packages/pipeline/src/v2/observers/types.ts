@@ -55,26 +55,30 @@ export interface RunObserverFailure {
 	readonly error: unknown;
 }
 
+/** Explicit mutable process-local observer delivery state. @internal */
+export interface ObserverRuntime {
+	readonly observers: readonly RunObserver[];
+	readonly failures: RunObserverFailure[];
+	readonly events: RunEvent[];
+	tail?: Promise<void>;
+	nextSequence: number;
+}
+
 /** @internal */
-export interface ObserverDispatcher {
-	readonly publishNode: (options: {
+export interface ObserverNodeTransition {
+	readonly node: string;
+	readonly nodeOrdinal: number;
+	readonly state: NodeRunEvent['state'];
+}
+
+/** @internal */
+export interface ObserverEffectTransition {
+	readonly effect: {
 		readonly node: string;
 		readonly nodeOrdinal: number;
-		readonly state: NodeRunEvent['state'];
-	}) => void;
-	readonly publishEffect: (options: {
-		readonly effect: {
-			readonly node: string;
-			readonly nodeOrdinal: number;
-			readonly effectOrdinal: number;
-			readonly request: { readonly participant: PropertyKey };
-		};
-		readonly phase: EffectPhase;
-		readonly state: EffectRunEvent['state'];
-	}) => void;
-	readonly publishTerminal: (
-		outcomeKind: TerminalRunEvent['outcomeKind']
-	) => undefined | Promise<void>;
-	readonly failures: () => readonly RunObserverFailure[];
-	readonly events: () => readonly RunEvent[];
+		readonly effectOrdinal: number;
+		readonly request: { readonly participant: PropertyKey };
+	};
+	readonly phase: EffectPhase;
+	readonly state: EffectRunEvent['state'];
 }

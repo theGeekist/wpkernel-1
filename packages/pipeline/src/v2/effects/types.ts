@@ -6,7 +6,7 @@ import type {
 	GraphValue,
 	MaybePromise,
 } from '../graph/types.js';
-import type { ObserverDispatcher } from '../observers/types.js';
+import type { ObserverRuntime } from '../observers/types.js';
 import type { PendingEffect } from '../scheduler/types.js';
 
 /** Explicit success or declared failure returned by one effect phase. @public */
@@ -183,7 +183,7 @@ export type JournalSettlementAuthority<TEffects extends EffectRegistry> =
 /** Explicit mutable process-local interpreter state. @internal */
 export interface EffectJournalRuntime<TEffects extends EffectRegistry> {
 	readonly participants: CompiledEffectParticipants;
-	readonly observers: ObserverDispatcher;
+	readonly observers: ObserverRuntime;
 	readonly entries: Map<string, JournalOwnedEntry<TEffects>>;
 	readonly failures: EffectJournalFailure<TEffects>[];
 	settlement: JournalSettlementAuthority<TEffects>;

@@ -1,4 +1,5 @@
 import type { EffectRegistry } from '../graph/types.js';
+import { publishEffectEvent } from '../observers/dispatcher.js';
 import { invokeParticipant } from '../scheduler/maybe-promise.js';
 import type { PendingEffect } from '../scheduler/types.js';
 import { ownEffectPhaseResult } from './ownership.js';
@@ -33,7 +34,7 @@ const failure = <TEffects extends EffectRegistry>(options: {
 		error: options.error,
 	}) as EffectJournalFailure<TEffects>;
 	options.runtime.failures.push(retained);
-	options.runtime.observers.publishEffect({
+	publishEffectEvent(options.runtime.observers, {
 		effect: options.effect,
 		phase: options.phase,
 		state: 'failed',
@@ -56,7 +57,7 @@ const retainPrepared = <TEffects extends EffectRegistry>(options: {
 			compensation: 'not-attempted',
 		})
 	);
-	options.runtime.observers.publishEffect({
+	publishEffectEvent(options.runtime.observers, {
 		effect: options.effect,
 		phase: 'prepare',
 		state: 'succeeded',

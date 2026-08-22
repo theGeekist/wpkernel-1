@@ -10,6 +10,10 @@ import type {
 	GraphValue,
 	NodeRegistry,
 } from '../graph/types.js';
+import {
+	projectObserverFailures,
+	publishTerminalEvent,
+} from '../observers/dispatcher.js';
 import { driveScheduler, listenForAbort } from '../scheduler/engine.js';
 import type {
 	ErasedRunOutcome,
@@ -103,7 +107,7 @@ const withFinalDiagnostics = <TEffects extends EffectRegistry>(
 ): ErasedRunOutcome<TEffects> =>
 	Object.freeze({
 		...outcome,
-		observerFailures: state.observers.failures(),
+		observerFailures: projectObserverFailures(state.observers),
 		diagnostics: projectRunDiagnostics(state),
 	});
 
@@ -111,7 +115,7 @@ const finishTerminal = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>,
 	outcome: ErasedRunOutcome<TEffects>
 ): ErasedRunOutcome<TEffects> | Promise<ErasedRunOutcome<TEffects>> => {
-	const delivery = state.observers.publishTerminal(outcome.kind);
+	const delivery = publishTerminalEvent(state.observers, outcome.kind);
 	return delivery
 		? delivery.then(() => withFinalDiagnostics(state, outcome))
 		: withFinalDiagnostics(state, outcome);
@@ -136,7 +140,7 @@ const suspendedOutcome = <TEffects extends EffectRegistry>(options: {
 		primaryPause: options.scheduled.primaryPause,
 		suspension,
 		nodes: options.scheduled.nodes,
-		observerFailures: options.state.observers.failures(),
+		observerFailures: projectObserverFailures(options.state.observers),
 		effectJournal: projectEffectJournal(options.state.journal),
 		effectFailures: Object.freeze([...options.state.journal.failures]),
 		diagnostics,
@@ -151,7 +155,7 @@ const finishSuspension = <TEffects extends EffectRegistry>(options: {
 	>;
 }): ErasedRunOutcome<TEffects> | Promise<ErasedRunOutcome<TEffects>> => {
 	const authority = captureSuspensionAuthority(options.state);
-	const delivery = options.state.observers.publishTerminal('suspended');
+	const delivery = publishTerminalEvent(options.state.observers, 'suspended');
 	const project = () => suspendedOutcome({ ...options, authority });
 	return delivery ? delivery.then(project) : project();
 };
@@ -239,14 +243,14 @@ const abandonmentOutcome = <TEffects extends EffectRegistry>(
 			)
 		),
 		effectJournal: projectEffectJournal(state.journal),
-		observerFailures: state.observers.failures(),
+		observerFailures: projectObserverFailures(state.observers),
 		diagnostics: projectRunDiagnostics(state),
 	});
 
 const finishAbandonment = <TEffects extends EffectRegistry>(
 	state: SchedulerState<TEffects>
 ): AbandonmentOutcome<TEffects> | Promise<AbandonmentOutcome<TEffects>> => {
-	const delivery = state.observers.publishTerminal('abandoned');
+	const delivery = publishTerminalEvent(state.observers, 'abandoned');
 	return delivery
 		? delivery.then(() => abandonmentOutcome(state))
 		: abandonmentOutcome(state);
