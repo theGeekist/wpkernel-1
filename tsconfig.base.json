@@ -11,37 +11,8 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
-
-		// Path Aliases
-		"baseUrl": ".",
-		"paths": {
-			"@wpkernel/core": ["./packages/core/src/index.ts"],
-			"@wpkernel/core/*": ["./packages/core/src/*"],
-			"@wpkernel/ui": ["./packages/ui/src/index.ts"],
-			"@wpkernel/ui/*": ["./packages/ui/src/*"],
-			"@wpkernel/cli": ["./packages/cli/src/index.ts"],
-			"@wpkernel/cli/utils/reporter.js": ["./types/cli-reporter"],
-			"@wpkernel/cli/commands/*": ["./packages/cli/src/commands/*"],
-			"@wpkernel/cli/src/*": ["./packages/cli/src/*"],
-			"@wpkernel/cli/*": ["./packages/cli/src/*"],
-			"@wpkernel/e2e-utils": ["./packages/e2e-utils/src/index.ts"],
-			"@wpkernel/e2e-utils/*": ["./packages/e2e-utils/src/*"],
-			"@wpkernel/test-utils": ["./packages/test-utils/src/index.ts"],
-			"@wpkernel/test-utils/*": ["./packages/test-utils/src/*"],
-			"@wpkernel/pipeline": ["./packages/pipeline/src/index.ts"],
-			"@wpkernel/pipeline/*": ["./packages/pipeline/src/*"],
-			"@wpkernel/php-json-ast": ["./packages/php-json-ast/src/index.ts"],
-			"@wpkernel/php-json-ast/*": ["./packages/php-json-ast/src/*"],
-			"@wpkernel/php-driver": ["./packages/php-driver/src/index.ts"],
-			"@wpkernel/php-driver/*": ["./packages/php-driver/src/*"],
-			"@wpkernel/scripts/*": ["./scripts/*"],
-			"@test-utils/*": ["./tests/test-utils/*"],
-			"@wpkernel/wp-json-ast": ["./packages/wp-json-ast/src/index.ts"],
-			"@wpkernel/wp-json-ast/*": ["./packages/wp-json-ast/src/*"],
-			"@wpkernel/create-wpk": ["./packages/create-wpk/src/index.ts"],
-			"@wpkernel/create-wpk/*": ["./packages/create-wpk/src/*"],
-			"@cli-tests/*": ["./packages/cli/tests/*"]
-		},
+		// Keep workspace aliases out of the root context so installed dependencies
+		// resolve the package versions declared by their own dependency graphs.
 
 		// Type Checking (Strict Mode)
 		"strict": true,
