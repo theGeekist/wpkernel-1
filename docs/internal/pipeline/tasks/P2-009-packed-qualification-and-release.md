@@ -3,7 +3,7 @@ architecture_version: 1
 id: P2-009
 title: Qualify and release Pipeline 2.0.0
 stage: release
-status: active
+status: in_progress
 priority: critical
 evidence_milestone: null
 replaced_by: []
@@ -141,7 +141,7 @@ Suggested execution tier: balanced release execution with frontier audit.
 - Independent reviews are clean for middleware typing, archive hygiene, the
   packed qualifier, TypeDoc projection, public prose, installed Task Graph
   resolution and the trusted release workflow.
-- The task remains active until the contribution is merged upstream, `pipewrk`
+- The task remains in progress until the contribution is merged upstream, `pipewrk`
   creates `pipeline-v2.0.0` at that merged commit, the trusted workflow
   publishes its single qualified archive, and registry SRI, shasum and `latest`
   evidence are recorded.

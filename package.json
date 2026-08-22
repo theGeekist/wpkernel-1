@@ -88,9 +88,9 @@
 	},
 	"devDependencies": {
 		"@braintree/sanitize-url": "^7.1.1",
-		"@geekist/task-graph": "0.1.0-beta.2",
 		"@eslint/eslintrc": "^3.3.1",
 		"@eslint/js": "^9.39.1",
+		"@geekist/task-graph": "0.1.0-beta.4",
 		"@kucrut/vite-for-wp": "^0.12.0",
 		"@loglayer/transport-simple-pretty-terminal": "^2.2.13",
 		"@microsoft/api-documenter": "^7.28.0",
