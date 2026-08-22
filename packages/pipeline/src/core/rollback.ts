@@ -1,5 +1,5 @@
 import { maybeThen, maybeTry, processSequentially } from './async-utils.js';
-import type { MaybePromise } from './types.js';
+import type { HelperRollback, MaybePromise } from './types.js';
 
 /**
  * Best-effort diagnostic metadata extracted from a rollback failure.
@@ -53,14 +53,7 @@ export interface PipelineRollbackErrorMetadata {
  *
  * @internal
  */
-export interface PipelineRollback {
-	/** Stable machine-readable owner key for diagnostics. */
-	readonly key?: string;
-	/** Human-readable cleanup description for observers. */
-	readonly label?: string;
-	/** Cleanup operation invoked at most once by one rollback traversal. */
-	readonly run: () => unknown | Promise<unknown>;
-}
+export type PipelineRollback = HelperRollback;
 
 /**
  * Internal options for best-effort rollback observation.
@@ -125,7 +118,7 @@ export interface RunRollbackStackOptions {
  * @internal
  */
 export function createPipelineRollback(
-	run: () => unknown | Promise<unknown>,
+	run: () => MaybePromise<unknown>,
 	options: {
 		readonly key?: string;
 		readonly label?: string;

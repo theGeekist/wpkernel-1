@@ -4,6 +4,7 @@ import {
 	processSequentially,
 	maybeTry,
 } from '../async-utils';
+import type { MaybePromise } from '../types';
 
 describe('async-utils', () => {
 	describe('maybeAll', () => {
@@ -20,28 +21,51 @@ describe('async-utils', () => {
 			);
 		});
 
-		it('adopts thenables without reading their then property', async () => {
-			let reads = 0;
-			const thenable = new Proxy(
-				{
-					then(resolve: (value: number) => void) {
-						resolve(2);
-					},
-				},
-				{
-					get() {
-						reads += 1;
-						throw new Error(
-							'then must be read from its descriptor'
-						);
-					},
-				}
-			) as unknown as Promise<number>;
+		it('preserves heterogeneous readonly tuple inference', async () => {
+			const result: MaybePromise<[1, string]> = maybeAll([
+				1,
+				Promise.resolve('two'),
+			] as const);
 
-			await expect(maybeAll([1, thenable, 3])).resolves.toEqual([
-				1, 2, 3,
-			]);
-			expect(reads).toBe(0);
+			await expect(result).resolves.toEqual([1, 'two']);
+		});
+
+		it('does not observe a synchronous value again when a sibling is asynchronous', async () => {
+			let reads = 0;
+			const direct = Object.defineProperty({ value: 1 }, 'then', {
+				get: () => {
+					reads += 1;
+					if (reads > 1) {
+						throw new Error('then read twice');
+					}
+					return undefined;
+				},
+			});
+
+			await expect(
+				maybeAll([direct, Promise.resolve({ value: 2 })])
+			).resolves.toEqual([direct, { value: 2 }]);
+			expect(reads).toBe(1);
+		});
+
+		it('reads then once and invokes it through asynchronous adoption', async () => {
+			let reads = 0;
+			let invocations = 0;
+			const thenable = Object.defineProperty({}, 'then', {
+				get: () => {
+					reads += 1;
+					return (resolve: (value: number) => void) => {
+						invocations += 1;
+						resolve(2);
+					};
+				},
+			}) as PromiseLike<number>;
+
+			const result = maybeAll([1, thenable, 3]);
+			expect(reads).toBe(1);
+			expect(invocations).toBe(0);
+			await expect(result).resolves.toEqual([1, 2, 3]);
+			expect(invocations).toBe(1);
 		});
 	});
 
@@ -70,31 +94,22 @@ describe('async-utils', () => {
 			expect(result).toEqual([3, 2, 1]);
 		});
 
-		it('adopts handler thenables without reading their then property', async () => {
+		it('adopts handler thenables through one property read', async () => {
 			const visited: number[] = [];
 			let reads = 0;
 
 			await processSequentially([1, 2], (item) => {
 				visited.push(item);
-				return new Proxy(
-					{
-						then(resolve: () => void) {
-							resolve();
-						},
+				return Object.defineProperty({}, 'then', {
+					get: () => {
+						reads += 1;
+						return (resolve: () => void) => resolve();
 					},
-					{
-						get() {
-							reads += 1;
-							throw new Error(
-								'then must be read from its descriptor'
-							);
-						},
-					}
-				) as unknown as Promise<void>;
+				}) as PromiseLike<void>;
 			});
 
 			expect(visited).toEqual([1, 2]);
-			expect(reads).toBe(0);
+			expect(reads).toBe(2);
 		});
 	});
 

@@ -1,19 +1,21 @@
-import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { glob } from 'glob';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import {
+	collectDocumentationInputs,
+	computeSignature as computeCacheSignature,
+} from './api-cache.cjs';
 
-const rootDir = path.resolve(__dirname, '..', '..');
+const moduleFilename = fileURLToPath(import.meta.url);
+const moduleDirectory = path.dirname(moduleFilename);
+
+const rootDir = path.resolve(moduleDirectory, '..', '..');
 const docsDir = path.join(rootDir, 'docs');
 const cacheFile = path.join(docsDir, 'api', '.typedoc-cache.json');
 const apiIndexFile = path.join(docsDir, 'api', 'index.md');
 const typedocConfig = path.join(rootDir, 'typedoc.json');
-const tsconfigDocs = path.join(rootDir, 'tsconfig.docs.json');
 const CACHE_VERSION = 1;
 
 const packages = [
@@ -127,6 +129,13 @@ async function writeApiIndex() {
 	await fs.writeFile(apiIndexFile, content, 'utf8');
 }
 
+async function clearGeneratedPackageDocs() {
+	const generatedPackages = path.join(docsDir, 'api', '@wpkernel');
+	if (await pathExists(generatedPackages)) {
+		await fs.rm(generatedPackages, { recursive: true, force: true });
+	}
+}
+
 async function assertGeneratedApiIndexes() {
 	const expected = [
 		apiIndexFile,
@@ -159,64 +168,16 @@ async function pathExists(target: string) {
 	}
 }
 
-async function collectSourceFiles(): Promise<string[]> {
-	const patterns = packages.map((pkg) =>
-		path.join(
-			rootDir,
-			'packages',
-			pkg,
-			'src',
-			'**',
-			'*.{ts,tsx,js,jsx,d.ts}'
-		)
-	);
-	const results = await Promise.all(
-		patterns.map((pattern) => glob(pattern, { nodir: true }))
-	);
-	const files = new Set<string>();
-
-	for (const list of results) {
-		for (const file of list) {
-			files.add(path.resolve(file));
-		}
-	}
-
-	files.add(typedocConfig);
-	// tsconfigDocs is not used directly by Typedoc, but it's part of the dependencies, so keep it for signature calculation
-	files.add(tsconfigDocs);
-
-	for (const pkg of packages) {
-		files.add(path.join(rootDir, 'packages', pkg, 'package.json'));
-		// Add package-specific tsconfig.json to source files for signature calculation
-		files.add(path.join(rootDir, 'packages', pkg, 'tsconfig.json'));
-	}
-
-	return Array.from(files).sort();
+export async function collectSourceFiles(): Promise<string[]> {
+	return collectDocumentationInputs(rootDir, packages);
 }
 
 async function computeSignature(): Promise<string> {
-	const hash = createHash('sha256');
-	const files = await collectSourceFiles();
-
-	for (const file of files) {
-		hash.update(file);
-		try {
-			const content = await fs.readFile(file);
-			hash.update(content);
-		} catch (error: unknown) {
-			if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-				continue;
-			}
-
-			throw error;
-		}
-	}
-
-	return hash.digest('hex');
+	return computeCacheSignature(await collectSourceFiles());
 }
 
 // Build scripts often have sequential logic that naturally increases complexity
-/* eslint-disable complexity, sonarjs/cognitive-complexity */
+/* eslint-disable complexity */
 async function main() {
 	const args = process.argv.slice(2);
 	const force =
@@ -225,15 +186,8 @@ async function main() {
 	const passThroughArgs = args.filter((arg) => arg !== '--force');
 	const watchMode = passThroughArgs.includes('--watch');
 
-	// Clear previous generated API docs
-	if (await pathExists(path.join(docsDir, 'api', '@wpkernel'))) {
-		await fs.rm(path.join(docsDir, 'api', '@wpkernel'), {
-			recursive: true,
-			force: true,
-		});
-	}
-
 	if (watchMode) {
+		await clearGeneratedPackageDocs();
 		// In watch mode, we might want to run Typedoc for all packages or a specific one.
 		// For simplicity, let's run for all in watch mode too, but without caching.
 		for (const pkg of packages) {
@@ -299,6 +253,7 @@ async function main() {
 	}
 
 	console.log('docs:api - changes detected, regenerating TypeDoc output...');
+	await clearGeneratedPackageDocs();
 	for (const pkg of packages) {
 		const entryPoint = path.join(
 			rootDir,
@@ -342,7 +297,10 @@ async function main() {
 	await writeCache(signature);
 }
 
-main().catch((error) => {
-	console.error(error);
-	process.exitCode = 1;
-});
+const entryPath = process.argv[1] ? path.resolve(process.argv[1]) : null;
+if (entryPath === moduleFilename) {
+	main().catch((error) => {
+		console.error(error);
+		process.exitCode = 1;
+	});
+}

@@ -34,6 +34,26 @@ that boundary when a caller needs one asynchronous shape. An observer thenable
 can delay or promote terminal delivery, but cannot change graph meaning,
 admission, values, primary failure or journal order.
 
+Pipeline exports the composition algebra instead of making every consumer
+rebuild it:
+
+- `adoptMaybePromise` observes once and returns a tagged record containing
+  either the direct value or its adopted native promise;
+- `isPromiseLike` applies the same read-once thenable boundary;
+- `maybeThen` maps without promoting a direct value;
+- `AwaitedTuple` names the fresh mutable tuple of position-specific fulfilled
+  values returned by a join;
+- `maybeAll` joins values and thenables, returning an `AwaitedTuple` directly
+  when all are direct while preserving heterogeneous tuple positions;
+- `maybeTry` recovers synchronous throws and asynchronous rejection through one
+  shape;
+- `processSequentially` traverses in order without manufacturing a promise for
+  wholly synchronous work.
+
+These are root exports because they are useful FP primitives, not private
+scheduler authority. Native v2 participant observation shares
+`adoptMaybePromise`; that does not make the runtime the algebra's owner.
+
 ## Runtime roles
 
 `NodeMiddleware` is local to one exact static node key. It has ordered

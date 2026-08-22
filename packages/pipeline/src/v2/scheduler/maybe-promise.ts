@@ -1,35 +1,10 @@
-type ThenMethod = (
-	onFulfilled: (value: unknown) => unknown,
-	onRejected: (reason: unknown) => unknown
-) => unknown;
+import { adoptMaybePromise } from '../../core/async-utils.js';
+import type { MaybePromise } from '../graph/types.js';
 
 export type ObservedParticipant<T> =
 	| { readonly kind: 'synchronous'; readonly value: T }
 	| { readonly kind: 'asynchronous'; readonly promise: Promise<T> }
 	| { readonly kind: 'failed'; readonly error: unknown };
-
-type ThenCandidate = { readonly then?: unknown };
-
-const isThenCandidate = (value: unknown): value is ThenCandidate =>
-	(typeof value === 'object' && value !== null) ||
-	typeof value === 'function';
-
-const adoptCapturedThen = <T>(
-	value: ThenCandidate,
-	then: ThenMethod
-): Promise<T> =>
-	new Promise<T>((resolve, reject) => {
-		queueMicrotask(() => {
-			try {
-				Reflect.apply(then, value, [
-					resolve as (resolved: unknown) => unknown,
-					reject,
-				]);
-			} catch (error) {
-				reject(error);
-			}
-		});
-	});
 
 /**
  * Observes a participant return exactly once. Callable `then` promotes the
@@ -40,21 +15,14 @@ const adoptCapturedThen = <T>(
 export const observeParticipant = <T>(
 	value: unknown
 ): ObservedParticipant<T> => {
-	if (!isThenCandidate(value)) {
-		return { kind: 'synchronous', value: value as T };
-	}
-	let then: unknown;
 	try {
-		then = (value as { readonly then?: unknown }).then;
+		const adopted = adoptMaybePromise<T>(value as MaybePromise<T>);
+		return adopted.promise === null
+			? { kind: 'synchronous', value: adopted.value }
+			: { kind: 'asynchronous', promise: adopted.promise };
 	} catch (error) {
 		return { kind: 'failed', error };
 	}
-	return typeof then === 'function'
-		? {
-				kind: 'asynchronous',
-				promise: adoptCapturedThen<T>(value, then as ThenMethod),
-			}
-		: { kind: 'synchronous', value: value as T };
 };
 
 /**

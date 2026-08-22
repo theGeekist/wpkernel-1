@@ -1,7 +1,4 @@
-import type {
-	PipelineRollback,
-	PipelineRollbackErrorMetadata,
-} from './rollback.js';
+import type { PipelineRollbackErrorMetadata } from './rollback.js';
 
 /**
  * A value that may be available synchronously or through a promise-compatible
@@ -14,7 +11,8 @@ import type {
  * semantics; a throwing getter is a synchronous participant failure.
  *
  * @typeParam T - Settled value type.
- * @see {@link HelperApplyFn}
+ * @see {@link maybeThen}
+ * @see {@link maybeAll}
  * @public
  */
 export type MaybePromise<T> = T | PromiseLike<T>;
@@ -107,6 +105,35 @@ export interface HelperApplyOptions<
 	/** Reporter associated with the current run. */
 	readonly reporter: TReporter;
 }
+
+/**
+ * Type-only v1 descriptor for cleanup admitted after a helper succeeds.
+ *
+ * Returning this descriptor from {@link HelperApplyResult.rollback} requests
+ * best-effort cleanup if later serial work fails. The callback remains
+ * consumer-authored and callable by its owner. The descriptor grants no
+ * evaluator admission or traversal authority; the compatibility evaluator
+ * exclusively owns admission and reverse-order invocation.
+ *
+ * @typeParam TResult - Direct or recursively adopted cleanup result.
+ *
+ * @public
+ */
+export interface HelperRollback<TResult = unknown> {
+	/** Stable machine-readable helper key for diagnostics. */
+	readonly key?: string;
+	/** Human-readable cleanup description for observers. */
+	readonly label?: string;
+	/**
+	 * Cleanup invoked at most once by one evaluator-owned traversal.
+	 *
+	 * The result crosses the standard read-once thenable boundary: a direct
+	 * value keeps cleanup synchronous, while a callable `then` is adopted before
+	 * the evaluator continues to the next older cleanup.
+	 */
+	readonly run: () => MaybePromise<TResult>;
+}
+
 /**
  * Optional transformation and compensation produced by a helper.
  *
@@ -123,7 +150,7 @@ export interface HelperApplyResult<TOutput> {
 	/** Replacement passed to downstream helpers and later stages. */
 	readonly output?: TOutput;
 	/** Compensation to execute if later work causes the run to fail. */
-	readonly rollback?: PipelineRollback;
+	readonly rollback?: HelperRollback;
 }
 
 /**
@@ -646,7 +673,7 @@ export interface PipelineHelperRollback<THelper> {
 	/** Original helper that produced the rollback. */
 	readonly helper: THelper;
 	/** Compensation registered by the helper result. */
-	readonly rollback: PipelineRollback;
+	readonly rollback: HelperRollback;
 }
 
 /**

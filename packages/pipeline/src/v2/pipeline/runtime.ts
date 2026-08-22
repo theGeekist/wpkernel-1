@@ -3,18 +3,20 @@ import {
 	createGraphExtensionGeneration,
 } from '../extensions/generation.js';
 import type {
+	GraphExtension,
 	GraphExtensionCompilation,
-	GraphExtensionRegistrationShape,
 } from '../extensions/types.js';
 import type {
 	Edge,
 	EffectRegistry,
+	GraphContribution,
 	GraphValue,
+	NodeKey,
 	NodeRegistry,
 	OutputProjection,
 } from '../graph/types.js';
 import { inspectRecord } from '../graph/inspection.js';
-import type { NodeMiddlewareRegistration } from '../middleware/types.js';
+import type { NodeMiddleware } from '../middleware/types.js';
 import type { RunObserver } from '../observers/types.js';
 import type { GraphSchedulerError } from '../scheduler/errors.js';
 import { createGraphSchedulerError } from '../scheduler/errors.js';
@@ -22,7 +24,6 @@ import { ownGraphInputSnapshot } from '../scheduler/ownership.js';
 import { scheduleOwnedGraph } from '../scheduler/schedule.js';
 import type { ErasedRunOutcome } from '../scheduler/state.js';
 import { attachPipelineBrand } from './brand.js';
-import type { pipelineBrand } from './brand.js';
 import {
 	collectPipelineRoleFailures,
 	ownPipelineRoles,
@@ -37,6 +38,7 @@ import type {
 	PipelineEdges,
 	PipelineNodes,
 	PipelineProjection,
+	RunPipelineOptions,
 	RunPipelineResult,
 } from './types.js';
 
@@ -55,59 +57,10 @@ interface PipelineAuthority {
 
 const pipelineAuthorities = new WeakMap<object, PipelineAuthority>();
 
-interface PipelineShape {
-	readonly [pipelineBrand]: {
-		readonly inputs: { readonly value: unknown };
-		readonly nodes: { readonly value: unknown };
-		readonly effects: { readonly value: unknown };
-		readonly outputs: { readonly value: unknown };
-		readonly capabilities: { readonly value: unknown };
-	};
-	readonly kind: 'pipeline';
-}
-
-type PipelineWitnessValue<
-	TPipeline,
-	TKey extends keyof PipelineShape[typeof pipelineBrand],
-> = TPipeline extends PipelineShape
-	? Exclude<
-			TPipeline[typeof pipelineBrand][TKey] extends {
-				readonly value: infer TValue;
-			}
-				? TValue
-				: never,
-			undefined
-		>
-	: never;
-
-type PipelineInputOf<TPipeline> =
-	PipelineWitnessValue<TPipeline, 'inputs'> extends Readonly<
-		Record<string, GraphValue>
-	>
-		? PipelineWitnessValue<TPipeline, 'inputs'>
-		: never;
-
-type PipelineNodesOf<TPipeline> =
-	PipelineWitnessValue<TPipeline, 'nodes'> extends NodeRegistry
-		? PipelineWitnessValue<TPipeline, 'nodes'>
-		: never;
-
-type PipelineEffectsOf<TPipeline> =
-	PipelineWitnessValue<TPipeline, 'effects'> extends EffectRegistry
-		? PipelineWitnessValue<TPipeline, 'effects'>
-		: never;
-
-type PipelineProjectionOf<TPipeline> =
-	PipelineWitnessValue<TPipeline, 'outputs'> extends OutputProjection<
-		PipelineNodesOf<TPipeline>
-	>
-		? PipelineWitnessValue<TPipeline, 'outputs'>
-		: never;
-
-type RunResultFor<TPipeline> = RunPipelineResult<
-	PipelineNodesOf<TPipeline>,
-	PipelineEffectsOf<TPipeline>,
-	PipelineProjectionOf<TPipeline>
+type ErasedPublicRunResult = RunPipelineResult<
+	NodeRegistry,
+	EffectRegistry,
+	OutputProjection<NodeRegistry>
 >;
 
 const captureCreateFields = (value: unknown): ReadonlyMap<string, unknown> => {
@@ -152,7 +105,7 @@ const createToken = (authority: PipelineAuthority): object => {
  * @returns A frozen process-local Pipeline token.
  * @public
  */
-export const createPipeline = <
+export function createPipeline<
 	TInputs extends Readonly<Record<string, GraphValue>>,
 	TNodes extends NodeRegistry,
 	TEdges extends readonly Edge[],
@@ -160,10 +113,17 @@ export const createPipeline = <
 	const TProjection extends OutputProjection<TNodes>,
 	TCapabilities,
 	const TParticipants extends Readonly<Record<PropertyKey, unknown>>,
-	const TExtensions extends
-		readonly GraphExtensionRegistrationShape[] = readonly [],
-	const TMiddleware extends
-		readonly NodeMiddlewareRegistration[] = readonly [],
+	const TExtensions extends readonly {
+		readonly extension: GraphExtension<never, GraphContribution>;
+		readonly configuration: GraphValue;
+	}[] = readonly [],
+	const TMiddleware extends readonly NodeMiddleware<
+		NodeKey,
+		never,
+		unknown,
+		unknown,
+		unknown
+	>[] = readonly [],
 >(
 	options: CreatePipelineOptions<
 		TInputs,
@@ -183,7 +143,8 @@ export const createPipeline = <
 	TEffects,
 	PipelineProjection<TNodes, TProjection, TExtensions>,
 	TCapabilities
-> => {
+>;
+export function createPipeline(options: unknown): object {
 	const fields = captureCreateFields(options);
 	const roles = ownPipelineRoles({
 		middleware: fields.get('middleware'),
@@ -201,15 +162,8 @@ export const createPipeline = <
 			participants: roles.participants,
 			roleFailures: roles.failures,
 		})
-	) as Pipeline<
-		TInputs,
-		PipelineNodes<TNodes, TExtensions>,
-		PipelineEdges<TEdges, TExtensions>,
-		TEffects,
-		PipelineProjection<TNodes, TProjection, TExtensions>,
-		TCapabilities
-	>;
-};
+	);
+}
 
 const isGraphSchedulerError = (value: unknown): value is GraphSchedulerError =>
 	value instanceof Error &&
@@ -446,17 +400,27 @@ const invalidRunSignal = (value: unknown): GraphSchedulerError | undefined => {
  * @returns Configuration evidence, admission evidence or a terminal run outcome.
  * @public
  */
-export const runPipeline = <const TPipeline>(options: {
-	readonly pipeline: TPipeline extends PipelineShape ? TPipeline : never;
-	readonly inputs: NoInfer<PipelineInputOf<TPipeline>>;
-	readonly capabilities: NoInfer<
-		PipelineWitnessValue<TPipeline, 'capabilities'>
-	>;
-	readonly signal?: AbortSignal;
-}): RunResultFor<TPipeline> => {
+export function runPipeline<
+	TInputs extends Readonly<Record<string, GraphValue>>,
+	TNodes extends NodeRegistry,
+	TEdges extends readonly Edge[],
+	TEffects extends EffectRegistry,
+	TProjection extends OutputProjection<TNodes>,
+	TCapabilities,
+>(
+	options: RunPipelineOptions<
+		TInputs,
+		TNodes,
+		TEdges,
+		TEffects,
+		TProjection,
+		TCapabilities
+	>
+): RunPipelineResult<TNodes, TEffects, TProjection>;
+export function runPipeline(options: unknown): ErasedPublicRunResult {
 	const captured = captureRunFields(options);
 	if (!captured.ok) {
-		return captured.failure as RunResultFor<TPipeline>;
+		return captured.failure;
 	}
 	const authority =
 		captured.value.pipeline && typeof captured.value.pipeline === 'object'
@@ -468,21 +432,21 @@ export const runPipeline = <const TPipeline>(options: {
 			code: 'invalid-graph',
 			message:
 				'Pipeline is not a live process-local evaluator authority.',
-		}) as RunResultFor<TPipeline>;
+		});
 	}
 	const inputs = ownGraphInputSnapshot({ value: captured.value.inputs });
 	if (!inputs.ok) {
 		return admissionFailure({
 			field: 'inputs',
 			error: inputs.error,
-		}) as RunResultFor<TPipeline>;
+		});
 	}
 	const signalError = invalidRunSignal(captured.value.signal);
 	if (signalError) {
 		return admissionFailure({
 			field: 'signal',
 			error: signalError,
-		}) as RunResultFor<TPipeline>;
+		});
 	}
 	const compiled = compileGraphExtensionGeneration(authority.generation);
 	const pending = Object.freeze({
@@ -497,5 +461,5 @@ export const runPipeline = <const TPipeline>(options: {
 		compiled instanceof Promise
 			? Promise.all([compiled, pending]).then(evaluatePending)
 			: evaluatePending([compiled, pending])
-	) as RunResultFor<TPipeline>;
-};
+	) as ErasedPublicRunResult;
+}

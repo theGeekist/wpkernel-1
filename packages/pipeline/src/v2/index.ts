@@ -10,6 +10,15 @@
 
 export { createPipeline, runPipeline } from './pipeline/runtime.js';
 export { abandon, resume } from './suspension/runtime.js';
+export {
+	adoptMaybePromise,
+	isPromiseLike,
+	maybeAll,
+	maybeThen,
+	maybeTry,
+	processSequentially,
+} from '../core/async-utils.js';
+export type { AwaitedTuple } from '../core/async-utils.js';
 
 export type {
 	CreatePipelineOptions,

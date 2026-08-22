@@ -92,6 +92,10 @@ const outcome = runPipeline({
 
 `outcome` remains direct for all-synchronous work; see
 [Synchronous settlement](../../docs/packages/pipeline/execution-and-effects.md#synchronous-settlement).
+The package root also exports `MaybePromise`, `AwaitedTuple`,
+`adoptMaybePromise`, `isPromiseLike`, `maybeThen`, `maybeAll`, `maybeTry` and
+`processSequentially`, so application composition can preserve that boundary
+without copying Pipeline internals or defaulting to `async`.
 
 `greeting` and `punctuation` are independent. `message` is the explicit join:
 its executor receives both outputs by node key. Its value cannot depend on

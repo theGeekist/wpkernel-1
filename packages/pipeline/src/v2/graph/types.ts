@@ -1,4 +1,7 @@
 import type { compiledGraphBrand } from './brand.js';
+import type { MaybePromise } from '../../core/types.js';
+
+export type { MaybePromise } from '../../core/types.js';
 
 /**
  * Scalar leaf values in the {@link GraphValue} algebra.
@@ -21,16 +24,6 @@ export type GraphValue =
 	| GraphScalar
 	| readonly GraphValue[]
 	| { readonly [key: string]: GraphValue };
-
-/**
- * A value that settles now unless its return exposes a callable `then`.
- *
- * All structurally valid thenables are adopted; no eager Promise wrapping is
- * implied by this type.
- *
- * @public
- */
-export type MaybePromise<T> = T | PromiseLike<T>;
 
 /** Stable identity of one independently scheduled node. @public */
 export type NodeKey = string;

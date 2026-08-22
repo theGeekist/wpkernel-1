@@ -46,6 +46,7 @@ required_reading:
     - path: docs/internal/pipeline/decisions/ADR-002-process-local-host-boundary.md
       reason: Keep inspection distinct from durable plans and execution authority.
 read_scope:
+    - instructions/wpkernel-repository-guide.md
     - packages/pipeline/src/v2/**
     - packages/pipeline/README.md
     - packages/pipeline/scripts/qualify-packed-api.mjs

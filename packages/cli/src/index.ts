@@ -55,9 +55,12 @@ export type {
 	Helper,
 	HelperApplyFn,
 	HelperApplyOptions,
+	HelperApplyResult,
 	HelperDescriptor,
 	HelperKind,
 	HelperMode,
+	HelperNext,
+	HelperRollback,
 	CreateHelperOptions,
 } from '@wpkernel/pipeline/v1';
 export * from './runtime';

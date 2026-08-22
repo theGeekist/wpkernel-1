@@ -19,11 +19,11 @@ The published Task Graph manifest now owns the exact Pipeline 1.4.1 dependency.
 WPKernel does not override it. Release evidence and the remaining external
 llm-core lane are recorded in [`EXTERNAL-LANES.md`](EXTERNAL-LANES.md).
 
-Task Graph beta.2 publishes a raw TypeScript planner. When it runs beneath this
-workspace, Bun applies WPKernel's global Pipeline source mapping and redirects
-Task Graph's exact 1.4.1 import to the local v2 root. A narrow compiled beta.3
-retains and bundles exact Pipeline 1.4.1, restoring the planner without adopting
-unfinished native v2 semantics:
+P2-016 separates WPKernel's intentional first-party source aliases from the
+root runtime context. Task Graph beta.2's raw TypeScript planner can therefore
+resolve its exact Pipeline 1.4.1 dependency without being redirected to the
+local v2 root. A narrow compiled beta.3 still retains and bundles exact Pipeline
+1.4.1, but it is now a downstream tooling update rather than a workspace bridge:
 
 ```text
 Task Graph compiled-package base
@@ -32,10 +32,8 @@ Task Graph compiled-package base
   -> successful task-graph:plan against the P2-007 checkout
 ```
 
-This is a non-blocking tooling lane for P2-007. It must be restored before the
-next task is claimed under the coordination contract, but it is not a Pipeline
-runtime or release dependency. P2-016 separately owns the global declaration
-resolution sharp edge.
+Neither beta.3 nor native Task Graph v2 adoption is a Pipeline runtime or
+release dependency. P2-016 owns and qualifies the WPKernel resolution boundary.
 
 The llm-core specification compiler has a separate early migration:
 
@@ -67,14 +65,16 @@ P2-005 + P2-006
             -> P2-013 source TSDoc and authored public docs
                  -> P2-015 bounded staged Markdown normalisation
                       -> P2-007 v1 adapter and consumer integration
-                           -> P2-008 generated API and site projection
-                                -> P2-009 packed qualification and 2.0.0 release
+                           -> P2-018 public MaybePromise composition
+                                -> P2-008 generated API and site projection
+                                     -> P2-009 packed qualification and 2.0.0 release
 ```
 
 P2-002 and P2-004 may run concurrently after P2-001. P2-005 and P2-006 may
 run concurrently after their shared runtime contracts settle. P2-013 finishes
 source TSDoc and authored prose before P2-015 closes the commit-hook write-set
-leak. P2-007 then exposes the shared root, and P2-008 regenerates the API
+leak. P2-007 then exposes the shared root. P2-018 makes its complete
+MaybePromise composition algebra public before P2-008 regenerates the API
 projection from that integrated surface.
 
 P2-017 is a separate future integration seam. It may expose an authority-free

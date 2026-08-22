@@ -43,6 +43,13 @@ top-level functions. `v2/pipeline` curates the public role and outcome types;
 graph, role, journal and scheduler compilers remain internal seams. These four
 roles are semantic boundaries, not four execution authorities.
 
+Public-surface curation contains execution authority. It does not hide general
+functional composition primitives merely because the interpreter also uses
+them. The package root exports the complete shared `MaybePromise` utility
+algebra: `MaybePromise`, `AwaitedTuple`, `adoptMaybePromise`, `isPromiseLike`,
+`maybeThen`, `maybeAll`, `maybeTry` and `processSequentially`. These utilities carry no graph,
+scheduler, journal or effect authority.
+
 ## Consequences
 
 Middleware remains possible without smuggling serial continuation semantics
