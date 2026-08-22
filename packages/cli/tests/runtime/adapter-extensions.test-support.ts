@@ -91,19 +91,12 @@ export function buildAdapterExtensionOptions(
 	};
 }
 
-export async function buildAdapterExtensionHook(
-	config: WPKernelConfigV1
-): Promise<{
+export function buildAdapterExtensionHook(config: WPKernelConfigV1): {
 	hook: PipelineExtensionHook;
 	options: PipelineExtensionHookOptions;
-}> {
+} {
 	const extension = buildAdapterExtensionsExtension();
-	const registration = await extension.register({} as never);
-	const hook = (
-		typeof registration === 'function'
-			? registration
-			: (registration?.hook ?? (() => Promise.resolve()))
-	) as PipelineExtensionHook;
+	const hook = extension.hook as PipelineExtensionHook;
 	const baseOptions = buildAdapterExtensionOptions();
 	const options: PipelineExtensionHookOptions = {
 		...baseOptions,

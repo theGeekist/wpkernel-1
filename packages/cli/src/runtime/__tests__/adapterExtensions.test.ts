@@ -50,7 +50,7 @@ describe('buildAdapterExtensionsExtension', () => {
 		} as WPKernelConfigV1;
 		const { hook, options } = await buildAdapterExtensionHook(config);
 
-		const result = await hook({
+		const result = hook({
 			...options,
 			context: { ...options.context, phase: 'apply' },
 			options: { ...options.options, phase: 'apply' },
@@ -71,7 +71,7 @@ describe('buildAdapterExtensionsExtension', () => {
 		} as WPKernelConfigV1;
 		const { hook, options } = await buildAdapterExtensionHook(config);
 
-		const result = await hook(options);
+		const result = hook(options);
 
 		expect(result).toBeUndefined();
 		expect(runAdapterExtensionsMock).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('buildAdapterExtensionsExtension', () => {
 		} as WPKernelConfigV1;
 		const { hook, options } = await buildAdapterExtensionHook(config);
 
-		await expect(hook(options)).rejects.toThrow(WPKernelError);
+		expect(() => hook(options)).toThrow(WPKernelError);
 		expect(runAdapterExtensionsMock).not.toHaveBeenCalled();
 		expect(options.options.reporter.child).toHaveBeenCalledWith('adapter');
 		expect(options.options.reporter.error).toHaveBeenCalledWith(
@@ -196,7 +196,7 @@ describe('buildAdapterExtensionsExtension', () => {
 		} as WPKernelConfigV1;
 		const { hook, options } = await buildAdapterExtensionHook(config);
 
-		await expect(hook(options)).rejects.toThrow(WPKernelError);
+		expect(() => hook(options)).toThrow(WPKernelError);
 		expect(runAdapterExtensionsMock).not.toHaveBeenCalled();
 		expect(options.options.reporter.error).toHaveBeenCalledWith(
 			'Adapter extensions failed to initialise.',
@@ -232,7 +232,7 @@ describe('buildAdapterExtensionsExtension', () => {
 			} as WPKernelConfigV1;
 			const { hook, options } = await buildAdapterExtensionHook(config);
 
-			await expect(hook(options)).rejects.toThrow(WPKernelError);
+			expect(() => hook(options)).toThrow(WPKernelError);
 			expect(runAdapterExtensionsMock).not.toHaveBeenCalled();
 			expect(options.options.reporter.error).toHaveBeenCalledWith(
 				'Adapter extensions failed to initialise.',
@@ -253,7 +253,7 @@ describe('buildAdapterExtensionsExtension', () => {
 		} as WPKernelConfigV1;
 		const { hook, options } = await buildAdapterExtensionHook(config);
 
-		const result = await hook(options);
+		const result = hook(options);
 
 		expect(result).toBeUndefined();
 		expect(skip).toHaveBeenCalledTimes(1);
@@ -330,5 +330,48 @@ describe('buildAdapterExtensionsExtension', () => {
 		expect(args?.extensions).toEqual([
 			expect.objectContaining({ name: 'single', apply }),
 		]);
+	});
+
+	it('rejects adapter execution when the IR has no generated output root', () => {
+		const config = {
+			version: 1,
+			namespace: 'test',
+			resources: {},
+			schemas: {},
+			adapters: {
+				extensions: [
+					() => ({ name: 'requires-output', apply: jest.fn() }),
+				],
+			},
+		} as WPKernelConfigV1;
+		const { hook, options } = buildAdapterExtensionHook(config);
+		const artifact = {
+			...options.artifact,
+			artifacts: undefined,
+			layout: undefined,
+		} as unknown as IRv1;
+
+		expect(() => hook({ ...options, artifact })).toThrow(
+			'Adapter extensions require runtime artifact paths'
+		);
+		expect(runAdapterExtensionsMock).not.toHaveBeenCalled();
+	});
+
+	it('preserves a synchronous adapter runtime failure', () => {
+		const config = {
+			version: 1,
+			namespace: 'test',
+			resources: {},
+			schemas: {},
+			adapters: {
+				extensions: [() => ({ name: 'failing', apply: jest.fn() })],
+			},
+		} as WPKernelConfigV1;
+		const { hook, options } = buildAdapterExtensionHook(config);
+		runAdapterExtensionsMock.mockImplementationOnce(() => {
+			throw new Error('adapter runtime failure');
+		});
+
+		expect(() => hook(options)).toThrow('adapter runtime failure');
 	});
 });

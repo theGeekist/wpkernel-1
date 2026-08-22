@@ -248,9 +248,6 @@ describe('createIr', () => {
 			ir: { meta: { namespace: config.namespace } },
 		} as const;
 		const pipeline = {
-			ir: { use: jest.fn() },
-			builders: { use: jest.fn() },
-			extensions: { use: jest.fn() },
 			run: jest.fn(async (input) => {
 				expect(input.phase).toBe('init');
 				expect(input.workspace).toBe(workspace);
@@ -281,9 +278,6 @@ describe('createIr', () => {
 		});
 
 		expect(ir).toBe(pipelineRunResult.ir);
-		expect(pipeline.ir.use).toHaveBeenCalled();
-		expect(pipeline.builders.use).toHaveBeenCalled();
-		expect(pipeline.extensions.use).toHaveBeenCalledTimes(1);
 		expect(pipeline.run).toHaveBeenCalledTimes(1);
 	});
 
@@ -320,9 +314,6 @@ describe('createIr', () => {
 			ir: { meta: { namespace: config.namespace } },
 		} as const;
 		const pipeline = {
-			ir: { use: jest.fn() },
-			builders: { use: jest.fn() },
-			extensions: { use: jest.fn() },
 			run: jest.fn(async (input) => {
 				expect(input.workspace).toBe(createdWorkspace);
 				expect(input.reporter).toBe(createdReporter);
@@ -339,9 +330,6 @@ describe('createIr', () => {
 		});
 
 		expect(ir).toBe(pipelineRunResult.ir);
-		expect(pipeline.ir.use).toHaveBeenCalled();
-		expect(pipeline.builders.use).toHaveBeenCalled();
-		expect(pipeline.extensions.use).toHaveBeenCalledTimes(1);
 		expect(pipeline.run).toHaveBeenCalledTimes(1);
 		expect(workspaceSpy).toHaveBeenCalledWith(
 			path.dirname(options.sourcePath)

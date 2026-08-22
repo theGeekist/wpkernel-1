@@ -19,7 +19,8 @@ import type {
 	ResourcePipelineRunOptions,
 	ResourcePipelineRunResult,
 } from '../pipeline/resources/types';
-import { isPromiseLike, type MaybePromise } from '@wpkernel/pipeline';
+import type { MaybePromise } from '@wpkernel/pipeline';
+import { observeMaybePromise } from '../pipeline/helpers/maybePromise';
 import { resolveNamespaceAndName } from './namespace';
 import { resolveResourceReporter } from './reporter';
 import type { NormalizedResourceConfig } from './buildResourceObject';
@@ -28,14 +29,19 @@ import { validateConfig } from './validation';
 function assertSynchronousRunResult<T, TQuery>(
 	result: MaybePromise<ResourcePipelineRunResult<T, TQuery>>
 ): ResourcePipelineRunResult<T, TQuery> {
-	if (isPromiseLike(result)) {
+	const observed =
+		observeMaybePromise<ResourcePipelineRunResult<T, TQuery>>(result);
+	if (observed.kind === 'failed') {
+		throw observed.error;
+	}
+	if (observed.kind === 'asynchronous') {
 		throw new WPKernelError('DeveloperError', {
 			message:
 				'defineResource pipeline execution must complete synchronously. Received a promise from the pipeline run.',
 		});
 	}
 
-	return result;
+	return observed.value;
 }
 
 function buildNormalizedConfig<T, TQuery, const TRoutes extends ResourceRoutes>(

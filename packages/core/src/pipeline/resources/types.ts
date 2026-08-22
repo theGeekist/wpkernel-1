@@ -7,12 +7,12 @@ import type {
 } from '../../resource/types';
 import type { NormalizedResourceConfig } from '../../resource/buildResourceObject';
 import type {
-	CreatePipelineOptions,
+	CreateSerialPipelineOptions,
 	Helper,
-	Pipeline,
 	PipelineDiagnostic,
 	PipelineRunState,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import type { CorePipelineContext } from '../helpers/context';
 
 /**
@@ -20,7 +20,7 @@ import type { CorePipelineContext } from '../helpers/context';
  *
  * @example
  * ```ts
- * pipeline.ir.use({
+ * const fragment = createHelper({
  *   key: 'resource.config.enrich',
  *   kind: RESOURCE_FRAGMENT_KIND,
  *   apply: ({ output }) => {
@@ -134,45 +134,27 @@ export type ResourcePipelineRunResult<T, TQuery> = PipelineRunState<
 /**
  * Pipeline configuration contract used to instantiate the resource pipeline.
  */
-export type ResourcePipelineOptions<T, TQuery> = CreatePipelineOptions<
+export type ResourcePipelineOptions<T, TQuery> = CreateSerialPipelineOptions<
 	ResourcePipelineRunOptions<T, TQuery>,
 	ResourcePipelineBuildOptions<T, TQuery>,
 	ResourcePipelineContext<T, TQuery>,
-	Reporter,
 	ResourcePipelineDraft<T, TQuery>,
 	ResourcePipelineArtifact<T, TQuery>,
-	PipelineDiagnostic,
 	ResourcePipelineRunResult<T, TQuery>,
 	ResourceFragmentInput<T, TQuery>,
 	ResourcePipelineDraft<T, TQuery>,
 	ResourceBuilderInput<T, TQuery>,
-	ResourcePipelineArtifact<T, TQuery>,
-	ResourceFragmentKind,
-	ResourceBuilderKind,
-	ResourceFragmentHelper<T, TQuery>,
-	ResourceBuilderHelper<T, TQuery>
+	ResourcePipelineArtifact<T, TQuery>
 >;
 
 /**
  * Fully constructed resource pipeline exposing helper registration and execution.
  */
-export type ResourcePipeline<T, TQuery> = Pipeline<
-	ResourcePipelineRunOptions<T, TQuery>,
-	ResourcePipelineRunResult<T, TQuery>,
-	ResourcePipelineContext<T, TQuery>,
-	Reporter,
-	ResourcePipelineBuildOptions<T, TQuery>,
-	ResourcePipelineArtifact<T, TQuery>,
-	ResourceFragmentInput<T, TQuery>,
-	ResourcePipelineDraft<T, TQuery>,
-	ResourceBuilderInput<T, TQuery>,
-	ResourcePipelineArtifact<T, TQuery>,
-	PipelineDiagnostic,
-	ResourceFragmentKind,
-	ResourceBuilderKind,
-	ResourceFragmentHelper<T, TQuery>,
-	ResourceBuilderHelper<T, TQuery>
->;
+export interface ResourcePipeline<T, TQuery> {
+	run: (
+		options: ResourcePipelineRunOptions<T, TQuery>
+	) => MaybePromise<ResourcePipelineRunResult<T, TQuery>>;
+}
 
 /**
  * Input contract consumed by resource lifecycle fragments.

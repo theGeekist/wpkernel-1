@@ -17,9 +17,10 @@ export interface NodeDiagnostic {
 }
 
 /**
- * Immutable canonical node records plus honest timing-dependent FIFO events.
- * Canonical records are deterministic; chronology is evidence of this run and
- * is not used to choose graph meaning or failure precedence.
+ * Immutable node records with canonical identity, final state and graph order,
+ * plus honest timing-dependent admission and settlement sequences and FIFO
+ * events. Timing evidence is not used to choose graph meaning or failure
+ * precedence.
  *
  * @public
  */

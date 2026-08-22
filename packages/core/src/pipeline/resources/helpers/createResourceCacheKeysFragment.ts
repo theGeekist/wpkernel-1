@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { createDefaultCacheKeys } from '../../../resource/utils';
 import type { CacheKeys } from '../../../resource/types';
 import type {
@@ -18,7 +18,7 @@ import type { Reporter } from '../../../reporter/types';
  * @example
  * ```ts
  * const cacheKeysFragment = createResourceCacheKeysFragment<Post, { id: number }>();
- * pipeline.ir.use(cacheKeysFragment);
+ * const programme = createSerialPipeline({ fragments: [cacheKeysFragment], ...options });
  * ```
  */
 export function createResourceCacheKeysFragment<

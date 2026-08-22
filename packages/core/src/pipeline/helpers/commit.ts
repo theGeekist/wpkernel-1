@@ -1,4 +1,5 @@
-import { isPromiseLike, type MaybePromise } from '@wpkernel/pipeline';
+import type { MaybePromise } from '@wpkernel/pipeline';
+import { observeMaybePromise } from './maybePromise';
 /**
  * @typedef {Function} PipelineTask
  * A function representing a single task within a pipeline.
@@ -25,9 +26,13 @@ function runSequential(tasks: readonly PipelineTask[]): MaybePromise<void> {
 	const iterate = (): MaybePromise<void> | void => {
 		for (; index < tasks.length; index += 1) {
 			const result = tasks[index]!();
-			if (isPromiseLike(result)) {
+			const observed = observeMaybePromise<void>(result);
+			if (observed.kind === 'failed') {
+				throw observed.error;
+			}
+			if (observed.kind === 'asynchronous') {
 				index += 1;
-				return result.then(() => iterate());
+				return observed.promise.then(() => iterate());
 			}
 		}
 	};

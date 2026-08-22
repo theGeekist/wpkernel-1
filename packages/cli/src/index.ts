@@ -59,7 +59,7 @@ export type {
 	HelperKind,
 	HelperMode,
 	CreateHelperOptions,
-} from '@wpkernel/pipeline';
+} from '@wpkernel/pipeline/v1';
 export * from './runtime';
 export * from './ir';
 export * from './builders';

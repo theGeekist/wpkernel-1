@@ -144,8 +144,9 @@ const createToken = (authority: PipelineAuthority): object => {
  * is owned first, and each callback runs exactly once in tuple order. Creating
  * a different configuration means creating a different Pipeline token.
  *
- * This function performs no graph work and claims no durable or cross-process
- * authority.
+ * Creation owns and freezes the graph declaration, captures registrations and
+ * invokes each extension contribution. It performs no graph compilation or
+ * execution and claims no durable or cross-process authority.
  *
  * @param options - Complete evaluator configuration to capture.
  * @returns A frozen process-local Pipeline token.

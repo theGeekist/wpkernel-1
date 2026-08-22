@@ -7,7 +7,7 @@
 The CLI turns a single `wpk.config.ts` into a production-ready plugin. It scaffolds resources,
 actions, UI entrypoints, DataViews wiring, PHP bridges, and block registrars while keeping
 code generation deterministic. `wpk generate` and `wpk apply` form the core workflow, with
-adapters and extensions riding on the shared `@wpkernel/pipeline` runtime.
+adapters and extensions riding on Pipeline's explicit v1 compatibility surface.
 
 ## Quick links
 
@@ -71,7 +71,13 @@ cache invalidation and capability checks stay consistent.
 
 ## Pipeline & codemod integration
 
-- Built on `@wpkernel/pipeline` helpers for deterministic execution, diagnostics, and rollback.
+- Built on `@wpkernel/pipeline/v1` helpers for deterministic serial execution,
+  diagnostics, and admitted cleanup. This is a compatibility boundary, not the
+  v2 dataflow evaluator: CLI helpers retain threaded output, lifecycle
+  extensions, and `next` semantics until the CLI is redesigned around an
+  explicit graph, but the captured serial programme now settles through one
+  native v2 node and one aggregate native effect participant. The CLI does not
+  receive public pause/resume or independent rollback authority from that path.
 - Adapters can register pipeline extensions that queue files or mutate the IR via `updateIr()`.
 - The CLI threads PHP codemod configuration into `@wpkernel/php-json-ast` helpers.
 - `adapters.php` may return a `codemods` manifest (`files`, optional `configurationPath`, diagnostics/driver overrides); the builder calls `createPhpCodemodIngestionHelper` to run `runPhpCodemodIngestion`, emit `.codemod.*` artefacts, and requeue the transformed programs before writing.

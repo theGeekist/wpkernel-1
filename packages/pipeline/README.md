@@ -8,9 +8,23 @@ thread a current output, or call the rest of the graph.
 
 ## Version boundary
 
-The installed 1.x package retains the v1 helper, stage and lifecycle API. This
-README describes the v2 contract and its intended root import after v2 is
-integrated. It is not a claim that a 1.x installation already exports it.
+The package root is the native v2 dataflow contract. Existing helper,
+fragment-builder, `next` and lifecycle consumers can use
+`@wpkernel/pipeline/v1`, an explicitly serial compatibility boundary for the
+1.x standard runtime.
+
+That subpath preserves selected serial semantics through a new immutable
+adapter API. It is not source-compatible with v1. Mutable `createPipeline`,
+registration through `.use()` and instance `.run()` become a static
+`createSerialPipeline({ fragments, builders, extensions })` programme plus the
+top-level `runPipeline({ pipeline, options })` function.
+
+The captured programme runs through one native v2 node with one aggregate
+native effect participant. It does not turn helpers into immutable nodes, make
+stages concurrent, or make `next` anything other than node-local serial
+composition. Pause/resume and independent rollback authority are intentionally
+unsupported there. New code should model its dataflow at the package root
+rather than use `/v1` to hide a new serial programme.
 
 ## A small graph
 
@@ -87,8 +101,9 @@ which sibling settled first.
 
 - Edges are data dependencies, not ordering hints, resource locks or
   middleware selectors.
-- Readiness permits concurrent work. Canonical ordering controls admission and
-  reporting, never a node value or effect settlement.
+- Readiness permits concurrent work. Canonical node and effect ordinals define
+  journal chronology, forward commit order and reverse compensation order.
+  Wall-clock settlement cannot choose node values or reorder those semantics.
 - Graph inputs, node outputs and effect payloads are copied and frozen at the
   owning boundary. Capabilities are live host-owned services, not graph data.
 - `Pipeline` is process-local. Suspension is a live, single-use value, not a

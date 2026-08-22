@@ -14,8 +14,6 @@
  *
  * @example
  * ```ts
- * import { createPipeline } from '@wpkernel/pipeline';
- *
  * const pipeline = createPipeline({
  *   createBuildOptions: () => ({}),
  *   createContext: () => ({ reporter: console }),
@@ -38,6 +36,6 @@
  * const result = await pipeline.run({});
  * ```
  *
- * @public
+ * @internal
  */
 export { createStandardPipeline as createPipeline } from './runner/index.js';

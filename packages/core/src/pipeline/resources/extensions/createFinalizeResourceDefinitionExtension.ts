@@ -4,13 +4,11 @@ import {
 	removeResourceDefined,
 } from '../../../events/bus';
 import type { ResourceDefinedEvent } from '../../../events/bus';
-import { createPipelineExtension } from '@wpkernel/pipeline';
-import type { PipelineExtension } from '@wpkernel/pipeline';
+import type { SerialPipelineExtension } from '@wpkernel/pipeline/v1';
 import type {
-	ResourcePipeline,
 	ResourcePipelineArtifact,
-	ResourcePipelineBuildOptions,
 	ResourcePipelineContext,
+	ResourcePipelineRunOptions,
 } from '../types';
 
 /**
@@ -24,10 +22,9 @@ import type {
  *
  * @example
  * ```ts
- * const pipeline = createResourcePipeline<Post, PostQuery>();
- * pipeline.extensions.use(createFinalizeResourceDefinitionExtension());
- *
- * const { artifact } = pipeline.run(runOptions);
+ * const extension = createFinalizeResourceDefinitionExtension<Post, PostQuery>();
+ * const programme = createSerialPipeline({ extensions: [extension], ...options });
+ * const outcome = runPipeline({ pipeline: programme, options: runOptions });
  * // At this point the definition event has been emitted once and will be
  * // removed automatically if a later extension rejects.
  * ```
@@ -35,19 +32,14 @@ import type {
 export function createFinalizeResourceDefinitionExtension<
 	T,
 	TQuery,
->(): PipelineExtension<
-	ResourcePipeline<T, TQuery>,
+>(): SerialPipelineExtension<
 	ResourcePipelineContext<T, TQuery>,
-	ResourcePipelineBuildOptions<T, TQuery>,
+	ResourcePipelineRunOptions<T, TQuery>,
 	ResourcePipelineArtifact<T, TQuery>
 > {
-	return createPipelineExtension<
-		ResourcePipeline<T, TQuery>,
-		ResourcePipelineContext<T, TQuery>,
-		ResourcePipelineBuildOptions<T, TQuery>,
-		ResourcePipelineArtifact<T, TQuery>
-	>({
+	return {
 		key: 'core.resource.finalize-definition',
+		lifecycle: 'finalize',
 		hook({ artifact, context }) {
 			let definition: ResourceDefinedEvent<T, TQuery> | undefined;
 
@@ -86,5 +78,5 @@ export function createFinalizeResourceDefinitionExtension<
 				},
 			};
 		},
-	});
+	};
 }

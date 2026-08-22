@@ -2,10 +2,10 @@ import type { Reporter } from '@wpkernel/core/reporter';
 import type {
 	Helper,
 	HelperDescriptor,
-	Pipeline as CorePipeline,
-	PipelineExtension as CorePipelineExtension,
-	PipelineExtensionHookOptions as CorePipelineExtensionHookOptions,
-} from '@wpkernel/pipeline';
+	SerialPipelineHookOptions as CorePipelineExtensionHookOptions,
+	SerialPipelineExtension,
+} from '@wpkernel/pipeline/v1';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import type {
 	BuilderHelper as PhpBuilderHelper,
 	BuilderInput as BaseBuilderInput,
@@ -269,9 +269,9 @@ export interface PipelineExtensionHookResult {
 	/** Optional: A modified IR artifact. */
 	readonly artifact?: IRv1;
 	/** Optional: A function to commit changes made by the hook. */
-	readonly commit?: () => Promise<void>;
+	readonly commit?: () => MaybePromise<void>;
 	/** Optional: A function to rollback changes made by the hook. */
-	readonly rollback?: () => Promise<void>;
+	readonly rollback?: () => MaybePromise<void>;
 }
 
 /**
@@ -281,38 +281,23 @@ export interface PipelineExtensionHookResult {
  */
 export type PipelineExtensionHook = (
 	options: PipelineExtensionHookOptions
-) => Promise<PipelineExtensionHookResult | void>;
+) => MaybePromise<PipelineExtensionHookResult | void>;
 
 /**
  * The main pipeline interface for CLI operations.
  *
  * @category Runtime
  */
-export type Pipeline = CorePipeline<
-	PipelineRunOptions,
-	PipelineRunResult,
-	PipelineContext,
-	PipelineContext['reporter'],
-	FragmentIrOptions,
-	IRv1,
-	FragmentInput,
-	FragmentOutput,
-	BuilderInput,
-	BuilderOutput,
-	PipelineDiagnostic,
-	FragmentHelper['kind'],
-	BuilderHelper['kind'],
-	FragmentHelper,
-	BuilderHelper
->;
+export interface Pipeline {
+	run: (options: PipelineRunOptions) => MaybePromise<PipelineRunResult>;
+}
 
 /**
  * Represents a pipeline extension.
  *
  * @category Runtime
  */
-export type PipelineExtension = CorePipelineExtension<
-	Pipeline,
+export type PipelineExtension = SerialPipelineExtension<
 	PipelineContext,
 	PipelineRunOptions,
 	IRv1

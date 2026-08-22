@@ -1,7 +1,10 @@
 import {
-	createPipeline as createCorePipeline,
-	type CreatePipelineOptions,
-} from '@wpkernel/pipeline';
+	createSerialPipeline,
+	runPipeline,
+	type CreateSerialPipelineOptions,
+	type SerialPipeline,
+	type SerialRunOutcome,
+} from '@wpkernel/pipeline/v1';
 import { WPKernelError } from '@wpkernel/core/error';
 import type { FragmentIrOptions } from '../ir/publicTypes';
 import {
@@ -19,10 +22,15 @@ import type {
 	FragmentOutput,
 	Pipeline,
 	PipelineContext,
-	PipelineDiagnostic,
 	PipelineRunOptions,
 	PipelineRunResult,
 } from './types';
+import { observeMaybePromise } from './maybePromise';
+
+const cliProgrammeAuthorities = new WeakMap<
+	object,
+	SerialPipeline<PipelineRunOptions, PipelineRunResult>
+>();
 
 function buildBuilderOutput(): BuilderOutput {
 	const actions: BuilderOutput['actions'] = [];
@@ -55,23 +63,17 @@ function mapRunOptionsToBuildOptions(
  * @category Runtime
  * @returns A `Pipeline` instance configured for CLI operations.
  */
-type CliPipelineOptions = CreatePipelineOptions<
+export type CliPipelineOptions = CreateSerialPipelineOptions<
 	PipelineRunOptions,
 	FragmentIrOptions,
 	PipelineContext,
-	PipelineContext['reporter'],
 	MutableIr,
 	PipelineRunResult['ir'],
-	PipelineDiagnostic,
 	PipelineRunResult,
 	FragmentInput,
 	FragmentOutput,
 	BuilderInput,
-	BuilderOutput,
-	FragmentHelper['kind'],
-	BuilderHelper['kind'],
-	FragmentHelper,
-	BuilderHelper
+	BuilderOutput
 >;
 
 export function createPipeline(
@@ -90,27 +92,24 @@ export function createPipeline(
 		'ir.ui.core',
 	];
 
-	return createCorePipeline<
+	const programme = createSerialPipeline<
 		PipelineRunOptions,
 		FragmentIrOptions,
 		PipelineContext,
-		PipelineContext['reporter'],
 		MutableIr,
 		PipelineRunResult['ir'],
-		PipelineDiagnostic,
 		PipelineRunResult,
 		FragmentInput,
 		FragmentOutput,
 		BuilderInput,
-		BuilderOutput,
-		FragmentHelper['kind'],
-		BuilderHelper['kind'],
-		FragmentHelper,
-		BuilderHelper
+		BuilderOutput
 	>({
 		...overrides,
 		builderProvidedKeys:
 			overrides.builderProvidedKeys ?? defaultBuilderProvidedKeys,
+		fragments: overrides.fragments ?? [],
+		builders: overrides.builders ?? [],
+		extensions: overrides.extensions ?? [],
 		createError(code, message) {
 			// Map pipeline error codes to WPKernel ErrorCode
 			const errorCode = code as
@@ -170,18 +169,35 @@ export function createPipeline(
 				extensions: extensionKeys,
 			});
 		},
-		createConflictDiagnostic({ helper, existing, message }) {
-			return {
-				type: 'conflict',
-				key: helper.key,
-				mode: 'override',
-				helpers: [
-					existing.origin ?? existing.key,
-					helper.origin ?? helper.key,
-				],
-				message,
-				kind: helper.kind,
-			} satisfies PipelineDiagnostic;
-		},
-	}) as Pipeline;
+	});
+
+	const pipeline: Pipeline = Object.freeze({ run: runCliPipeline });
+	cliProgrammeAuthorities.set(pipeline, programme);
+	return pipeline;
+}
+
+function runCliPipeline(this: Pipeline, options: PipelineRunOptions) {
+	const programme = cliProgrammeAuthorities.get(this);
+	if (!programme) {
+		throw new TypeError('Invalid CLI Pipeline authority.');
+	}
+	const observed = observeMaybePromise<SerialRunOutcome<PipelineRunResult>>(
+		runPipeline({ pipeline: programme, options })
+	);
+	if (observed.kind === 'failed') {
+		throw observed.error;
+	}
+	return observed.kind === 'synchronous'
+		? unwrapOutcome(observed.value)
+		: observed.promise.then(unwrapOutcome);
+}
+
+function unwrapOutcome<TResult>(outcome: SerialRunOutcome<TResult>): TResult {
+	if (outcome.kind === 'succeeded') {
+		return outcome.result;
+	}
+	if (outcome.kind === 'failed') {
+		throw outcome.error;
+	}
+	throw outcome.reason ?? new Error('CLI pipeline run was cancelled.');
 }

@@ -2,7 +2,7 @@ import {
 	RESOURCE_BUILDER_KIND,
 	RESOURCE_FRAGMENT_KIND,
 } from '../../resources/types';
-import type { HelperDescriptor } from '@wpkernel/pipeline';
+import type { HelperDescriptor } from '@wpkernel/pipeline/v1';
 
 export type ResourceLifecycleResponsibility =
 	| 'validation'

@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { resolveOptions } from '../../../actions/context';
 import type {
 	ActionFragmentHelper,

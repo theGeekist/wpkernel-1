@@ -1,6 +1,6 @@
 import { finalizeIrDraft, buildIrDraft, type MutableIr } from '../types';
 import { WPKernelError } from '@wpkernel/core/error';
-import type { FragmentFinalizationMetadata } from '@wpkernel/pipeline';
+import type { FragmentFinalizationMetadata } from '@wpkernel/pipeline/v1';
 import { makeWPKernelConfigFixture } from '@cli-tests/printers.test-support';
 import { loadTestLayoutSync } from '@wpkernel/test-utils/layout.test-support';
 import { buildTestArtifactsPlan, makeIrMeta } from '@cli-tests/ir.test-support';
@@ -100,5 +100,22 @@ describe('finalizeIrDraft', () => {
 		const helpers = createHelpersMetadata(REQUIRED, ['ir.resources.core']);
 
 		expect(() => finalizeIrDraft(draft, helpers)).toThrow(WPKernelError);
+	});
+
+	it.each([
+		['meta', 'IR meta fragment did not set metadata'],
+		[
+			'capabilityMap',
+			'IR capability map fragment did not resolve capability map',
+		],
+		['php', 'IR PHP fragment did not configure PHP project'],
+		['layout', 'IR layout fragment did not resolve layout'],
+		['artifacts', 'IR artifacts fragment did not resolve artifact plans'],
+	] as const)('rejects a draft without its %s projection', (key, message) => {
+		const draft = buildDraft();
+		const helpers = createHelpersMetadata(REQUIRED, []);
+		draft[key] = null;
+
+		expect(() => finalizeIrDraft(draft, helpers)).toThrow(message);
 	});
 });

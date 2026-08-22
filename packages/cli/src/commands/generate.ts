@@ -127,7 +127,6 @@ async function runGenerateWorkflow(
 		const workspaceRoot = resolveWorkspaceRoot(loaded);
 		const baseWorkspace = dependencies.buildWorkspace(workspaceRoot);
 		const tracked = createTrackedWorkspace(baseWorkspace, { dryRun });
-		const pipeline = dependencies.createPipeline();
 
 		await runCommandReadiness({
 			buildReadinessRegistry: dependencies.buildReadinessRegistry,
@@ -143,9 +142,11 @@ async function runGenerateWorkflow(
 			allowDirty,
 		});
 
-		dependencies.registerFragments(pipeline);
-		dependencies.registerBuilders(pipeline);
-		pipeline.extensions.use(dependencies.buildAdapterExtensionsExtension());
+		const pipeline = dependencies.createPipeline({
+			fragments: dependencies.registerFragments(),
+			builders: dependencies.registerBuilders(),
+			extensions: [dependencies.buildAdapterExtensionsExtension()],
+		});
 
 		const previousGenerationState = await readGenerationState(
 			tracked.workspace

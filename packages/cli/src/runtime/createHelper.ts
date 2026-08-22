@@ -1,5 +1,5 @@
-import type { CreateHelperOptions } from '@wpkernel/pipeline';
-import { createHelper as createCoreHelper } from '@wpkernel/pipeline';
+import type { CreateHelperOptions } from '@wpkernel/pipeline/v1';
+import { createHelper as createCoreHelper } from '@wpkernel/pipeline/v1';
 import type {
 	BuilderHelper,
 	BuilderInput,

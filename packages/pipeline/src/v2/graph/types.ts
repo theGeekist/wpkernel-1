@@ -226,7 +226,12 @@ export interface PauseRequest {
 	readonly reason?: string;
 }
 
-/** Algebraic node settlement: success, declared failure or cancellation. @public */
+/**
+ * Algebraic node settlement: success, declared failure or cancellation.
+ * `cancelled` is valid only after the supplied signal is aborted; premature
+ * cancellation is an invalid-node-result contract failure.
+ * @public
+ */
 export type NodeResult<TOutput extends GraphValue, TFailure, TRequest> =
 	| {
 			readonly kind: 'success';

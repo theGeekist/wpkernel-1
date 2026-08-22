@@ -12,7 +12,7 @@ import type { MaybePromise } from './types.js';
  *
  * @see {@link PipelineRollback}
  * @see {@link createPipelineRollback}
- * @public
+ * @internal
  */
 export interface PipelineRollbackErrorMetadata {
 	/** Error constructor name when it can be read safely. */
@@ -44,11 +44,6 @@ export interface PipelineRollbackErrorMetadata {
  *
  * @example
  * ```ts
- * import {
- *   createPipelineRollback,
- *   type PipelineRollback,
- * } from '@wpkernel/pipeline';
- *
  * const allocations = new Set(['temporary']);
  * const rollback: PipelineRollback = createPipelineRollback(
  *   () => allocations.delete('temporary'),
@@ -56,7 +51,7 @@ export interface PipelineRollbackErrorMetadata {
  * );
  * ```
  *
- * @public
+ * @internal
  */
 export interface PipelineRollback {
 	/** Stable machine-readable owner key for diagnostics. */
@@ -101,12 +96,6 @@ export interface RunRollbackStackOptions {
  *
  * @example
  * ```ts
- * import {
- *   createHelper,
- *   createPipelineRollback,
- *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
- *
  * type Context = {
  *   reporter: PipelineReporter;
  *   cache: Map<string, string>;
@@ -133,7 +122,7 @@ export interface RunRollbackStackOptions {
  * ```
  *
  * @category Pipeline
- * @public
+ * @internal
  */
 export function createPipelineRollback(
 	run: () => unknown | Promise<unknown>,

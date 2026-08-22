@@ -364,4 +364,29 @@ describe('standard pipeline runner coverage', () => {
 			>)
 		).toThrow('expected "builder"');
 	});
+
+	it('uses the default validation error for equal helper kinds', () => {
+		expect(() =>
+			createPipeline({
+				fragmentKind: 'same',
+				builderKind: 'same',
+				createBuildOptions: () => ({}),
+				createContext: () => ({ reporter: baseReporter }),
+				createFragmentState: () => ({}),
+				createFragmentArgs: ({ context }) => ({
+					context,
+					input: undefined,
+					output: undefined,
+					reporter: baseReporter,
+				}),
+				finalizeFragmentState: ({ draft }) => draft,
+				createBuilderArgs: ({ context }) => ({
+					context,
+					input: undefined,
+					output: undefined,
+					reporter: baseReporter,
+				}),
+			})
+		).toThrow('must be distinct');
+	});
 });
