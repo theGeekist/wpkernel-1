@@ -1,5 +1,5 @@
 import { WPKernelError } from '@wpkernel/core/error';
-import { createHelper, type Helper } from '@wpkernel/pipeline';
+import { createHelper, type Helper } from '@wpkernel/pipeline/v1';
 import type { Reporter } from '@wpkernel/core/reporter';
 import type { DriverWorkspace } from './types';
 import type { BuilderInput, BuilderOutput } from './programBuilder';

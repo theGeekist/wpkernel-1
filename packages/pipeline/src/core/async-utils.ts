@@ -96,8 +96,6 @@ export function adoptMaybePromise<T>(
  *
  * @example
  * ```ts
- * import { isPromiseLike } from '@wpkernel/pipeline';
- *
  * const accessorBacked = Object.defineProperty({}, 'then', {
  *   get() {
  *     throw new Error('must not execute');
@@ -108,7 +106,7 @@ export function adoptMaybePromise<T>(
  * isPromiseLike(accessorBacked); // false, getter was not evaluated
  * ```
  *
- * @public
+ * @internal
  */
 export function isPromiseLike<T>(
 	value: MaybePromise<T>
@@ -135,8 +133,6 @@ export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
  *
  * @example
  * ```ts
- * import { isPromiseLike, maybeThen } from '@wpkernel/pipeline';
- *
  * const immediate = maybeThen(2, (value) => value * 3);
  * isPromiseLike(immediate); // false
  *
@@ -144,7 +140,7 @@ export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
  * isPromiseLike(deferred); // true
  * ```
  *
- * @public
+ * @internal
  */
 export function maybeThen<T, TResult>(
 	value: MaybePromise<T>,
@@ -181,15 +177,13 @@ export function maybeThen<T, TResult>(
  *
  * @example
  * ```ts
- * import { maybeTry } from '@wpkernel/pipeline';
- *
  * const parsed = maybeTry(
  *   () => JSON.parse('{invalid}') as unknown,
  *   () => ({ valid: false })
  * );
  * ```
  *
- * @public
+ * @internal
  */
 export function maybeTry<T>(
 	run: () => MaybePromise<T>,
@@ -273,8 +267,6 @@ export function processSequentially<T>(
  *
  * @example
  * ```ts
- * import { isPromiseLike, maybeAll } from '@wpkernel/pipeline';
- *
  * const immediate = maybeAll([1, 2, 3]);
  * isPromiseLike(immediate); // false
  *
@@ -282,7 +274,7 @@ export function processSequentially<T>(
  * isPromiseLike(deferred); // true
  * ```
  *
- * @public
+ * @internal
  */
 export function maybeAll<T>(
 	values: readonly MaybePromise<T>[]

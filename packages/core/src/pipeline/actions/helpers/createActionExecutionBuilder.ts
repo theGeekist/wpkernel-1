@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { createActionLifecycleEvent } from '../../../actions/lifecycle';
 import { emitLifecycleEvent } from '../../../actions/context';
 import type {
@@ -25,7 +25,7 @@ import { WPKernelError } from '../../../error/WPKernelError';
  * @example
  * ```ts
  * const executionBuilder = createActionExecutionBuilder<{ id: string }, string>();
- * pipeline.builders.use(executionBuilder);
+ * const programme = createSerialPipeline({ builders: [executionBuilder], ...options });
  * ```
  */
 export function createActionExecutionBuilder<

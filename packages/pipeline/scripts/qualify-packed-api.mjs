@@ -14,6 +14,9 @@ import { fileURLToPath } from 'node:url';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repositoryRoot = resolve(packageRoot, '..', '..');
+const { default: ts } = await import(
+	join(repositoryRoot, 'node_modules', 'typescript', 'lib', 'typescript.js')
+);
 const sourceManifest = JSON.parse(
 	readFileSync(join(packageRoot, 'package.json'), 'utf8')
 );
@@ -24,278 +27,278 @@ const suppliedTarball = process.argv[2]
 	? resolve(process.cwd(), process.argv[2])
 	: undefined;
 
+const declarationCandidates = (owner, specifier) => {
+	const target = resolve(dirname(owner), specifier);
+	if (/\.mjs$/u.test(target)) {
+		return [target.replace(/\.mjs$/u, '.d.mts')];
+	}
+	if (/\.cjs$/u.test(target)) {
+		return [target.replace(/\.cjs$/u, '.d.cts')];
+	}
+	if (/\.js$/u.test(target)) {
+		return [target.replace(/\.js$/u, '.d.ts')];
+	}
+	return [
+		`${target}.d.ts`,
+		`${target}.d.mts`,
+		`${target}.d.cts`,
+		join(target, 'index.d.ts'),
+	];
+};
+
+const readReachableDeclarations = (entry) => {
+	const pending = [entry];
+	const visited = new Set();
+	const declarations = [];
+	const specifiers = [];
+	while (pending.length > 0) {
+		const path = pending.pop();
+		if (!path || visited.has(path)) {
+			continue;
+		}
+		visited.add(path);
+		const source = readFileSync(path, 'utf8')
+			.replace(/\/\*[\s\S]*?\*\//gu, '')
+			.replace(/\/\/.*$/gmu, '');
+		declarations.push(source);
+		const matcher = /(?:from\s*|import\s*\()\s*['"](\.[^'"]+)['"]/gu;
+		for (const match of source.matchAll(matcher)) {
+			const specifier = match[1];
+			specifiers.push(specifier);
+			const resolved = declarationCandidates(path, specifier).find(
+				(candidate) => existsSync(candidate)
+			);
+			if (!resolved) {
+				throw new Error(
+					`Reachable declaration import could not be resolved: ${specifier} from ${path}`
+				);
+			}
+			pending.push(resolved);
+		}
+	}
+	return { declarations: declarations.join('\n'), specifiers };
+};
+
+const findReachableForbiddenSymbols = (
+	entry,
+	forbiddenNames,
+	forbiddenModules
+) => {
+	const program = ts.createProgram({
+		rootNames: [entry],
+		options: {
+			module: ts.ModuleKind.NodeNext,
+			moduleResolution: ts.ModuleResolutionKind.NodeNext,
+			skipLibCheck: true,
+		},
+	});
+	const checker = program.getTypeChecker();
+	const source = program.getSourceFile(entry);
+	const moduleSymbol = source && checker.getSymbolAtLocation(source);
+	if (!source || !moduleSymbol) {
+		throw new Error(
+			`Could not inspect compatibility declaration symbols: ${entry}`
+		);
+	}
+	const found = new Set();
+	const visitedSymbols = new Set();
+	const declarationRoot = dirname(dirname(entry));
+
+	const visitNode = (node) => {
+		if (ts.isIdentifier(node)) {
+			const referenced = checker.getSymbolAtLocation(node);
+			if (referenced) {
+				visitSymbol(referenced);
+			}
+		}
+		ts.forEachChild(node, visitNode);
+	};
+	const recordForbiddenSymbols = (candidate, symbol) => {
+		if (forbiddenNames.has(candidate.getName())) {
+			found.add(candidate.getName());
+		}
+		if (forbiddenNames.has(symbol.getName())) {
+			found.add(symbol.getName());
+		}
+	};
+	const visitOwnedDeclarations = (symbol) => {
+		for (const ownedDeclaration of symbol.declarations ?? []) {
+			const declarationPath = ownedDeclaration.getSourceFile().fileName;
+			for (const forbiddenModule of forbiddenModules) {
+				if (declarationPath.includes(forbiddenModule)) {
+					found.add(`module:${forbiddenModule}`);
+				}
+			}
+			if (declarationPath.startsWith(declarationRoot)) {
+				visitNode(ownedDeclaration);
+			}
+		}
+	};
+
+	const visitSymbol = (candidate) => {
+		if (!candidate || visitedSymbols.has(candidate)) {
+			return;
+		}
+		visitedSymbols.add(candidate);
+		const symbol =
+			candidate.flags === ts.SymbolFlags.Alias
+				? checker.getAliasedSymbol(candidate)
+				: candidate;
+		recordForbiddenSymbols(candidate, symbol);
+		visitOwnedDeclarations(symbol);
+	};
+
+	for (const exported of checker.getExportsOfModule(moduleSymbol)) {
+		visitSymbol(exported);
+	}
+	return found;
+};
+
 const source = String.raw`
 import {
-	createHelper,
 	createPipeline,
-	isPromiseLike,
-	makePipeline,
-	makeResumablePipeline,
-	maybeThen,
-	maybeTry,
-	type AgnosticPipeline,
-	type Helper,
-	type MaybePromise,
-	type MissingDependencyDiagnostic,
-	type Pipeline,
-	type PipelineRunState,
-	type PipelineStage,
-	type PipelineStageDependencies,
-	type PipelineStageState,
-	type StandardPipelineExtension,
+	runPipeline as runNativePipeline,
+	type GraphDeclaration,
+	type NodeContract,
 } from '@wpkernel/pipeline';
+import {
+	createHelper,
+	createSerialPipeline,
+	runPipeline as runSerialPipeline,
+	type SerialNativeOutcome,
+	type SerialRunOutcome,
+} from '@wpkernel/pipeline/v1';
 
-const mappedUtility = maybeThen(2, (value) => value * 3);
-const recoveredUtility = maybeTry(
-	() => {
-		throw new Error('expected');
-	},
-	() => 7
-);
-if (mappedUtility !== 6 || recoveredUtility !== 7) {
-	throw new Error('Root async utility exports did not preserve sync semantics.');
+function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
+	return (
+		(typeof value === 'object' && value !== null) ||
+		typeof value === 'function'
+	) && typeof Reflect.get(value, 'then') === 'function';
 }
 
-type Kind = 'compiler';
-type Options = { readonly source: string };
-type State = { readonly nodes: readonly string[]; readonly revision: number };
-type Reporter = { warn?: (message: string, context?: unknown) => void };
-type Context = { readonly reporter: Reporter };
-type Diagnostic = MissingDependencyDiagnostic<Kind>;
-type Result = PipelineRunState<State, Diagnostic>;
-type StageState = PipelineStageState<
-	Options,
-	State,
-	Context,
-	Reporter,
-	Diagnostic
->;
-type Dependencies = PipelineStageDependencies<
-	Options,
-	State,
-	Context,
-	Reporter,
-	Diagnostic,
-	Result,
-	Kind
->;
-type CompilerHelper = Helper<Context, Options, State, Reporter, Kind>;
+type NativeInputs = Readonly<{ source: string }>;
+type NativeNodes = Readonly<{
+	uppercase: NodeContract<'source', string, never>;
+}>;
+type NativeOutputs = Readonly<{ result: 'uppercase' }>;
 
-const assertTypes = (deps: Dependencies): void => {
-	// @ts-expect-error helper kind must belong to the declared union
-	deps.makeHelperStage('invalid-kind');
-	const invalidStage: PipelineStage<StageState, Result> =
-		// @ts-expect-error stage output must preserve StageState
-		(state) => ({ ...state, userState: 'invalid-state' });
-	void invalidStage;
-	// @ts-expect-error stage state must be derived from the branded input
-	const reconstructedState: StageState = {
-		context: { reporter: {} },
-		reporter: {},
-		runOptions: { source: 'fixture' },
-		userState: { nodes: [], revision: 0 },
-		steps: [],
-		diagnostics: [],
-		executedLifecycles: new Set(),
-	};
-	void reconstructedState;
-};
-void assertTypes;
-
-const pipeline = makePipeline<
-	Options,
-	Context,
-	Reporter,
-	State,
-	Diagnostic,
-	Result,
-	Kind
->({
-	helperKinds: ['compiler'],
-	createContext: () => ({ reporter: {} }),
-	createState: () => ({ nodes: [], revision: 0 }),
-	createStages: (deps) => {
-		const inferred: Dependencies = deps;
-		void inferred;
-		return [
-			deps.makeHelperStage<Options, State, Kind, CompilerHelper>(
-				'compiler',
-				{
-					makeArgs: (state) => (entry) => {
-						const helper: CompilerHelper = entry.helper;
-						void helper;
-						return {
-							context: state.context,
-							input: state.runOptions,
-							output: state.userState,
-							reporter: state.reporter,
-						};
-					},
-					writeOutput: (state, output) => ({
-						...state,
-						userState: output,
-					}),
-				}
-			),
-			(state) => ({
-				...state,
-				userState: {
-					nodes: [...state.userState.nodes, 'custom-stage'],
-					revision: state.userState.revision + 1,
-				},
-			}),
-			deps.finalizeResult,
-		];
+const declaration: GraphDeclaration<
+	NativeInputs,
+	NativeNodes,
+	readonly [],
+	Readonly<Record<never, never>>,
+	NativeOutputs,
+	Readonly<Record<never, never>>
+> = {
+	inputKeys: ['source'],
+	nodes: {
+		uppercase: { externalInputs: ['source'], effectKeys: [], priority: 0 },
 	},
-	createRunResult: ({ artifact, diagnostics, state }) => {
-		const typedState: StageState = state;
-		void typedState;
-		return { artifact, diagnostics, steps: state.steps };
-	},
-});
-
-const typedAgnosticPipeline: AgnosticPipeline<
-	Options,
-	Result,
-	Context,
-	Reporter,
-	Kind
-> = pipeline;
-void typedAgnosticPipeline;
-
-const assertPipelineSurface = () => {
-	// @ts-expect-error configured helper kinds constrain registration
-	pipeline.use({ ...({} as CompilerHelper), kind: 'invalid-kind' });
-	// @ts-expect-error providedKeys is construction input, not runtime state
-	void pipeline.providedKeys;
-};
-void assertPipelineSurface;
-
-export const resumable = makeResumablePipeline({
-	helperKinds: ['compiler'] as const,
-	createContext: () => ({ reporter: {} }),
-	createState: () => ({ nodes: [], revision: 0 }),
-});
-
-pipeline.use(
-	createHelper<Context, Options, State, Reporter, Kind>({
-		key: 'compiler.first',
-		kind: 'compiler',
-		apply: ({ output }) => ({
-			output: {
-				nodes: [...output.nodes, 'first'],
-				revision: output.revision + 1,
-			},
+	edges: [],
+	effects: {},
+	outputs: { result: 'uppercase' },
+	policy: { maxConcurrency: 1 },
+	executors: {
+		uppercase: ({ input }) => ({
+			kind: 'success',
+			output: input.external.source.toUpperCase(),
+			effects: [],
 		}),
-	})
-);
+	},
+};
 
-pipeline.use(
-	createHelper<Context, Options, State, Reporter, Kind>({
-		key: 'compiler.around',
-		kind: 'compiler',
-		dependsOn: ['compiler.first'],
-		apply: ({ output }, next) => {
-			const downstream: MaybePromise<State> = next!({
-				nodes: [...output.nodes, 'before-next'],
-				revision: output.revision + 1,
-			});
-			if (isPromiseLike(downstream)) {
-				throw new Error('A synchronous helper chain became asynchronous.');
-			}
-			return {
-				output: {
-					nodes: [...downstream.nodes, 'after-next'],
-					revision: downstream.revision + 1,
-				},
-			};
-		},
-	})
-);
-
-export const result = pipeline.run({ source: 'post:1' });
-if (isPromiseLike(result)) {
-	throw new Error('A synchronous pipeline returned a Promise.');
+export const native = createPipeline({ declaration, participants: {} });
+export const nativeOutcome = runNativePipeline({
+	pipeline: native,
+	inputs: { source: 'native' },
+	capabilities: {},
+});
+if (isPromiseLike(nativeOutcome)) {
+	throw new Error('Synchronous native graph became asynchronous.');
 }
-const expected = ['first', 'before-next', 'after-next', 'custom-stage'];
-if (JSON.stringify(result.artifact.nodes) !== JSON.stringify(expected)) {
-	throw new Error(
-		'Immutable replacement output was not preserved: ' +
-			JSON.stringify(result.artifact.nodes)
-	);
+if (
+	nativeOutcome.kind !== 'succeeded' || nativeOutcome.outputs.result !== 'NATIVE'
+) {
+	throw new Error('Native root did not preserve synchronous graph evaluation.');
 }
 
-type StandardDraft = { readonly parts: readonly string[] };
-type StandardArtifact = { readonly value: string };
-type StandardResult = PipelineRunState<StandardArtifact>;
-type StandardPipeline = Pipeline<
-	Options,
-	StandardResult,
-	Context,
-	Reporter,
-	Record<string, never>,
-	StandardArtifact,
-	StandardDraft,
-	StandardDraft,
-	StandardArtifact,
-	StandardArtifact
->;
-
-const standardPipeline: StandardPipeline = createPipeline({
+export const serial = createSerialPipeline({
 	createBuildOptions: () => ({}),
 	createContext: () => ({ reporter: {} }),
-	createFragmentState: (): StandardDraft => ({ parts: ['draft'] }),
+	createFragmentState: () => [] as string[],
 	createFragmentArgs: ({ context, draft }) => ({
 		context,
-		input: draft,
+		input: undefined,
 		output: draft,
 		reporter: context.reporter,
 	}),
-	finalizeFragmentState: ({ draft }): StandardArtifact => ({
-		value: draft.parts.join(':'),
-	}),
+	finalizeFragmentState: ({ draft }) => draft,
 	createBuilderArgs: ({ context, artifact }) => ({
 		context,
-		input: artifact,
+		input: undefined,
 		output: artifact,
 		reporter: context.reporter,
 	}),
+	createRunResult: ({ artifact }) => artifact,
+	fragments: [
+		createHelper({
+			key: 'fragment',
+			kind: 'fragment',
+			apply: ({ output }) => void (output as string[]).push('serial'),
+		}),
+	],
+	builders: [],
 });
-type ExportedStandardExtension = StandardPipelineExtension<
-	Options,
-	StandardResult,
-	Context,
-	Reporter,
-	Record<string, never>,
-	StandardArtifact,
-	StandardDraft,
-	StandardDraft,
-	StandardArtifact,
-	StandardArtifact
->;
-const exportedStandardExtension: ExportedStandardExtension = {
-	register: () => ({ artifact }) => ({
-		artifact: { value: artifact.value + ':typed' },
-	}),
-};
-standardPipeline.extensions.use(exportedStandardExtension);
-const assertStandardPipelineSurface = () => {
-	standardPipeline.use({
-		...({} as Parameters<StandardPipeline['ir']['use']>[0]),
-		// @ts-expect-error generic registration accepts only standard helper kinds
-		kind: 'invalid-kind',
-	});
-};
-void assertStandardPipelineSurface;
 
-const standardResult = standardPipeline.run({ source: 'standard' });
-if (isPromiseLike(standardResult)) {
-	throw new Error('A synchronous standard pipeline returned a Promise.');
+export const serialOutcome = runSerialPipeline({ pipeline: serial, options: {} });
+if (isPromiseLike(serialOutcome)) {
+	throw new Error('Synchronous serial compatibility became asynchronous.');
 }
-if (standardResult.artifact.value !== 'draft:typed') {
-	throw new Error(
-		'Standard extension did not receive and replace the finalised artifact.'
-	);
+export const typedSerialOutcome: SerialRunOutcome<unknown> = serialOutcome;
+export type InferredNativeOutcome = typeof nativeOutcome;
+export type InferredSerialPipeline = typeof serial;
+export type InferredSerialOutcome = typeof serialOutcome;
+type ExpectNever<T extends never> = T;
+export type SerialSuspensionIsImpossible = ExpectNever<
+	Extract<SerialNativeOutcome, { readonly kind: 'suspended' }>
+>;
+if (
+	typedSerialOutcome.kind !== 'succeeded' ||
+	JSON.stringify(typedSerialOutcome.result) !== JSON.stringify(['serial'])
+) {
+	throw new Error('Serial compatibility did not preserve helper output.');
+}
+if (
+	typedSerialOutcome.native.effectJournal.some((entry) =>
+		Object.values(entry).some((value) => typeof value === 'function')
+	)
+) {
+	throw new Error('Native evidence exposed effect settlement authority.');
+}
+
+const root = await import('@wpkernel/pipeline');
+const compatibility = await import('@wpkernel/pipeline/v1');
+for (const rejected of [
+	'createHelper',
+	'createSerialPipeline',
+	'makePipeline',
+	'makeResumablePipeline',
+]) {
+	if (rejected in root) {
+		throw new Error('Native root leaked compatibility symbol: ' + rejected);
+	}
+}
+for (const rejected of [
+	'createPipeline',
+	'createPipelineExtension',
+	'createPipelineRollback',
+	'makePipeline',
+	'makeResumablePipeline',
+	'maybeThen',
+]) {
+	if (rejected in compatibility) {
+		throw new Error('Compatibility entry leaked rejected authority: ' + rejected);
+	}
 }
 `;
 
@@ -351,7 +354,8 @@ try {
 	}
 	const exportKeys = Object.keys(packedManifest.exports ?? {}).sort();
 	if (
-		JSON.stringify(exportKeys) !== JSON.stringify(['.', './package.json'])
+		JSON.stringify(exportKeys) !==
+		JSON.stringify(['.', './package.json', './v1'])
 	) {
 		throw new Error(
 			`Packed package exposes unexpected entry points: ${exportKeys.join(', ')}`
@@ -400,6 +404,18 @@ try {
 	);
 	mkdirSync(join(fixtureRoot, 'src'), { recursive: true });
 	writeFileSync(join(fixtureRoot, 'src', 'index.ts'), source);
+	writeFileSync(
+		join(fixtureRoot, 'src', 'rejected-root.ts'),
+		"// @ts-expect-error compatibility authoring is not exported at the native root\nimport { createHelper } from '@wpkernel/pipeline';\nvoid createHelper;\n"
+	);
+	writeFileSync(
+		join(fixtureRoot, 'src', 'rejected-v1.ts'),
+		"// @ts-expect-error mutable runner authority is not exported by /v1\nimport { createPipeline } from '@wpkernel/pipeline/v1';\nvoid createPipeline;\n"
+	);
+	writeFileSync(
+		join(fixtureRoot, 'src', 'rejected-deep.ts'),
+		"// @ts-expect-error private implementation subpaths are not package exports\nimport { createHelper } from '@wpkernel/pipeline/dist/core/helper.js';\nvoid createHelper;\n"
+	);
 
 	const typescriptBin = join(
 		repositoryRoot,
@@ -430,6 +446,15 @@ try {
 		'utf8'
 	);
 	if (
+		!declaration.includes('InferredNativeOutcome') ||
+		!declaration.includes('InferredSerialPipeline') ||
+		!declaration.includes('InferredSerialOutcome')
+	) {
+		throw new Error(
+			'Packed consumer declaration did not retain representative inferred values and outcomes.'
+		);
+	}
+	if (
 		declaration.includes('core/runner') ||
 		declaration.includes('dist/core/') ||
 		declaration.includes('AgnosticStageDeps')
@@ -437,6 +462,28 @@ try {
 		throw new Error(
 			'External declarations leaked private Pipeline runner types.'
 		);
+	}
+
+	readReachableDeclarations(join(installedPackage, 'dist', 'v1.d.ts'));
+	const forbiddenSymbols = new Set([
+		'PreparedSerialRun',
+		'Suspension',
+		'createPipelineExtension',
+		'createPipelineRollback',
+		'makePipeline',
+		'makeResumablePipeline',
+		'maybeThen',
+	]);
+	for (const rejectedSymbol of findReachableForbiddenSymbols(
+		join(installedPackage, 'dist', 'v1.d.ts'),
+		forbiddenSymbols,
+		new Set(['serial-authority', 'suspension/types'])
+	)) {
+		if (rejectedSymbol) {
+			throw new Error(
+				`Compatibility declarations leaked rejected authority: ${rejectedSymbol}`
+			);
+		}
 	}
 
 	execFileSync(process.execPath, [join(fixtureRoot, 'dist', 'index.js')], {

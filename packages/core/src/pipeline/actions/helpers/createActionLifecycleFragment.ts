@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { createActionLifecycleEvent } from '../../../actions/lifecycle';
 import { emitLifecycleEvent } from '../../../actions/context';
 import { WPKernelError } from '../../../error/WPKernelError';
@@ -23,7 +23,7 @@ import { readMonotonicTime } from './timing';
  * @example
  * ```ts
  * const lifecycleFragment = createActionLifecycleFragment<{ id: string }, string>();
- * pipeline.ir.use(lifecycleFragment);
+ * const programme = createSerialPipeline({ fragments: [lifecycleFragment], ...options });
  * ```
  */
 export function createActionLifecycleFragment<

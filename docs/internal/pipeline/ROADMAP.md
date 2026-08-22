@@ -19,6 +19,24 @@ The published Task Graph manifest now owns the exact Pipeline 1.4.1 dependency.
 WPKernel does not override it. Release evidence and the remaining external
 llm-core lane are recorded in [`EXTERNAL-LANES.md`](EXTERNAL-LANES.md).
 
+Task Graph beta.2 publishes a raw TypeScript planner. When it runs beneath this
+workspace, Bun applies WPKernel's global Pipeline source mapping and redirects
+Task Graph's exact 1.4.1 import to the local v2 root. A narrow compiled beta.3
+retains and bundles exact Pipeline 1.4.1, restoring the planner without adopting
+unfinished native v2 semantics:
+
+```text
+Task Graph compiled-package base
+  -> qualified 0.1.0-beta.3 archive using Pipeline 1.4.1
+  -> WPKernel exact dependency and lock update
+  -> successful task-graph:plan against the P2-007 checkout
+```
+
+This is a non-blocking tooling lane for P2-007. It must be restored before the
+next task is claimed under the coordination contract, but it is not a Pipeline
+runtime or release dependency. P2-016 separately owns the global declaration
+resolution sharp edge.
+
 The llm-core specification compiler has a separate early migration:
 
 ```text

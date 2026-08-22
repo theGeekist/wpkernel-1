@@ -8,6 +8,7 @@ import type {
 	AdapterExtension,
 	AdapterExtensionContext,
 } from '../config/types';
+import type { MaybePromise } from '@wpkernel/pipeline';
 import type { IRAdapterChange, IRv1 } from '../ir/publicTypes';
 import { diffIr } from './changeLog';
 
@@ -48,7 +49,7 @@ interface RunAdapterExtensionsOptions {
 	configDirectory?: string;
 	ensureDirectory: (directoryPath: string) => Promise<void>;
 	writeFile: (filePath: string, contents: string) => Promise<void>;
-	formatPhp: (filePath: string, contents: string) => Promise<string>;
+	formatPhp: (filePath: string, contents: string) => MaybePromise<string>;
 	formatTs: (filePath: string, contents: string) => Promise<string>;
 }
 

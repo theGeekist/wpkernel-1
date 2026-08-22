@@ -186,4 +186,52 @@ describe('createActionExecutionBuilder', () => {
 		expect(readMonotonicTime).not.toHaveBeenCalled();
 		expect(measureDurationMs).toHaveBeenCalledWith(25);
 	});
+
+	it('rejects execution without an assembled action context', async () => {
+		const helper = createActionExecutionBuilder<
+			{ value: number },
+			{ ok: boolean }
+		>();
+		const context = { ...baseContext, actionContext: undefined };
+
+		await expect(
+			helper.apply({
+				context,
+				reporter,
+				input: {
+					args: { value: 4 },
+					handler: async () => ({ ok: true }),
+				},
+				output: {},
+			})
+		).rejects.toMatchObject({
+			code: 'DeveloperError',
+			message:
+				'action.execute.handler requires an action context. Ensure action.context.assemble runs first.',
+		});
+	});
+
+	it('rejects execution without resolved action options', async () => {
+		const helper = createActionExecutionBuilder<
+			{ value: number },
+			{ ok: boolean }
+		>();
+		const context = { ...baseContext, resolvedOptions: undefined };
+
+		await expect(
+			helper.apply({
+				context,
+				reporter,
+				input: {
+					args: { value: 5 },
+					handler: async () => ({ ok: true }),
+				},
+				output: {},
+			})
+		).rejects.toMatchObject({
+			code: 'DeveloperError',
+			message:
+				'action.execute.handler requires resolved options. Ensure action.options.resolve runs first.',
+		});
+	});
 });

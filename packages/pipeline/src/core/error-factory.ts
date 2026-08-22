@@ -17,26 +17,8 @@
  *
  * @example
  * ```ts
- * import {
- *   makePipeline,
- *   type ErrorFactory,
- *   type PipelineReporter,
- * } from '@wpkernel/pipeline';
- *
- * class HostError extends Error {
- *   constructor(readonly code: string, message: string) {
- *     super(message);
- *   }
- * }
- *
  * const createError: ErrorFactory = (code, message) =>
- *   new HostError(code, message);
- *
- * const pipeline = makePipeline({
- *   helperKinds: [],
- *   createContext: () => ({ reporter: {} as PipelineReporter }),
- *   createError,
- * });
+ *   Object.assign(new Error(message), { code });
  * ```
  *
  * @category Pipeline

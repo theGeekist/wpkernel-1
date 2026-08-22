@@ -1,4 +1,4 @@
-import { createHelper } from '@wpkernel/pipeline';
+import { createHelper } from '@wpkernel/pipeline/v1';
 import { buildResourceObject } from '../../../resource/buildResourceObject';
 import type {
 	ResourceBuilderHelper,
@@ -18,7 +18,7 @@ import { WPKernelError } from '../../../error/WPKernelError';
  * @example
  * ```ts
  * const builder = createResourceObjectBuilder<Post, { id: number }>();
- * pipeline.builders.use(builder);
+ * const programme = createSerialPipeline({ builders: [builder], ...options });
  * ```
  */
 export function createResourceObjectBuilder<T, TQuery>(): ResourceBuilderHelper<
