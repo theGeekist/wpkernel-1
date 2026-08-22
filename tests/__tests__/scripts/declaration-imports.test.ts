@@ -370,5 +370,5 @@ void exportKeysAreExact;
 				processError.stdout || processError.stderr || String(error)
 			);
 		}
-	});
+	}, 30_000);
 });

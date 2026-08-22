@@ -96,7 +96,7 @@ describe('app-config builder', () => {
 					rating: { type: 'number' },
 				},
 				taxonomies: {
-					topics: { taxonomy: 'topics' },
+					departments: { taxonomy: 'acme_department' },
 				},
 			} as any,
 		});
@@ -140,7 +140,11 @@ describe('app-config builder', () => {
 		expect(configWrite).toBeDefined();
 		expect(configWrite?.contents).toContain("id: 'title'");
 		expect(configWrite?.contents).toContain("id: 'rating'");
-		expect(configWrite?.contents).toContain("id: 'topics'");
+		expect(configWrite?.contents).toContain("id: 'departments'");
+		expect(configWrite?.contents).toContain("item['departments']");
+		expect(configWrite?.contents).toMatch(
+			/defaultView: \{[\s\S]*fields: \[[\s\S]*'departments'/u
+		);
 	});
 
 	it('deduplicates core, meta, and taxonomy DataViews fields', async () => {
@@ -155,8 +159,8 @@ describe('app-config builder', () => {
 					priority: { type: 'integer' },
 				},
 				taxonomies: {
-					statusTaxonomy: { taxonomy: 'status' },
-					priorityTaxonomy: { taxonomy: 'priority' },
+					status: { taxonomy: 'status' },
+					priority: { taxonomy: 'priority' },
 				},
 			} as any,
 		});

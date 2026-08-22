@@ -153,6 +153,7 @@ async function generateAdminScreen(options: {
 	const componentMeta = resolveAdminScreenComponentMetadata(descriptor);
 	const names = resolveAdminNames(descriptor, componentMeta);
 	const paths = resolveAdminPaths(uiPlan, componentMeta);
+	const canCreate = hasCollectionRoute(resource, ['POST']);
 
 	const resourceImport = buildRelativeImport(
 		paths.appliedScreenPath,
@@ -340,7 +341,8 @@ async function generateAdminScreen(options: {
 				names,
 				entityType,
 				quickForm,
-				listRoutePath
+				listRoutePath,
+				canCreate
 			);
 		},
 	});
@@ -642,13 +644,14 @@ function writeAdminScreenReturn(
 	names: AdminNames,
 	entityType: string,
 	quickForm: string,
-	listRoutePath: string | null
+	listRoutePath: string | null,
+	canCreate: boolean
 ): void {
 	writer.writeLine('return (');
 	writer.indent(() => {
 		writer.writeLine('<div className="wrap">');
 		writer.indent(() => {
-			writeAdminHeader(writer, pascalName, resourceName);
+			writeAdminHeader(writer, pascalName, resourceName, canCreate);
 			writer.writeLine('<hr className="wp-header-end" />');
 			writer.blankLine();
 			writeResourceDataViewBlock(
@@ -667,7 +670,8 @@ function writeAdminScreenReturn(
 function writeAdminHeader(
 	writer: CodeBlockWriter,
 	pascalName: string,
-	resourceName: string
+	resourceName: string,
+	canCreate: boolean
 ): void {
 	writer.writeLine(
 		'<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>'
@@ -676,15 +680,33 @@ function writeAdminHeader(
 		writer.writeLine(
 			`<h1 className="wp-heading-inline">${pascalName}s</h1>`
 		);
-		writer.writeLine(
-			'<Button variant="primary" onClick={() => { setEditId(null); setFormOpen(true); }}>'
-		);
-		writer.indent(() => {
-			writer.writeLine(`Create ${resourceName}`);
-		});
-		writer.writeLine('</Button>');
+		if (canCreate) {
+			writer.writeLine(
+				'<Button variant="primary" onClick={() => { setEditId(null); setFormOpen(true); }}>'
+			);
+			writer.indent(() => {
+				writer.writeLine(`Create ${resourceName}`);
+			});
+			writer.writeLine('</Button>');
+		}
 	});
 	writer.writeLine('</div>');
+}
+
+function hasCollectionRoute(
+	resource: IRResource,
+	methods: readonly string[]
+): boolean {
+	const identityParam = resource.identity?.param ?? 'id';
+	const placeholders = [`:${identityParam}`, `{${identityParam}}`];
+
+	return resource.routes.some(
+		(route) =>
+			methods.includes(route.method.toUpperCase()) &&
+			!placeholders.some((placeholder) =>
+				route.path.includes(placeholder)
+			)
+	);
 }
 
 function writeResourceDataViewBlock(

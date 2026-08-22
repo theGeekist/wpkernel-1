@@ -1,4 +1,5 @@
 import path from 'node:path';
+import * as ts from 'typescript';
 import { createAppFormBuilder } from '../app-form';
 import { makeIr } from '@cli-tests/ir.test-support';
 import { makeWorkspaceMock } from '@cli-tests/workspace.test-support';
@@ -188,7 +189,7 @@ describe('app-form builder (branches)', () => {
 					id: 'post',
 					storage: {
 						mode: 'wp-post',
-						supports: ['title', 'editor'],
+						supports: ['title', 'editor', 'excerpt'],
 						meta: {
 							rating: { type: 'number' },
 							isFeatured: { type: 'boolean' },
@@ -234,6 +235,8 @@ describe('app-form builder (branches)', () => {
 		expect(writes).toHaveLength(1);
 		const content = writes[0]?.contents ?? '';
 		expect(content).toContain("title: '',"); // default form
+		expect(content).toContain("content: '',");
+		expect(content).toContain("excerpt: '',");
 		expect(content).toContain('rating: undefined,');
 		expect(content).toContain('isFeatured: undefined,');
 		expect(content).toContain('category: undefined,');
@@ -247,6 +250,18 @@ describe('app-form builder (branches)', () => {
 		);
 		expect(content).toContain(
 			"selectField<PostFormInput>('category', categoryOptions.options, { label: 'Category', edit: 'select' }),"
+		);
+		expect(content).toContain(
+			"textField<PostFormInput>('content', { label: 'Content', edit: 'text' }),"
+		);
+		expect(content).toContain(
+			"textField<PostFormInput>('excerpt', { label: 'Excerpt', edit: 'text' }),"
+		);
+		expect(content).toContain(
+			'if (input.content !== undefined) payload.content = input.content;'
+		);
+		expect(content).toContain(
+			'if (input.excerpt !== undefined) payload.excerpt = input.excerpt;'
 		);
 	});
 
@@ -380,6 +395,125 @@ describe('app-form builder (branches)', () => {
 		expect(writes[0]?.contents).toContain(
 			'const fetchPath = `/acme/v1/posts/${editId}`;'
 		);
+	});
+
+	it('does not generate item actions or a fallback fetch URL for a list-only resource', async () => {
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+		const ir = makeIr({
+			resources: [
+				{
+					name: 'post',
+					id: 'post',
+					identity: { type: 'string', param: 'uuid' },
+					routes: [
+						{ method: 'GET', path: '/acme/v1/posts' },
+						{ method: 'POST', path: '/acme/v1/posts' },
+					],
+					storage: { mode: 'wp-post' },
+				} as any,
+			],
+		});
+		ir.artifacts.surfaces = {
+			post: {
+				resource: 'post',
+				modulePath: 'path',
+				appDir: 'app',
+				generatedAppDir: 'generated/app',
+			} as any,
+		};
+
+		await createAppFormBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content).not.toContain('quick-edit');
+		expect(content).not.toContain('const fetchPath');
+		expect(content).toContain(
+			'Editing is not available for this resource.'
+		);
+		const transpiled = ts.transpileModule(content, {
+			fileName: 'PostForm.tsx',
+			compilerOptions: {
+				jsx: ts.JsxEmit.ReactJSX,
+				target: ts.ScriptTarget.ES2022,
+			},
+			reportDiagnostics: true,
+		});
+		expect(
+			(transpiled.diagnostics ?? []).filter(
+				(diagnostic) =>
+					diagnostic.category === ts.DiagnosticCategory.Error
+			)
+		).toEqual([]);
+	});
+
+	it('throws instead of reporting a successful create when create is unavailable', async () => {
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+		const ir = makeIr({
+			resources: [
+				{
+					name: 'post',
+					id: 'post',
+					routes: [{ method: 'GET', path: '/acme/v1/posts' }],
+					storage: { mode: 'wp-post' },
+				} as any,
+			],
+		});
+		ir.artifacts.surfaces = {
+			post: {
+				resource: 'post',
+				modulePath: 'path',
+				appDir: 'app',
+				generatedAppDir: 'generated/app',
+			} as any,
+		};
+
+		await createAppFormBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content).toContain("mode === 'create' && !mutate.create");
+		expect(content).toContain("mode === 'update' && !mutate.update");
+		expect(content).not.toContain('mutate.create?.');
+		expect(content).not.toContain('mutate.update?.');
 	});
 
 	it('generates form without wp-post fields', async () => {

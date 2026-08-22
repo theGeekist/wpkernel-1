@@ -98,7 +98,7 @@ export default [
 			'import/resolver': {
 				typescript: {
 					alwaysTryTypes: true,
-					project: './tsconfig.base.json',
+					project: ['./tsconfig.lib.json', './tsconfig.tests.json'],
 				},
 			},
 		},
