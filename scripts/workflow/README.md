@@ -20,7 +20,7 @@ rebase, squash or add commits only to an open `pr/*` branch.
 
 ## update-upstream-pr.sh
 
-```
+```sh
 PR_BRANCH=pr/<existing-pr> scripts/workflow/update-upstream-pr.sh
 ```
 

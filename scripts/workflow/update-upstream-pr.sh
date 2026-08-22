@@ -48,22 +48,33 @@ require_pr_branch() {
 	fi
 }
 
+require_authoring_main_branch() {
+	if [[ $FORK_BRANCH != main ]]; then
+		echo "Error: FORK_BRANCH must be main, not '${FORK_BRANCH}'." >&2
+		exit 1
+	fi
+}
+
+fetch_required_branch() {
+	local branch=$1
+	if ! git fetch "$FORK_REMOTE" "$branch"; then
+		echo "Error: missing ${FORK_REMOTE}/${branch} after fetch." >&2
+		exit 1
+	fi
+	if ! git show-ref --verify --quiet "refs/remotes/${FORK_REMOTE}/${branch}"; then
+		echo "Error: missing ${FORK_REMOTE}/${branch} after fetch." >&2
+		exit 1
+	fi
+}
+
 require_binary git
+require_authoring_main_branch
 require_clean_worktree
 require_authoring_remote_contract "$FORK_REMOTE"
 require_pr_branch
 
-git fetch "$FORK_REMOTE" "$FORK_BRANCH"
-git fetch "$FORK_REMOTE" "$PR_BRANCH"
-
-if ! git show-ref --verify --quiet "refs/remotes/${FORK_REMOTE}/${FORK_BRANCH}"; then
-	echo "Error: missing ${FORK_REMOTE}/${FORK_BRANCH} after fetch." >&2
-	exit 1
-fi
-if ! git show-ref --verify --quiet "refs/remotes/${FORK_REMOTE}/${PR_BRANCH}"; then
-	echo "Error: missing ${FORK_REMOTE}/${PR_BRANCH} after fetch." >&2
-	exit 1
-fi
+fetch_required_branch "$FORK_BRANCH"
+fetch_required_branch "$PR_BRANCH"
 main_sha=$(git rev-parse "refs/remotes/${FORK_REMOTE}/${FORK_BRANCH}")
 pr_sha=$(git rev-parse "refs/remotes/${FORK_REMOTE}/${PR_BRANCH}")
 if ! git merge-base --is-ancestor \

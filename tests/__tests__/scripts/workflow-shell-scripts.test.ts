@@ -156,8 +156,11 @@ if [ "$1" = push ] && [ -n "\${WPK_TEST_RACE_SCRIPT:-}" ]; then
 	"$WPK_TEST_RACE_SCRIPT"
 fi
 if [ "$1" = remote ] && [ "$2" = get-url ]; then
-	printf '%s\\n' '${authoringRepository}'
-	exit 0
+	for remote; do :; done
+	if [ "$remote" = origin ]; then
+		printf '%s\\n' '${authoringRepository}'
+		exit 0
+	fi
 fi
 exec '${git}' "$@"
 `,
@@ -364,7 +367,38 @@ describe('repository workflow shell scripts', () => {
 			stdout: expect.stringContaining(mainSha),
 		});
 		await expect(localBranchState(root)).resolves.toEqual(before);
+		await expect(
+			execFileAsync(updatePrScript, [], {
+				cwd: root,
+				env: { ...environment, PR_BRANCH: 'pr/missing' },
+			})
+		).rejects.toMatchObject({
+			stderr: expect.stringContaining(
+				'Error: missing origin/pr/missing after fetch.'
+			),
+		});
 	});
+
+	it.each([preparePrScript, updatePrScript])(
+		'%s refuses a non-main authoring branch before remote work',
+		async (script) => {
+			const root = await mkdtemp(
+				path.join(os.tmpdir(), 'wpk-authoring-main-only-')
+			);
+			fixtureRoots.push(root);
+			await initialiseRepository(root);
+			await expect(
+				execFileAsync(script, [], {
+					cwd: root,
+					env: { ...process.env, FORK_BRANCH: 'release' },
+				})
+			).rejects.toMatchObject({
+				stderr: expect.stringContaining(
+					"FORK_BRANCH must be main, not 'release'"
+				),
+			});
+		}
+	);
 
 	it('leaves local branches unchanged when a leased PR update races', async () => {
 		const root = await mkdtemp(

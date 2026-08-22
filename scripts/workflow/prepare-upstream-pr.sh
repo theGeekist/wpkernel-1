@@ -70,6 +70,13 @@ require_pr_branch_name() {
 	fi
 }
 
+require_authoring_main_branch() {
+	if [[ $FORK_BRANCH != main ]]; then
+		echo "Error: FORK_BRANCH must be main, not '${FORK_BRANCH}'." >&2
+		exit 1
+	fi
+}
+
 ensure_remote_branch() {
 	local remote=$1
 	local branch=$2
@@ -93,6 +100,7 @@ EOF
 
 require_binary git
 require_binary date
+require_authoring_main_branch
 require_clean_worktree
 require_remote_contracts
 require_branch_name "$FORK_BRANCH"

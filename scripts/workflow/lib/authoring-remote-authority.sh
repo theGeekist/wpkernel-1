@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Intentional sourced-library outputs set by require_authoring_remote_contract.
+# shellcheck disable=SC2034
+declare validated_authoring_fetch_url=''
+# shellcheck disable=SC2034
+declare validated_authoring_push_url=''
+
 github_slug_from_url() {
 	local slug
 	case "$1" in
