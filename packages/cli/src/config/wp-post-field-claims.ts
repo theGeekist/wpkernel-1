@@ -49,7 +49,7 @@ export function findWpPostFieldClaimConflict(
 		return undefined;
 	}
 
-	const claims = buildClaims(resource);
+	const claims = buildClaims(resource, resource.storage);
 	const claimedBy = new Map<string, string>();
 	for (const claim of claims) {
 		const existing = claimedBy.get(claim.key);
@@ -62,12 +62,13 @@ export function findWpPostFieldClaimConflict(
 	return undefined;
 }
 
-function buildClaims(resource: WpPostClaimInput): Claim[] {
-	const storage = resource.storage;
-	if (storage?.mode !== 'wp-post') {
-		return [];
-	}
-
+function buildClaims(
+	resource: WpPostClaimInput,
+	storage: Extract<
+		NonNullable<WpPostClaimInput['storage']>,
+		{ mode: 'wp-post' }
+	>
+): Claim[] {
 	const claims: Claim[] = [];
 	appendReservedClaims(
 		claims,

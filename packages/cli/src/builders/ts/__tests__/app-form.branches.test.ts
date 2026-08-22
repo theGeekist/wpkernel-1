@@ -649,6 +649,61 @@ describe('app-form builder (branches)', () => {
 		).toEqual([]);
 	});
 
+	it('generates delete and quick-edit actions for mutable item routes', async () => {
+		const { workspace, writes } = buildWorkspace();
+		const reporter = buildReporter();
+		const output = buildOutput();
+		const ir = makeIr({
+			resources: [
+				{
+					name: 'post',
+					id: 'post',
+					routes: [
+						{ method: 'GET', path: '/acme/v1/posts/:id' },
+						{ method: 'PATCH', path: '/acme/v1/posts/:id' },
+						{ method: 'DELETE', path: '/acme/v1/posts/:id' },
+					],
+					storage: { mode: 'wp-post' },
+				} as any,
+			],
+		});
+		ir.artifacts.surfaces = {
+			post: {
+				resource: 'post',
+				modulePath: 'path',
+				appDir: 'app',
+				generatedAppDir: 'generated/app',
+			} as any,
+		};
+
+		await createAppFormBuilder().apply({
+			input: {
+				phase: 'generate',
+				options: {
+					namespace: ir.meta.namespace,
+					origin: ir.meta.origin,
+					sourcePath: ir.meta.sourcePath,
+				},
+				ir,
+			},
+			context: {
+				workspace,
+				reporter,
+				phase: 'generate',
+				generationState: buildEmptyGenerationState(),
+			},
+			output,
+			reporter,
+		});
+
+		const content = writes[0]?.contents ?? '';
+		expect(content).toContain('if (mutate.remove)');
+		expect(content).toContain('supportsBulk: true');
+		expect(content).toContain('mutate.remove(id)');
+		expect(content).toContain('if (mutate.update)');
+		expect(content).toContain('id: "quick-edit"');
+	});
+
 	it('throws instead of reporting a successful create when create is unavailable', async () => {
 		const { workspace, writes } = buildWorkspace();
 		const reporter = buildReporter();

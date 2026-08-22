@@ -531,6 +531,35 @@ describe('validateWPKernelConfig', () => {
 		expect(child.error).toHaveBeenCalled();
 	});
 
+	it('accepts readiness helper functions and rejects other values', () => {
+		const { reporter } = createMockReporter();
+		const validConfig = {
+			...createValidConfig(),
+			readiness: { helpers: [() => ({})] },
+		};
+
+		expect(() =>
+			validateWPKernelConfig(validConfig, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).not.toThrow();
+
+		const invalidConfig = {
+			...createValidConfig(),
+			readiness: { helpers: ['not-a-function'] },
+		} as unknown;
+
+		expect(() =>
+			validateWPKernelConfig(invalidConfig, {
+				reporter,
+				origin: 'wpk.config.ts',
+				sourcePath: '/tmp/wpk.config.ts',
+			})
+		).toThrow(WPKernelError);
+	});
+
 	it('accepts blocks.mode "ssr"', () => {
 		const { reporter } = createMockReporter();
 		const config: any = createValidConfig();

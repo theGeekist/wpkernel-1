@@ -91,4 +91,16 @@ describe('wp-post authoritative field claims', () => {
 		const resource = createResource({ storage: { mode: 'transient' } });
 		expect(findWpPostFieldClaimConflict(resource)).toBeUndefined();
 	});
+
+	it('ignores absent routes and paths without an identity placeholder', () => {
+		const resource = createResource({
+			identity: undefined,
+			routes: {
+				list: undefined,
+				get: { method: 'GET', path: '/things' },
+			},
+		});
+
+		expect(findWpPostFieldClaimConflict(resource)).toBeUndefined();
+	});
 });
