@@ -2,7 +2,7 @@
 
 Architecture version: 1
 Projection contract: task front matter under [`tasks/`](tasks/)
-Updated: 2026-08-17
+Updated: 2026-08-25
 
 ## Completed recovery work
 
@@ -11,19 +11,26 @@ Updated: 2026-08-17
   snapshot qualification.
 - `cli-admin-generation-hardening`: done, with generator tests and CLI
   typecheck.
+- `authoring-declarations-contract-v1`: done, with a frozen declarations,
+  imports, namespace and file-composition contract and clean final independent
+  review.
+- `cli-migration-contract-v1`: done, with a frozen migration, ownership,
+  staged-plan and recovery contract and clean final independent review.
 
 No implementation task currently holds an active write scope.
 
 ## Ready parallel frontier
 
-- `authoring-declarations-contract-v1`
 - `source-bridge-contract-v1`
-- `cli-migration-contract-v1`
 - `qualification-contracts-v1`
 
 Each owns one task brief and one separate versioned contract document. No
 ready-frontier task owns package source, shared exports, manifests, lockfiles or
 generated output.
+
+The completed contracts also make `authoring-declarations-v1` and
+`cli-codemod-repair-v1` lifecycle-ready. Their high-priority implementation
+lanes remain behind the two critical contract tasks above.
 
 ## Projection rule
 

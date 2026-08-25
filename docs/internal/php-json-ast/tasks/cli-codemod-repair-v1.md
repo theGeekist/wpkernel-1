@@ -3,7 +3,7 @@ architecture_version: 1
 id: cli-codemod-repair-v1
 title: 'Reconnect CLI codemod execution to migration contract v1'
 stage: cli
-status: proposed
+status: ready
 priority: high
 evidence_milestone: null
 replaced_by: []
@@ -30,10 +30,13 @@ write_scope:
 required_reading:
     - path: docs/internal/php-json-ast/authoring-roadmap.md
       reason: 'Preserve the compiler boundary, recovered evidence and qualification distinctions relevant to this task.'
+    - path: docs/internal/php-json-ast/contracts/cli-migration-v1.md
+      reason: Implement strict discovery and activation without weakening the frozen migration and ownership contract.
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
+    - docs/internal/php-json-ast/contracts/cli-migration-v1.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-25
 ---
 
 # cli-codemod-repair-v1: Reconnect CLI codemod execution to migration contract v1
