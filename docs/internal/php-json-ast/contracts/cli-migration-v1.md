@@ -33,19 +33,19 @@ fixtures on both sides of the migration boundary.
 
 ## 2. Terms
 
-| Term | Meaning |
-| --- | --- |
-| **invocation** | One `generate` or `apply` execution, identified by `invocationId`. |
-| **declared target** | A path explicitly supplied through the PHP codemod configuration. A declaration is not evidence that the path exists. |
-| **resolved target** | A declared target that normalises to one regular, workspace-contained file. |
-| **migration target** | A separately reported source or workspace path whose outcome can affect the migration. It has exactly one terminal target state in an emitted result. |
-| **base** | The last successful generator-owned bytes for a target, retained only after a clean apply. |
-| **incoming** | The candidate bytes produced for the current invocation before they are applied. |
-| **current** | The bytes found at the target path immediately before the operation that would change it. |
-| **guarded region** | The bytes strictly between a valid WPK auto-guard begin and end marker. |
-| **generated artefact** | A file whose complete path is recorded as generated in the last valid generation state. |
-| **user-owned bytes** | Bytes outside a valid guarded region, or bytes in a path without valid generated ownership. |
-| **recovery journal** | The durable invocation record retained while an apply has not reached a terminal result. It is not a successful migration manifest. |
+| Term                   | Meaning                                                                                                                                               |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **invocation**         | One `generate` or `apply` execution, identified by `invocationId`.                                                                                    |
+| **declared target**    | A path explicitly supplied through the PHP codemod configuration. A declaration is not evidence that the path exists.                                 |
+| **resolved target**    | A declared target that normalises to one regular, workspace-contained file.                                                                           |
+| **migration target**   | A separately reported source or workspace path whose outcome can affect the migration. It has exactly one terminal target state in an emitted result. |
+| **base**               | The last successful generator-owned bytes for a target, retained only after a clean apply.                                                            |
+| **incoming**           | The candidate bytes produced for the current invocation before they are applied.                                                                      |
+| **current**            | The bytes found at the target path immediately before the operation that would change it.                                                             |
+| **guarded region**     | The bytes strictly between a valid WPK auto-guard begin and end marker.                                                                               |
+| **generated artefact** | A file whose complete path is recorded as generated in the last valid generation state.                                                               |
+| **user-owned bytes**   | Bytes outside a valid guarded region, or bytes in a path without valid generated ownership.                                                           |
+| **recovery journal**   | The durable invocation record retained while an apply has not reached a terminal result. It is not a successful migration manifest.                   |
 
 All paths in this contract are POSIX-style paths relative to the resolved
 workspace root. They must be non-empty, normalised, and must not escape that
@@ -55,15 +55,15 @@ root through `..`, an absolute path, a symlink, or a platform-specific spelling.
 
 Every migration result carries these independent versions:
 
-| Field | Meaning |
-| --- | --- |
-| `contractVersion` | This ownership and migration contract. Its v1 value is `1`. |
-| `schemaVersion` | The migration-manifest JSON shape. Its v1 value is `1`. |
-| `source.cliVersion` | The CLI version that last successfully produced the authoritative base, if known; otherwise `null`. |
-| `source.generationStateVersion` | The version of the prior generation state, if known; otherwise `null`. |
-| `target.cliVersion` | The executing CLI package version. It must be a non-empty exact package version. |
-| `target.generationStateVersion` | The generation-state version the executing CLI writes. |
-| `ownership.markerVersion` | The recognised ownership marker grammar. Its v1 value is `1`. |
+| Field                           | Meaning                                                                                             |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `contractVersion`               | This ownership and migration contract. Its v1 value is `1`.                                         |
+| `schemaVersion`                 | The migration-manifest JSON shape. Its v1 value is `1`.                                             |
+| `source.cliVersion`             | The CLI version that last successfully produced the authoritative base, if known; otherwise `null`. |
+| `source.generationStateVersion` | The version of the prior generation state, if known; otherwise `null`.                              |
+| `target.cliVersion`             | The executing CLI package version. It must be a non-empty exact package version.                    |
+| `target.generationStateVersion` | The generation-state version the executing CLI writes.                                              |
+| `ownership.markerVersion`       | The recognised ownership marker grammar. Its v1 value is `1`.                                       |
 
 For the recovered v1 fixture corpus, the known released source is `0.11.0`, the
 known beta source and target is `0.12.6-beta.3`, and generation state is version
@@ -186,15 +186,15 @@ must continue emitting those spellings even when the compiler path changes.
 Before an apply can write, delete or replace a target, it classifies the target
 as exactly one of the following:
 
-| Classification | Required evidence | Permitted v1 action |
-| --- | --- | --- |
-| `generated-file` | Path is in a valid prior generation state as a generated artefact and its recorded base matches current bytes. | Replace or remove only through a clean planned migration. |
-| `guarded-file` | One valid guard pair is present. | Change only the guarded region through a clean merge. |
-| `absent-target` | The planned generated path does not exist and has no contrary ownership evidence. | Create it only when the exact staged plan declares a generated artefact at that path. |
-| `user-file` | No valid generated-file evidence and no valid guard pair. | Do not create, replace or delete it. Report a conflict if migration needs to change it. |
-| `modified-generated-file` | Generated-file or guarded-file evidence exists, but current bytes differ from the recorded base outside an independently clean merge. | Three-way merge only; unresolved overlap is a conflict. |
-| `marker-invalid` | Any malformed, duplicate, nested, reversed or unmatched marker. | Do not write, delete or repair it. Report a conflict. |
-| `state-invalid` | Required generation state, base snapshot or path evidence is absent, malformed or version-incompatible. | Do not treat the file as generated. Report a conflict or failed preflight as applicable. |
+| Classification            | Required evidence                                                                                                                     | Permitted v1 action                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `generated-file`          | Path is in a valid prior generation state as a generated artefact and its recorded base matches current bytes.                        | Replace or remove only through a clean planned migration.                                |
+| `guarded-file`            | One valid guard pair is present.                                                                                                      | Change only the guarded region through a clean merge.                                    |
+| `absent-target`           | The planned generated path does not exist and has no contrary ownership evidence.                                                     | Create it only when the exact staged plan declares a generated artefact at that path.    |
+| `user-file`               | No valid generated-file evidence and no valid guard pair.                                                                             | Do not create, replace or delete it. Report a conflict if migration needs to change it.  |
+| `modified-generated-file` | Generated-file or guarded-file evidence exists, but current bytes differ from the recorded base outside an independently clean merge. | Three-way merge only; unresolved overlap is a conflict.                                  |
+| `marker-invalid`          | Any malformed, duplicate, nested, reversed or unmatched marker.                                                                       | Do not write, delete or repair it. Report a conflict.                                    |
+| `state-invalid`           | Required generation state, base snapshot or path evidence is absent, malformed or version-incompatible.                               | Do not treat the file as generated. Report a conflict or failed preflight as applicable. |
 
 Generated state alone is not permission to overwrite a newly user-owned path.
 The current bytes must still be reconciled with the recorded base. Likewise,
@@ -215,74 +215,74 @@ are emitted in the order shown below.
 
 ```json
 {
-  "schemaVersion": 1,
-  "contractVersion": 1,
-  "invocationId": "uuid-or-equivalent-unique-id",
-  "command": "generate",
-  "outcome": "succeeded",
-  "source": {
-    "cliVersion": "0.11.0",
-    "generationStateVersion": 1
-  },
-  "target": {
-    "cliVersion": "0.12.6-beta.3",
-    "generationStateVersion": 1
-  },
-  "ownership": {
-    "markerVersion": 1,
-    "begin": "WPK:BEGIN AUTO",
-    "end": "WPK:END AUTO"
-  },
-  "discovery": [
-    {
-      "occurrenceId": "declaration:0",
-      "configuredPath": "plugin.php",
-      "canonicalPath": "plugin.php",
-      "targetId": "source:plugin.php",
-      "state": "resolved",
-      "reason": null
-    }
-  ],
-  "targets": [
-    {
-      "targetId": "source:plugin.php",
-      "path": "plugin.php",
-      "kind": "source",
-      "state": "unchanged",
-      "reason": "no-op",
-      "ownership": "guarded-file",
-      "observation": {
-        "existence": "present",
-        "readability": "readable",
-        "observedSha256": "lowercase-hex-sha256"
-      },
-      "terminalObservation": {
-        "existence": "present",
-        "readability": "readable",
-        "observedSha256": "lowercase-hex-sha256"
-      },
-      "beforeSha256": "lowercase-hex-sha256-or-null",
-      "afterSha256": "lowercase-hex-sha256-or-null",
-      "diagnosticIds": []
-    }
-  ],
-  "diagnostics": [],
-  "pendingRecovery": null,
-  "stagedPlan": {
-    "schemaVersion": 1,
-    "path": ".wpk/migration/v1/invocations/example/plan.json",
-    "sha256": "lowercase-hex-sha256",
-    "entries": [
-      {
-        "targetId": "generated:.wpk/generate/php/Rest/JobController.php",
-        "action": "write",
-        "incomingPath": ".wpk/migration/v1/invocations/example/incoming/JobController.php",
-        "incomingSha256": "lowercase-hex-sha256"
-      }
-    ]
-  },
-  "startedAt": "RFC-3339 timestamp",
-  "completedAt": "RFC-3339 timestamp"
+	"schemaVersion": 1,
+	"contractVersion": 1,
+	"invocationId": "uuid-or-equivalent-unique-id",
+	"command": "generate",
+	"outcome": "succeeded",
+	"source": {
+		"cliVersion": "0.11.0",
+		"generationStateVersion": 1
+	},
+	"target": {
+		"cliVersion": "0.12.6-beta.3",
+		"generationStateVersion": 1
+	},
+	"ownership": {
+		"markerVersion": 1,
+		"begin": "WPK:BEGIN AUTO",
+		"end": "WPK:END AUTO"
+	},
+	"discovery": [
+		{
+			"occurrenceId": "declaration:0",
+			"configuredPath": "plugin.php",
+			"canonicalPath": "plugin.php",
+			"targetId": "source:plugin.php",
+			"state": "resolved",
+			"reason": null
+		}
+	],
+	"targets": [
+		{
+			"targetId": "source:plugin.php",
+			"path": "plugin.php",
+			"kind": "source",
+			"state": "unchanged",
+			"reason": "no-op",
+			"ownership": "guarded-file",
+			"observation": {
+				"existence": "present",
+				"readability": "readable",
+				"observedSha256": "lowercase-hex-sha256"
+			},
+			"terminalObservation": {
+				"existence": "present",
+				"readability": "readable",
+				"observedSha256": "lowercase-hex-sha256"
+			},
+			"beforeSha256": "lowercase-hex-sha256-or-null",
+			"afterSha256": "lowercase-hex-sha256-or-null",
+			"diagnosticIds": []
+		}
+	],
+	"diagnostics": [],
+	"pendingRecovery": null,
+	"stagedPlan": {
+		"schemaVersion": 1,
+		"path": ".wpk/migration/v1/invocations/example/plan.json",
+		"sha256": "lowercase-hex-sha256",
+		"entries": [
+			{
+				"targetId": "generated:.wpk/generate/php/Rest/JobController.php",
+				"action": "write",
+				"incomingPath": ".wpk/migration/v1/invocations/example/incoming/JobController.php",
+				"incomingSha256": "lowercase-hex-sha256"
+			}
+		]
+	},
+	"startedAt": "RFC-3339 timestamp",
+	"completedAt": "RFC-3339 timestamp"
 }
 ```
 
@@ -344,11 +344,11 @@ Each `diagnostics` entry has this exact shape:
 
 ```json
 {
-  "id": "diagnostic:unique-within-invocation",
-  "code": "stable-machine-code",
-  "severity": "error",
-  "targetId": "source:plugin.php",
-  "message": "Human-readable explanation"
+	"id": "diagnostic:unique-within-invocation",
+	"code": "stable-machine-code",
+	"severity": "error",
+	"targetId": "source:plugin.php",
+	"message": "Human-readable explanation"
 }
 ```
 
@@ -362,8 +362,8 @@ outcome it has the exact shape below, and `targets` must be an empty array:
 
 ```json
 {
-  "journalId": "durable-journal-identity",
-  "journalTargetIds": ["generated:inc/Rest/JobController.php"]
+	"journalId": "durable-journal-identity",
+	"journalTargetIds": ["generated:inc/Rest/JobController.php"]
 }
 ```
 
@@ -386,14 +386,14 @@ targets. Generation must derive every later target from an explicit
 section 4.2. Its kind is declared by the generation artefact role, never guessed
 from an extension or directory:
 
-| Artefact role | Required kind |
-| --- | --- |
-| Resource generated artefact or PHP index | `generated` |
-| Resource applied shim | `shim` |
-| Plugin loader | `plugin-loader` |
-| Runtime generated or applied pair | `runtime` |
-| Block generated or applied pair | `block` |
-| Generation state, migration result, staged plan or recovery journal | `state` |
+| Artefact role                                                       | Required kind   |
+| ------------------------------------------------------------------- | --------------- |
+| Resource generated artefact or PHP index                            | `generated`     |
+| Resource applied shim                                               | `shim`          |
+| Plugin loader                                                       | `plugin-loader` |
+| Runtime generated or applied pair                                   | `runtime`       |
+| Block generated or applied pair                                     | `block`         |
+| Generation state, migration result, staged plan or recovery journal | `state`         |
 
 The generator validates that each staged-plan record's declared role maps to
 the listed kind and canonical path before it emits the migration result. Apply
@@ -402,23 +402,23 @@ uses the same explicit role and kind as its prior artefact.
 
 `outcome` is one of:
 
-| Outcome | Meaning |
-| --- | --- |
-| `succeeded` | Every target is `changed`, `unchanged` or an allowed `skipped` state. |
-| `conflicted` | At least one target is `conflicted`; no target is `failed`. |
-| `failed` | Discovery, validation, runner, persistence or recovery failed. A failed invocation is never presented as successful, even if earlier targets changed. |
-| `recovery-required` | A durable non-terminal journal exists and the caller did not explicitly resume recovery. No new migration work was started. |
+| Outcome             | Meaning                                                                                                                                               |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `succeeded`         | Every target is `changed`, `unchanged` or an allowed `skipped` state.                                                                                 |
+| `conflicted`        | At least one target is `conflicted`; no target is `failed`.                                                                                           |
+| `failed`            | Discovery, validation, runner, persistence or recovery failed. A failed invocation is never presented as successful, even if earlier targets changed. |
+| `recovery-required` | A durable non-terminal journal exists and the caller did not explicitly resume recovery. No new migration work was started.                           |
 
 For every outcome other than `recovery-required`, each target has exactly one
 terminal `state`:
 
-| State | `generate` meaning | `apply` meaning |
-| --- | --- | --- |
-| `changed` | A materially different plan or incoming payload was produced for the target. | Target bytes changed and the base snapshot was advanced. |
-| `unchanged` | The regenerated plan and incoming payload are byte-equivalent to the existing authoritative version. | Current bytes already equal incoming bytes, or a recovered completed write is byte-equivalent. |
-| `skipped` | The target was deliberately not processed. | The target was deliberately not changed. |
-| `conflicted` | Ownership, marker or content reconciliation requires user judgement. | Ownership, marker or three-way reconciliation requires user judgement. |
-| `failed` | Target-specific validation or runner work failed. | Target-specific validation, write, persistence or recovery work failed. |
+| State        | `generate` meaning                                                                                   | `apply` meaning                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `changed`    | A materially different plan or incoming payload was produced for the target.                         | Target bytes changed and the base snapshot was advanced.                                       |
+| `unchanged`  | The regenerated plan and incoming payload are byte-equivalent to the existing authoritative version. | Current bytes already equal incoming bytes, or a recovered completed write is byte-equivalent. |
+| `skipped`    | The target was deliberately not processed.                                                           | The target was deliberately not changed.                                                       |
+| `conflicted` | Ownership, marker or content reconciliation requires user judgement.                                 | Ownership, marker or three-way reconciliation requires user judgement.                         |
+| `failed`     | Target-specific validation or runner work failed.                                                    | Target-specific validation, write, persistence or recovery work failed.                        |
 
 Valid v1 `changed` reasons are `generated`, `applied`, `merged`, and
 `recovered`. Valid v1 `unchanged` reasons are `no-op` and `recovered`. Valid v1
@@ -506,13 +506,13 @@ present, their existence/readability combination and digest must agree; a
 successful deletion records an absent terminal observation and a null terminal
 digest.
 
-| Re-observed target state | Recovery result |
-| --- | --- |
-| `(present, readable)` with digest equal to incoming, and base update absent | Record `unchanged` with recovery reason, advance the base snapshot, then continue. |
-| Equal to the recorded pre-write observation, including `(absent, not-applicable)` | Re-run that target from its durable journal entry. |
-| `(present, readable)` with digest equal to recorded terminal target result | Re-record the terminal result without rewriting. |
-| `(absent, not-applicable)` equal to a recorded absent terminal observation | Re-record the successful deletion as `changed/recovered` without deleting again. |
-| `(unreadable, unreadable)`, any changed existence state, another digest, invalid marker, or stale plan | Record `conflicted/interrupted-ambiguous`; do not overwrite. |
+| Re-observed target state                                                                               | Recovery result                                                                    |
+| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `(present, readable)` with digest equal to incoming, and base update absent                            | Record `unchanged` with recovery reason, advance the base snapshot, then continue. |
+| Equal to the recorded pre-write observation, including `(absent, not-applicable)`                      | Re-run that target from its durable journal entry.                                 |
+| `(present, readable)` with digest equal to recorded terminal target result                             | Re-record the terminal result without rewriting.                                   |
+| `(absent, not-applicable)` equal to a recorded absent terminal observation                             | Re-record the successful deletion as `changed/recovered` without deleting again.   |
+| `(unreadable, unreadable)`, any changed existence state, another digest, invalid marker, or stale plan | Record `conflicted/interrupted-ambiguous`; do not overwrite.                       |
 
 Recovery never deletes a journal simply because a process restarted, and it
 never rolls back a target automatically. A user or later explicit rollback

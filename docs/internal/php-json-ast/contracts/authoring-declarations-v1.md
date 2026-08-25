@@ -39,7 +39,10 @@ type PhpTypeInput = string | PhpType | PhpTypeExpression;
 type PhpTypeExpression =
 	| { readonly kind: 'nullable'; readonly type: PhpTypeInput }
 	| { readonly kind: 'union'; readonly types: readonly PhpTypeInput[] }
-	| { readonly kind: 'intersection'; readonly types: readonly PhpTypeInput[] };
+	| {
+			readonly kind: 'intersection';
+			readonly types: readonly PhpTypeInput[];
+	  };
 
 interface PhpParameterInput {
 	readonly name: string;
@@ -100,9 +103,7 @@ function functionDeclaration(
 	input: PhpFunctionDeclarationInput
 ): PhpDeclarationValue;
 function methodDeclaration(input: PhpMethodDeclarationInput): PhpClassStmt;
-function classDeclaration(
-	input: PhpClassDeclarationInput
-): PhpDeclarationValue;
+function classDeclaration(input: PhpClassDeclarationInput): PhpDeclarationValue;
 function phpImport(input: PhpImportInput): PhpStmtUse;
 function namespaceDeclaration(input: PhpNamespaceInput): PhpStmtNamespace;
 function phpFile(input: PhpFileInput): PhpProgram;
@@ -162,14 +163,14 @@ Declaration, method, parameter and import-alias names lower to `Identifier`.
 
 `phpType()` accepts the following exact inputs.
 
-| Input | Lowering | Notes |
-| --- | --- | --- |
-| Simple built-in or pseudo-type string | `Identifier` | The permitted keyword set below is validated. |
-| Class-like name string | `Name` or `Name_FullyQualified` | A simple non-keyword name is class-like, never an `Identifier`. |
-| Existing canonical `PhpType` | The same node | It is accepted only after structural AST validation. |
-| `{ kind: 'nullable', type }` | `NullableType` | `type` cannot itself be nullable, union or intersection. |
-| `{ kind: 'union', types }` | `UnionType` | At least two distinct members. |
-| `{ kind: 'intersection', types }` | `IntersectionType` | At least two distinct named-class members. |
+| Input                                 | Lowering                        | Notes                                                           |
+| ------------------------------------- | ------------------------------- | --------------------------------------------------------------- |
+| Simple built-in or pseudo-type string | `Identifier`                    | The permitted keyword set below is validated.                   |
+| Class-like name string                | `Name` or `Name_FullyQualified` | A simple non-keyword name is class-like, never an `Identifier`. |
+| Existing canonical `PhpType`          | The same node                   | It is accepted only after structural AST validation.            |
+| `{ kind: 'nullable', type }`          | `NullableType`                  | `type` cannot itself be nullable, union or intersection.        |
+| `{ kind: 'union', types }`            | `UnionType`                     | At least two distinct members.                                  |
+| `{ kind: 'intersection', types }`     | `IntersectionType`              | At least two distinct named-class members.                      |
 
 The context-free grammar accepts the built-in or pseudo-type keywords `array`,
 `bool`, `callable`, `float`, `int`, `iterable`, `mixed`, `never`, `null`,
@@ -282,11 +283,11 @@ contract, even when canonical raw AST node interfaces already exist.
 It does not group imports. The PHP-parser type values are fixed by this
 contract:
 
-| `kind` | `Stmt_Use.type` | `UseItem.type` |
-| --- | ---: | ---: |
-| `class` (default) | `1` | `0` |
-| `function` | `2` | `0` |
-| `const` | `3` | `0` |
+| `kind`            | `Stmt_Use.type` | `UseItem.type` |
+| ----------------- | --------------: | -------------: |
+| `class` (default) |             `1` |            `0` |
+| `function`        |             `2` |            `0` |
+| `const`           |             `3` |            `0` |
 
 The imported `name` is a non-empty namespace name. A leading `\\` is
 normalised away because import declarations are namespace-relative in their
@@ -385,13 +386,13 @@ Every public factory fails synchronously with `PhpAuthoringError`; it never
 returns a partially lowered program. The existing codes remain the v1 public
 taxonomy:
 
-| Condition | Code | Path convention |
-| --- | --- | --- |
-| Invalid simple, qualified or alias name | `INVALID_IDENTIFIER` | `$class.name`, `$function.name`, `$method.name`, `$parameter.name`, `$namespace.name`, `$import.name`, `$import.alias`, `$type` |
-| Invalid type structure or position | `INVALID_EXPRESSION` | `$type`, `$parameter.type`, `$function.returnType`, `$method.returnType` |
-| Invalid declaration/file option, modifier combination, duplicate or unsupported construct | `INVALID_STATEMENT` | `$class`, `$function`, `$method`, `$parameter`, `$namespace`, `$import`, `$file` with an indexed child path |
-| Untrusted descriptor, accessor-backed object/array, malformed raw canonical type, or raw statement input | `AMBIGUOUS_VALUE` | The offending public input path |
-| Invalid default value | The existing `renderPhpValue()` code | The existing value path nested below `$parameter.default` |
+| Condition                                                                                                | Code                                 | Path convention                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Invalid simple, qualified or alias name                                                                  | `INVALID_IDENTIFIER`                 | `$class.name`, `$function.name`, `$method.name`, `$parameter.name`, `$namespace.name`, `$import.name`, `$import.alias`, `$type` |
+| Invalid type structure or position                                                                       | `INVALID_EXPRESSION`                 | `$type`, `$parameter.type`, `$function.returnType`, `$method.returnType`                                                        |
+| Invalid declaration/file option, modifier combination, duplicate or unsupported construct                | `INVALID_STATEMENT`                  | `$class`, `$function`, `$method`, `$parameter`, `$namespace`, `$import`, `$file` with an indexed child path                     |
+| Untrusted descriptor, accessor-backed object/array, malformed raw canonical type, or raw statement input | `AMBIGUOUS_VALUE`                    | The offending public input path                                                                                                 |
+| Invalid default value                                                                                    | The existing `renderPhpValue()` code | The existing value path nested below `$parameter.default`                                                                       |
 
 All option records and arrays are read through the existing descriptor-safe
 readers. Public factories must not invoke an accessor, a custom iterator, an
