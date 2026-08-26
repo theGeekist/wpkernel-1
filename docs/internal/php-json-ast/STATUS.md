@@ -11,11 +11,10 @@ Updated: 2026-08-25
   snapshot qualification.
 - `cli-admin-generation-hardening`: done, with generator tests and CLI
   typecheck.
-- `authoring-declarations-contract-v1`: done, with a frozen declarations,
-  imports, namespace and file-composition contract and clean final independent
-  review.
-- `cli-migration-contract-v1`: done, with a frozen migration, ownership,
-  staged-plan and recovery contract and clean final independent review.
+- `authoring-declarations-contract-v1`: done, with PR feedback incorporated for
+  PHP type and documentation-collision semantics and host parser evidence.
+- `cli-migration-contract-v1`: done, with PR feedback incorporated for
+  staged-plan, canonical-path and target-record invariants.
 
 No implementation task currently holds an active write scope.
 

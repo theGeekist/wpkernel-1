@@ -48,8 +48,12 @@ fixtures on both sides of the migration boundary.
 | **recovery journal**   | The durable invocation record retained while an apply has not reached a terminal result. It is not a successful migration manifest.                   |
 
 All paths in this contract are POSIX-style paths relative to the resolved
-workspace root. They must be non-empty, normalised, and must not escape that
-root through `..`, an absolute path, a symlink, or a platform-specific spelling.
+workspace root. In v1 the resolved workspace root is the repository root;
+configuration that selects a nested or external workspace root is unsupported
+and fails preflight. Discovery, staged-plan persistence and apply therefore
+resolve every canonical path against the same root. Paths must be non-empty,
+normalised, and must not escape that root through `..`, an absolute path, a
+symlink, or a platform-specific spelling.
 
 ## 3. Version inputs and outputs
 
@@ -115,7 +119,9 @@ targetId = kind + ":" + canonicalWorkspaceRelativePath
 
 where `kind` is exactly one of `source`, `generated`, `shim`, `plugin-loader`,
 `runtime`, `block`, or `state`. A target kind and canonical path can occur at
-most once in `targets`; two different kinds at one path remain distinct targets.
+most once in `targets`. Non-source targets are writable mutation targets and
+must also be unique by canonical path across all kinds; a staged plan that maps
+two roles or kinds to one writable path fails validation before any write.
 
 No glob, directory expansion or arbitrary file-system discovery is implicit in
 v1. A later version may add a separate target-selection grammar, but must not
@@ -264,6 +270,27 @@ are emitted in the order shown below.
 			"beforeSha256": "lowercase-hex-sha256-or-null",
 			"afterSha256": "lowercase-hex-sha256-or-null",
 			"diagnosticIds": []
+		},
+		{
+			"targetId": "generated:.wpk/generate/php/Rest/JobController.php",
+			"path": ".wpk/generate/php/Rest/JobController.php",
+			"kind": "generated",
+			"state": "changed",
+			"reason": "generated",
+			"ownership": "generated-file",
+			"observation": {
+				"existence": "absent",
+				"readability": "not-applicable",
+				"observedSha256": null
+			},
+			"terminalObservation": {
+				"existence": "present",
+				"readability": "readable",
+				"observedSha256": "lowercase-hex-sha256"
+			},
+			"beforeSha256": null,
+			"afterSha256": "lowercase-hex-sha256",
+			"diagnosticIds": []
 		}
 	],
 	"diagnostics": [],
@@ -275,6 +302,7 @@ are emitted in the order shown below.
 		"entries": [
 			{
 				"targetId": "generated:.wpk/generate/php/Rest/JobController.php",
+				"role": "resource-generated",
 				"action": "write",
 				"incomingPath": ".wpk/migration/v1/invocations/example/incoming/JobController.php",
 				"incomingSha256": "lowercase-hex-sha256"
@@ -295,14 +323,19 @@ in the same manifest.
 
 `stagedPlan` is required. It is `null` only for a failed preflight or a
 `recovery-required` refusal. Otherwise it has the exact shape shown above:
-`schemaVersion` is `1`; `path` is the canonical repository-relative path to one
+`schemaVersion` is `1`; `path` is the canonical workspace-relative path to one
 regular staged-plan JSON file; `sha256` is the lowercase SHA-256 of its exact
 UTF-8 bytes; and `entries` is sorted by `targetId` with one entry for every
-non-source target that apply may write or delete. An entry has one of:
+non-source target that apply may write or delete. Every staged-plan entry has
+exactly one target record with the same `targetId`, kind and canonical path,
+and every non-source target planned for write or deletion has exactly one
+staged-plan entry. An entry has one of:
 
-- `action: "write"`, a canonical repository-relative regular-file
-  `incomingPath`, and the lowercase SHA-256 of those exact incoming bytes; or
-- `action: "delete"`, `incomingPath: null`, and `incomingSha256: null`.
+- `action: "write"`, an explicit `role`, a canonical workspace-relative
+  regular-file `incomingPath`, and the lowercase SHA-256 of those exact
+  incoming bytes; or
+- `action: "delete"`, the prior artefact's explicit `role`,
+  `incomingPath: null`, and `incomingSha256: null`.
 
 `path` and every non-null `incomingPath` must be non-empty, normalised POSIX
 paths beneath the repository root, with no absolute spelling, `.` or `..`
@@ -383,22 +416,34 @@ Configured `codemods.files` declarations create only `source` discovery targets
 with IDs `source:<canonicalPath>`. They do not directly name generated or apply
 targets. Generation must derive every later target from an explicit
 `stagedPlan.entries` record whose `targetId` uses the kind-and-path formula in
-section 4.2. Its kind is declared by the generation artefact role, never guessed
-from an extension or directory:
+section 4.2. Its kind is declared by the persisted generation artefact role,
+never guessed from an extension or directory.
 
-| Artefact role                                                       | Required kind   |
-| ------------------------------------------------------------------- | --------------- |
-| Resource generated artefact or PHP index                            | `generated`     |
-| Resource applied shim                                               | `shim`          |
-| Plugin loader                                                       | `plugin-loader` |
-| Runtime generated or applied pair                                   | `runtime`       |
-| Block generated or applied pair                                     | `block`         |
-| Generation state, migration result, staged plan or recovery journal | `state`         |
+The exact persisted role values and their kinds are:
 
-The generator validates that each staged-plan record's declared role maps to
-the listed kind and canonical path before it emits the migration result. Apply
-uses that validated record, not an inferred path classification. A deletion
-uses the same explicit role and kind as its prior artefact.
+| Persisted role       | Required kind   |
+| -------------------- | --------------- |
+| `resource-generated` | `generated`     |
+| `php-index`          | `generated`     |
+| `resource-shim`      | `shim`          |
+| `plugin-loader`      | `plugin-loader` |
+| `runtime-generated`  | `runtime`       |
+| `runtime-applied`    | `runtime`       |
+| `block-generated`    | `block`         |
+| `block-applied`      | `block`         |
+| `generation-state`   | `state`         |
+| `migration-result`   | `state`         |
+| `staged-plan`        | `state`         |
+| `recovery-journal`   | `state`         |
+
+The generator persists the role on every staged-plan entry and validates that
+the role maps to the entry target ID's kind before it emits the migration
+result. The canonical path encoded after the target ID's first `:` must equal
+the matching target record's `path`, and each entry's `(role, kind, path)`
+triplet is part of the staged-plan digest. Apply consumes that persisted and
+validated triplet; it never infers classification from a path, extension or
+directory. A deletion preserves the exact role, kind and canonical path
+recorded for the prior artefact.
 
 `outcome` is one of:
 
@@ -422,8 +467,9 @@ terminal `state`:
 
 Valid v1 `changed` reasons are `generated`, `applied`, `merged`, and
 `recovered`. Valid v1 `unchanged` reasons are `no-op` and `recovered`. Valid v1
-`skipped` reasons are `duplicate-declaration`, `discovery-failed`,
-`not-applicable`, `missing-target`, `guarded-by-plan`, and `already-absent`.
+`skipped` reasons are `discovery-failed`, `not-applicable`, `missing-target`,
+`guarded-by-plan`, and `already-absent`. `duplicate-declaration` is valid only
+on a `discovery` occurrence and never on a target record.
 `conflicted` must give one of `user-owned-target`, `marker-invalid`,
 `state-invalid`, `three-way-overlap`, `interrupted-ambiguous`, or
 `legacy-conflict-marker`. `failed` must use its specific diagnostic code as the

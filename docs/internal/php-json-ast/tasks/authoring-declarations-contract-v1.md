@@ -5,7 +5,7 @@ title: 'Freeze authoring declarations contract v1'
 stage: contract
 status: done
 priority: critical
-evidence_milestone: 'Contract authored; git diff checks passed; fresh independent final review clean after correction'
+evidence_milestone: 'PR review corrections incorporated; formatting, whitespace and host PHP parser checks passed'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
@@ -123,6 +123,13 @@ identity.
 - Base SHA: `bc25f73195be62e243fbc44adaa896fa292970aa`.
 - `git diff --check`: passed (exit 0) after authoring the contract and task
   handoff.
+- `git diff --no-index --check /dev/null docs/internal/php-json-ast/contracts/authoring-declarations-v1.md`:
+  emitted no whitespace diagnostics; exit 1 is expected for an added file.
+- PR review corrections were verified against host PHP: `static` parameters,
+  `false|true`, and `object|stdClass` each failed parsing with the expected
+  invariant-specific fatal error.
+- `pnpm exec prettier --check` passed for the contract, task brief and status
+  file; `git diff --check` passed with no diagnostics.
 - Contract exercised against the current authoring and AST source boundary at
   `@wpkernel/php-json-ast` `0.12.6-beta.3`, Node.js `v22.22.0` and pnpm
   `10.19.0`; no package runtime claim is made by this documentation task.
@@ -142,7 +149,6 @@ authoring contract and must not be represented as a proven rejection guarantee.
 
 ### Recommended next task
 
-Coordinator review, then add
-`contracts/authoring-declarations-v1.md` to
-`authoring-declarations-v1` required reading and read scope before admitting
-the implementation task.
+Implement the now-ready `authoring-declarations-v1` task against the frozen
+contract, including its descriptor provenance and adversarial type-validation
+fixtures.

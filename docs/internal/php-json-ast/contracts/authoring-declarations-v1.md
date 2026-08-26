@@ -181,14 +181,15 @@ intersection has at least two class-like members. A nullable cannot wrap a
 nullable, union or intersection, or `mixed`, `never`, `void`, `null`, `false`
 or `true`. An intersection cannot contain a built-in or pseudo-type. A union
 cannot contain `mixed`, `void` or `never`, cannot repeat a member, and cannot
-combine `bool` with `false` or `true`, `iterable` with `array` or `Traversable`,
-or a nullable representation with a separate `null` member. Duplicate type
-members are compared after normalising a leading `\\` and case-folding
-class-like names; member order otherwise remains caller order.
+combine `bool` with `false` or `true`, `false` with `true`, `iterable` with
+`array` or `Traversable`, `object` with any class-like member, or a nullable
+representation with a separate `null` member. Duplicate type members are
+compared after normalising a leading `\\` and case-folding class-like names;
+member order otherwise remains caller order.
 
 Contextual validation happens only when a type is assigned to a parameter or
-return position. `void` and `never` are return-only. `static`, `self` and
-`parent` are class-method-only, with `parent` requiring that the containing
+return position. `void`, `never` and `static` are return-only. `static`, `self`
+and `parent` are class-method-only, with `parent` requiring that the containing
 class has `extends`. `null`, `false` and `true` are union-only. The same
 contextual rules apply recursively to every union member. Thus `phpType()` can
 construct a canonical shape without knowing a declaration context, while
@@ -327,6 +328,8 @@ neither concatenates raw source nor accepts prebuilt comment AST.
 - for a file without a namespace, file docs attach to the first emitted
   declaration after any strict-types declare;
 - for a namespaced file, file docs attach to `Stmt_Namespace`;
+- for a file without a namespace, a file `doc` and a `doc` on the first
+  declaration are mutually exclusive and the input is invalid if both exist;
 - a file with `doc` and no declaration or namespace is invalid.
 
 `PhpNamespaceInput` has no `doc` property. Direct `namespaceDeclaration()` is

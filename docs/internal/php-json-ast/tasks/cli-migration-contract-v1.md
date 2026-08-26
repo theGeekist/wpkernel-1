@@ -5,7 +5,7 @@ title: 'Freeze CLI migration and ownership contract v1'
 stage: contract
 status: done
 priority: critical
-evidence_milestone: 'Contract authored; git diff checks passed; fresh independent final review clean after correction'
+evidence_milestone: 'PR review corrections incorporated; formatting, whitespace and task-graph checks passed'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
@@ -127,6 +127,11 @@ refusal semantics.
 Fresh final independent review confirmed staged-plan integrity binding,
 source-kind discovery and bounded handoff evidence, then returned clean with no
 regressions.
+PR review corrections made the workspace root singular, bound every persisted
+role to an exact kind and canonical path, made writable paths unique across
+kinds, and separated discovery-only duplicate declarations from target reasons.
+`pnpm exec prettier --check`, `git diff --check`, and `pnpm task-graph:plan`
+then passed; the planner reported this task in review with no hard blocker.
 
 Base SHA: `bc25f73195be62e243fbc44adaa896fa292970aa`.
 Contract exercised: CLI migration and ownership contract v1. Package evidence
@@ -146,8 +151,8 @@ behaviour.
 
 ### Recommended next task
 
-Coordinator: add the produced contract to `cli-codemod-repair-v1` required
-reading; create and schedule `cli-migration-state-provenance-v1` and
-`cli-ownership-safe-apply-v1`; then update manifest and idempotency dependencies
-as specified by the contract. Assign the versioned migration-manifest location
-through the coordinator-owned layout surface before admitting its implementation.
+Implement the now-ready `cli-codemod-repair-v1` task. Create and schedule
+`cli-migration-state-provenance-v1` and `cli-ownership-safe-apply-v1`, then
+update manifest and idempotency dependencies as specified by the contract.
+Assign the versioned migration-manifest location through the coordinator-owned
+layout surface before admitting its implementation.
