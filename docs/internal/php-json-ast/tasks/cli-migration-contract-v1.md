@@ -3,19 +3,19 @@ architecture_version: 1
 id: cli-migration-contract-v1
 title: 'Freeze CLI migration and ownership contract v1'
 stage: contract
-status: ready
+status: done
 priority: critical
-evidence_milestone: null
+evidence_milestone: 'PR review corrections incorporated; formatting, whitespace and task-graph checks passed'
 replaced_by: []
 forward_to: []
 preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
+owner: codex-cli-migration-contract-worker
+owner_kind: codex
+lease_started_at: 2026-08-25T09:46:29+08:00
+lease_expires_at: 2026-08-25T11:46:29+08:00
+base_sha: bc25f73195be62e243fbc44adaa896fa292970aa
+branch: main
+worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - spike-truth-baseline
 decision_dependencies: []
@@ -29,7 +29,7 @@ required_reading:
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-25
 ---
 
 # cli-migration-contract-v1: Freeze CLI migration and ownership contract v1
@@ -91,8 +91,8 @@ Follow [`../COORDINATION.md`](../COORDINATION.md) and [`README.md`](README.md). 
 
 Execution mode: shared-checkout
 Execution rationale: The declared scope is designed for the primary checkout.
-Concurrency evaluation: evaluate against the live planner before claim; same-priority disjoint tasks may start alongside.
-Concurrent task scopes: none recorded until claim.
+Concurrency evaluation: start alongside authoring-declarations-contract-v1; scopes are disjoint and both dependencies are satisfied.
+Concurrent task scopes: authoring-declarations-contract-v1 owns its task brief and contracts/authoring-declarations-v1.md.
 Swarm delegation: none
 
 ## Blocker
@@ -103,20 +103,56 @@ None recorded.
 
 ### Result
 
-Not started.
+Authored the exact CLI migration and generated-ownership contract v1. It
+freezes strict requested-target discovery, the existing WPK auto-guard spellings,
+terminal manifest states, version provenance, conflict handling, and durable
+interruption recovery. Review corrections separate raw configured-path evidence
+from canonical paths, define terminal observations for deletion recovery, and
+give recovery-required refusals an empty target list plus pending-journal
+references.
 
 ### Files changed
 
-None recorded.
+- `docs/internal/php-json-ast/contracts/cli-migration-v1.md`
+- `docs/internal/php-json-ast/tasks/cli-migration-contract-v1.md`
 
 ### Verification evidence
 
-Pending.
+`git diff --check` exited 0. The untracked contract was also checked with
+`git diff --no-index --check /dev/null docs/internal/php-json-ast/contracts/cli-migration-v1.md`;
+its expected comparison exit was 1 and it emitted no whitespace diagnostics.
+Independent migration-safety re-review returned clean after correcting
+discovery identity, raw-path diagnostics, terminal observations and recovery
+refusal semantics.
+Fresh final independent review confirmed staged-plan integrity binding,
+source-kind discovery and bounded handoff evidence, then returned clean with no
+regressions.
+PR review corrections made the workspace root singular, bound every persisted
+role to an exact kind and canonical path, made writable paths unique across
+kinds, and separated discovery-only duplicate declarations from target reasons.
+`pnpm exec prettier --check`, `git diff --check`, and `pnpm task-graph:plan`
+then passed; the planner reported this task in review with no hard blocker.
+
+Base SHA: `bc25f73195be62e243fbc44adaa896fa292970aa`.
+Contract exercised: CLI migration and ownership contract v1. Package evidence
+read from `packages/cli/package.json`: `@wpkernel/cli` `0.12.6-beta.3`.
+Observed command runtime: Node `v22.22.0`; package-manager runtime: pnpm
+`10.19.0`. This task performed documentation and diff qualification only; it
+did not claim CLI, PHP, WordPress or packed-runtime qualification.
 
 ### Remaining risks
 
-Pending implementation or review.
+The observed config path currently fails to carry the active codemod object to
+the helper, the resolver can treat an empty resolved target set as a successful
+no-op, and apply can write whole-file three-way conflict markers. Generation
+state has no assigned v1 source/base provenance or recovery-journal schema.
+These are implementation requirements, not claims of current compliant
+behaviour.
 
 ### Recommended next task
 
-Follow the dependency graph in [`../ROADMAP.md`](../ROADMAP.md).
+Implement the now-ready `cli-codemod-repair-v1` task. Create and schedule
+`cli-migration-state-provenance-v1` and `cli-ownership-safe-apply-v1`, then
+update manifest and idempotency dependencies as specified by the contract.
+Assign the versioned migration-manifest location through the coordinator-owned
+layout surface before admitting its implementation.

@@ -3,7 +3,7 @@ architecture_version: 1
 id: authoring-declarations-v1
 title: 'Implement authoring declarations v1'
 stage: authoring
-status: proposed
+status: ready
 priority: high
 evidence_milestone: null
 replaced_by: []
@@ -31,10 +31,13 @@ write_scope:
 required_reading:
     - path: docs/internal/php-json-ast/authoring-roadmap.md
       reason: 'Preserve the compiler boundary, recovered evidence and qualification distinctions relevant to this task.'
+    - path: docs/internal/php-json-ast/contracts/authoring-declarations-v1.md
+      reason: Implement the frozen declaration, type, import, namespace and file-composition contract exactly.
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
+    - docs/internal/php-json-ast/contracts/authoring-declarations-v1.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-25
 ---
 
 # authoring-declarations-v1: Implement authoring declarations v1
