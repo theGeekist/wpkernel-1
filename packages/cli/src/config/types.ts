@@ -27,8 +27,8 @@ export type WPKernelConfigVersion = 1;
 /**
  * Configuration for a registered schema file.
  *
- * Describes a shared schema source and where generated TypeScript types should
- * be written. Mirrors the JSON Schema `schemaConfig` definition.
+ * Describes a shared schema source and its optional human-readable metadata.
+ * Mirrors the JSON Schema `schemaConfig` definition.
  *
  * @category Config
  * @public
@@ -97,9 +97,6 @@ export interface AdaptersConfig<TConfigSurface = unknown, TIr = unknown> {
 	extensions?: AdapterExtensionFactory<TConfigSurface, TIr>[];
 }
 
-/**
- * Optional readiness helper configuration provided by a wpk project.
- */
 /**
  * Optional readiness helper configuration provided by a WPKernel project.
  *

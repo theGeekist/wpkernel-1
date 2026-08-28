@@ -17,7 +17,6 @@ describe('wpk-config reference', () => {
 		'`adapters.php`',
 		'`adapters.extensions`',
 		'`schemas.<key>.path`',
-		'`schemas.<key>.generated.types`',
 		'`schemas.<key>.description`',
 		'`resources.<key>.name`',
 		'`resources.<key>.namespace`',

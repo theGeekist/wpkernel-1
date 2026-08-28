@@ -146,7 +146,7 @@ You have three main ways to express that relationship:
 Where schemas are wired, they feed into:
 
 - REST argument metadata – WordPress gets a richer picture of fields, types, and constraints for request payloads.
-- Future type emitters – TypeScript definitions can be generated from the same schemas, keeping compile-time and runtime validation in step.
+- Generated resource types – when a resource references a schema, `wpk generate` emits a TypeScript definition from its storage metadata.
 - Runtime metadata – `ResourceObject.schemaKey` exposes which schema a resource uses so clients can introspect or cross-link docs.
 
 ⸻

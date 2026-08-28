@@ -174,12 +174,7 @@ const schemaConfigValidator = t.isObject(
 
 const adaptersValidator = t.isObject(
 	{
-		php: t.isOptional(
-			t.makeValidator<unknown, (...args: unknown[]) => unknown>({
-				test: (value): value is (...args: unknown[]) => unknown =>
-					typeof value === 'function',
-			})
-		),
+		php: t.isOptional(functionValidator),
 	},
 	{ extra: t.isRecord(t.isUnknown()) }
 );

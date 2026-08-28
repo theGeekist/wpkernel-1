@@ -8,8 +8,8 @@
 
 Configuration for a registered schema file.
 
-Describes a shared schema source and where generated TypeScript types should
-be written. Mirrors the JSON Schema `schemaConfig` definition.
+Describes a shared schema source and its optional human-readable metadata.
+Mirrors the JSON Schema `schemaConfig` definition.
 
 ## Properties
 

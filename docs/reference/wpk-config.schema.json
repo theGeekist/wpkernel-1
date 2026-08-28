@@ -156,7 +156,7 @@
 		},
 		"schemaConfig": {
 			"type": "object",
-			"required": ["path", "generated"],
+			"required": ["path"],
 			"additionalProperties": true,
 			"properties": {
 				"path": {
@@ -164,26 +164,13 @@
 					"minLength": 1,
 					"description": "Relative path (from the plugin root) to the source schema file (for example, a JSON Schema or Zod schema)."
 				},
-				"generated": {
-					"type": "object",
-					"required": ["types"],
-					"additionalProperties": true,
-					"properties": {
-						"types": {
-							"type": "string",
-							"minLength": 1,
-							"description": "Relative path where WPKernel should write the generated TypeScript types for this schema."
-						}
-					},
-					"description": "Configuration for code that WPKernel generates from this schema, typically TypeScript types."
-				},
 				"description": {
 					"type": "string",
 					"minLength": 1,
 					"description": "Human-readable description of what this schema models (for example, \"Public job listing API payload\")."
 				}
 			},
-			"description": "Describes a single shared schema file and where its generated types should be written."
+			"description": "Describes a single shared schema file and optional metadata."
 		},
 		"resourceRoute": {
 			"type": "object",
