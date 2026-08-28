@@ -1,37 +1,27 @@
 ---
-architecture_version: 1
-id: P2-007
+id: p2-007
 title: Integrate v2, the v1 adapter and consumers
 stage: integration
 status: done
 priority: critical
 evidence_milestone: 'V2 root, serial v1 adapter and WPKernel consumers qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: codex-root
-owner_kind: codex
-lease_started_at: 2026-08-22T04:30:00+08:00
-lease_expires_at: 2026-08-22T12:30:00+08:00
-base_sha: 618f9d22b23484ad1fec72089eb59c2fb055347a
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-005
-    - P2-006
-    - P2-013
-    - P2-015
+    - p2-005
+    - p2-006
+    - p2-013
+    - p2-015
 decision_dependencies:
     - ADR-001
     - ADR-002
     - ADR-003
 conflicts_with:
-    - P2-003
-    - P2-004
-    - P2-005
-    - P2-006
-    - P2-013
-    - P2-015
+    - p2-003
+    - p2-004
+    - p2-005
+    - p2-006
+    - p2-013
+    - p2-015
 write_scope:
     - packages/pipeline/package.json
     - packages/pipeline/README.md

@@ -1,21 +1,11 @@
 ---
-architecture_version: 1
-id: P2-001
+id: p2-001
 title: Freeze v2 semantics and public vocabulary
 stage: contract
 status: done
 priority: critical
 evidence_milestone: 'Accepted contract and clean independent review'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_001_contract
-owner_kind: null
-lease_started_at: 2026-08-21T02:36:04Z
-lease_expires_at: 2026-08-21T04:36:04Z
-base_sha: 46011d577a13839875d289bfeac9cc5edec1ac8c
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on: []
 decision_dependencies:
     - ADR-001

@@ -1,23 +1,13 @@
 ---
-architecture_version: 1
-id: P2-009
+id: p2-009
 title: Qualify and release Pipeline 2.0.0
 stage: release
 status: done
 priority: critical
 evidence_milestone: 'Pipeline 2.0.0 published through trusted OIDC workflow 32561994256; Node 20, 22.20.0 and 24 qualification, registry identity and live documentation verified'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_009_release
-owner_kind: codex
-lease_started_at: 2026-08-22T13:46:14+08:00
-lease_expires_at: 2026-08-22T17:46:14+08:00
-base_sha: a6b74e063d7a462c10b787ef7191b827347abffd
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-008
+    - p2-008
 decision_dependencies:
     - ADR-001
     - ADR-002
@@ -25,7 +15,7 @@ decision_dependencies:
 conflicts_with: []
 write_scope:
     - .gitignore
-    - task-graph.project.json
+    - .taskgraph/project.json
     - typedoc.json
     - docs/internal/pipeline/tasks/P2-009-packed-qualification-and-release.md
     - docs/internal/pipeline/ROADMAP.md
@@ -78,7 +68,7 @@ required_reading:
       reason: Use origin for contribution and upstream for the trusted release tag.
 read_scope:
     - .gitignore
-    - task-graph.project.json
+    - .taskgraph/project.json
     - typedoc.json
     - docs/internal/pipeline/**
     - docs/internal/php-json-ast/**

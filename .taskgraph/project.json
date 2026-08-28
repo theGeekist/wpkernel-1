@@ -1,0 +1,158 @@
+{
+  "commands": [
+    {
+      "description": "Typecheck Pipeline source and tests.",
+      "id": "pipeline.typecheck",
+      "invocations": [
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/pipeline",
+            "typecheck"
+          ],
+          "heading": "Pipeline source typecheck"
+        },
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/pipeline",
+            "typecheck:tests"
+          ],
+          "heading": "Pipeline test typecheck"
+        }
+      ],
+      "label": "Typecheck Pipeline",
+      "mutates": false,
+      "requiresTask": false
+    },
+    {
+      "description": "Run the Pipeline package tests.",
+      "id": "pipeline.test",
+      "invocations": [
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/pipeline",
+            "test"
+          ],
+          "heading": "Pipeline tests"
+        }
+      ],
+      "label": "Test Pipeline",
+      "mutates": false,
+      "requiresTask": false
+    },
+    {
+      "description": "Run the php-json-ast package tests.",
+      "id": "ast.php-tests",
+      "invocations": [
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/php-json-ast",
+            "test",
+            "--",
+            "--runInBand"
+          ],
+          "heading": "php-json-ast tests"
+        }
+      ],
+      "label": "Test PHP AST",
+      "mutates": false,
+      "requiresTask": false
+    },
+    {
+      "description": "Run the wp-json-ast package tests.",
+      "id": "ast.wordpress-tests",
+      "invocations": [
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/wp-json-ast",
+            "test",
+            "--",
+            "--runInBand"
+          ],
+          "heading": "wp-json-ast tests"
+        }
+      ],
+      "label": "Test WordPress AST",
+      "mutates": false,
+      "requiresTask": false
+    },
+    {
+      "description": "Typecheck both AST package boundaries.",
+      "id": "ast.typecheck",
+      "invocations": [
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/php-json-ast",
+            "typecheck"
+          ],
+          "heading": "php-json-ast typecheck"
+        },
+        {
+          "command": [
+            "pnpm",
+            "--filter",
+            "@wpkernel/wp-json-ast",
+            "typecheck"
+          ],
+          "heading": "wp-json-ast typecheck"
+        }
+      ],
+      "label": "Typecheck AST packages",
+      "mutates": false,
+      "requiresTask": false
+    }
+  ],
+  "externalReadingSources": [],
+  "graphs": [
+    {
+      "decisionsRoot": "php-json-ast/decisions",
+      "governingReading": [
+        "README.md",
+        "docs/internal/php-json-ast/README.md",
+        "docs/internal/php-json-ast/COORDINATION.md",
+        "docs/internal/php-json-ast/tasks/README.md"
+      ],
+      "id": "php-json-ast",
+      "label": "PHP and WordPress JSON AST",
+      "tasksRoot": "php-json-ast/tasks"
+    },
+    {
+      "decisionsRoot": "pipeline/decisions",
+      "governingReading": [
+        "README.md",
+        "docs/internal/pipeline/README.md",
+        "docs/internal/pipeline/COORDINATION.md",
+        "docs/internal/pipeline/tasks/README.md"
+      ],
+      "id": "pipeline-v2",
+      "label": "Pipeline v2",
+      "tasksRoot": "pipeline/tasks"
+    }
+  ],
+  "localState": {
+    "root": ".taskgraph/local",
+    "tracking": "ignored"
+  },
+  "outputContractVersion": 2,
+  "planning": {
+    "root": "docs/internal",
+    "tracking": "tracked"
+  },
+  "project": {
+    "id": "wpkernel-programmes",
+    "label": "WPKernel engineering programmes"
+  },
+  "schemaVersion": 1,
+  "taskSchemaVersion": 2
+}

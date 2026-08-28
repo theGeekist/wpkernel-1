@@ -1,30 +1,20 @@
 ---
-architecture_version: 1
-id: P2-014
+id: p2-014
 title: Implement and freeze the v2 public evaluator surface
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Functional Pipeline evaluator and exact public outcome surface qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_014_public_surface
-owner_kind: null
-lease_started_at: 2026-08-21T16:47:35Z
-lease_expires_at: 2026-08-21T20:47:35Z
-base_sha: c4e047c0
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-012
+    - p2-012
 decision_dependencies:
     - ADR-001
     - ADR-002
     - ADR-003
 conflicts_with:
-    - P2-007
-    - P2-013
+    - p2-007
+    - p2-013
 write_scope:
     - docs/internal/pipeline/contracts/**
     - docs/internal/pipeline/decisions/ADR-003-middleware-extensions-effects.md

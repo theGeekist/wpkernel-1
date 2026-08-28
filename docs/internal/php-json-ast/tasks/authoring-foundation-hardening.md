@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: authoring-foundation-hardening
 title: 'Harden generic authoring and codec boundaries'
 stage: authoring
 status: done
 priority: critical
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: codex-root
-owner_kind: coordinator
-lease_started_at: '2026-08-13T00:00:00+08:00'
-lease_expires_at: '2026-08-14T00:00:00+08:00'
-base_sha: 'e5ec9b740e953f8d61e2e273516b0e3ccd83cbf6'
-branch: main
-worktree: null
 depends_on:
     - spike-truth-baseline
 decision_dependencies: []

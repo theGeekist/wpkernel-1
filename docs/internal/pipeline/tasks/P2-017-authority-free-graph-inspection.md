@@ -1,25 +1,14 @@
 ---
-architecture_version: 1
-id: P2-017
+id: p2-017
 title: Expose authority-free configured graph inspection
 stage: source
 status: proposed
 priority: normal
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
-    - P2-009
-    - P2-011
-    - P2-014
+    - p2-009
+    - p2-011
+    - p2-014
 decision_dependencies:
     - ADR-001
     - ADR-002

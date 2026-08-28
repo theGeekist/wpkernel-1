@@ -36,8 +36,8 @@ importers:
         specifier: ^9.39.1
         version: 9.39.1
       '@geekist/task-graph':
-        specifier: 0.1.0-beta.4
-        version: 0.1.0-beta.4(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)
+        specifier: 0.1.0-beta.6
+        version: 0.1.0-beta.6(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)
       '@kucrut/vite-for-wp':
         specifier: ^0.12.0
         version: 0.12.0(rollup-plugin-external-globals@0.13.0(rollup@4.53.2))(vite-plugin-external@6.2.2)(vite@7.2.2(@types/node@24.10.1)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.9.0))
@@ -1983,9 +1983,9 @@ packages:
   '@formatjs/intl-localematcher@0.6.2':
     resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
 
-  '@geekist/task-graph@0.1.0-beta.4':
-    resolution: {integrity: sha512-xH/rEyqufwbgkvzbKeEGWWQRmrQv+UBk0pd6YInkaR4GBxTX2MarR5WwbVv+CR+ob2WXTIk5Uu2QRXy30CamSg==}
-    engines: {bun: '>=1.3.14', node: '>=22'}
+  '@geekist/task-graph@0.1.0-beta.6':
+    resolution: {integrity: sha512-D6TTyjRGz8KpKRmfJtL5dV+BFWqUUCa5yuN2WhWBFZLJFVZAUBECu4zdMkDtc+4PtHCLCUddKI93rKOz/7iIEw==}
+    engines: {bun: '>=1.3.14', node: '>=20.19'}
     hasBin: true
 
   '@gerrit0/mini-shiki@3.15.0':
@@ -4691,8 +4691,9 @@ packages:
   '@wpkernel/pipeline@0.12.5-beta.0':
     resolution: {integrity: sha512-vQ1/6TDxgwgxVtj+rtpJ8e14SNsqlIc7I2YQdESDX28L6czPv/2Bmh9pTzc0dLRmxmQLf3K0Xot3YFP6YgOllg==}
 
-  '@wpkernel/pipeline@1.4.1':
-    resolution: {integrity: sha512-pblJv79K7P6GATfggEWHv2dKaywdhw3wZf617xI+MzmWirRfoOmkBCea6cXl+BgP4aefOLUy8BzqM15FiAZDdA==}
+  '@wpkernel/pipeline@2.0.0':
+    resolution: {integrity: sha512-ghsrX+odtLblOQVS+qHAntU989qmNavAQB3JOpZXRTOKUTCSDdBoD1jd1YkFfRZpTzBFTqpjRtiSrONq1I9J3w==}
+    engines: {node: '>=20.0.0'}
 
   '@wpkernel/ui@0.12.5-beta.0':
     resolution: {integrity: sha512-Bt4MzU++FQRrGMSLq4EP/O4q8lPB/CDfwnxs6cD45yAxeNQcaXXU0R01MmvIP7KjzUyBYSALSEq6pm6Gk/ei1w==}
@@ -13718,10 +13719,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@geekist/task-graph@0.1.0-beta.4(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)':
+  '@geekist/task-graph@0.1.0-beta.6(@types/node@24.10.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)':
     dependencies:
       '@vitejs/plugin-react': 4.7.0(vite@6.4.3(@types/node@24.10.1)(sass@1.94.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.9.0))
-      '@wpkernel/pipeline': 1.4.1
+      '@wpkernel/pipeline': 2.0.0
       '@xyflow/react': 12.11.3(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       elkjs: 0.12.0
       react: 18.3.1
@@ -17523,7 +17524,7 @@ snapshots:
 
   '@wpkernel/pipeline@0.12.5-beta.0': {}
 
-  '@wpkernel/pipeline@1.4.1': {}
+  '@wpkernel/pipeline@2.0.0': {}
 
   '@wpkernel/ui@0.12.5-beta.0(@testing-library/react@16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@wordpress/components@30.8.0(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@wordpress/data@10.35.0(react@18.3.1))(@wordpress/dataviews@9.1.0(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@wordpress/element@6.35.0)(@wpkernel/core@0.12.5-beta.0(@loglayer/shared@3.0.1)(@loglayer/transport-simple-pretty-terminal@2.2.13)(@loglayer/transport@2.3.9)(@wordpress/api-fetch@7.35.0)(@wordpress/data@10.35.0(react@18.3.1))(@wordpress/element@6.35.0)(@wordpress/hooks@4.35.0)(@wordpress/interactivity@6.35.0)(loglayer@6.10.0))(react@18.3.1)':
     dependencies:

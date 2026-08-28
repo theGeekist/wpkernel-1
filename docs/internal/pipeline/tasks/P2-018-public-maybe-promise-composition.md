@@ -1,28 +1,18 @@
 ---
-architecture_version: 1
-id: P2-018
+id: p2-018
 title: Export the complete MaybePromise composition algebra
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Independent review clean; source/test typechecks, build, 82 suites and 564 tests, near-total coverage, and packed Bundler/strict NodeNext qualification passed'
-replaced_by: []
 forward_to:
-    - P2-008
-preferred_owner_kind: codex
-owner: codex-root
-owner_kind: codex
-lease_started_at: 2026-08-22T12:09:09+08:00
-lease_expires_at: 2026-08-22T16:09:09+08:00
-base_sha: 629117f70c779ee1b84faef3bac40ed54cf0bc47
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
+    - p2-008
 depends_on:
-    - P2-007
+    - p2-007
 decision_dependencies:
     - ADR-003
 conflicts_with:
-    - P2-009
+    - p2-009
 write_scope:
     - packages/pipeline/src/core/async-utils.ts
     - packages/pipeline/src/core/createExtension.ts

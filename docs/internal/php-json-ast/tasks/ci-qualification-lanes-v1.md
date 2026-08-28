@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: ci-qualification-lanes-v1
 title: 'Add packed AST qualification lanes v1'
 stage: integration
 status: proposed
 priority: medium
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - dual-path-runtime-parity-v1
     - cli-packed-qualification-v1
@@ -32,14 +21,16 @@ required_reading:
 read_scope:
     - docs/internal/php-json-ast/authoring-roadmap.md
 review_owner: coordinator
-updated_at: 2026-08-13
+updated_at: 2026-08-24
 ---
 
 # ci-qualification-lanes-v1: Add packed AST qualification lanes v1
 
 ## Objective
 
-Add fast pull-request and wider release lanes for packed AST, CLI, WordPress and browser qualification.
+Extend the repository's ordinary quality gate with packed AST, CLI, WordPress
+and browser qualification while preserving one minimal trusted-publishing
+release path.
 
 ## Why this exists
 
@@ -52,18 +43,29 @@ Local evidence is not durable until clean CI reproduces the supported version ma
 
 ## In scope
 
-- Fast packed-artifact PR lane and minimum/current PHP and WordPress release matrix.
+- Packed-artifact qualification inside the ordinary quality gate and a
+  minimum/current PHP and WordPress release matrix.
 - Diagnostic and provenance artefact retention.
 
 ## Out of scope
 
 - Registry publication and unrelated CI restructuring.
+- Verifier Apps, exact-diff approval jobs, required independent-approval
+  checks, release-specific approval pull requests, governance pull-request
+  chains and TaskGraph's multi-workflow release ceremony.
 
 ## Contract and naming constraints
 
 - Preserve the dependency direction `wp-json-ast -> php-json-ast/authoring -> php-json-ast/ast`.
 - Consume exact v1 contracts. Do not silently broaden a versioned shape.
 - Do not add a competing PHP DSL in WordPress or CLI code.
+- Keep one version and tag, one package qualification and trusted-publishing
+  path, and one ordinary quality gate. Do not split publication authority into
+  additional WPKernel workflows merely to mirror another repository.
+- CodeRabbit is the external pull-request reviewer. The repository owner
+  retains merge and close authority.
+- Local semantic review is supporting evidence. It must not become a required
+  GitHub job, exact-diff approval envelope or independent merge authority.
 
 ## File ownership
 
@@ -74,6 +76,8 @@ Only edit this task, its declared write scope, work log and handoff. Request coo
 - PR qualification uses packed artefacts and deterministic runtime setup.
 - Release matrix names exact supported versions.
 - Failures upload actionable PHP, WordPress, REST and browser evidence.
+- The resulting CI and release shape contains no verifier App, exact-diff
+  approval job, release-approval pull request or governance pull-request chain.
 
 ## Verification
 

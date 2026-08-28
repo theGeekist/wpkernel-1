@@ -1,27 +1,17 @@
 ---
-architecture_version: 1
-id: P2-003
+id: p2-003
 title: Implement the immutable concurrent scheduler
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Concurrent scheduler qualified at scale and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_003_scheduler
-owner_kind: null
-lease_started_at: 2026-08-21T05:00:22Z
-lease_expires_at: 2026-08-21T07:00:22Z
-base_sha: d716fd8edd6cd9f2be0ed17dad32b1f7f1d3798a
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-002
+    - p2-002
 decision_dependencies:
     - ADR-001
 conflicts_with:
-    - P2-007
+    - p2-007
 write_scope:
     - packages/pipeline/src/v2/scheduler/**
     - packages/pipeline/src/v2/__tests__/scheduler/**

@@ -1,27 +1,17 @@
 ---
-architecture_version: 1
-id: P2-015
+id: p2-015
 title: Bound staged Markdown normalisation
 stage: integration
 status: done
 priority: critical
 evidence_milestone: 'Staged Markdown normalisation bounded to explicit files and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: codex-root
-owner_kind: codex
-lease_started_at: 2026-08-22T04:00:00+08:00
-lease_expires_at: 2026-08-22T08:00:00+08:00
-base_sha: 656c5016df4d02346044b968d0e0944171565613
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-013
+    - p2-013
 decision_dependencies: []
 conflicts_with:
-    - P2-007
-    - P2-008
+    - p2-007
+    - p2-008
 write_scope:
     - package.json
     - scripts/normalize-punctuation.js

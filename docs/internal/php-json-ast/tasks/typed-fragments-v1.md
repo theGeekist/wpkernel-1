@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: typed-fragments-v1
 title: 'Implement typed PHP fragments v1'
 stage: authoring
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - authoring-declarations-v1
     - source-fragment-parser-v1

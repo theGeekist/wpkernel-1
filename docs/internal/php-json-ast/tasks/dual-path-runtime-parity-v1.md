@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: dual-path-runtime-parity-v1
 title: 'Prove dual-path WordPress runtime parity v1'
 stage: integration
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - wordpress-rest-migration-v1
     - wordpress-api-qualification-v1

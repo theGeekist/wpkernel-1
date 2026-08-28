@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
-id: TASK-ID
+id: task-id
 title: Task title
 stage: contract
 status: proposed
 priority: normal
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on: []
 decision_dependencies: []
 conflicts_with: []
@@ -29,7 +18,7 @@ review_owner: coordinator
 updated_at: YYYY-MM-DD
 ---
 
-# TASK-ID: Task title
+# task-id: Task title
 
 ## Objective
 

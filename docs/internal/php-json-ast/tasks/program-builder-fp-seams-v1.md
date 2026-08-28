@@ -1,23 +1,12 @@
 ---
-architecture_version: 1
 id: program-builder-fp-seams-v1
 title: 'Extract class-free PHP program-builder seams'
 stage: source
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
-    - pipeline-v2/P2-007
+    - pipeline-v2/p2-007
 decision_dependencies: []
 conflicts_with: []
 write_scope:
@@ -120,7 +109,7 @@ Swarm delegation: none
 
 ## Blocker
 
-None. `pipeline-v2/P2-007` is done and its overlapping write scope has been
+None. `pipeline-v2/p2-007` is done and its overlapping write scope has been
 released.
 
 ## Handoff

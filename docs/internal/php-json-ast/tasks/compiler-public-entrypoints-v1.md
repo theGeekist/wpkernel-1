@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: compiler-public-entrypoints-v1
 title: 'Publish and pack-qualify compiler fronts v1'
 stage: integration
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - typed-fragments-v1
     - source-runtime-convergence-v1

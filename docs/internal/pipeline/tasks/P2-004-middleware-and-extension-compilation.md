@@ -1,30 +1,20 @@
 ---
-architecture_version: 1
-id: P2-004
+id: p2-004
 title: Extract node evaluation and compile middleware into explicit roles
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Node evaluation, middleware, observers and typed extension generations qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_004_node_interpreter
-owner_kind: null
-lease_started_at: 2026-08-21T11:41:26Z
-lease_expires_at: 2026-08-21T14:41:26Z
-base_sha: ca274a0824162df465e1884a6e74e763c06b7e09
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-001
-    - P2-002
-    - P2-003
-    - P2-011
+    - p2-001
+    - p2-002
+    - p2-003
+    - p2-011
 decision_dependencies:
     - ADR-003
 conflicts_with:
-    - P2-007
+    - p2-007
 write_scope:
     - packages/pipeline/src/v2/scheduler/**
     - packages/pipeline/src/v2/extensions/**

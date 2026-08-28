@@ -20,7 +20,7 @@ compiler, WordPress semantic adoption, CLI migration and runtime qualification.
 - [`templates/task.md`](templates/task.md) is the canonical task shape.
 
 The project is consumed through the repository-root
-[`task-graph.project.json`](../../../task-graph.project.json). Manifest,
+[`.taskgraph/project.json`](../../../.taskgraph/project.json). Manifest,
 task-brief, plan and architecture versions are independent from package
 release versions. Increment each only when its own compatibility contract
 changes.

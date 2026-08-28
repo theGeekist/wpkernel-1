@@ -1,30 +1,20 @@
 ---
-architecture_version: 1
-id: P2-013
+id: p2-013
 title: Author v2 TSDoc and public documentation
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Curated v2 surface, source TSDoc and authored public documentation independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_013_tsdoc
-owner_kind: null
-lease_started_at: 2026-08-21T19:10:19Z
-lease_expires_at: 2026-08-21T23:10:19Z
-base_sha: d202c1ce
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-014
+    - p2-014
 decision_dependencies:
     - ADR-001
     - ADR-002
     - ADR-003
 conflicts_with:
-    - P2-007
-    - P2-012
+    - p2-007
+    - p2-012
 write_scope:
     - packages/pipeline/src/v2/**/*.ts
     - packages/pipeline/src/v2/index.ts
