@@ -67,9 +67,10 @@ describe('schema helpers', () => {
 			const workspaceSchema = path.join(workspaceRoot, 'workspace.json');
 			await fs.writeFile(workspaceSchema, '{}', 'utf8');
 			process.chdir(otherCwd);
+			const fallbackConfigPath = path.join(otherCwd, 'wpk.config.ts');
 			const workspaceResult = await resolveSchemaPath(
 				'workspace.json',
-				configPath,
+				fallbackConfigPath,
 				workspaceRoot
 			);
 			expect(workspaceResult).toBe(workspaceSchema);
