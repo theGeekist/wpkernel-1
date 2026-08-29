@@ -2,7 +2,7 @@ import path from 'node:path';
 import { WPKernelError } from '@wpkernel/core/error';
 import type { WPKernelConfigV1 } from '../../config/types';
 import { createIr } from '../createIr';
-import { createPipeline } from '../../runtime/createPipeline';
+import { buildWorkspace } from '../../workspace';
 import {
 	FIXTURE_CONFIG_PATH,
 	FIXTURE_ROOT,
@@ -11,16 +11,19 @@ import {
 } from '../shared/test-helpers';
 import { type IRv1 } from '..';
 
-async function buildIr(options: {
-	readonly config: WPKernelConfigV1;
-	readonly sourcePath: string;
-	readonly origin: string;
-	readonly namespace: string;
-}): Promise<IRv1> {
-	return createIr({
-		...options,
-		pipeline: createPipeline(),
-	});
+async function buildIr(
+	options: {
+		readonly config: WPKernelConfigV1;
+		readonly sourcePath: string;
+		readonly origin: string;
+		readonly namespace: string;
+	},
+	workspaceRoot?: string
+): Promise<IRv1> {
+	return createIr(
+		options,
+		workspaceRoot ? { workspace: buildWorkspace(workspaceRoot) } : {}
+	);
 }
 
 describe('buildIr - validation', () => {
@@ -262,14 +265,17 @@ describe('buildIr - validation', () => {
 			},
 		} as unknown as WPKernelConfigV1['resources'];
 
-		const ir = await buildIr({
-			config,
-			sourcePath: FIXTURE_CONFIG_PATH,
-			origin: 'wpk.config.ts',
-			namespace: config.namespace,
-		});
+		const ir = await buildIr(
+			{
+				config,
+				sourcePath: FIXTURE_CONFIG_PATH,
+				origin: 'wpk.config.ts',
+				namespace: config.namespace,
+			},
+			process.cwd()
+		);
 
-		expect(ir.schemas[0]?.sourcePath).toBe('schemas/todo.schema.json');
+		expect(ir.schemas[0]?.sourcePath).toBe(schemaPath);
 	});
 
 	it('rejects empty route definitions', async () => {

@@ -346,6 +346,13 @@ function addPostDates(iface: InterfaceDeclaration): void {
 	iface.addProperty({ name: 'modified_gmt', type: 'string' });
 }
 
+/**
+ * Adds the generated post status property, escaping configured status names
+ * as TypeScript string literals and retaining WordPress lifecycle statuses.
+ *
+ * @param iface   - Interface receiving the status property
+ * @param storage - WordPress post storage configuration
+ */
 function addPostStatus(
 	iface: InterfaceDeclaration,
 	storage: NonNullable<IRResource['storage']> & { mode: 'wp-post' }

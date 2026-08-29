@@ -162,7 +162,7 @@
 				"path": {
 					"type": "string",
 					"minLength": 1,
-					"description": "Relative path (from the plugin root) to the source schema file (for example, a JSON Schema or Zod schema)."
+					"description": "Path to the source schema file (for example, a JSON Schema or Zod schema). Relative paths resolve from the config file directory first, then from the workspace root."
 				},
 				"description": {
 					"type": "string",

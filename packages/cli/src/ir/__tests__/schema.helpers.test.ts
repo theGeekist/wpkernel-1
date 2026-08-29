@@ -43,7 +43,11 @@ describe('schema helpers', () => {
 		const absoluteSchema = path.join(workspaceRoot, 'abs.schema.json');
 		await fs.writeFile(absoluteSchema, '{}', 'utf8');
 
-		const absResult = await resolveSchemaPath(absoluteSchema, configPath);
+		const absResult = await resolveSchemaPath(
+			absoluteSchema,
+			configPath,
+			workspaceRoot
+		);
 		expect(absResult).toBe(absoluteSchema);
 
 		const relativeDir = path.join(workspaceRoot, 'schemas');
@@ -52,27 +56,31 @@ describe('schema helpers', () => {
 		await fs.writeFile(relativeSchema, '{}', 'utf8');
 		const relativeResult = await resolveSchemaPath(
 			'./schemas/todo.json',
-			configPath
+			configPath,
+			workspaceRoot
 		);
 		expect(relativeResult).toBe(relativeSchema);
 
+		const otherCwd = await fs.mkdtemp(path.join(os.tmpdir(), 'wpk-cwd-'));
 		const originalCwd = process.cwd();
 		try {
-			process.chdir(workspaceRoot);
 			const workspaceSchema = path.join(workspaceRoot, 'workspace.json');
 			await fs.writeFile(workspaceSchema, '{}', 'utf8');
+			process.chdir(otherCwd);
 			const workspaceResult = await resolveSchemaPath(
 				'workspace.json',
-				configPath
+				configPath,
+				workspaceRoot
 			);
 			expect(workspaceResult).toBe(workspaceSchema);
 		} finally {
 			process.chdir(originalCwd);
+			await fs.rm(otherCwd, { recursive: true, force: true });
 			await fs.rm(workspaceRoot, { recursive: true, force: true });
 		}
 
 		await expect(
-			resolveSchemaPath('missing.json', configPath)
+			resolveSchemaPath('missing.json', configPath, workspaceRoot)
 		).rejects.toBeInstanceOf(WPKernelError);
 	});
 
