@@ -1,28 +1,18 @@
 ---
-architecture_version: 1
-id: P2-011
+id: p2-011
 title: Make compiled Graph authority nominal
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Nominal compiled Graph authority qualified in strict NodeNext and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_011_nominal_graph
-owner_kind: null
-lease_started_at: 2026-08-21T11:27:39Z
-lease_expires_at: 2026-08-21T13:27:39Z
-base_sha: 304e28b652bca97f45dccca94e2ddba15b3ed5e9
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-002
-    - P2-003
+    - p2-002
+    - p2-003
 decision_dependencies:
     - ADR-001
 conflicts_with:
-    - P2-007
+    - p2-007
 write_scope:
     - packages/pipeline/src/v2/graph/types.ts
     - packages/pipeline/src/v2/graph/topology.ts

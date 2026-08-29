@@ -1,23 +1,13 @@
 ---
-architecture_version: 1
-id: P2-002
+id: p2-002
 title: Build the immutable graph IR and compiler
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Immutable graph compiler qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_002_graph
-owner_kind: null
-lease_started_at: 2026-08-21T03:40:07Z
-lease_expires_at: 2026-08-21T05:40:07Z
-base_sha: a4d1ed3b6d38e27fac0c1278d392e8d38bdcfa7b
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-001
+    - p2-001
 decision_dependencies:
     - ADR-001
 conflicts_with: []

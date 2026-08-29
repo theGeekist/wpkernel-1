@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: source-bridge-contract-v1
 title: 'Freeze PHP source bridge protocol v1'
 stage: contract
 status: ready
 priority: critical
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - spike-truth-baseline
 decision_dependencies: []

@@ -4,7 +4,10 @@ import type { IRResource } from '../../ir/publicTypes';
 import type { ResourcePostMetaDescriptor } from '@wpkernel/core/resource';
 import { IndentationText, Project, type InterfaceDeclaration } from 'ts-morph';
 import { toPascalCase } from '../../utils';
-import { typeScriptPropertyName } from './typescript-syntax';
+import {
+	typeScriptPropertyName,
+	typeScriptStringLiteral,
+} from './typescript-syntax';
 
 /**
  * Creates a builder helper for generating TypeScript type definitions from resource storage configuration.
@@ -343,13 +346,20 @@ function addPostDates(iface: InterfaceDeclaration): void {
 	iface.addProperty({ name: 'modified_gmt', type: 'string' });
 }
 
+/**
+ * Adds the generated post status property, escaping configured status names
+ * as TypeScript string literals and retaining WordPress lifecycle statuses.
+ *
+ * @param iface   - Interface receiving the status property
+ * @param storage - WordPress post storage configuration
+ */
 function addPostStatus(
 	iface: InterfaceDeclaration,
 	storage: NonNullable<IRResource['storage']> & { mode: 'wp-post' }
 ): void {
 	if (storage.statuses && storage.statuses.length > 0) {
 		const statusUnion =
-			storage.statuses.map((s) => `'${s}'`).join(' | ') +
+			storage.statuses.map(typeScriptStringLiteral).join(' | ') +
 			" | 'trash' | 'auto-draft'";
 		iface.addProperty({
 			name: 'status',

@@ -1,21 +1,11 @@
 ---
-architecture_version: 1
 id: spike-truth-baseline
 title: 'Freeze the recovered spike baseline'
 stage: baseline
 status: done
 priority: critical
 evidence_milestone: 'Recovered G0 and spike baseline'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: coordinator
-owner_kind: coordinator
-lease_started_at: null
-lease_expires_at: null
-base_sha: '940a86495f0804dd15ae546e82bc631b95797c62'
-branch: main
-worktree: null
 depends_on: []
 decision_dependencies: []
 conflicts_with: []

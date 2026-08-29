@@ -65,7 +65,8 @@ export async function loadConfiguredSchemas(
 	for (const [key, schemaConfig] of schemaEntries) {
 		const resolvedPath = await resolveSchemaPath(
 			schemaConfig.path,
-			options.sourcePath
+			options.sourcePath,
+			workspaceRoot
 		);
 
 		const schema = await loadJsonSchema(resolvedPath, key);
@@ -230,14 +231,16 @@ export function inferSchemaSetting(
  * config file, or resolve paths relative to the workspace root. A
  * ValidationError is thrown when the path cannot be resolved.
  *
- * @param    schemaPath - Path declared in the config
- * @param    configPath - Path to the config file for resolving relative refs
+ * @param    schemaPath    - Path declared in the config
+ * @param    configPath    - Path to the config file for resolving relative refs
+ * @param    workspaceRoot - Workspace root for fallback resolution
  * @returns Absolute filesystem path to the schema file
  * @category IR
  */
 export async function resolveSchemaPath(
 	schemaPath: string,
-	configPath: string
+	configPath: string,
+	workspaceRoot: string
 ): Promise<string> {
 	if (path.isAbsolute(schemaPath)) {
 		await ensureFileExists(schemaPath);
@@ -251,7 +254,7 @@ export async function resolveSchemaPath(
 		return configRelative;
 	}
 
-	const workspaceRelative = resolveFromWorkspace(schemaPath);
+	const workspaceRelative = resolveFromWorkspace(workspaceRoot, schemaPath);
 	if (await fileExists(workspaceRelative)) {
 		return workspaceRelative;
 	}

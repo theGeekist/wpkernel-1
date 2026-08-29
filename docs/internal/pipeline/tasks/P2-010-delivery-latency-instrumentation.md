@@ -1,28 +1,17 @@
 ---
-architecture_version: 1
-id: P2-010
+id: p2-010
 title: Instrument Pipeline delivery latency
 stage: qualification
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on: []
 decision_dependencies: []
 conflicts_with: []
 write_scope:
     - docs/internal/pipeline/evidence/delivery-latency/**
     - scripts/benchmark-delivery-gates.mjs
-    - task-graph.project.json
+    - .taskgraph/project.json
 required_reading:
     - path: docs/internal/pipeline/COORDINATION.md
       reason: Measure the intended ownership and review sequence against actual execution.

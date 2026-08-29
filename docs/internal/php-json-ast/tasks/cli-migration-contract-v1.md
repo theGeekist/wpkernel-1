@@ -1,21 +1,11 @@
 ---
-architecture_version: 1
 id: cli-migration-contract-v1
 title: 'Freeze CLI migration and ownership contract v1'
 stage: contract
 status: done
 priority: critical
 evidence_milestone: 'PR review corrections incorporated; formatting, whitespace and task-graph checks passed'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: codex-cli-migration-contract-worker
-owner_kind: codex
-lease_started_at: 2026-08-25T09:46:29+08:00
-lease_expires_at: 2026-08-25T11:46:29+08:00
-base_sha: bc25f73195be62e243fbc44adaa896fa292970aa
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
     - spike-truth-baseline
 decision_dependencies: []

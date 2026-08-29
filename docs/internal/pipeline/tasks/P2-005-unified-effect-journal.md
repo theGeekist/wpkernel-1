@@ -1,29 +1,19 @@
 ---
-architecture_version: 1
-id: P2-005
+id: p2-005
 title: Implement the unified effect journal
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Unified process-local effect journal qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_005_effect_journal
-owner_kind: null
-lease_started_at: 2026-08-21T13:38:31Z
-lease_expires_at: 2026-08-21T17:38:31Z
-base_sha: 690c4063c3467b5008cd2e478dc247a416104b91
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-003
-    - P2-004
+    - p2-003
+    - p2-004
 decision_dependencies:
     - ADR-002
     - ADR-003
 conflicts_with:
-    - P2-007
+    - p2-007
 write_scope:
     - packages/pipeline/src/v2/graph/compiler.ts
     - packages/pipeline/src/v2/graph/executors.ts

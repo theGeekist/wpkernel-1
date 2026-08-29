@@ -57,7 +57,7 @@ describe('ts.types builder branch coverage', () => {
 					'book-genre': { taxonomy: 'book_genre' },
 					'book genre': { taxonomy: 'book_topic' },
 				},
-				statuses: ['draft', 'published'],
+				statuses: ['draft', "published'\\hot"],
 			},
 			identity: { type: 'number', param: "post'id" },
 		};
@@ -118,7 +118,7 @@ describe('ts.types builder branch coverage', () => {
 		expect(dts).toContain('content');
 		expect(dts).toContain('excerpt');
 		expect(dts).toContain(
-			"status: 'draft' | 'published' | 'trash' | 'auto-draft'"
+			"status: 'draft' | 'published\\'\\\\hot' | 'trash' | 'auto-draft'"
 		);
 		expect(dts).toContain('tags?: string[]');
 		expect(dts).toContain('featured?: boolean');

@@ -114,9 +114,9 @@ describe('workspace and installed package resolution', () => {
 			readonly version: string;
 		};
 		expect(taskGraphManifest).toMatchObject({
-			dependencies: { '@wpkernel/pipeline': '1.4.1' },
+			dependencies: { '@wpkernel/pipeline': '2.0.0' },
 			name: '@geekist/task-graph',
-			version: '0.1.0-beta.4',
+			version: '0.1.0-beta.6',
 		});
 
 		const publishedPipelineRoot = path.dirname(path.dirname(pipelineEntry));
@@ -128,7 +128,7 @@ describe('workspace and installed package resolution', () => {
 		) as { readonly name: string; readonly version: string };
 		expect(publishedManifest).toMatchObject({
 			name: '@wpkernel/pipeline',
-			version: '1.4.1',
+			version: '2.0.0',
 		});
 		const root = await mkdtemp(
 			path.join(os.tmpdir(), 'wpk-installed-resolution-')

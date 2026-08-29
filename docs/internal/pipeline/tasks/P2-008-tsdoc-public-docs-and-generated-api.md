@@ -1,29 +1,19 @@
 ---
-architecture_version: 1
-id: P2-008
+id: p2-008
 title: Generate and verify the v2 API documentation projection
 stage: qualification
 status: done
 priority: high
 evidence_milestone: 'Exact-semantic generated projection, generator-aware cache, truthful v1 cleanup vocabulary, packed boundary and both site routes qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_008_generated_docs
-owner_kind: codex
-lease_started_at: 2026-08-22T11:38:27+08:00
-lease_expires_at: 2026-08-22T15:38:27+08:00
-base_sha: 629117f70c779ee1b84faef3bac40ed54cf0bc47
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-007
+    - p2-007
 decision_dependencies:
     - ADR-001
     - ADR-002
     - ADR-003
 conflicts_with:
-    - P2-009
+    - p2-009
 write_scope:
     - docs/api/@wpkernel/**
     - docs/internal/pipeline/contracts/v2-public-contract.md

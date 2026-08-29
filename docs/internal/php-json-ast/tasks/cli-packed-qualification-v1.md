@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: cli-packed-qualification-v1
 title: 'Qualify packed CLI migration v1'
 stage: qualification
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - cli-idempotency-v1
     - compiler-public-entrypoints-v1

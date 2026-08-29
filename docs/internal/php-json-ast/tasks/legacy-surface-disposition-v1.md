@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: legacy-surface-disposition-v1
 title: 'Decide legacy PHP generation surface disposition v1'
 stage: integration
 status: proposed
 priority: medium
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - compiler-public-entrypoints-v1
 decision_dependencies: []

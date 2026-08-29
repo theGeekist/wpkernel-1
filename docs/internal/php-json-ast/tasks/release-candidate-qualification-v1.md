@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: release-candidate-qualification-v1
 title: 'Qualify AST release candidate v1'
 stage: release
 status: proposed
 priority: medium
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - ci-qualification-lanes-v1
     - legacy-surface-disposition-v1

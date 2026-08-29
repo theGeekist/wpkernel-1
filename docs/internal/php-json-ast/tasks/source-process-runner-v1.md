@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: source-process-runner-v1
 title: 'Implement bounded PHP process runner v1'
 stage: source
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - source-bridge-contract-v1
 decision_dependencies: []

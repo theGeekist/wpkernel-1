@@ -1,21 +1,10 @@
 ---
-architecture_version: 1
 id: browser-qualification-v1
 title: 'Implement browser qualification v1'
 stage: qualification
 status: proposed
 priority: high
-evidence_milestone: null
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: null
-owner_kind: null
-lease_started_at: null
-lease_expires_at: null
-base_sha: null
-branch: null
-worktree: null
 depends_on:
     - packed-plugin-harness-v1
 decision_dependencies: []

@@ -1,30 +1,20 @@
 ---
-architecture_version: 1
-id: P2-006
+id: p2-006
 title: Define graph-frontier suspension and concurrent diagnostics
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Process-local frontier suspension and concurrent diagnostics qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_006_suspension
-owner_kind: null
-lease_started_at: 2026-08-21T15:04:31Z
-lease_expires_at: 2026-08-21T19:04:31Z
-base_sha: 7b17369bf3f790088fd897a1b42ee9beb11f6994
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-003
-    - P2-004
-    - P2-005
+    - p2-003
+    - p2-004
+    - p2-005
 decision_dependencies:
     - ADR-001
     - ADR-002
 conflicts_with:
-    - P2-007
+    - p2-007
 write_scope:
     - packages/pipeline/src/v2/suspension/**
     - packages/pipeline/src/v2/diagnostics/**

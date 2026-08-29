@@ -1,31 +1,21 @@
 ---
-architecture_version: 1
-id: P2-012
+id: p2-012
 title: Remove class syntax from the v2 functional core
 stage: source
 status: done
 priority: critical
 evidence_milestone: 'Class-free invariant Graph and Suspension authority qualified and independently reviewed clean'
-replaced_by: []
 forward_to: []
-preferred_owner_kind: codex
-owner: /root/p2_012_class_free
-owner_kind: null
-lease_started_at: 2026-08-21T16:12:12Z
-lease_expires_at: 2026-08-21T20:12:12Z
-base_sha: 8dad995d
-branch: main
-worktree: /Users/jasonnathan/Repos/wpkernel
 depends_on:
-    - P2-006
+    - p2-006
 decision_dependencies:
     - ADR-001
     - ADR-002
 conflicts_with:
-    - P2-007
-    - P2-008
-    - P2-013
-    - P2-014
+    - p2-007
+    - p2-008
+    - p2-013
+    - p2-014
 write_scope:
     - packages/pipeline/src/v2/graph/**
     - packages/pipeline/src/v2/scheduler/**
