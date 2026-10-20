@@ -10,6 +10,10 @@
 
 **📖 Read [DEVELOPMENT.md](DEVELOPMENT.md)** for the complete contributor workflow, testing infrastructure, and troubleshooting.
 
+Repository changes start with the [authoring and promotion guide](docs/REPOSITORY-GUIDE.md).
+Documentation-affecting work lands in `theGeekist/wpkernel-1:main`, passes its push
+CI, then is promoted to this upstream repository with an identical source tree.
+
 The JavaScript is the source of truth and PHP is a thin contract.
 
 [![CI Status](https://github.com/wpkernel/wpkernel/workflows/CI/badge.svg)](https://github.com/wpkernel/wpkernel/actions)
@@ -259,12 +263,13 @@ Both patterns work identically - pick what you prefer. Submodule imports provide
 
 ## 📦 Packages
 
-| Package                                   | Description                                              | Version |
-| ----------------------------------------- | -------------------------------------------------------- | ------- |
-| [@wpkernel/core](packages/core)           | Core framework (Resources, Actions, Events, Jobs)        | 0.1.0   |
-| [@wpkernel/ui](packages/ui)               | Accessible UI components (wraps @wordpress/components)   | 0.1.0   |
-| [@wpkernel/cli](packages/cli)             | Scaffolding CLI (generators)                             | 0.1.0   |
-| [@wpkernel/e2e-utils](packages/e2e-utils) | Playwright test utilities _(optional - for E2E testing)_ | 0.1.0   |
+| Package                                   | Description                                                       | Version |
+| ----------------------------------------- | ----------------------------------------------------------------- | ------- |
+| [@wpkernel/pipeline](packages/pipeline)   | Standalone typed dataflow DAG evaluator; usable outside WordPress | 2.0.0   |
+| [@wpkernel/core](packages/core)           | Core framework (Resources, Actions, Events, Jobs)                 | 0.1.0   |
+| [@wpkernel/ui](packages/ui)               | Accessible UI components (wraps @wordpress/components)            | 0.1.0   |
+| [@wpkernel/cli](packages/cli)             | Scaffolding CLI (generators)                                      | 0.1.0   |
+| [@wpkernel/e2e-utils](packages/e2e-utils) | Playwright test utilities _(optional - for E2E testing)_          | 0.1.0   |
 
 ---
 
