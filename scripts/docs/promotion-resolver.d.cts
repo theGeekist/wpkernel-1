@@ -18,6 +18,14 @@ export function assertPromotionPullSource(
 	paths: readonly string[]
 ): void;
 
+export function promotionPullPaths(
+	pull: { readonly changed_files: number },
+	files: readonly {
+		readonly filename: string;
+		readonly previous_filename?: string;
+	}[]
+): string[];
+
 export function parsePublicApiResponse(response: PublicApiResponse): unknown;
 
 export function associatedPullPageState(

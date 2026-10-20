@@ -24,19 +24,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-
-            - name: Check documentation promotion source
-              if: github.event_name == 'pull_request'
-              env:
-                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
-                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-              shell: bash
-              run: |
-                  set -euo pipefail
-                  git diff --name-only --no-renames -z "${BASE_SHA}...${HEAD_SHA}" > "${RUNNER_TEMP}/promotion-paths"
-                  node scripts/docs/promotion-resolver.cjs check-pull-source --paths-file "${RUNNER_TEMP}/promotion-paths"
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4

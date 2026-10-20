@@ -24,6 +24,12 @@ Do not open a deployment-affecting PR from an upstream branch or a fork feature
 branch. Deployment requires a real merged authoring receipt, identical Git trees
 and successful authoring-main push CI. Do not bypass or manufacture those checks.
 
+The separate **Check documentation promotion source** status uses trusted base
+code and read-only PR metadata. Review it before merging; it does not configure
+branch protection. Its first adoption is a reviewed bootstrap: a new workflow
+cannot certify its own PR before it exists on the trusted default branch.
+Only claim that admission ran when its actual workflow receipt is present.
+
 Read the selected package README and its engineering authority before work.
 Use [DEVELOPMENT.md](https://github.com/wpkernel/wpkernel/blob/main/DEVELOPMENT.md) for framework setup and commands.
 

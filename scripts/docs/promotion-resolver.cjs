@@ -6,6 +6,28 @@ const AUTHORING_REPOSITORY = 'theGeekist/wpkernel-1';
 const MAX_ASSOCIATED_PULL_PAGES = 3;
 const PAGE_SIZE = 100;
 
+function promotionPullPaths(pull, files) {
+	if (
+		!Number.isInteger(pull.changed_files) ||
+		pull.changed_files < 0 ||
+		pull.changed_files > 3000 ||
+		!Array.isArray(files) ||
+		files.length !== pull.changed_files
+	) {
+		throw new Error(
+			'Pull file list is incomplete or exceeds GitHub limits'
+		);
+	}
+	return files.flatMap((file) => {
+		if (!nonEmptyString(file.filename)) {
+			throw new Error('Pull file path is missing');
+		}
+		return nonEmptyString(file.previous_filename)
+			? [file.filename, file.previous_filename]
+			: [file.filename];
+	});
+}
+
 function assertPromotionPullSource(repository, pull, paths) {
 	if (repository !== 'wpkernel/wpkernel') {
 		return;
@@ -366,6 +388,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+	promotionPullPaths,
 	assertPromotionPullSource,
 	parsePublicApiResponse,
 	associatedPullPageState,

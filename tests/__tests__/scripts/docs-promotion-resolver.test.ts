@@ -1,21 +1,13 @@
 import {
 	assertPromotionPullSource,
+	promotionPullPaths,
 	associatedPullPageState,
 	findPromotionSourceSha,
 	parsePublicApiResponse,
 	resolvePromotion,
 	selectAuthoringCI,
 } from '../../../scripts/docs/promotion-resolver.cjs';
-import {
-	readFileSync,
-	mkdtempSync,
-	mkdirSync,
-	writeFileSync,
-	renameSync,
-	rmSync,
-} from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const upstreamSha = 'upstream-sha';
@@ -53,52 +45,114 @@ function ciRun(overrides: Partial<Record<string, string | number>> = {}) {
 }
 
 describe('documentation promotion resolver', () => {
-	it('retains the source path when documentation is renamed outside docs', () => {
-		const directory = mkdtempSync(path.join(tmpdir(), 'wpk-promotion-'));
-		const git = (...args: string[]) =>
-			execFileSync('git', args, { cwd: directory, encoding: 'utf8' });
-		try {
-			git('init', '--quiet');
-			mkdirSync(path.join(directory, 'docs'));
-			writeFileSync(path.join(directory, 'docs/guide.md'), 'guide\n');
-			git('add', '.');
-			git(
-				'-c',
-				'user.name=Test',
-				'-c',
-				'user.email=test@example.invalid',
-				'-c',
-				'commit.gpgsign=false',
-				'commit',
-				'--quiet',
-				'-m',
-				'fixture'
+	it.each(['before', 'after'])(
+		'rejects a live PR revision changing %s metadata pagination',
+		async (when) => {
+			const workflow = readFileSync(
+				'.github/workflows/docs-promotion.yml',
+				'utf8'
 			);
-			renameSync(
-				path.join(directory, 'docs/guide.md'),
-				path.join(directory, 'guide.md')
+			const script = workflow
+				.split('script: |\n')[1]
+				.split('\n\n            - name:')[0]
+				.split('\n')
+				.map((line) => line.slice(22))
+				.join('\n');
+			const execute = new Function(
+				'require',
+				'github',
+				'context',
+				'process',
+				`return (async () => { ${script} })();`
 			);
-			git('add', '-A');
-			const paths = git(
-				'diff',
-				'--cached',
-				'--name-only',
-				'--no-renames',
-				'-z'
-			)
-				.split('\0')
-				.filter(Boolean);
-			expect(paths).toContain('docs/guide.md');
-			expect(() =>
-				assertPromotionPullSource('wpkernel/wpkernel', undefined, paths)
-			).toThrow('must be promoted');
-			expect(readFileSync('.github/workflows/ci.yml', 'utf8')).toContain(
-				'git diff --name-only --no-renames -z'
-			);
-		} finally {
-			rmSync(directory, { recursive: true, force: true });
+			const expected = {
+				head: { sha: 'head' },
+				base: { sha: 'base' },
+				changed_files: 1,
+			};
+			const changed = { ...expected, head: { sha: 'new-head' } };
+			const get = jest
+				.fn()
+				.mockResolvedValueOnce({
+					data: when === 'before' ? changed : expected,
+				})
+				.mockResolvedValueOnce({ data: changed });
+			const write = jest.fn();
+			const mockRequire = (name: string) =>
+				name === 'node:fs'
+					? { writeFileSync: write }
+					: name === 'node:path'
+						? path
+						: { promotionPullPaths };
+			await expect(
+				execute(
+					mockRequire,
+					{
+						rest: { pulls: { get, listFiles: jest.fn() } },
+						paginate: jest
+							.fn()
+							.mockResolvedValue([{ filename: 'docs/x.md' }]),
+					},
+					{
+						payload: { pull_request: expected },
+						repo: { owner: 'wpkernel', repo: 'wpkernel' },
+						issue: { number: 1 },
+					},
+					{ env: { RUNNER_TEMP: '/tmp' } }
+				)
+			).rejects.toThrow('Pull revision changed');
+			expect(write).not.toHaveBeenCalled();
 		}
+	);
+
+	it('retains renamed source paths from complete GitHub metadata', () => {
+		const paths = promotionPullPaths({ changed_files: 1 }, [
+			{ filename: 'guide.md', previous_filename: 'docs/guide.md' },
+		]);
+		expect(paths).toEqual(['guide.md', 'docs/guide.md']);
+		expect(() =>
+			assertPromotionPullSource('wpkernel/wpkernel', undefined, paths)
+		).toThrow('must be promoted');
 	});
+
+	it('accepts complete paginated metadata including deleted paths', () => {
+		const files = Array.from({ length: 201 }, (_, index) => ({
+			filename: `docs/${index}.md`,
+		}));
+		expect(promotionPullPaths({ changed_files: 201 }, files)).toHaveLength(
+			201
+		);
+	});
+
+	it.each([0, 2, 3001, -1, Number.NaN])(
+		'rejects incomplete or unbounded file list with count %s',
+		(changed_files) => {
+			expect(() =>
+				promotionPullPaths({ changed_files }, [
+					{ filename: 'docs/x.md' },
+				])
+			).toThrow('incomplete');
+		}
+	);
+
+	it('pins admission to trusted base code with read-only metadata access', () => {
+		const workflow = readFileSync(
+			'.github/workflows/docs-promotion.yml',
+			'utf8'
+		);
+		expect(workflow).toContain('pull_request_target:');
+		expect(workflow).toContain(
+			'ref: ${{ github.event.pull_request.base.sha }}'
+		);
+		expect(workflow).toContain('persist-credentials: false');
+		expect(workflow).toContain('pull-requests: read');
+		expect(workflow).not.toContain(
+			'ref: ${{ github.event.pull_request.head.sha }}'
+		);
+		expect(workflow).toContain('assertRevision(before)');
+		expect(workflow).toContain('assertRevision(after)');
+	});
+
 	const authoringHead = {
 		repo: { full_name: 'theGeekist/wpkernel-1' },
 		ref: 'main',
