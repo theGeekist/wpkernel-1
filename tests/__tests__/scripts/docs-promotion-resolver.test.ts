@@ -165,6 +165,7 @@ describe('documentation promotion resolver', () => {
 		'pnpm-lock.yaml',
 		'pnpm-workspace.yaml',
 		'.github/workflows/docs.yml',
+		'.github/workflows/docs-promotion.yml',
 		'scripts/docs/promotion-resolver.cjs',
 	])('rejects direct upstream PRs affecting %s before deployment', (file) => {
 		expect(() =>
@@ -205,7 +206,7 @@ describe('documentation promotion resolver', () => {
 				{ head: { ...authoringHead, ref: 'repair' } },
 				['docs/guide.md']
 			)
-		).toThrow('authoring main');
+		).toThrow('See docs/REPOSITORY-PROMOTION.md');
 		expect(() =>
 			assertPromotionPullSource('wpkernel/wpkernel', undefined, [
 				'docs/guide.md',

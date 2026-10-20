@@ -10,7 +10,7 @@
 
 **📖 Read [DEVELOPMENT.md](DEVELOPMENT.md)** for the complete contributor workflow, testing infrastructure, and troubleshooting.
 
-Repository changes start with the [authoring and promotion guide](docs/REPOSITORY-GUIDE.md).
+Repository changes start with the [authoring and promotion guide](docs/REPOSITORY-PROMOTION.md).
 Documentation-affecting work lands in `theGeekist/wpkernel-1:main`, passes its push
 CI, then is promoted to this upstream repository with an identical source tree.
 
