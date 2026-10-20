@@ -1,11 +1,21 @@
 import {
+	assertPromotionPullSource,
 	associatedPullPageState,
 	findPromotionSourceSha,
 	parsePublicApiResponse,
 	resolvePromotion,
 	selectAuthoringCI,
 } from '../../../scripts/docs/promotion-resolver.cjs';
-import { readFileSync } from 'node:fs';
+import {
+	readFileSync,
+	mkdtempSync,
+	mkdirSync,
+	writeFileSync,
+	renameSync,
+	rmSync,
+} from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 const upstreamSha = 'upstream-sha';
@@ -43,6 +53,121 @@ function ciRun(overrides: Partial<Record<string, string | number>> = {}) {
 }
 
 describe('documentation promotion resolver', () => {
+	it('retains the source path when documentation is renamed outside docs', () => {
+		const directory = mkdtempSync(path.join(tmpdir(), 'wpk-promotion-'));
+		const git = (...args: string[]) =>
+			execFileSync('git', args, { cwd: directory, encoding: 'utf8' });
+		try {
+			git('init', '--quiet');
+			mkdirSync(path.join(directory, 'docs'));
+			writeFileSync(path.join(directory, 'docs/guide.md'), 'guide\n');
+			git('add', '.');
+			git(
+				'-c',
+				'user.name=Test',
+				'-c',
+				'user.email=test@example.invalid',
+				'-c',
+				'commit.gpgsign=false',
+				'commit',
+				'--quiet',
+				'-m',
+				'fixture'
+			);
+			renameSync(
+				path.join(directory, 'docs/guide.md'),
+				path.join(directory, 'guide.md')
+			);
+			git('add', '-A');
+			const paths = git(
+				'diff',
+				'--cached',
+				'--name-only',
+				'--no-renames',
+				'-z'
+			)
+				.split('\0')
+				.filter(Boolean);
+			expect(paths).toContain('docs/guide.md');
+			expect(() =>
+				assertPromotionPullSource('wpkernel/wpkernel', undefined, paths)
+			).toThrow('must be promoted');
+			expect(readFileSync('.github/workflows/ci.yml', 'utf8')).toContain(
+				'git diff --name-only --no-renames -z'
+			);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	});
+	const authoringHead = {
+		repo: { full_name: 'theGeekist/wpkernel-1' },
+		ref: 'main',
+	};
+
+	it.each([
+		'docs/guide.md',
+		'packages/pipeline/src/index.ts',
+		'package.json',
+		'pnpm-lock.yaml',
+		'pnpm-workspace.yaml',
+		'.github/workflows/docs.yml',
+		'scripts/docs/promotion-resolver.cjs',
+	])('rejects direct upstream PRs affecting %s before deployment', (file) => {
+		expect(() =>
+			assertPromotionPullSource(
+				'wpkernel/wpkernel',
+				{
+					head: {
+						repo: { full_name: 'wpkernel/wpkernel' },
+						ref: 'repair',
+					},
+				},
+				[file]
+			)
+		).toThrow('must be promoted from theGeekist/wpkernel-1:main');
+	});
+
+	it('admits fork-main promotions and internal authoring PRs', () => {
+		expect(() =>
+			assertPromotionPullSource(
+				'wpkernel/wpkernel',
+				{ head: authoringHead },
+				['docs/deleted.md']
+			)
+		).not.toThrow();
+		expect(() =>
+			assertPromotionPullSource(
+				'theGeekist/wpkernel-1',
+				{ head: { ...authoringHead, ref: 'repair' } },
+				['docs/guide.md']
+			)
+		).not.toThrow();
+	});
+
+	it('rejects fork feature branches and absent source metadata for deployment paths', () => {
+		expect(() =>
+			assertPromotionPullSource(
+				'wpkernel/wpkernel',
+				{ head: { ...authoringHead, ref: 'repair' } },
+				['docs/guide.md']
+			)
+		).toThrow('authoring main');
+		expect(() =>
+			assertPromotionPullSource('wpkernel/wpkernel', undefined, [
+				'docs/guide.md',
+			])
+		).toThrow('authoring main');
+	});
+
+	it('does not require a promotion for paths outside deployment triggers', () => {
+		expect(() =>
+			assertPromotionPullSource('wpkernel/wpkernel', undefined, [
+				'README.md',
+				'AGENTS.md',
+			])
+		).not.toThrow();
+	});
+
 	const docsWorkflow = readFileSync(
 		path.resolve('.github/workflows/docs.yml'),
 		'utf8'

@@ -6,6 +6,33 @@ const AUTHORING_REPOSITORY = 'theGeekist/wpkernel-1';
 const MAX_ASSOCIATED_PULL_PAGES = 3;
 const PAGE_SIZE = 100;
 
+function assertPromotionPullSource(repository, pull, paths) {
+	if (repository !== 'wpkernel/wpkernel') {
+		return;
+	}
+	const triggersDeployment = paths.some(
+		(file) =>
+			file.startsWith('docs/') ||
+			file.startsWith('packages/') ||
+			[
+				'package.json',
+				'pnpm-lock.yaml',
+				'pnpm-workspace.yaml',
+				'.github/workflows/docs.yml',
+				'scripts/docs/promotion-resolver.cjs',
+			].includes(file)
+	);
+	if (
+		triggersDeployment &&
+		(pull?.head?.repo?.full_name !== AUTHORING_REPOSITORY ||
+			pull?.head?.ref !== 'main')
+	) {
+		throw new Error(
+			`Documentation-affecting upstream changes must be promoted from ${AUTHORING_REPOSITORY}:main. Merge reviewed work into authoring main, wait for its push CI, then open the upstream promotion PR. See docs/REPOSITORY-GUIDE.md.`
+		);
+	}
+}
+
 function nonEmptyString(value) {
 	return typeof value === 'string' && value.length > 0;
 }
@@ -262,6 +289,17 @@ function values(args, name) {
 
 function main() {
 	const [command, ...args] = process.argv.slice(2);
+	if (command === 'check-pull-source') {
+		assertPromotionPullSource(
+			process.env.GITHUB_REPOSITORY,
+			readJson(process.env.GITHUB_EVENT_PATH).pull_request,
+			fs
+				.readFileSync(argumentValue(args, '--paths-file'), 'utf8')
+				.split('\0')
+				.filter(Boolean)
+		);
+		return;
+	}
 	if (command === 'check-public-response') {
 		parsePublicApiResponse({
 			bodyText: fs.readFileSync(
@@ -328,6 +366,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+	assertPromotionPullSource,
 	parsePublicApiResponse,
 	associatedPullPageState,
 	findPromotionSourceSha,
