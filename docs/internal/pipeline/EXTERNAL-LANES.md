@@ -54,10 +54,3 @@ run-local transitions. They do not provide durable audit storage or provider
 billing. Declared effects commit after graph success and compensate on failure;
 eager host mutation is outside that guarantee. A durable restart is a fresh
 graph invocation, not a serialised private frontier.
-
-## Package compatibility surface
-
-The package root does not expose the Pipeline 1.4 API. The public
-`@wpkernel/pipeline/v1` subpath provides a serial compatibility adapter; it
-does not recreate the original 1.4 source surface. Historical 1.4.1 consumer
-pins remain external dependency boundaries.
