@@ -33,3 +33,5 @@ code and read-only PR metadata. Review it before merging; it does not configure
 branch protection. Its first adoption is a reviewed bootstrap: a new workflow
 cannot certify its own PR before it exists on the trusted default branch. Only
 claim that admission ran when its actual workflow receipt is present.
+
+For the package-root and serial v1-adapter boundary referenced by this repository's Pipeline guidance, see the [Pipeline package compatibility note](internal/pipeline/PACKAGE-COMPATIBILITY.md).
