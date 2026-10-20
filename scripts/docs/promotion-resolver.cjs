@@ -41,6 +41,7 @@ function assertPromotionPullSource(repository, pull, paths) {
 				'pnpm-lock.yaml',
 				'pnpm-workspace.yaml',
 				'.github/workflows/docs.yml',
+				'.github/workflows/docs-promotion.yml',
 				'scripts/docs/promotion-resolver.cjs',
 			].includes(file)
 	);
