@@ -10,10 +10,6 @@
 
 **📖 Read [DEVELOPMENT.md](DEVELOPMENT.md)** for the complete contributor workflow, testing infrastructure, and troubleshooting.
 
-Repository changes start with the [authoring and promotion guide](docs/REPOSITORY-PROMOTION.md).
-Documentation-affecting work lands in `theGeekist/wpkernel-1:main`, passes its push
-CI, then is promoted to this upstream repository with an identical source tree.
-
 The JavaScript is the source of truth and PHP is a thin contract.
 
 [![CI Status](https://github.com/wpkernel/wpkernel/workflows/CI/badge.svg)](https://github.com/wpkernel/wpkernel/actions)
