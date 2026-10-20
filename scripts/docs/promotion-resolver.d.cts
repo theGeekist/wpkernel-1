@@ -5,27 +5,6 @@ export type PublicApiResponse = {
 	readonly url: string;
 };
 
-export function assertPromotionPullSource(
-	repository: string,
-	pull:
-		| {
-				readonly head?: {
-					readonly repo?: { readonly full_name?: string };
-					readonly ref?: string;
-				};
-		  }
-		| undefined,
-	paths: readonly string[]
-): void;
-
-export function promotionPullPaths(
-	pull: { readonly changed_files: number },
-	files: readonly {
-		readonly filename: string;
-		readonly previous_filename?: string;
-	}[]
-): string[];
-
 export function parsePublicApiResponse(response: PublicApiResponse): unknown;
 
 export function associatedPullPageState(
