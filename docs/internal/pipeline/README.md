@@ -34,8 +34,6 @@ Three boundaries are non-negotiable:
    belong to its host.
 
 V2 is a major version, not a silent reinterpretation of `dependsOn`,
-`next(output?)`, extensions or pause snapshots. The package root does not expose
-the 1.4 API. The public `@wpkernel/pipeline/v1` subpath provides a serial
-compatibility adapter, not the original 1.4 source surface. Historical 1.4.1
-consumer pins remain exact external dependency boundaries.
-See [external lanes](EXTERNAL-LANES.md).
+`next(output?)`, extensions or pause snapshots. Historical 1.4.1 consumer pins
+remain exact external dependency boundaries, not evidence that this source
+checkout still exposes the 1.4 API. See [external lanes](EXTERNAL-LANES.md).
