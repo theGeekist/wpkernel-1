@@ -9,6 +9,7 @@ The package is version 2.0.0. P2-009 records publication and exact packed
 qualification; [the package README](../../../packages/pipeline/README.md)
 and [public guide](../../packages/pipeline.md) describe the v2 API.
 Task front matter distinguishes completed release work from future work.
+See [package compatibility notes](PACKAGE-COMPATIBILITY.md) for the package-root and public v1 adapter boundary.
 
 The programme starts from an explicit correction: Pipeline v1 validates and
 topologically orders helper dependencies, then executes a serial transformation
