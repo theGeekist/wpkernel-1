@@ -206,7 +206,7 @@ describe('documentation promotion resolver', () => {
 				{ head: { ...authoringHead, ref: 'repair' } },
 				['docs/guide.md']
 			)
-		).toThrow('authoring main');
+		).toThrow('See docs/REPOSITORY-PROMOTION.md');
 		expect(() =>
 			assertPromotionPullSource('wpkernel/wpkernel', undefined, [
 				'docs/guide.md',
